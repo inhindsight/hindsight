@@ -1,0 +1,6 @@
+%{
+  "checkov": {:hex, :checkov, "0.5.1", "546d017317f6593cb199e46266acc73e2160432f90f3fcbecc38762e777d037d", [:mix], [], "hexpm"},
+  "faker": {:hex, :faker, "0.13.0", "8abcb996f010ccd6c85588c89fc047f11134e04da019b70252f95431d721a3dc", [:mix], [], "hexpm"},
+  "norm": {:hex, :norm, "0.9.1", "521de849c9e44f3be0d15d8096fdd1be19c10f929b7007965b33b6847f7c0c5a", [:mix], [], "hexpm"},
+  "stream_data": {:hex, :stream_data, "0.4.3", "62aafd870caff0849a5057a7ec270fad0eb86889f4d433b937d996de99e3db25", [:mix], [], "hexpm"},
+}
