@@ -22,5 +22,4 @@ defmodule Dataset do
     struct(__MODULE__, map)
     |> Norm.conform(@schema.s())
   end
-
 end

@@ -10,7 +10,13 @@ defmodule DatasetTest do
       assert {:ok, %Dataset{}} = Dataset.new(input)
     end
 
-    data_test "validates #{inspect(field)} for bad input" do
+    test "handles input with string keys" do
+      {:ok, ds} = DatasetFaker.dataset(%{})
+      input = for {key, val} <- Map.delete(ds, :__struct__), do: {to_string(key), val}, into: %{}
+      assert {:ok, %Dataset{}} = Dataset.new(input)
+    end
+
+    data_test "validates #{inspect(field)} against bad input" do
       {:ok, ds} = DatasetFaker.dataset(%{})
       input = Map.delete(ds, :__struct__) |> put_in(field, value)
 
@@ -30,7 +36,7 @@ defmodule DatasetTest do
         [[:contact, :name], 1],
         [[:contact, :email], "foo"],
         [[:boundaries, :spatial], [[]]],
-        [[:boundaries, :temporal], ["foo"]],
+        [[:boundaries, :temporal], ["foo", "bar"]],
         [[:data], nil]
       ]
     end
