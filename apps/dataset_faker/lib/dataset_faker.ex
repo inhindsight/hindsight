@@ -1,6 +1,5 @@
 defmodule DatasetFaker do
-  @moduledoc "TODO"
-
+  @spec dataset(map()) :: Dataset.t()
   def dataset(override) do
     default()
     |> Map.merge(override)
