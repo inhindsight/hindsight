@@ -22,16 +22,15 @@ defmodule Dataset.Schema.V1 do
     })
   end
 
-  defp timestamp, do: spec(is_binary() and ts?())
+  defp timestamp, do: spec(ts?())
   defp string, do: spec(is_binary() and not_empty?())
   defp contact, do: schema(%{name: string(), email: spec(email?())})
   defp geo_spatial, do: spec(is_list() and bbox?())
-  defp temporal, do: spec(is_list() and ts?() and temporal_range?())
 
   defp boundaries do
     schema(%{
       spatial: geo_spatial(),
-      temporal: temporal()
+      temporal: spec(temporal_range?())
     })
   end
 end
