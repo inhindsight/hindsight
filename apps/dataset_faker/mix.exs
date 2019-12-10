@@ -25,7 +25,8 @@ defmodule DatasetFaker.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:faker, "~> 0.12"}
+      {:faker, "~> 0.12"},
+      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
     ]
   end
 end

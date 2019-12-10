@@ -28,6 +28,7 @@ defmodule Dataset.MixProject do
       {:norm, "~> 0.9.0"},
       {:dataset_faker, in_umbrella: true, only: [:dev, :test]},
       {:checkov, "~> 0.4", only: [:test]},
+      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
     ]
   end
 end
