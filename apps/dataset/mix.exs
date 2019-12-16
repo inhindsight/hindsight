@@ -29,7 +29,7 @@ defmodule Dataset.MixProject do
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
       {:dataset_faker, in_umbrella: true, only: [:dev, :test]},
       {:stream_data, "~> 0.4.0", only: [:dev, :test]},
-      {:checkov, "~> 0.4", only: [:test]}
+      {:checkov, "~> 1.0", only: [:test]}
     ]
   end
 end
