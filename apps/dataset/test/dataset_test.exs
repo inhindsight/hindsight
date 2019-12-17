@@ -36,8 +36,7 @@ defmodule DatasetTest do
         [[:contact, :name], 1],
         [[:contact, :email], "foo"],
         [[:boundaries, :spatial], [[]]],
-        [[:boundaries, :temporal], ["foo", "bar"]],
-        [[:data], nil]
+        [[:boundaries, :temporal], ["foo", "bar"]]
       ]
     end
   end

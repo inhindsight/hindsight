@@ -12,8 +12,7 @@ defmodule Dataset do
             keywords: [],
             license: nil,
             contact: %{name: nil, email: nil},
-            boundaries: %{spatial: [], temporal: []},
-            data: []
+            boundaries: %{spatial: [], temporal: []}
 
   @spec new(map()) :: t()
   def new(%{} = input) do

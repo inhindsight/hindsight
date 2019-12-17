@@ -17,8 +17,7 @@ defmodule Dataset.Schema.V1 do
       created_ts: timestamp(),
       modified_ts: timestamp(),
       contact: contact(),
-      boundaries: boundaries(),
-      data: spec(is_list())
+      boundaries: boundaries()
     })
   end
 
