@@ -1,8 +1,5 @@
 defmodule Definition.Schema.Dataset.V1 do
-  @behaviour Definition.Schema
-
-  import Norm
-  import Definition.Schema.Validation
+  use Definition.Schema
 
   @impl Definition.Schema
   def s do
