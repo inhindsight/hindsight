@@ -5,11 +5,4 @@ defmodule DatasetFaker do
     |> Map.merge(override)
     |> Dataset.new()
   end
-
-  @spec attachment(map()) :: Dataset.Attachment.t()
-  def attachment(override) do
-    DatasetFaker.Attachment.default()
-    |> Map.merge(override)
-    |> Dataset.Attachment.new()
-  end
 end

@@ -20,23 +20,41 @@ defmodule DatasetTest do
       {:ok, ds} = DatasetFaker.dataset(%{})
       input = Map.delete(ds, :__struct__) |> put_in(field, value)
 
-      assert {:error, [%{path: field}]} = Dataset.new(input)
+      assert {:error, [%{input: value, path: field} | _]} = Dataset.new(input)
 
       where [
         [:field, :value],
         [[:version], "1"],
         [[:id], ""],
-        [[:org_id], 42],
+        [[:owner_id], 42],
         [[:title], " "],
         [[:description], 9001],
         [[:keywords], 99],
         [[:license], ""],
-        [[:created_ts], "foo"],
-        [[:modified_ts], "foo"],
-        [[:contact, :name], 1],
-        [[:contact, :email], "foo"],
-        [[:boundaries, :spatial], [[]]],
-        [[:boundaries, :temporal], ["foo", "bar"]]
+        [[:created_ts], ""],
+        [[:profile, :updated_ts], "bar"],
+        [[:profile, :profiled_ts], "foo"],
+        [[:profile, :modified_ts], "bar"],
+        [[:profile, :spatial], [[]]],
+        [[:profile, :temporal], ["foo", "bar"]]
+      ]
+    end
+
+    data_test "accepts default value in #{inspect(field)} field" do
+      {:ok, ds} = DatasetFaker.dataset(%{})
+      input = Map.delete(ds, :__struct__) |> put_in(field, value)
+
+      assert {:ok, %Dataset{}} = Dataset.new(input)
+
+      where [
+        [:field, :value],
+        [[:description], ""],
+        [[:keywords], []],
+        [[:profile, :updated_ts], ""],
+        [[:profile, :profiled_ts], ""],
+        [[:profile, :modified_ts], ""],
+        [[:profile, :spatial], []],
+        [[:profile, :temporal], []],
       ]
     end
   end

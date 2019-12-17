@@ -41,17 +41,20 @@ defmodule Dataset.Schema.Validation do
 
   def email?(_), do: false
 
-  @spec not_empty?(String.t() | list() | map()) :: boolean()
-  def not_empty?(""), do: false
-  def not_empty?([]), do: false
-  def not_empty?(map) when map == %{}, do: false
+  @spec empty?(String.t() | list() | map()) :: boolean()
+  def empty?(""), do: true
+  def empty?([]), do: true
+  def empty?(map) when map == %{}, do: true
 
-  def not_empty?(input) when is_binary(input) do
+  def empty?(input) when is_binary(input) do
     case String.trim(input) do
-      "" -> false
-      _ -> true
+      "" -> true
+      _ -> false
     end
   end
 
-  def not_empty?(_), do: true
+  def empty?(_), do: false
+
+  @spec not_empty?(String.t() | list() | map()) :: boolean()
+  def not_empty?(input), do: not empty?(input)
 end

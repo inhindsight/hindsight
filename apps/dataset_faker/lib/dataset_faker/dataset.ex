@@ -5,22 +5,19 @@ defmodule DatasetFaker.Dataset do
     %{
       version: 1,
       id: Faker.UUID.v4(),
-      org_id: Faker.UUID.v4(),
+      owner_id: Faker.UUID.v4(),
       title: title(),
       description: Faker.Lorem.Shakespeare.hamlet(),
       keywords: Faker.Util.list(5, &Faker.Company.buzzword/0),
       license: Faker.Util.pick(["Apache", "GNU", "BDS", "MIT"]),
       created_ts: timestamp(360),
-      modified_ts: timestamp(180),
-      contact: %{
-        name: Faker.Name.name(),
-        email: Faker.Internet.email()
-      },
-      boundaries: %{
+      profile: %{
+        updated_ts: timestamp(90),
+        profiled_ts: timestamp(120),
+        modified_ts: timestamp(180),
         spatial: bbox(),
         temporal: temporal_range()
-      },
-      data: []
+      }
     }
   end
 

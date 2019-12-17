@@ -4,15 +4,19 @@ defmodule Dataset do
 
   defstruct version: nil,
             id: nil,
-            org_id: nil,
-            created_ts: nil,
-            modified_ts: nil,
+            owner_id: nil,
             title: nil,
             description: "",
             keywords: [],
             license: nil,
-            contact: %{name: nil, email: nil},
-            boundaries: %{spatial: [], temporal: []}
+            created_ts: nil,
+            profile: %{
+              updated_ts: "",
+              profiled_ts: "",
+              modified_ts: "",
+              spatial: [],
+              temporal: []
+            }
 
   @spec new(map()) :: t()
   def new(%{} = input) do
