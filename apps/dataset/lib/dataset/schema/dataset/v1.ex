@@ -1,4 +1,4 @@
-defmodule Dataset.Schema.V1 do
+defmodule Dataset.Schema.Dataset.V1 do
   @behaviour Dataset.Schema
 
   import Norm

@@ -4,12 +4,6 @@ defmodule DatasetTest do
   doctest Dataset
 
   describe "new/1" do
-    test "returns a Dataset struct" do
-      {:ok, ds} = DatasetFaker.dataset(%{})
-      input = Map.delete(ds, :__struct__)
-      assert {:ok, %Dataset{}} = Dataset.new(input)
-    end
-
     test "handles input with string keys" do
       {:ok, ds} = DatasetFaker.dataset(%{})
       input = for {key, val} <- Map.delete(ds, :__struct__), do: {to_string(key), val}, into: %{}

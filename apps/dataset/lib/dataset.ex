@@ -1,6 +1,6 @@
 defmodule Dataset do
   @type t() :: %__MODULE__{}
-  @schema Application.get_env(:dataset, :schema)
+  @schema Dataset.Schema.Dataset.V1
 
   defstruct version: nil,
             id: nil,
