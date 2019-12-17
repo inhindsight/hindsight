@@ -78,6 +78,28 @@ defmodule Dataset.Schema.ValidationTest do
     end
   end
 
+  describe "empty?/1" do
+    test "returns true for empty string/list/map" do
+      assert empty?("")
+      assert empty?([])
+      assert empty?(%{})
+    end
+
+    test "returns true for string with only space characters" do
+      assert empty?("    ")
+      assert empty?("\t\n")
+    end
+
+    test "returns false for any other input" do
+      check all input <- term(),
+        input != [],
+        input != "",
+        input != %{} do
+        refute empty?(input)
+      end
+    end
+  end
+
   describe "not_empty?/1" do
     test "returns true for non-empty strings/lists/maps" do
       assert not_empty?("foo")
