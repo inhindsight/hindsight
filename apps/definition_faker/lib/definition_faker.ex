@@ -8,7 +8,7 @@ defmodule DefinitionFaker do
     |> Dataset.new()
   end
 
-  @spec owner(map()) :: Dataset.Owner.t()
+  @spec owner(map()) :: Owner.t()
   def owner(override) do
     DefinitionFaker.Owner.default()
     |> Map.merge(override)
