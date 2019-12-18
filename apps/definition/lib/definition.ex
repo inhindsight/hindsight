@@ -1,5 +1,6 @@
 defmodule Definition do
   @callback new(map()) :: struct()
+  @callback migrate(struct()) :: struct()
 
   defmacro __using__(opts) do
     quote do
@@ -14,10 +15,14 @@ defmodule Definition do
         map = for {key, val} <- input, do: {:"#{key}", val}, into: %{}
 
         struct(__MODULE__, map)
+        |> migrate()
         |> Norm.conform(@schema.s())
       end
 
-      defoverridable Definition
+      @impl Definition
+      def migrate(arg), do: arg
+
+      defoverridable migrate: 1
     end
   end
 end
