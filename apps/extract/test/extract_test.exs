@@ -44,7 +44,9 @@ defmodule ExtractTest do
         }
       ]
 
-      message = "function Test.Steps.Invalid.__struct__/1 is undefined (module Test.Steps.Invalid is not available)"
+      message =
+        "function Test.Steps.Invalid.__struct__/1 is undefined (module Test.Steps.Invalid is not available)"
+
       assert {:error, message} == Extract.execute_steps(steps)
     end
   end

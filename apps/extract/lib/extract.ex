@@ -3,7 +3,7 @@ defmodule Extract do
     @type t() :: %__MODULE__{
             response: Tesla.Env.t(),
             variables: map,
-            stream: Enumerable.t
+            stream: Enumerable.t()
           }
     defstruct response: nil, variables: %{}, stream: nil
 
@@ -30,18 +30,16 @@ defmodule Extract do
   end
 
   defprotocol Step do
-    @spec execute(step :: t, context :: Context.t()) :: Context.t()
+    @spec execute(step :: t, context :: Context.t()) :: {:ok, Context.t()} | {:error, term}
     def execute(step, context)
   end
 
-  @spec execute_steps(steps :: list) :: {:ok, Enum.t} | {:error, term}
+  @spec execute_steps(steps :: list) :: {:ok, Enum.t()} | {:error, term}
   def execute_steps(steps) do
-    context =
-      steps
-      |> parse_steps()
-      |> Enum.reduce(Context.new(), &Extract.Step.execute/2)
-
-    {:ok, context.stream}
+    steps
+    |> parse_steps()
+    |> Ok.reduce(Context.new(), &Extract.Step.execute/2)
+    |> Ok.map(fn c -> c.stream end)
   rescue
     e -> {:error, error_message(e)}
   end
@@ -49,8 +47,8 @@ defmodule Extract do
   defp parse_steps(steps) do
     steps
     |> Enum.map(fn step ->
-      struct = :"Elixir.#{Map.get(step, :step)}"
-      struct!(struct, Map.delete(step, :step))
+      :"Elixir.#{Map.get(step, :step)}"
+      |> struct!(Map.delete(step, :step))
     end)
   end
 
