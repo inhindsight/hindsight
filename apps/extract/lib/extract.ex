@@ -12,29 +12,29 @@ defmodule Extract do
       %Context{}
     end
 
-    @spec set_response(t, Tesla.Env.t()) :: t
+    @spec set_response(context :: t, response :: Tesla.Env.t()) :: t
     def set_response(context, response) do
       Map.put(context, :response, response)
     end
 
-    @spec add_variable(t, String.t(), String.t()) :: t
+    @spec add_variable(context :: t, name :: String.t(), value :: String.t()) :: t
     def add_variable(context, name, value) do
       new_variables = Map.put(context.variables, name, value)
       Map.put(context, :variables, new_variables)
     end
 
-    @spec set_stream(t, Enum.t()) :: t
+    @spec set_stream(context :: t, stream :: Enum.t()) :: t
     def set_stream(context, stream) do
       Map.put(context, :stream, stream)
     end
   end
 
   defprotocol Step do
-    @spec execute(t, Context.t()) :: Context.t()
+    @spec execute(step :: t, context :: Context.t()) :: Context.t()
     def execute(step, context)
   end
 
-  @spec execute_steps(list) :: {:ok, Enum.t} | {:error, term}
+  @spec execute_steps(steps :: list) :: {:ok, Enum.t} | {:error, term}
   def execute_steps(steps) do
     context =
       steps
