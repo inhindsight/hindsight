@@ -1,9 +1,9 @@
-defmodule Definition.MixProject do
+defmodule Dataset.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :definition,
+      app: :definition_dataset,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -25,9 +25,9 @@ defmodule Definition.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:norm, "~> 0.9.0"},
+      {:definition, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
-      {:stream_data, "~> 0.4.0", only: [:dev, :test]},
+      {:definition_faker, in_umbrella: true, only: [:dev, :test]},
       {:checkov, "~> 1.0", only: [:test]}
     ]
   end
