@@ -16,4 +16,13 @@ defmodule DefinitionFaker do
       |> Dataset.Owner.new()
     end
   end
+
+  if Code.ensure_loaded?(Data) do
+    @spec data(override :: map) :: Data.t()
+    def data(override) do
+      DefinitionFaker.Data.default()
+      |> Map.merge(override)
+      |> Data.new()
+    end
+  end
 end

@@ -1,18 +1,8 @@
 defmodule Data do
-  @moduledoc """
-  Documentation for Data.
-  """
+  use Definition, schema: Data.V1
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Data.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
+  defstruct version: nil,
+            gather_id: nil,
+            load_id: nil,
+            payload: nil
 end
