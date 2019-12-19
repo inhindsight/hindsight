@@ -5,6 +5,7 @@ defmodule Definition do
   defmacro __using__(opts) do
     quote do
       @behaviour Definition
+      @before_compile Definition
 
       @type t() :: %__MODULE__{}
       @schema Keyword.fetch!(unquote(opts), :schema)
@@ -18,11 +19,13 @@ defmodule Definition do
         |> migrate()
         |> Norm.conform(@schema.s())
       end
+    end
+  end
 
+  defmacro __before_compile__(_) do
+    quote do
       @impl Definition
       def migrate(arg), do: arg
-
-      defoverridable migrate: 1
     end
   end
 end
