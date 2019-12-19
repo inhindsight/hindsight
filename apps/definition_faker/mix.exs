@@ -26,7 +26,7 @@ defmodule DefinitionFaker.MixProject do
   defp deps do
     [
       {:faker, "~> 0.12"},
-      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false}
     ]
   end
 end
