@@ -3,11 +3,11 @@ defmodule Extract do
     @type t() :: %__MODULE__{
             response: Tesla.Env.t(),
             variables: map,
-            stream: Stream.t()
+            stream: Enumerable.t
           }
     defstruct response: nil, variables: %{}, stream: nil
 
-    @spec new() :: t
+    @spec new() :: %__MODULE__{}
     def new() do
       %Context{}
     end
@@ -23,7 +23,7 @@ defmodule Extract do
       Map.put(context, :variables, new_variables)
     end
 
-    @spec set_stream(t, Stream.t()) :: t
+    @spec set_stream(t, Enum.t()) :: t
     def set_stream(context, stream) do
       Map.put(context, :stream, stream)
     end
@@ -34,7 +34,7 @@ defmodule Extract do
     def execute(step, context)
   end
 
-  @spec execute_steps(list) :: {:ok, Stream.t} | {:error, term}
+  @spec execute_steps(list) :: {:ok, Enum.t} | {:error, term}
   def execute_steps(steps) do
     context =
       steps
