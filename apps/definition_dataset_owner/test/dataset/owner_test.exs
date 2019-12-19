@@ -1,9 +1,9 @@
-defmodule Definition.OwnerTest do
+defmodule Dataset.OwnerTest do
   use ExUnit.Case
   import Checkov
-  doctest Definition.Owner
+  doctest Dataset.Owner
 
-  alias Definition.Owner
+  alias Dataset.Owner
 
   describe "new/1" do
     test "handles input with string keys" do

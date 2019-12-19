@@ -1,5 +1,5 @@
-defmodule Definition.Owner do
-  use Definition, schema: Definition.Schema.Owner.V1
+defmodule Dataset.Owner do
+  use Definition, schema: Dataset.Owner.V1
 
   defstruct version: nil,
             id: nil,

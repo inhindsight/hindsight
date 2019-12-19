@@ -1,5 +1,5 @@
-defmodule Definition.Dataset do
-  use Definition, schema: Definition.Schema.Dataset.V1
+defmodule Dataset do
+  use Definition, schema: Dataset.V1
 
   defstruct version: nil,
             id: nil,
