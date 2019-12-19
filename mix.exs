@@ -1,4 +1,4 @@
-defmodule Agorix.MixProject do
+defmodule Doti.MixProject do
   use Mix.Project
 
   def project do
