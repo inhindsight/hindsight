@@ -1,6 +1,6 @@
 defmodule Definition do
-  @callback new(map()) :: struct()
-  @callback migrate(struct()) :: struct()
+  @callback new(map) :: struct
+  @callback migrate(struct) :: struct
 
   defmacro __using__(opts) do
     quote do
@@ -11,7 +11,7 @@ defmodule Definition do
       @schema Keyword.fetch!(unquote(opts), :schema)
 
       @impl Definition
-      @spec new(map()) :: t()
+      @spec new(input :: map) :: t
       def new(%{} = input) do
         map = for {key, val} <- input, do: {:"#{key}", val}, into: %{}
 

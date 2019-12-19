@@ -8,7 +8,10 @@ defmodule Definition.OwnerTest do
   describe "new/1" do
     test "handles input with string keys" do
       {:ok, owner} = DefinitionFaker.owner(%{})
-      input = for {key, val} <- Map.delete(owner, :__struct__), do: {to_string(key), val}, into: %{}
+
+      input =
+        for {key, val} <- Map.delete(owner, :__struct__), do: {to_string(key), val}, into: %{}
+
       assert {:ok, %Owner{}} = Owner.new(input)
     end
 

@@ -11,10 +11,11 @@ defmodule Definition.Schema.Owner.V1 do
       description: spec(is_binary()),
       url: spec(is_binary()),
       image: spec(is_binary()),
-      contact: schema(%{
-        name: string(),
-        email: spec(email?())
-      })
+      contact:
+        schema(%{
+          name: string(),
+          email: spec(email?())
+        })
     })
   end
 

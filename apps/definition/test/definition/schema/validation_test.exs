@@ -92,9 +92,9 @@ defmodule Definition.Schema.ValidationTest do
 
     test "returns false for any other input" do
       check all input <- term(),
-        input != [],
-        input != "",
-        input != %{} do
+                input != [],
+                input != "",
+                input != %{} do
         refute empty?(input)
       end
     end
