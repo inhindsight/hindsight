@@ -1,9 +1,9 @@
-defmodule Definition.Schema.Dataset.V1 do
+defmodule Dataset.V1 do
   use Definition.Schema
 
   @impl Definition.Schema
   def s do
-    schema(%Definition.Dataset{
+    schema(%Dataset{
       version: spec(fn v -> v == 1 end),
       id: string(),
       owner_id: string(),

@@ -1,5 +1,5 @@
 defmodule DefinitionFaker do
-  alias Definition.{Dataset, Owner}
+  alias Definition.{Owner}
 
   @spec dataset(override :: map) :: Dataset.t()
   def dataset(override) do

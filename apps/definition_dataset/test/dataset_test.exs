@@ -1,9 +1,7 @@
-defmodule Defintion.DatasetTest do
+defmodule DatasetTest do
   use ExUnit.Case
   import Checkov
-  doctest Definition.Dataset
-
-  alias Definition.Dataset
+  doctest Dataset
 
   describe "new/1" do
     test "handles input with string keys" do
