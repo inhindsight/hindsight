@@ -5,8 +5,10 @@ defmodule DatasetTest do
 
   describe "new/1" do
     data_test "validates #{inspect(field)} against bad input" do
-      {:ok, ds} = DefinitionFaker.dataset(%{})
-      input = Map.delete(ds, :__struct__) |> put_in(field, value)
+      {:ok, input} =
+        DefinitionFaker.dataset(%{})
+        |> Ok.map(&Map.delete(&1, :__struct__))
+        |> Ok.map(&put_in(&1, field, value))
 
       assert {:error, [%{input: value, path: field} | _]} = Dataset.new(input)
 
@@ -29,8 +31,10 @@ defmodule DatasetTest do
     end
 
     data_test "accepts default value in #{inspect(field)} field" do
-      {:ok, ds} = DefinitionFaker.dataset(%{})
-      input = Map.delete(ds, :__struct__) |> put_in(field, value)
+      {:ok, input} =
+        DefinitionFaker.dataset(%{})
+        |> Ok.map(&Map.delete(&1, :__struct__))
+        |> Ok.map(&put_in(&1, field, value))
 
       assert {:ok, %Dataset{}} = Dataset.new(input)
 
@@ -42,7 +46,7 @@ defmodule DatasetTest do
         [[:profile, :profiled_ts], ""],
         [[:profile, :modified_ts], ""],
         [[:profile, :spatial], []],
-        [[:profile, :temporal], []],
+        [[:profile, :temporal], []]
       ]
     end
   end
