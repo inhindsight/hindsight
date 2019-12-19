@@ -4,12 +4,6 @@ defmodule DatasetTest do
   doctest Dataset
 
   describe "new/1" do
-    test "handles input with string keys" do
-      {:ok, ds} = DefinitionFaker.dataset(%{})
-      input = for {key, val} <- Map.delete(ds, :__struct__), do: {to_string(key), val}, into: %{}
-      assert {:ok, %Dataset{}} = Dataset.new(input)
-    end
-
     data_test "validates #{inspect(field)} against bad input" do
       {:ok, ds} = DefinitionFaker.dataset(%{})
       input = Map.delete(ds, :__struct__) |> put_in(field, value)
