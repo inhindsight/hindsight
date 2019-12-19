@@ -1,6 +1,4 @@
 defmodule DefinitionFaker do
-  alias Definition.{Owner}
-
   @spec dataset(override :: map) :: Dataset.t()
   def dataset(override) do
     DefinitionFaker.Dataset.default()
@@ -8,10 +6,10 @@ defmodule DefinitionFaker do
     |> Dataset.new()
   end
 
-  @spec owner(override :: map) :: Owner.t()
+  @spec owner(override :: map) :: Dataset.Owner.t()
   def owner(override) do
     DefinitionFaker.Owner.default()
     |> Map.merge(override)
-    |> Owner.new()
+    |> Dataset.Owner.new()
   end
 end
