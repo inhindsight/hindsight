@@ -1,9 +1,9 @@
-defmodule Definition.Schema.Owner.V1 do
+defmodule Dataset.Owner.V1 do
   use Definition.Schema
 
   @impl Definition.Schema
   def s do
-    schema(%Definition.Owner{
+    schema(%Dataset.Owner{
       version: spec(fn v -> v == 1 end),
       id: string(),
       name: string(),
