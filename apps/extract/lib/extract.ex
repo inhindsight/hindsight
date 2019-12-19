@@ -34,7 +34,7 @@ defmodule Extract do
     def execute(step, context)
   end
 
-  @spec execute_steps(steps :: list) :: {:ok, Enum.t()} | {:error, term}
+  @spec execute_steps(Enum.t()) :: {:ok, Enum.t()} | {:error, term}
   def execute_steps(steps) do
     steps
     |> parse_steps()

@@ -13,16 +13,17 @@ defmodule OkTest do
 
   describe "reduce/3" do
     test "will reduce through ok_tuples" do
-      assert {:ok, 10} == Ok.reduce([1,2,3,4], 0, fn x, acc -> {:ok, x + acc} end)
+      assert {:ok, 10} == Ok.reduce([1, 2, 3, 4], 0, fn x, acc -> {:ok, x + acc} end)
     end
 
     test "will reduce until error is returned" do
-      assert {:error, "3 is a failure"} == Ok.reduce([1,2,3,4], 0, fn x, acc ->
-        case x do
-          3 -> {:error, "3 is a failure"}
-          _ -> {:ok, x + acc}
-        end
-      end)
+      assert {:error, "3 is a failure"} ==
+               Ok.reduce([1, 2, 3, 4], 0, fn x, acc ->
+                 case x do
+                   3 -> {:error, "3 is a failure"}
+                   _ -> {:ok, x + acc}
+                 end
+               end)
     end
   end
- end
+end
