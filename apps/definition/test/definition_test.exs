@@ -9,8 +9,6 @@ defmodule DefinitionTest do
       struct(__MODULE__, %{version: 2, bar: String.to_integer(old.bar)})
     end
 
-    def migrate(arg), do: arg
-
     defmodule V1 do
       use Definition.Schema
 
