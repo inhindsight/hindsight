@@ -37,4 +37,11 @@ defmodule DefinitionTest do
       assert {:ok, %Foo{version: 2, bar: 42}} = Foo.new(input)
     end
   end
+
+  describe "new/1" do
+    test "handles input with string keys" do
+      input = %{"version" => 2, "bar" => 33}
+      assert {:ok, %Foo{version: 2, bar: 33}} = Foo.new(input)
+    end
+  end
 end
