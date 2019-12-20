@@ -37,4 +37,20 @@ defmodule DefinitionTest do
       assert {:ok, %Foo{version: 2, bar: 42}} = Foo.new(input)
     end
   end
+
+  describe "new/1" do
+    test "handles input with string keys" do
+      input = %{"version" => 2, "bar" => 33}
+      assert {:ok, %Foo{version: 2, bar: 33}} = Foo.new(input)
+    end
+
+    test "accepts a Keyword list input" do
+      assert {:ok, %Foo{bar: 42}} = Foo.new(version: 2, bar: 42)
+    end
+
+    test "returns exception for other list input" do
+      assert {:error, %Foo.InputError{} = ex} = Foo.new([:foo])
+      assert ex.message == [:foo]
+    end
+  end
 end

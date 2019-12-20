@@ -1,9 +1,9 @@
-defmodule Dataset.MixProject do
+defmodule Data.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :definition_dataset,
+      app: :definition_data,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
