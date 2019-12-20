@@ -26,6 +26,7 @@ defmodule Definition.MixProject do
   defp deps do
     [
       {:norm, "~> 0.9.0"},
+      {:jason, "~> 1.1"},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
       {:stream_data, "~> 0.4.0", only: [:dev, :test]}
     ]
