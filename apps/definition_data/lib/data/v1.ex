@@ -7,7 +7,7 @@ defmodule Data.V1 do
       version: spec(fn v -> v == 1 end),
       gather_id: spec(is_binary() and not_empty?()),
       load_id: spec(is_binary() and not_empty?()),
-      payload: spec(is_binary())
+      payload: schema(%{})
     })
   end
 end
