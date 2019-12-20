@@ -2,21 +2,37 @@ defmodule Http.Header do
   @enforce_keys [:name, :into]
   defstruct [:name, :into]
 
+  defmodule InvalidResponseError do
+    defexception message: "Invalid response"
+  end
+
+  defmodule HeaderNotAvailableError do
+    defexception message: "Header not available",
+                 header: nil,
+                 response: nil
+  end
+
   defimpl Extract.Step, for: Http.Header do
     require Logger
     import Extract.Context
 
     def execute(%Http.Header{} = step, context) do
-      case context.response do
-        nil ->
-          Logger.warn("#{__MODULE__}: No response is available to execute step: #{inspect(step)}")
-          Ok.ok(context)
+      with {:response, %Tesla.Env{} = response} <- {:response, context.response},
+           {:header, value} when value != nil <- {:header, Tesla.get_header(response, step.name)} do
+        value = Tesla.get_header(response, step.name)
 
-        response ->
-          value = Tesla.get_header(response, step.name)
+        add_variable(context, step.into, value)
+        |> Ok.ok()
+      else
+        {:response, _} ->
+          InvalidResponseError.exception([]) |> Ok.error()
 
-          add_variable(context, step.into, value)
-          |> Ok.ok()
+        {:header, _} ->
+          HeaderNotAvailableError.exception(
+            header: step.name,
+            response: context.response
+          )
+          |> Ok.error()
       end
     end
   end
