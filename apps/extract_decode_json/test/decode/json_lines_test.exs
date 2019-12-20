@@ -21,7 +21,10 @@ defmodule Decode.JsonLinesTest do
 
   test "returns error tuple when stream is not available" do
     {:error, reason} = Extract.Step.execute(%Decode.JsonLines{}, Context.new())
-    expected = Extract.InvalidContextError.exception(message: "Invalid stream", step: %Decode.JsonLines{})
+
+    expected =
+      Extract.InvalidContextError.exception(message: "Invalid stream", step: %Decode.JsonLines{})
+
     assert reason == expected
   end
 
