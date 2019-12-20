@@ -6,7 +6,7 @@ defmodule DefinitionFaker.Data do
       version: 1,
       gather_id: Faker.UUID.v4(),
       load_id: Faker.UUID.v4(),
-      payload: Faker.Lorem.sentence()
+      payload: %{"a" => Faker.Lorem.sentence(), "b" => Faker.Util.digit()}
     }
   end
 end
