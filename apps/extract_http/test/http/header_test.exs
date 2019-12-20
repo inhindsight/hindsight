@@ -22,7 +22,12 @@ defmodule Http.HeaderTest do
   test "returns error is response is not available" do
     step = %Http.Header{name: "header1", into: "variable1"}
     {:error, reason} = Extract.Step.execute(step, Context.new())
-    assert reason == Http.Header.InvalidResponseError.exception(message: "Invalid response")
+
+    assert reason ==
+             Extract.InvalidContextError.exception(
+               message: "Response is not available in context.",
+               step: step
+             )
   end
 
   test "returns error when header is not set in response" do
