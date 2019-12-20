@@ -2,7 +2,7 @@ defmodule Http.GetTest do
   use ExUnit.Case
   import Plug.Conn
 
-  alias Extract.Context
+  alias Extract.Steps.Context
 
   @moduletag capture_log: true
 

@@ -6,7 +6,7 @@ defmodule Decode.Csv do
             skip_first_line: false
 
   defimpl Extract.Step, for: Decode.Csv do
-    import Extract.Context
+    import Extract.Steps.Context
 
     def execute(%Decode.Csv{} = step, %{stream: nil} = _context) do
       message = "There is no stream available in the context."

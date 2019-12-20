@@ -10,7 +10,7 @@ defmodule Http.Header do
 
   defimpl Extract.Step, for: Http.Header do
     require Logger
-    import Extract.Context
+    import Extract.Steps.Context
 
     def execute(%Http.Header{} = step, context) do
       with {:response, %Tesla.Env{} = response} <- {:response, context.response},

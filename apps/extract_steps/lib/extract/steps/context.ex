@@ -1,4 +1,4 @@
-defmodule Extract.Context do
+defmodule Extract.Steps.Context do
   @type t() :: %__MODULE__{
     response: Tesla.Env.t(),
     variables: map,
