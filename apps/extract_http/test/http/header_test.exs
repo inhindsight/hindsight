@@ -1,8 +1,6 @@
 defmodule Http.HeaderTest do
   use ExUnit.Case
 
-  import ExUnit.CaptureLog, only: [capture_log: 1]
-
   alias Extract.Context
 
   test "retrieves header value from latest response and creates variable" do
@@ -21,15 +19,23 @@ defmodule Http.HeaderTest do
     assert "value1" == Map.get(context.variables, "variable1")
   end
 
-  test "logs warning if no response is available" do
+  test "returns error is response is not available" do
     step = %Http.Header{name: "header1", into: "variable1"}
+    {:error, reason} = Extract.Step.execute(step, Context.new())
+    assert reason == Http.Header.InvalidResponseError.exception(message: "Invalid response")
+  end
 
-    output =
-      capture_log(fn ->
-        {:ok, context} = Extract.Step.execute(step, Context.new())
-        assert nil == Map.get(context.variables, "variable1")
-      end)
+  test "returns error when header is not set in response" do
+    step = %Http.Header{name: "header1", into: "variable1"}
+    response = %Tesla.Env{}
+    context = Context.new() |> Context.set_response(response)
+    {:error, reason} = Extract.Step.execute(step, context)
 
-    assert output =~ "No response is available to execute step"
+    assert reason ==
+             Http.Header.HeaderNotAvailableError.exception(
+               message: "Header not available",
+               header: "header1",
+               response: response
+             )
   end
 end
