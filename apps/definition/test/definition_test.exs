@@ -53,4 +53,20 @@ defmodule DefinitionTest do
       assert ex.message == [:foo]
     end
   end
+
+  describe "from_json/1" do
+    test "turns JSON into new struct" do
+      input = ~s/{"version": 2, "bar": 9001}/
+      assert {:ok, %Foo{bar: 9001}} = Foo.from_json(input)
+    end
+
+    test "returns error tuple for invalid JSON" do
+      assert {:error, %Jason.DecodeError{}} = Foo.from_json("{a, b}")
+    end
+
+    test "returns exception for invalid new/1 input" do
+      input = ~s/[{"version": 2, "bar": 0}]/
+      assert {:error, %Foo.InputError{}} = Foo.from_json(input)
+    end
+  end
 end

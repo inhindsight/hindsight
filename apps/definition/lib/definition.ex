@@ -1,5 +1,6 @@
 defmodule Definition do
   @callback new(map | keyword) :: struct
+  @callback from_json(String.t()) :: struct
   @callback migrate(struct) :: struct
 
   defmacro __using__(opts) do
@@ -31,6 +32,14 @@ defmodule Definition do
 
           false ->
             {:error, InputError.exception(message: input)}
+        end
+      end
+
+      @impl Definition
+      @spec from_json(input :: String.t()) :: t
+      def from_json(input) when is_binary(input) do
+        with {:ok, map} <- Jason.decode(input) do
+          new(map)
         end
       end
     end
