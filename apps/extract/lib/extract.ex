@@ -28,7 +28,7 @@ defmodule Extract do
       Map.put(context, :stream, stream)
     end
 
-    @spec apply_variables(context :: t, string :: String.t) :: String.t
+    @spec apply_variables(context :: t, string :: String.t()) :: String.t()
     def apply_variables(context, string) do
       context.variables
       |> Enum.reduce(string, fn {name, value}, buffer ->
