@@ -3,7 +3,7 @@ defmodule Extract.MixProject do
 
   def project do
     [
-      app: :extract,
+      app: :definition_extract,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -25,6 +25,7 @@ defmodule Extract.MixProject do
   defp deps do
     [
       {:ok, in_umbrella: true},
+      {:definition, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end
