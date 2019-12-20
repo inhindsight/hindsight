@@ -15,11 +15,12 @@ defmodule Http.Get do
       url = apply_variables(context, step.url)
       headers = replace_variables_in_headers(context, step.headers)
 
-      with {:ok, %Tesla.Env{status: 200} = response} <- get(url, headers: headers) do
-        set_response(context, response)
-        |> set_stream(response.body)
-        |> Ok.ok()
-      else
+      case get(url, headers: headers) do
+        {:ok, %Tesla.Env{status: 200} = response} ->
+          set_response(context, response)
+          |> set_stream(response.body)
+          |> Ok.ok()
+
         {:ok, response} ->
           {:error, invalid_status_message(url, response)}
 

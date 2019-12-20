@@ -17,11 +17,12 @@ defmodule Http.Post do
       body = apply_variables(context, step.body)
       headers = replace_variables_in_headers(context, step.headers)
 
-      with {:ok, %Tesla.Env{status: 200} = response} <- post(url, body, headers: headers) do
-        set_response(context, response)
-        |> set_stream(response.body)
-        |> Ok.ok()
-      else
+      case post(url, body, headers: headers) do
+        {:ok, %Tesla.Env{status: 200} = response} ->
+          set_response(context, response)
+          |> set_stream(response.body)
+          |> Ok.ok()
+
         {:ok, response} ->
           {:error, invalid_status_message(url, response)}
 
