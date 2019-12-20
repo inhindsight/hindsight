@@ -7,6 +7,10 @@ defmodule Definition do
       @behaviour Definition
       @before_compile Definition
 
+      defmodule InputError do
+        defexception [:message]
+      end
+
       @type t() :: %__MODULE__{}
       @schema Keyword.fetch!(unquote(opts), :schema)
 
@@ -26,7 +30,7 @@ defmodule Definition do
             Map.new(input) |> new()
 
           false ->
-            {:error, "Invalid input: #{inspect(input)}"}
+            {:error, InputError.exception(message: input)}
         end
       end
     end

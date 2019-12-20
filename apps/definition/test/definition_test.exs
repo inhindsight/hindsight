@@ -48,8 +48,9 @@ defmodule DefinitionTest do
       assert {:ok, %Foo{bar: 42}} = Foo.new(version: 2, bar: 42)
     end
 
-    test "raises for other list input" do
-      assert {:error, "Invalid input: [:foo]"} = Foo.new([:foo])
+    test "returns exception for other list input" do
+      assert {:error, %Foo.InputError{} = ex} = Foo.new([:foo])
+      assert ex.message == [:foo]
     end
   end
 end
