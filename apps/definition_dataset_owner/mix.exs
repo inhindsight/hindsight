@@ -28,7 +28,8 @@ defmodule Dataset.Owner.MixProject do
       {:definition, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
       {:definition_faker, in_umbrella: true, only: [:dev, :test]},
-      {:checkov, "~> 1.0", only: [:test]}
+      {:checkov, "~> 1.0", only: [:test]},
+      {:ok, in_umbrella: true, only: [:test]}
     ]
   end
 end
