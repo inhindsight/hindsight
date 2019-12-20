@@ -13,24 +13,26 @@ defmodule Decode.JsonLines do
     end
 
     def execute(%Decode.JsonLines{}, context) do
-      {:ok, file_path} =
-        Temp.open([], fn file ->
-          Enum.each(context.stream, &IO.binwrite(file, &1))
-        end)
+      context.stream
+      |> write_stream_to_file()
+      |> Ok.map(&decode_from_file/1)
+      |> Ok.map(&set_stream(context, &1))
+    end
 
-      new_stream =
-        file_path
-        |> File.stream!()
-        |> Stream.transform(
-          fn -> :ok end,
-          fn line, acc -> {[Jason.decode!(line)], acc} end,
-          fn _acc ->
-            File.rm!(file_path)
-          end
-        )
+    defp write_stream_to_file(stream) do
+      Temp.open([], fn file ->
+        Enum.each(stream, &IO.binwrite(file, &1))
+      end)
+    end
 
-      set_stream(context, new_stream)
-      |> Ok.ok()
+    defp decode_from_file(file_path) do
+      file_path
+      |> File.stream!()
+      |> Stream.transform(
+        fn -> :ok end,
+        fn line, acc -> {[Jason.decode!(line)], acc} end,
+        fn _acc -> File.rm!(file_path) end
+      )
     end
   end
 end
