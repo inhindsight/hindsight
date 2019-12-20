@@ -27,6 +27,14 @@ defmodule Extract do
     def set_stream(context, stream) do
       Map.put(context, :stream, stream)
     end
+
+    @spec apply_variables(context :: t, string :: String.t()) :: String.t()
+    def apply_variables(context, string) do
+      context.variables
+      |> Enum.reduce(string, fn {name, value}, buffer ->
+        String.replace(buffer, "<" <> name <> ">", value)
+      end)
+    end
   end
 
   defprotocol Step do
