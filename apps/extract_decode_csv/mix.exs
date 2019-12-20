@@ -25,8 +25,7 @@ defmodule ExtractDecodeCsv.MixProject do
     [
       {:extract, in_umbrella: true},
       {:nimble_csv, "~> 0.6.0"},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:bypass, "~> 1.0", only: [:test]}
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end
 end

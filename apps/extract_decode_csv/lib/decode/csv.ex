@@ -3,7 +3,7 @@ NimbleCSV.define(Decode.Csv.Parser, [])
 defmodule Decode.Csv do
   @enforce_keys [:headers]
   defstruct headers: nil,
-            skip_first_line: true
+            skip_first_line: false
 
   defimpl Extract.Step, for: Decode.Csv do
     import Extract.Context
