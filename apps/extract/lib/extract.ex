@@ -1,4 +1,8 @@
 defmodule Extract do
+  defmodule InvalidContextError do
+    defexception [:message, :step]
+  end
+
   defmodule Context do
     @type t() :: %__MODULE__{
             response: Tesla.Env.t(),
