@@ -23,7 +23,7 @@ defmodule ExtractDecodeCsv.MixProject do
 
   defp deps do
     [
-      {:definition_extract, in_umbrella: true},
+      {:extract_steps, in_umbrella: true},
       {:nimble_csv, "~> 0.6.0"},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
