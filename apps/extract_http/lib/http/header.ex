@@ -2,10 +2,6 @@ defmodule Http.Header do
   @enforce_keys [:name, :into]
   defstruct [:name, :into]
 
-  defmodule InvalidResponseError do
-    defexception message: "Invalid response"
-  end
-
   defmodule HeaderNotAvailableError do
     defexception message: "Header not available",
                  header: nil,
@@ -25,7 +21,11 @@ defmodule Http.Header do
         |> Ok.ok()
       else
         {:response, _} ->
-          InvalidResponseError.exception([]) |> Ok.error()
+          Extract.InvalidContextError.exception(
+            message: "Response is not available in context.",
+            step: step
+          )
+          |> Ok.error()
 
         {:header, _} ->
           HeaderNotAvailableError.exception(

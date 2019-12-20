@@ -4,6 +4,8 @@ defmodule Http.PostTest do
 
   alias Extract.Context
 
+  @moduletag capture_log: true
+
   setup do
     [bypass: Bypass.open()]
   end
