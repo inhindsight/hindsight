@@ -10,11 +10,10 @@ defmodule Decode.Json do
     end
 
     def execute(%Decode.Json{}, context) do
-      with json_body <- Enum.join(context.stream),
-           {:ok, decoded_json} <- Jason.decode(json_body) do
-        set_stream(context, decoded_json)
-        |> Ok.ok()
-      end
+      context.stream
+      |> Enum.join()
+      |> Jason.decode()
+      |> Ok.map(&set_stream(context, &1))
     end
   end
 end
