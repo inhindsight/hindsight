@@ -26,4 +26,11 @@ defmodule DefinitionFaker do
     |> Map.merge(override)
     |> Extract.new()
   end
+
+  @spec schedule(override :: map) :: Schedule.t()
+  def schedule(override) do
+    DefinitionFaker.Schedule.default()
+    |> Map.merge(override)
+    |> Schedule.new()
+  end
 end
