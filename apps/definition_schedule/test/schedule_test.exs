@@ -23,5 +23,4 @@ defmodule ScheduleTest do
       ]
     end
   end
-
 end
