@@ -1,18 +1,11 @@
 defmodule Schedule do
-  @moduledoc """
-  Documentation for Schedule.
-  """
+  use Definition, schema: Schedule.V1
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Schedule.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
+  defstruct version: 1,
+            id: nil,
+            dataset_id: nil,
+            cron: nil,
+            extract: nil,
+            transform: [],
+            load: []
 end
