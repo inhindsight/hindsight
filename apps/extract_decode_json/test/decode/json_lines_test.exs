@@ -1,7 +1,7 @@
 defmodule Decode.JsonLinesTest do
   use ExUnit.Case
 
-  alias Extract.Context
+  alias Extract.Steps.Context
 
   test "decodes json lines file as a stream" do
     stream = [

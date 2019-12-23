@@ -2,7 +2,7 @@ defmodule Decode.JsonLines do
   defstruct []
 
   defimpl Extract.Step, for: Decode.JsonLines do
-    import Extract.Context
+    import Extract.Steps.Context
 
     def execute(%Decode.JsonLines{} = step, %{stream: nil} = _context) do
       Extract.InvalidContextError.exception(
