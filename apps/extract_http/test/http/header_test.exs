@@ -1,7 +1,7 @@
 defmodule Http.HeaderTest do
   use ExUnit.Case
 
-  alias Extract.Context
+  alias Extract.Steps.Context
 
   test "retrieves header value from latest response and creates variable" do
     step = %Http.Header{name: "header1", into: "variable1"}

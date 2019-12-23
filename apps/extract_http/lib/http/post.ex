@@ -6,7 +6,7 @@ defmodule Http.Post do
 
   defimpl Extract.Step, for: Http.Post do
     use Tesla
-    import Extract.Context
+    import Extract.Steps.Context
     adapter Tesla.Adapter.Mint, body_as: :stream
 
     plug Tesla.Middleware.FollowRedirects, max_redirects: 3
