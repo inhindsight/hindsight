@@ -1,6 +1,7 @@
 defmodule Definition do
   @callback new(map | keyword) :: struct
   @callback from_json(String.t()) :: struct
+  @callback schema() :: %Norm.Schema{}
   @callback migrate(struct) :: struct
 
   defmacro __using__(opts) do
@@ -41,6 +42,11 @@ defmodule Definition do
         with {:ok, map} <- Jason.decode(input) do
           new(map)
         end
+      end
+
+      @impl Definition
+      def schema do
+        @schema.s()
       end
     end
   end
