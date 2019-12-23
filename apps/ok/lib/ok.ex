@@ -29,4 +29,12 @@ defmodule Ok do
       end
     end)
   end
+
+  #TODO FIX THIS SHIT!
+  def all?(enum, transform \\ fn x -> x end) do
+    enum
+    |> Enum.map(transform)
+    |> Enum.any?(fn entry -> match?({:error, _}, entry) end)
+    |> Kernel.not()
+  end
 end
