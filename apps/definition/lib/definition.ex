@@ -1,6 +1,6 @@
 defmodule Definition do
-  @callback new(map | keyword) :: struct
-  @callback from_json(String.t()) :: struct
+  @callback new(map | keyword) :: {:ok, struct} | {:error, term}
+  @callback from_json(String.t()) :: {:ok, struct} | {:error, term}
   @callback schema() :: %Norm.Schema{}
   @callback migrate(struct) :: struct
 
@@ -17,7 +17,6 @@ defmodule Definition do
       @schema Keyword.fetch!(unquote(opts), :schema)
 
       @impl Definition
-      @spec new(input :: map | keyword) :: t
       def new(%{} = input) do
         map = for {key, val} <- input, do: {:"#{key}", val}, into: %{}
 
@@ -37,7 +36,6 @@ defmodule Definition do
       end
 
       @impl Definition
-      @spec from_json(input :: String.t()) :: t
       def from_json(input) when is_binary(input) do
         with {:ok, map} <- Jason.decode(input) do
           new(map)
