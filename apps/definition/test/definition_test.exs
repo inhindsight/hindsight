@@ -36,6 +36,10 @@ defmodule DefinitionTest do
       input = %{version: 1, bar: "42"}
       assert {:ok, %Foo{version: 2, bar: 42}} = Foo.new(input)
     end
+
+    test "makes schema/0 available to get current version schema" do
+      assert Foo.schema() == Foo.V2.s()
+    end
   end
 
   describe "new/1" do
