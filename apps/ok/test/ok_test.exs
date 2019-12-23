@@ -26,4 +26,14 @@ defmodule OkTest do
                end)
     end
   end
+
+  describe "all?/1" do
+    test "returns true if all entries are an ok tuple" do
+      assert Ok.all?([{:ok, 1}, {:ok, 2}, {:ok, 3}])
+    end
+
+    test "returns false if any entry is an error tuple" do
+      refute Ok.all?([{:ok, 1}, {:error, 2}, {:ok, 3}])
+    end
+  end
 end
