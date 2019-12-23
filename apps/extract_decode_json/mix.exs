@@ -23,7 +23,7 @@ defmodule ExtractDecodeJson.MixProject do
 
   defp deps do
     [
-      {:extract, in_umbrella: true},
+      {:extract_steps, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:temp, "~> 0.4.7"},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}

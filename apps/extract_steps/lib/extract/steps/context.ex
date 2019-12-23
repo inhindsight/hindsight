@@ -1,9 +1,9 @@
 defmodule Extract.Steps.Context do
   @type t() :: %__MODULE__{
-    response: Tesla.Env.t(),
-    variables: map,
-    stream: Enumerable.t()
-  }
+          response: Tesla.Env.t(),
+          variables: map,
+          stream: Enumerable.t()
+        }
   defstruct response: nil, variables: %{}, stream: nil
 
   @spec new() :: %__MODULE__{}
