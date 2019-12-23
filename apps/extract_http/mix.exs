@@ -23,7 +23,7 @@ defmodule ExtractHttp.MixProject do
 
   defp deps do
     [
-      {:extract, in_umbrella: true},
+      {:extract_steps, in_umbrella: true},
       {:tesla, github: "teamon/tesla", branch: "master"},
       {:mint, "~> 1.0", override: true},
       {:castore, "~> 0.1.4"},

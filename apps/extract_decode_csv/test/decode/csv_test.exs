@@ -1,7 +1,7 @@
 defmodule Decode.CsvTest do
   use ExUnit.Case
 
-  alias Extract.Context
+  alias Extract.Steps.Context
 
   test "parses context stream into csv" do
     step = %Decode.Csv{

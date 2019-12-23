@@ -19,4 +19,11 @@ defmodule DefinitionFaker do
     |> Map.merge(override)
     |> Data.new()
   end
+
+  @spec extract(override :: map) :: Extract.t()
+  def extract(override) do
+    DefinitionFaker.Extract.default()
+    |> Map.merge(override)
+    |> Extract.new()
+  end
 end
