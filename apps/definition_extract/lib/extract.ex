@@ -5,8 +5,4 @@ defmodule Extract do
             id: nil,
             dataset_id: nil,
             steps: []
-
-  defmodule InvalidContextError do
-    defexception [:message, :step]
-  end
 end
