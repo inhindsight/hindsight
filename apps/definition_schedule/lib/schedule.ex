@@ -6,6 +6,6 @@ defmodule Schedule do
             dataset_id: nil,
             cron: nil,
             extract: nil,
-            transform: [],
+            transform: nil,
             load: []
 end
