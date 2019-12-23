@@ -30,11 +30,8 @@ defmodule Ok do
     end)
   end
 
-  #TODO FIX THIS SHIT!
-  def all?(enum, transform \\ fn x -> x end) do
-    enum
-    |> Enum.map(transform)
-    |> Enum.any?(fn entry -> match?({:error, _}, entry) end)
-    |> Kernel.not()
+  @spec all?(Enum.t()) :: boolean
+  def all?(enum) do
+    not Enum.any?(enum, &match?({:error, _}, &1))
   end
 end
