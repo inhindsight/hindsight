@@ -19,5 +19,4 @@ defmodule ExtractTest do
       ]
     end
   end
-
 end
