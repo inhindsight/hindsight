@@ -30,6 +30,16 @@ defmodule Ok do
     end)
   end
 
+  @spec transform(Enum.t(), (Enum.element() -> {:ok, Enum.element()} | {:error, term})) ::
+          {:ok, Enum.t()} | {:error, term}
+  def transform(enum, function) when is_list(enum) and is_function(function, 1) do
+    reduce(enum, [], fn item, acc ->
+      function.(item)
+      |> map(fn result -> [result | acc] end)
+    end)
+    |> map(&Enum.reverse/1)
+  end
+
   @spec all?(Enum.t()) :: boolean
   def all?(enum) do
     not Enum.any?(enum, &match?({:error, _}, &1))
