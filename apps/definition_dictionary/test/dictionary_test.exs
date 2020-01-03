@@ -91,4 +91,70 @@ defmodule DictionaryTest do
       assert {:error, expected} == Dictionary.decode(json)
     end
   end
+
+  describe "normalize/2" do
+    test "normalized a correct payload" do
+      dictionary = [
+        %Dictionary.Type.String{name: "name"},
+        %Dictionary.Type.Integer{name: "age"}
+      ]
+
+      payload = %{
+        "name" => "brian",
+        "age" => 21
+      }
+
+      assert {:ok, payload} == Dictionary.normalize(dictionary, payload)
+    end
+
+    test "payload is put through type coercion" do
+      dictionary = [
+        %Dictionary.Type.String{name: "name"},
+        %Dictionary.Type.Integer{name: "age"}
+      ]
+
+      payload = %{
+        "name" => :brian,
+        "age" => "21"
+      }
+
+      expected = %{
+        "name" => "brian",
+        "age" => 21
+      }
+
+      assert {:ok, expected} == Dictionary.normalize(dictionary, payload)
+    end
+
+    test "reports all errors found during normalization" do
+      dictionary = [
+        %Dictionary.Type.String{name: "name"},
+        %Dictionary.Type.Integer{name: "age"},
+        %Dictionary.Type.Map{
+          name: "spouse",
+          fields: [
+            %Dictionary.Type.String{name: "name"},
+            %Dictionary.Type.Integer{name: "age"}
+          ]
+        }
+      ]
+
+      payload = %{
+        "name" => {:one, :two},
+        "age" => "one",
+        "spouse" => %{
+          "name" => "shelly",
+          "age" => "twenty-one"
+        }
+      }
+
+      expected = %{
+        "name" => :invalid_string,
+        "age" => :invalid_integer,
+        "spouse" => %{"age" => :invalid_integer}
+      }
+
+      assert {:error, expected} == Dictionary.normalize(dictionary, payload)
+    end
+  end
 end
