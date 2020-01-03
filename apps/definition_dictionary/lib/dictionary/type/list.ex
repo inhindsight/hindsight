@@ -1,11 +1,12 @@
-defmodule Dictionary.Type.Map do
-  use Definition, schema: Dictionary.Type.Map.V1
+defmodule Dictionary.Type.List do
+  use Definition, schema: Dictionary.Type.List.V1
   use Dictionary.JsonEncoder
 
   defstruct version: 1,
-            name: nil,
-            description: "",
-            fields: []
+    name: nil,
+    description: "",
+    item_type: nil,
+    fields: []
 
   defimpl Dictionary.Type.Decoder, for: __MODULE__ do
     def decode(_, values) do
@@ -14,7 +15,7 @@ defmodule Dictionary.Type.Map do
         |> Enum.map(fn {key, value} -> {String.to_existing_atom(key), value} end)
         |> Map.new()
         |> Map.put(:fields, fields)
-        |> Dictionary.Type.Map.new()
+        |> Dictionary.Type.List.new()
       end
     end
 
@@ -24,17 +25,19 @@ defmodule Dictionary.Type.Map do
 
     defp decode_fields(fields), do: Ok.ok(fields)
   end
+
 end
 
-defmodule Dictionary.Type.Map.V1 do
+defmodule Dictionary.Type.List.V1 do
   use Definition.Schema
 
   def s do
-    schema(%Dictionary.Type.Map{
-      version: spec(fn v -> v == 1 end),
-      name: spec(is_binary() and not_empty?()),
-      description: spec(is_binary()),
-      fields: spec(is_list())
+    schema(%Dictionary.Type.List{
+          version: spec(fn v -> v == 1 end),
+          name: spec(is_binary() and not_empty?()),
+          description: spec(is_binary()),
+          item_type: spec(is_binary() and not_empty?()),
+          fields: spec(is_list())
     })
   end
 end
