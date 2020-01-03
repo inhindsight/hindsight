@@ -4,16 +4,8 @@ defmodule Dictionary.JsonEncoder do
       defimpl Jason.Encoder, for: __MODULE__ do
         def encode(value, opts) do
           Map.from_struct(value)
-          |> Map.put("type", type())
+          |> Map.put("type", Dictionary.Type.to_string(__MODULE__))
           |> Jason.Encode.map(opts)
-        end
-
-        defp type() do
-          __MODULE__
-          |> to_string()
-          |> String.split(".")
-          |> List.last()
-          |> String.downcase()
         end
       end
     end

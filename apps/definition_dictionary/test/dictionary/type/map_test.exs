@@ -88,6 +88,29 @@ defmodule Dictionary.Type.MapTest do
     assert expected == Dictionary.Type.Decoder.decode(struct(Dictionary.Type.Map), map)
   end
 
+  data_test "normalizes all fields inside map" do
+    value = %{
+      "name" => name,
+      "age" => age
+    }
+
+    field = %Dictionary.Type.Map{
+      name: "spouse",
+      fields: [
+        %Dictionary.Type.String{name: "name"},
+        %Dictionary.Type.Integer{name: "age"}
+      ]
+    }
+
+    assert result == Dictionary.Type.Normalizer.normalize(field, value)
+
+    where [
+      [:name, :age, :result],
+      ["george", 21, {:ok, %{"name" => "george", "age" => 21}}],
+      ["fred", "abc", {:error, %{"age" => :invalid_integer}}]
+    ]
+  end
+
   defp decode(map) do
     Dictionary.Type.Decoder.decode(struct(Dictionary.Type.Map), map)
   end

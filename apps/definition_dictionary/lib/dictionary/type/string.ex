@@ -5,6 +5,15 @@ defmodule Dictionary.Type.String do
   defstruct version: 1,
             name: nil,
             description: ""
+
+  defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
+    def normalize(_field, value) do
+      case String.Chars.impl_for(value) do
+        nil -> Ok.error(:invalid_string)
+        _ -> value |> to_string |> String.trim() |> Ok.ok()
+      end
+    end
+  end
 end
 
 defmodule Dictionary.Type.String.V1 do

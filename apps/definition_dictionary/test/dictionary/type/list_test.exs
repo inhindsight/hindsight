@@ -58,7 +58,7 @@ defmodule Dictionary.Type.ListTest do
     list = %Dictionary.Type.List{
       name: "name",
       description: "description",
-      item_type: "map",
+      item_type: Dictionary.Type.Map,
       fields: [
         %Dictionary.Type.String{name: "name"},
         %Dictionary.Type.Integer{name: "age"}
@@ -94,6 +94,17 @@ defmodule Dictionary.Type.ListTest do
        }}
 
     assert expected == Dictionary.Type.Decoder.decode(struct(Dictionary.Type.List), list)
+  end
+
+  test "normalizes data according to field rules" do
+    field = %Dictionary.Type.List{
+      name: "friends",
+      item_type: "map",
+      fields: [
+        %Dictionary.Type.String{name: "name"},
+        %Dictionary.Type.Integer{name: "age"}
+      ]
+    }
   end
 
   defp decode(map) do

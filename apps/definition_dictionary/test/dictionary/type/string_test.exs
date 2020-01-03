@@ -60,6 +60,18 @@ defmodule Dictionary.Type.StringTest do
     assert expected == Dictionary.Type.Decoder.decode(struct(Dictionary.Type.String), map)
   end
 
+  data_test "validates strings - #{inspect(value)} --> #{inspect(result)}" do
+    assert result == Dictionary.Type.Normalizer.normalize(%Dictionary.Type.String{}, value)
+
+    where [
+      [:value, :result],
+      ["string", {:ok, "string"}],
+      ["  string  ", {:ok, "string"}],
+      [123, {:ok, "123"}],
+      [{:one, :two}, {:error, :invalid_string}]
+    ]
+  end
+
   defp decode(map) do
     Dictionary.Type.Decoder.decode(struct(Dictionary.Type.String), map)
   end
