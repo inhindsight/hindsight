@@ -46,6 +46,8 @@ defmodule Definition do
       def schema do
         @schema.s()
       end
+
+      defoverridable Definition
     end
   end
 
