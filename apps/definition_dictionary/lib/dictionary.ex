@@ -3,6 +3,10 @@ defmodule Dictionary do
     defexception [:message, :field]
   end
 
+  defmodule InvalidTypeError do
+    defexception [:message]
+  end
+
   @spec encode(list) :: {:ok, String.t()} | {:error, term}
   def encode(fields) do
     Jason.encode(fields)
@@ -20,16 +24,8 @@ defmodule Dictionary do
   end
 
   def decode(%{"type" => type} = field) do
-    with struct_module <- type_struct(type),
-         {:module, _} <- Code.ensure_loaded(struct_module),
-         {:struct?, true} <- {:struct?, function_exported?(struct_module, :__struct__, 0)} do
-      Dictionary.Type.Decoder.decode(struct(struct_module), field)
-    else
-      {:error, _e} ->
-        invalid_type(type, field)
-
-      {:struct?, false} ->
-        invalid_type(type, field)
+    with {:ok, module} <- Dictionary.Type.from_string(type) do
+      Dictionary.Type.Decoder.decode(struct(module), field)
     end
   end
 
@@ -55,12 +51,4 @@ defmodule Dictionary do
   end
 
   defp handle_normalization_context(%{data: data}), do: Ok.ok(data)
-
-  defp type_struct(type) do
-    :"Elixir.Dictionary.Type.#{String.capitalize(type)}"
-  end
-
-  defp invalid_type(type, field) do
-    {:error, InvalidFieldError.exception(message: "#{type} is not a valid type", field: field)}
-  end
 end

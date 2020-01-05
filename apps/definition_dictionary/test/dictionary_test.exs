@@ -60,11 +60,7 @@ defmodule DictionaryTest do
         %{"type" => "car", "make" => "ford", "model" => "mustang"}
       ]
 
-      expected =
-        Dictionary.InvalidFieldError.exception(
-          message: "car is not a valid type",
-          field: %{"type" => "car", "make" => "ford", "model" => "mustang"}
-        )
+      expected = Dictionary.InvalidTypeError.exception(message: "car is not a valid type")
 
       assert {:error, expected} == Dictionary.decode(json)
     end
@@ -82,11 +78,7 @@ defmodule DictionaryTest do
         }
       ]
 
-      expected =
-        Dictionary.InvalidFieldError.exception(
-          message: "animal is not a valid type",
-          field: %{"type" => "animal", "species" => "canine"}
-        )
+      expected = Dictionary.InvalidTypeError.exception(message: "animal is not a valid type")
 
       assert {:error, expected} == Dictionary.decode(json)
     end
