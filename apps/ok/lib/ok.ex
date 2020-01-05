@@ -16,6 +16,13 @@ defmodule Ok do
 
   def map({:error, _reason} = error, _function), do: error
 
+  @spec map_if_error(result, (term -> term)) :: result
+  def map_if_error({:error, reason}, function) when is_function(function, 1) do
+    {:error, function.(reason)}
+  end
+
+  def map_if_error({:ok, _} = result, _function), do: result
+
   @spec reduce(
           Enum.t(),
           Enum.acc(),
