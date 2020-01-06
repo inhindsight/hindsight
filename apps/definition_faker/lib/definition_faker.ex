@@ -33,4 +33,11 @@ defmodule DefinitionFaker do
     |> Map.merge(override)
     |> Schedule.new()
   end
+
+  @spec transform(override :: map) :: Transform.t()
+  def transform(override) do
+    DefinitionFaker.Transform.default()
+    |> Map.merge(override)
+    |> Transform.new()
+  end
 end
