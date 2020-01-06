@@ -24,6 +24,12 @@ defmodule Dictionary.Type.Map do
 
     defp decode_fields(fields), do: Ok.ok(fields)
   end
+
+  defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
+    def normalize(%{fields: fields}, map) do
+      Dictionary.normalize(fields, map)
+    end
+  end
 end
 
 defmodule Dictionary.Type.Map.V1 do
