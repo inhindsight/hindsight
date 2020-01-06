@@ -29,7 +29,8 @@ defmodule WriterPresto.MixProject do
       {:prestige, "~> 1.0"},
       {:tesla, github: "teamon/tesla", branch: "master", override: true},
       {:divo, "~> 1.1", only: [:dev, :test]},
-      {:checkov, "~> 1.0", only: [:dev, :test]}
+      {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}
     ]
   end
 end

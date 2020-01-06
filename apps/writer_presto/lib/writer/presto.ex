@@ -33,9 +33,10 @@ defmodule Writer.Presto do
       table_schema: Keyword.fetch!(args, :table_schema)
     }
 
-    create_table(state)
-
-    Ok.ok(state)
+    case create_table(state) do
+      {:ok, _} -> Ok.ok(state)
+      {:error, reason} -> {:stop, reason}
+    end
   end
 
   @impl GenServer
@@ -48,8 +49,10 @@ defmodule Writer.Presto do
     values = format_rows(state.table_schema, messages)
     insert_stmt = "INSERT INTO #{state.table}(#{columns}) VALUES #{values}"
 
-    Prestige.execute!(state.session, insert_stmt)
-    reply(:ok, state)
+    case Prestige.execute(state.session, insert_stmt) do
+      {:ok, _} -> reply(:ok, state)
+      {:error, reason} -> reply({:error, reason}, state)
+    end
   end
 
   defp create_table(state) do
@@ -59,7 +62,7 @@ defmodule Writer.Presto do
       |> Enum.join(",")
 
     create_table = "CREATE TABLE IF NOT EXISTS #{state.table} (#{columns})"
-    Prestige.execute!(state.session, create_table)
+    Prestige.execute(state.session, create_table)
   end
 
   defp format_rows(schema, rows) do
