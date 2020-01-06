@@ -11,7 +11,10 @@ defmodule AssertAsync.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        plt_add_apps: [:ex_unit]
+      ]
     ]
   end
 
