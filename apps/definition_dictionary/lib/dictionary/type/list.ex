@@ -14,7 +14,7 @@ defmodule Dictionary.Type.List do
       value
       |> Map.put(:item_type, Type.to_string(item_type))
       |> Map.from_struct()
-      |> Map.put("type", Type.to_string(Dictionary.Type.List))
+      |> Map.put(:type, Type.to_string(Dictionary.Type.List))
       |> Jason.Encode.map(opts)
     end
   end
@@ -59,15 +59,15 @@ defmodule Dictionary.Type.List do
     end
 
     defp create_sub_field(%{item_type: item_type} = field) do
-        sub_field = struct(item_type)
+      sub_field = struct(item_type)
 
-        field
-        |> Map.from_struct()
-        |> Map.keys()
-        |> Enum.filter(fn name -> Map.has_key?(sub_field, name) end)
-        |> Enum.reduce(sub_field, fn name, sf ->
-          Map.put(sf, name, Map.get(field, name))
-        end)
+      field
+      |> Map.from_struct()
+      |> Map.keys()
+      |> Enum.filter(fn name -> Map.has_key?(sub_field, name) end)
+      |> Enum.reduce(sub_field, fn name, sf ->
+        Map.put(sf, name, Map.get(field, name))
+      end)
     end
   end
 end
