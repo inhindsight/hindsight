@@ -7,15 +7,18 @@ defmodule Writer.Kafka.Topic do
     defstruct [:connection, :endpoints, :topic, :elsa_sup]
   end
 
+  @impl Writer
   def start_link(args) do
     server_opts = [name: Keyword.get(args, :name, nil)]
     GenServer.start_link(__MODULE__, args, server_opts)
   end
 
+  @impl Writer
   def write(server, messages, opts \\ []) do
     GenServer.call(server, {:write, messages, opts})
   end
 
+  @impl GenServer
   def init(opts) do
     state = %State{
       connection: Keyword.get(opts, :connection, default_connection_name()),
@@ -36,9 +39,10 @@ defmodule Writer.Kafka.Topic do
         ]
       )
 
-    {:ok, %{state | elsa_sup: elsa_sup}}
+    Ok.ok(%{state | elsa_sup: elsa_sup})
   end
 
+  @impl GenServer
   def handle_call({:write, messages, _opts}, _from, state) do
     Elsa.produce(state.connection, state.topic, messages)
     |> reply(state)
