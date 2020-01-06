@@ -3,6 +3,8 @@ defmodule Writer.Kafka.TopicTest do
   use Divo
   import AssertAsync
 
+  @moduletag integration: true, divo: true
+
   alias Writer.Kafka.Topic
 
   @server [localhost: 9092]
