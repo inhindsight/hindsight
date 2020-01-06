@@ -25,7 +25,8 @@ defmodule Dictionary do
 
   def decode(%{"type" => type} = field) do
     with {:ok, module} <- Dictionary.Type.from_string(type) do
-      Dictionary.Type.Decoder.decode(struct(module), field)
+      struct(module)
+      |> Dictionary.Type.Decoder.decode(field)
     end
   end
 
