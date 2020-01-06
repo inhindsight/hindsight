@@ -68,6 +68,7 @@ defmodule Dictionary.Type.StringTest do
       ["string", {:ok, "string"}],
       ["  string  ", {:ok, "string"}],
       [123, {:ok, "123"}],
+      [nil, {:ok, ""}],
       [{:one, :two}, {:error, :invalid_string}]
     ]
   end
