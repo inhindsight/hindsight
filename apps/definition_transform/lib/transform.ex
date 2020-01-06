@@ -4,5 +4,6 @@ defmodule Transform do
   defstruct version: 1,
             id: nil,
             dataset_id: nil,
+            dictionary: [],
             steps: []
 end
