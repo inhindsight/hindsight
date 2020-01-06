@@ -60,6 +60,17 @@ defmodule Dictionary.Type.IntegerTest do
     assert expected == Dictionary.Type.Decoder.decode(struct(Dictionary.Type.Integer), map)
   end
 
+  data_test "validates integers -- #{inspect(value)} --> #{inspect(result)}" do
+    assert result == Dictionary.Type.Normalizer.normalize(%Dictionary.Type.Integer{}, value)
+
+    where [
+      [:value, :result],
+      [1, {:ok, 1}],
+      ["123", {:ok, 123}],
+      ["one", {:error, :invalid_integer}]
+    ]
+  end
+
   defp decode(map) do
     Dictionary.Type.Decoder.decode(struct(Dictionary.Type.Integer), map)
   end

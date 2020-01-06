@@ -24,9 +24,9 @@ defmodule Dictionary.Type.ListTest do
 
   describe "Dictionary.Type.Decoder.decode/2" do
     data_test "validates #{inspect(field)} against bad input" do
-      assert {:error, [%{input: value, path: [field]} | _]} =
-               put_in(%{}, [field], value)
-               |> decode()
+      {:error, errors} = put_in(%{}, [field], value) |> decode()
+      atom_field = String.to_atom(field)
+      assert Enum.any?(errors, &match?(%{input: ^value, path: [^atom_field]}, &1))
 
       where [
         [:field, :value],
@@ -58,7 +58,7 @@ defmodule Dictionary.Type.ListTest do
     list = %Dictionary.Type.List{
       name: "name",
       description: "description",
-      item_type: "map",
+      item_type: Dictionary.Type.Map,
       fields: [
         %Dictionary.Type.String{name: "name"},
         %Dictionary.Type.Integer{name: "age"}
@@ -86,7 +86,7 @@ defmodule Dictionary.Type.ListTest do
        %Dictionary.Type.List{
          name: "name",
          description: "description",
-         item_type: "map",
+         item_type: Dictionary.Type.Map,
          fields: [
            %Dictionary.Type.String{name: "name"},
            %Dictionary.Type.Integer{name: "age"}
@@ -94,6 +94,49 @@ defmodule Dictionary.Type.ListTest do
        }}
 
     assert expected == Dictionary.Type.Decoder.decode(struct(Dictionary.Type.List), list)
+  end
+
+  data_test "normalizes data in maps according to field rules" do
+    field = %Dictionary.Type.List{
+      name: "friends",
+      item_type: Dictionary.Type.Map,
+      fields: [
+        %Dictionary.Type.String{name: "name"},
+        %Dictionary.Type.Integer{name: "age"}
+      ]
+    }
+
+    value = [
+      %{
+        "name" => name,
+        "age" => age
+      }
+    ]
+
+    assert result == Dictionary.Type.Normalizer.normalize(field, value)
+
+    where [
+      [:name, :age, :result],
+      ["holly", 27, {:ok, [%{"name" => "holly", "age" => 27}]}],
+      [
+        {:one},
+        "abc",
+        {:error, {:invalid_list, %{"name" => :invalid_string, "age" => :invalid_integer}}}
+      ]
+    ]
+  end
+
+  test "normalizes data in simple type" do
+    field = %Dictionary.Type.List{
+      item_type: Dictionary.Type.String
+    }
+
+    value = [
+      "one",
+      "  two  "
+    ]
+
+    assert {:ok, ["one", "two"]} == Dictionary.Type.Normalizer.normalize(field, value)
   end
 
   defp decode(map) do

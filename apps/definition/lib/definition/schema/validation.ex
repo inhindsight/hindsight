@@ -57,4 +57,8 @@ defmodule Definition.Schema.Validation do
 
   @spec not_empty?(input :: String.t() | list | map) :: boolean
   def not_empty?(input), do: not empty?(input)
+
+  @spec not_nil?(term) :: boolean
+  def not_nil?(nil), do: false
+  def not_nil?(_), do: true
 end
