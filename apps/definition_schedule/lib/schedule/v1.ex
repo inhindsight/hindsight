@@ -9,7 +9,7 @@ defmodule Schedule.V1 do
       dataset_id: spec(is_binary() and not_empty?()),
       cron: spec(is_binary() and not_empty?()),
       extract: Extract.schema(),
-      transform: spec(is_list()),
+      transform: Transform.schema(),
       load: spec(is_list())
     })
   end
