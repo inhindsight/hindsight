@@ -1,18 +1,8 @@
 defmodule Transform do
-  @moduledoc """
-  Documentation for Transform.
-  """
+  use Definition, schema: Transform.V1
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Transform.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
+  defstruct version: 1,
+            id: nil,
+            dataset_id: nil,
+            steps: []
 end
