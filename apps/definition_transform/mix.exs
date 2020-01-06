@@ -1,9 +1,9 @@
-defmodule Extract.MixProject do
+defmodule Transform.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :definition_extract,
+      app: :definition_transform,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -15,19 +15,21 @@ defmodule Extract.MixProject do
     ]
   end
 
+  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
+  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:definition, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:ok, in_umbrella: true, only: [:test]},
-      {:definition_faker, in_umbrella: true, only: [:dev, :test]},
-      {:checkov, "~> 1.0", only: [:dev, :test]}
+      {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:definition_faker, in_umbrella: true, only: [:dev, :test]}
     ]
   end
 end
