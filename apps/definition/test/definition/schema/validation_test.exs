@@ -40,22 +40,19 @@ defmodule Definition.Schema.ValidationTest do
   end
 
   describe "bbox?/1" do
-    setup do
-      x = Faker.Address.latitude()
-      y = Faker.Address.longitude()
-      [x: x, y: y]
+    property "returns true for valid bounding box" do
+      check all x <- resize(float(), 10),
+                y <- resize(float(), 10) do
+        assert bbox?([x, y, x, y])
+        assert bbox?([x, y, x + 1, y + 1])
+      end
     end
 
-    test "returns true with geospatial point", %{x: x, y: y} do
-      assert bbox?([x, y, x, y])
-    end
-
-    test "returns true with geospatial bounding box", %{x: x, y: y} do
-      assert bbox?([x, y, x + 1, y + 1])
-    end
-
-    test "returns false with invalid bounding box", %{x: x, y: y} do
-      refute bbox?([x, y, x - 1, y - 1])
+    property "returns false for invalid bounding box" do
+      check all x <- resize(float(), 10),
+                y <- resize(float(), 10) do
+        refute bbox?([x, y, x - 1, y - 1])
+      end
     end
 
     property "returns false for other inputs" do
