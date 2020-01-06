@@ -6,18 +6,22 @@ defmodule Doti.MixProject do
       apps_path: "apps",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      aliases: aliases(),
+      preferred_cli_env: ["test.unit": :test, "test.int": :test],
       dialyzer: [
         plt_add_apps: [:ex_unit]
       ]
     ]
   end
 
-  # Dependencies listed here are available only for this
-  # project and cannot be accessed from applications inside
-  # the apps folder.
-  #
-  # Run "mix help deps" for examples and options.
   defp deps do
     []
+  end
+
+  defp aliases() do
+    [
+      "test.unit": "test --exclude integration",
+      "test.int": "test --only integration"
+    ]
   end
 end
