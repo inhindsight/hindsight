@@ -19,9 +19,7 @@ defmodule DictionaryTest do
     end
 
     test "will return error tuple when encoding fails" do
-      dictionary = [
-        {:one, 2}
-      ]
+      dictionary = [<<80, 75, 3, 4, 20, 0, 6, 0, 8, 0, 0, 0, 33, 0, 235, 122, 210>>]
 
       {:error, expected} = Jason.encode(dictionary)
 

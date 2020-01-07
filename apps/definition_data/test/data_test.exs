@@ -4,11 +4,7 @@ defmodule DataTest do
 
   describe "new/1" do
     data_test "validates #{inspect(field)} against bad input" do
-      {:ok, input} =
-        DefinitionFaker.data(%{})
-        |> Ok.map(&Map.delete(&1, :__struct__))
-        |> Ok.map(&Map.put(&1, field, value))
-
+      input = put_in(%{}, [field], value)
       assert {:error, [%{input: value, path: field} | _]} = Data.new(input)
 
       where [

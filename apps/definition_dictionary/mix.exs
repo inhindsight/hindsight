@@ -25,6 +25,7 @@ defmodule DefinitionDictionary.MixProject do
     [
       {:ok, in_umbrella: true},
       {:definition, in_umbrella: true},
+      {:jason, "~> 1.1"},
       {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end

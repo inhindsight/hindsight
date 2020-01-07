@@ -25,8 +25,6 @@ defmodule Extract.MixProject do
     [
       {:definition, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:ok, in_umbrella: true, only: [:test]},
-      {:definition_faker, in_umbrella: true, only: [:dev, :test]},
       {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
