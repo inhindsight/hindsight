@@ -9,6 +9,9 @@ defmodule Definition.Schema.Type do
     spec(is_binary() and not_empty?())
   end
 
+  @spec string() :: spec
+  def string, do: spec(is_binary())
+
   @spec version(expected :: integer) :: spec
   def version(expected) do
     spec(fn v -> v == expected end)
