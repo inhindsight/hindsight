@@ -27,7 +27,6 @@ defmodule Transform.MixProject do
     [
       {:definition, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:ok, in_umbrella: true, only: [:test]},
       {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
