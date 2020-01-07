@@ -6,7 +6,7 @@ defmodule Definition.Schema do
       @behaviour Definition.Schema
 
       import Norm
-      import Definition.Schema.Validation
+      import Definition.Schema.{Type, Validation}
     end
   end
 end
