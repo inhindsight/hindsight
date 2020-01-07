@@ -29,9 +29,7 @@ defmodule Schedule.MixProject do
       {:definition_extract, in_umbrella: true},
       {:definition_transform, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:ok, in_umbrella: true, only: [:test]},
-      {:checkov, "~> 1.0", only: [:dev, :test]},
-      {:definition_faker, in_umbrella: true, only: [:dev, :test]}
+      {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
 end
