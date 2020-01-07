@@ -4,13 +4,13 @@ defmodule Dataset.V1 do
   @impl Definition.Schema
   def s do
     schema(%Dataset{
-      version: spec(fn v -> v == 1 end),
-      id: string(),
-      owner_id: string(),
-      title: string(),
+      version: version(1),
+      id: id(),
+      owner_id: id(),
+      title: required_string(),
       description: spec(is_binary()),
       keywords: spec(is_list()),
-      license: string(),
+      license: required_string(),
       created_ts: spec(ts?()),
       profile:
         schema(%{
@@ -24,7 +24,6 @@ defmodule Dataset.V1 do
   end
 
   defp optional_ts, do: spec(empty?() or ts?())
-  defp string, do: spec(is_binary() and not_empty?())
   defp optional_bbox, do: spec((is_list() and empty?()) or bbox?())
   defp optional_range, do: spec((is_list() and empty?()) or temporal_range?())
 end

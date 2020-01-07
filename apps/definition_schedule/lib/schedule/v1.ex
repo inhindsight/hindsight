@@ -4,10 +4,10 @@ defmodule Schedule.V1 do
   @impl Definition.Schema
   def s do
     schema(%Schedule{
-      version: spec(fn v -> v == 1 end),
-      id: spec(is_binary() and not_empty?()),
-      dataset_id: spec(is_binary() and not_empty?()),
-      cron: spec(is_binary() and not_empty?()),
+      version: version(1),
+      id: id(),
+      dataset_id: id(),
+      cron: required_string(),
       extract: Extract.schema(),
       transform: Transform.schema(),
       load: spec(is_list())
