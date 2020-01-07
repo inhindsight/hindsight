@@ -4,9 +4,9 @@ defmodule Data.V1 do
   @impl Definition.Schema
   def s do
     schema(%Data{
-      version: spec(fn v -> v == 1 end),
-      gather_id: spec(is_binary() and not_empty?()),
-      load_id: spec(is_binary() and not_empty?()),
+      version: version(1),
+      gather_id: id(),
+      load_id: id(),
       payload: schema(%{})
     })
   end
