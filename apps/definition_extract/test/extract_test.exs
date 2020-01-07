@@ -3,11 +3,7 @@ defmodule ExtractTest do
 
   describe "new/1" do
     data_test "validates #{field} against bad input" do
-      {:ok, input} =
-        DefinitionFaker.extract(%{})
-        |> Ok.map(&Map.delete(&1, :__struct__))
-        |> Ok.map(&put_in(&1, [field], value))
-
+      input = put_in(%{}, [field], value)
       assert {:error, [%{input: value, path: [field]} | _]} = Extract.new(input)
 
       where [
