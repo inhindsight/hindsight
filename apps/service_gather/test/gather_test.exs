@@ -5,6 +5,8 @@ defmodule GatherTest do
   @instance Gather.Application.instance()
   @moduletag capture_log: true
 
+  alias Gather.Extraction
+
   setup :set_mox_global
   setup :verify_on_exit!
 
@@ -12,7 +14,7 @@ defmodule GatherTest do
     [bypass: Bypass.open()]
   end
 
-  test "something, something, gather", %{bypass: bypass} do
+  test "extract csv file", %{bypass: bypass} do
     test = self()
     {:ok, dummy_process} = Agent.start_link(fn -> :dummy_process end)
 
@@ -48,7 +50,7 @@ defmodule GatherTest do
         ]
       )
 
-    Brook.Test.send(@instance, "gather:extract:start", "testing", extract)
+    Brook.Test.send(@instance, "extract:start", "testing", extract)
 
     assert_receive {:write, ^dummy_process, messages}, 5_000
     assert messages == [
@@ -56,6 +58,6 @@ defmodule GatherTest do
       %{"A" => "four", "B" => "five", "C" => "six"}
     ]
 
-    assert extract == Gather.Extraction.Store.get!(extract.id)
+    assert extract == Extraction.Store.get!(extract.id)
   end
 end
