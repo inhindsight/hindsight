@@ -4,20 +4,18 @@ defmodule Dataset.Owner.V1 do
   @impl Definition.Schema
   def s do
     schema(%Dataset.Owner{
-      version: spec(fn v -> v == 1 end),
-      id: string(),
-      name: string(),
-      title: string(),
+      version: version(1),
+      id: id(),
+      name: required_string(),
+      title: required_string(),
       description: spec(is_binary()),
       url: spec(is_binary()),
       image: spec(is_binary()),
       contact:
         schema(%{
-          name: string(),
+          name: required_string(),
           email: spec(email?())
         })
     })
   end
-
-  defp string, do: spec(is_binary() and not_empty?())
 end
