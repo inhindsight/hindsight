@@ -1,5 +1,5 @@
 defmodule Gather.Extraction do
-  use GenServer
+  use GenServer, restart: :transient
 
   @config Application.get_env(:service_gather, __MODULE__, [])
   @writer Keyword.get(@config, :writer, Gather.Writer)

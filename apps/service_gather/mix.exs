@@ -28,6 +28,7 @@ defmodule Gather.MixProject do
       {:brook, "~> 0.4.9"},
       {:definition_data, in_umbrella: true},
       {:definition_extract, in_umbrella: true},
+      {:definition_events, in_umbrella: true},
       {:extract_steps, in_umbrella: true},
       {:extract_http, in_umbrella: true},
       {:extract_gtfs, in_umbrella: true},
