@@ -9,7 +9,8 @@ defmodule Doti.MixProject do
       aliases: aliases(),
       preferred_cli_env: ["test.unit": :test, "test.int": :test],
       dialyzer: [
-        plt_add_apps: [:ex_unit]
+        plt_add_apps: [:ex_unit],
+        plt_file: {:no_warn, "_build/plts/#{System.version()}.plt"}
       ]
     ]
   end
