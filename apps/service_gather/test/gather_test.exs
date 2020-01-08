@@ -1,6 +1,7 @@
 defmodule GatherTest do
   use ExUnit.Case
   import Mox
+  import Definition.Events, only: [extract_start: 0]
 
   @instance Gather.Application.instance()
   @moduletag capture_log: true
@@ -50,7 +51,7 @@ defmodule GatherTest do
         ]
       )
 
-    Brook.Test.send(@instance, "extract:start", "testing", extract)
+    Brook.Test.send(@instance, extract_start(), "testing", extract)
 
     assert_receive {:write, ^dummy_process, messages}, 5_000
     assert messages == [
