@@ -3,10 +3,10 @@ defmodule Ok do
   @type error :: {:error, term}
   @type result :: ok | error
 
-  @spec ok(term) :: ok
+  @spec ok(value) :: {:ok, value} when value: term
   def ok(value), do: {:ok, value}
 
-  @spec error(term) :: error
+  @spec error(reason) :: {:error, reason} when reason: term
   def error(reason), do: {:error, reason}
 
   @spec map(result, (term -> term)) :: result
