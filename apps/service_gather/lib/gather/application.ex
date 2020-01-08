@@ -8,6 +8,7 @@ defmodule Gather.Application do
   def start(_type, _args) do
     children =
       [
+        Gather.Extraction.Supervisor,
         dlq(),
         brook()
       ]
