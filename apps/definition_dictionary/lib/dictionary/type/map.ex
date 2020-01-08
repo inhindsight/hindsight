@@ -37,9 +37,9 @@ defmodule Dictionary.Type.Map.V1 do
 
   def s do
     schema(%Dictionary.Type.Map{
-      version: spec(fn v -> v == 1 end),
-      name: spec(is_binary() and not_empty?()),
-      description: spec(is_binary()),
+      version: version(1),
+      name: required_string(),
+      description: string(),
       fields: spec(is_list())
     })
   end
