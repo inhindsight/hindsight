@@ -10,7 +10,7 @@ defmodule Doti.MixProject do
       preferred_cli_env: ["test.unit": :test, "test.int": :test],
       dialyzer: [
         plt_add_apps: [:ex_unit],
-        plt_file: {:no_warn, "_build/plts/#{System.version()}.plt"}
+        plt_file: {:no_warn, ".dialyzer/#{System.version()}.plt"}
       ]
     ]
   end
