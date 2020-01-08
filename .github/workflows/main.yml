@@ -1,5 +1,8 @@
 name: CI
-on: push
+on:
+  pull_request:
+    branches:
+      - master
 jobs:
   unit:
     name: Unit Test
@@ -47,7 +50,7 @@ jobs:
       - name: Retrieve cached PLT
         uses: actions/cache@v1
         with:
-          path: _build/plts
+          path: .dialyzer
           key: dialyzer-plt
       - name: Get dependencies
         run: |
