@@ -9,7 +9,7 @@ defmodule Ok do
   @spec error(reason) :: {:error, reason} when reason: term
   def error(reason), do: {:error, reason}
 
-  @spec map(result, (term -> term)) :: result
+  @spec map(result | :ok, (term -> term)) :: result
   def map({:ok, value}, function) when is_function(function, 1) do
     {:ok, function.(value)}
   end
@@ -36,6 +36,22 @@ defmodule Ok do
       end
     end)
   end
+
+  @spec each(Enum.t(), (Enum.element() -> term | error)) :: :ok | error
+  def each(enum, function) when is_function(function, 1) do
+    Ok.reduce(enum, nil, fn item, acc ->
+      case function.(item) do
+        {:error, reason} -> {:error, reason}
+        _ -> {:ok, acc}
+      end
+    end)
+    |> case do
+      {:ok, _} -> :ok
+      error -> error
+    end
+  end
+
+  def each({:error, _} = error), do: error
 
   @spec transform(Enum.t(), (Enum.element() -> {:ok, Enum.element()} | {:error, term})) ::
           {:ok, Enum.t()} | {:error, term}

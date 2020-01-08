@@ -38,6 +38,7 @@ defmodule Gather.MixProject do
       {:writer_kafka, in_umbrella: true},
       {:writer_dlq, in_umbrella: true},
       {:elixir_uuid, "~> 1.2"},
+      {:retry, "~> 0.13.0"},
       {:bypass, "~> 1.0", only: [:test]},
       {:assert_async, in_umbrella: true, only: [:test]},
       {:mox, "~> 0.5.1", only: [:test]}

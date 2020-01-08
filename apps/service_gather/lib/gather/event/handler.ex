@@ -9,7 +9,7 @@ defmodule Gather.Event.Handler do
     Extraction.Store.persist(extract)
   end
 
-  def handle_event(%Brook.Event{type: extract_end()}) do
-    :ok
+  def handle_event(%Brook.Event{type: extract_end(), data: %Extract{} = extract}) do
+    Extraction.Store.delete(extract.id)
   end
 end
