@@ -1,6 +1,8 @@
 defmodule Writer.DLQ do
   @behaviour Writer
 
+  alias Writer.DLQ.DeadLetter
+
   @default_writer Writer.Kafka.Topic
   @writer Application.get_env(:writer_dlq, :writer, @default_writer)
   @default_topic "dead-letter-queue"
@@ -13,32 +15,33 @@ defmodule Writer.DLQ do
     end
   end
 
-  defmodule DeadLetter do
-    @type t :: %__MODULE__{
-            dataset_id: String.t(),
-            original_message: term,
-            app_name: String.Chars.t(),
-            stacktrace: list,
-            reason: Exception.t() | String.Chars.t(),
-            timestamp: DateTime.t()
-          }
+  defmacro __using__(opts) do
+    name = Keyword.fetch!(opts, :name)
 
-    @enforce_keys [:dataset_id, :original_message, :app_name, :reason]
-    defstruct [
-      :dataset_id,
-      :original_message,
-      :app_name,
-      :stacktrace,
-      :reason,
-      :timestamp
-    ]
+    quote do
+      @behaviour Writer
+
+      def start_link(args) do
+        Keyword.put(args, :name, unquote(name))
+        |> Writer.DLQ.start_link()
+      end
+
+      defdelegate child_spec(args), to: Writer.DLQ
+
+      defdelegate write(server, messages, opts \\ []), to: Writer.DLQ
+
+      def write(messages) do
+        Writer.DLQ.write(unquote(name), messages)
+      end
+    end
   end
 
   @impl Writer
   def start_link(args) do
     @writer.start_link(
       endpoints: Keyword.fetch!(args, :endpoints),
-      topic: Keyword.get(args, :topic, @default_topic)
+      topic: Keyword.get(args, :topic, @default_topic),
+      name: Keyword.get(args, :name, nil)
     )
   end
 

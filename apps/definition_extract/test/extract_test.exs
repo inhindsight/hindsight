@@ -11,7 +11,9 @@ defmodule ExtractTest do
         [:version, "1"],
         [:id, ""],
         [:dataset_id, 2001],
-        [:steps, 1]
+        [:steps, 1],
+        [:name, nil],
+        [:name, ""]
       ]
     end
   end

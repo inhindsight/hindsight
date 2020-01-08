@@ -14,7 +14,7 @@ defmodule TransformTest do
         [:id, ""],
         [:dataset_id, nil],
         [:dictionary, nil],
-        [:steps, nil],
+        [:steps, nil]
       ]
     end
   end
