@@ -19,4 +19,6 @@ config :service_gather, Gather.Writer,
   dlq: DlqMock
 
 config :service_gather, Gather.Extraction,
-  writer: Gather.WriterMock
+  writer: Gather.WriterMock,
+  chunk_size: 10,
+  max_tries: 3

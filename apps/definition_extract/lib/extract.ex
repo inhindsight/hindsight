@@ -11,7 +11,7 @@ defmodule Extract do
           steps: [Extract.Step.t()]
         }
 
-  defstruct version: nil,
+  defstruct version: 1,
             id: nil,
             dataset_id: nil,
             name: nil,
