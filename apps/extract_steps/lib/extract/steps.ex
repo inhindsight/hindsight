@@ -11,11 +11,21 @@ defmodule Extract.Steps do
 
   defp parse_steps(steps) do
     steps
+    |> Enum.map(&to_atom_keys/1)
     |> Enum.map(fn step ->
       :"Elixir.#{Map.get(step, :step)}"
       |> struct!(Map.delete(step, :step))
     end)
   end
+
+  defp to_atom_keys(map) do
+    map
+    |> Enum.map(fn {k, v} -> {to_atom(k), v} end)
+    |> Map.new()
+  end
+
+  defp to_atom(word) when is_atom(word), do: word
+  defp to_atom(word), do: String.to_existing_atom(word)
 
   defp error_message(e) do
     case Exception.exception?(e) do

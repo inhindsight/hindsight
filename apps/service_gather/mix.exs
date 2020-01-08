@@ -11,11 +11,11 @@ defmodule Gather.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger],
@@ -25,6 +25,24 @@ defmodule Gather.MixProject do
 
   defp deps do
     [
+      {:brook, "~> 0.4.9"},
+      {:definition_data, in_umbrella: true},
+      {:definition_extract, in_umbrella: true},
+      {:extract_steps, in_umbrella: true},
+      {:extract_http, in_umbrella: true},
+      {:extract_gtfs, in_umbrella: true},
+      {:extract_decode_csv, in_umbrella: true},
+      {:extract_decode_json, in_umbrella: true},
+      {:writer, in_umbrella: true},
+      {:writer_kafka, in_umbrella: true},
+      {:writer_dlq, in_umbrella: true},
+      {:elixir_uuid, "~> 1.2"},
+      {:bypass, "~> 1.0", only: [:test]},
+      {:assert_async, in_umbrella: true, only: [:test]},
+      {:mox, "~> 0.5.1", only: [:test]}
     ]
   end
+
+  defp elixirc_paths(:test), do: ["test/support", "lib"]
+  defp elixirc_paths(_), do: ["lib"]
 end

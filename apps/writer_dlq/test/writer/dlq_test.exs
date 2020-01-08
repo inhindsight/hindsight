@@ -16,9 +16,10 @@ defmodule WriterDlqTest do
         {:ok, :pid}
       end)
 
-      assert {:ok, :pid} == Writer.DLQ.start_link(endpoints: [localhost: 9092])
+      assert {:ok, :pid} == Writer.DLQ.start_link(endpoints: [localhost: 9092], name: :joe)
 
-      assert_receive {:start_link, endpoints: [localhost: 9092], topic: "dead-letter-queue"}
+      assert_receive {:start_link,
+                      endpoints: [localhost: 9092], topic: "dead-letter-queue", name: :joe}
     end
   end
 
@@ -79,11 +80,11 @@ defmodule WriterDlqTest do
 
       assert match?(
                %{
-                 "original_message" => "<<80, 75, 3, 4, 20, 0, 6, 0, 8, 0, 0, 0, 33, 0, 235, 122, 210>>"
+                 "original_message" =>
+                   "<<80, 75, 3, 4, 20, 0, 6, 0, 8, 0, 0, 0, 33, 0, 235, 122, 210>>"
                },
                Jason.decode!(dl)
              )
     end
   end
-
 end

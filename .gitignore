@@ -20,4 +20,7 @@ erl_crash.dump
 *.ez
 
 *.DS_Store
+
 .dialyzer/
+
+.elixir_ls
