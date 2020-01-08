@@ -1,8 +1,8 @@
 name: CI
 on: push
 jobs:
-  test:
-    name: Test
+  unit:
+    name: Unit Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -18,3 +18,42 @@ jobs:
       - name: test.unit
         run: |
           mix test.unit
+  integration:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-elixir@v1.2.0
+        with:
+          otp-version: 22.2
+          elixir-version: 1.9.4
+      - name: deps.get
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
+      - name: test.int
+        run: |
+          mix test.int
+  dialyzer:
+    name: Dialyzer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-elixir@v1.2.0
+        with:
+          otp-version: 22.2
+          elixir-version: 1.9.4
+      - name: cache
+        uses: actions/cache@v1
+        with:
+          path: _build/plts
+          key: dialyzer-plt
+      - name: deps.get
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
+      - name: dialyzer
+        run: |
+          mix dialyzer
