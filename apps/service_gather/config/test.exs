@@ -18,5 +18,5 @@ config :service_gather, Gather.Writer,
   writer: WriterMock,
   dlq: DlqMock
 
-config :service_gather, Gather.Event.Handler,
+config :service_gather, Gather.Extraction,
   writer: Gather.WriterMock

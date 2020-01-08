@@ -3,19 +3,12 @@ defmodule Gather.Event.Handler do
 
   alias Gather.Extraction
 
-  @config Application.get_env(:service_gather, __MODULE__, [])
-  @writer Keyword.get(@config, :writer, Gather.Writer)
-
-  def handle_event(%Brook.Event{type: "gather:extract:start", data: %Extract{} = extract}) do
-    {:ok, pid} = @writer.start_link(extract: extract)
-    {:ok, stream} = Extract.Steps.execute(extract.steps)
-
-    messages = Enum.to_list(stream)
-    @writer.write(pid, messages)
+  def handle_event(%Brook.Event{type: "extract:start", data: %Extract{} = extract}) do
+    Extraction.Supervisor.start_child({Extraction, extract: extract})
     Extraction.Store.persist(extract)
   end
 
-  def handle_event(%Brook.Event{type: "gather:extract:stop"}) do
+  def handle_event(%Brook.Event{type: "extract:end"}) do
     :ok
   end
 end
