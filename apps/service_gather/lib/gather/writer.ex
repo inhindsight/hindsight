@@ -58,16 +58,12 @@ defmodule Gather.Writer do
   end
 
   defp to_dead_letter({%Data{dataset_id: dataset_id} = og, reason}) do
-    # TODO we should not have norm running against dead letter struct
-    {:ok, dl} =
-      DeadLetter.new(
-        dataset_id: dataset_id,
-        original_message: og,
-        app_name: Application.get_env(:service_gather, :app_name),
-        reason: reason
-      )
-
-    dl
+    DeadLetter.new(
+      dataset_id: dataset_id,
+      original_message: og,
+      app_name: Application.get_env(:service_gather, :app_name),
+      reason: reason
+    )
   end
 
   defp log_dlq_error(messages, reason) do

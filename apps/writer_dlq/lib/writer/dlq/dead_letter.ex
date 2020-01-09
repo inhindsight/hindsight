@@ -1,6 +1,4 @@
 defmodule Writer.DLQ.DeadLetter do
-  use Definition, schema: Writer.DLQ.DeadLetter.V1
-
   @type t :: %__MODULE__{
           version: integer,
           dataset_id: String.t(),
@@ -18,19 +16,9 @@ defmodule Writer.DLQ.DeadLetter do
             stacktrace: [],
             reason: nil,
             timestamp: nil
-end
 
-defmodule Writer.DLQ.DeadLetter.V1 do
-  use Definition.Schema
-
-  def s do
-    schema(%Writer.DLQ.DeadLetter{
-      version: spec(fn v -> v == 1 end),
-      dataset_id: spec(is_binary() and not_empty?()),
-      original_message: spec(not_nil?()),
-      app_name: spec(is_binary() and not_empty?()),
-      stacktrace: spec(is_list()),
-      reason: spec(not_nil?())
-    })
+  @spec new(keyword | map) :: t
+  def new(values) do
+    struct(__MODULE__, values)
   end
 end
