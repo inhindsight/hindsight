@@ -19,8 +19,6 @@ erl_crash.dump
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
 
-*.DS_Store
+# Ignore package tarball (built via "mix hex.build").
+service_gather-*.tar
 
-.dialyzer/
-
-.elixir_ls

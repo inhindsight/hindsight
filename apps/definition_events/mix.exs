@@ -1,9 +1,9 @@
-defmodule ExtractHttp.MixProject do
+defmodule DefinitionEvents.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :extract_http,
+      app: :definition_events,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -22,13 +22,6 @@ defmodule ExtractHttp.MixProject do
   end
 
   defp deps do
-    [
-      {:extract_steps, in_umbrella: true},
-      {:tesla, "~> 1.3"},
-      {:mint, "~> 1.0", override: true},
-      {:castore, "~> 0.1.4"},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:bypass, "~> 1.0", only: [:test]}
-    ]
+    []
   end
 end

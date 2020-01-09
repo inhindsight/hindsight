@@ -1,5 +1,6 @@
 defmodule Definition do
   @callback new(map | keyword) :: {:ok, struct} | {:error, term}
+  @callback new!(map | keyword) :: struct
   @callback from_json(String.t()) :: {:ok, struct} | {:error, term}
   @callback schema() :: %Norm.Schema{}
   @callback migrate(struct) :: struct
@@ -13,7 +14,6 @@ defmodule Definition do
         defexception [:message]
       end
 
-      @type t() :: %__MODULE__{}
       @schema Keyword.fetch!(unquote(opts), :schema)
 
       @impl Definition
@@ -32,6 +32,14 @@ defmodule Definition do
 
           false ->
             {:error, InputError.exception(message: input)}
+        end
+      end
+
+      @impl Definition
+      def new!(input) do
+        case new(input) do
+          {:ok, value} -> value
+          {:error, reason} -> raise reason
         end
       end
 
