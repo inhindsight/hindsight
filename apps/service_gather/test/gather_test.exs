@@ -1,7 +1,8 @@
 defmodule GatherTest do
-  use ExUnit.Case
+  use Gather.Case
   import Mox
-  import Definition.Events, only: [extract_start: 0]
+  import Definition.Events, only: [extract_start: 0, extract_end: 0]
+  import AssertAsync
 
   @instance Gather.Application.instance()
   @moduletag capture_log: true
@@ -12,6 +13,7 @@ defmodule GatherTest do
   setup :verify_on_exit!
 
   setup do
+    Brook.Test.clear_view_state(@instance, "extractions")
     [bypass: Bypass.open()]
   end
 
@@ -54,11 +56,32 @@ defmodule GatherTest do
     Brook.Test.send(@instance, extract_start(), "testing", extract)
 
     assert_receive {:write, ^dummy_process, messages}, 5_000
+
     assert messages == [
-      %{"A" => "one", "B" => "two", "C" => "three"},
-      %{"A" => "four", "B" => "five", "C" => "six"}
-    ]
+             %{"A" => "one", "B" => "two", "C" => "three"},
+             %{"A" => "four", "B" => "five", "C" => "six"}
+           ]
 
     assert extract == Extraction.Store.get!(extract.id)
+  end
+
+  test "removes stored extraction on #{extract_end()}" do
+    extract =
+      Extract.new!(
+        id: "extract-45",
+        dataset_id: "ds45",
+        name: "get_some_data",
+        steps: []
+      )
+
+    Brook.Test.with_event(@instance, fn ->
+      Extraction.Store.persist(extract)
+    end)
+
+    Brook.Test.send(@instance, extract_end(), "testing", extract)
+
+    assert_async do
+      assert nil == Extraction.Store.get!(extract.id)
+    end
   end
 end

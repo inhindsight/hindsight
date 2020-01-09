@@ -1,7 +1,10 @@
 defmodule Gather.Extraction.Store do
-
   @instance Gather.Application.instance()
   @collection "extractions"
+
+  def collection() do
+    @collection
+  end
 
   def persist(extract) do
     Brook.ViewState.merge(@collection, extract.id, %{extract: extract})
@@ -19,7 +22,7 @@ defmodule Gather.Extraction.Store do
   end
 
   def get_all!() do
-    Brook.get_all!(@instance, @collection)
+    Brook.get_all_values!(@instance, @collection)
     |> Enum.map(&Map.get(&1, :extract))
   end
 end

@@ -19,9 +19,7 @@ defmodule Extract.Steps do
   end
 
   defp to_atom_keys(map) do
-    map
-    |> Enum.map(fn {k, v} -> {to_atom(k), v} end)
-    |> Map.new()
+    for {k, v} <- map, do: {to_atom(k), v}, into: %{}
   end
 
   defp to_atom(word) when is_atom(word), do: word

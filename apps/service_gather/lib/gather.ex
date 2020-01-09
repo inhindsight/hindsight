@@ -1,2 +1,0 @@
-defmodule Gather do
-end

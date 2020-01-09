@@ -83,7 +83,7 @@ defmodule Gather.WriterTest do
       assert_receive {:dlq, dead_letters}
       {:error, reason} = messages |> List.first() |> Jason.encode()
 
-      {:ok, expected} =
+      expected =
         DeadLetter.new(
           dataset_id: "ds1",
           original_message: List.first(messages),
@@ -133,7 +133,7 @@ defmodule Gather.WriterTest do
       {:error, reason} = messages |> List.first() |> Jason.encode()
 
       expected_dead_letter =
-        DeadLetter.new!(
+        DeadLetter.new(
           dataset_id: "ds1",
           original_message: List.first(messages),
           app_name: Application.get_env(:service_gather, :app_name),

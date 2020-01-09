@@ -16,6 +16,7 @@ defmodule Gather.ExtractionTest do
 
   test "sends chunks of data to writer and then dies" do
     test = self()
+
     Gather.WriterMock
     |> expect(:start_link, 1, fn _ -> Agent.start_link(fn -> :dummy end) end)
     |> expect(:write, 10, fn server, messages ->
@@ -23,21 +24,22 @@ defmodule Gather.ExtractionTest do
       :ok
     end)
 
-    extract = Extract.new!(
-      id: "extract-1",
-      dataset_id: "ds1",
-      name: "happy-path",
-      steps: [
-        %{
-          "step" => "Fake.Step",
-          "values" => Stream.cycle([%{"one" => 1}]) |> Stream.take(100)
-        }
-      ]
-    )
+    extract =
+      Extract.new!(
+        id: "extract-1",
+        dataset_id: "ds1",
+        name: "happy-path",
+        steps: [
+          %{
+            "step" => "Fake.Step",
+            "values" => Stream.cycle([%{"one" => 1}]) |> Stream.take(100)
+          }
+        ]
+      )
 
     {:ok, pid} = Extraction.start_link(extract: extract)
 
-    assert_receive {:EXIT, ^pid, :normal}
+    assert_receive {:EXIT, ^pid, :normal}, 2_000
   end
 
   test "when child write return error tuple it retries and then dies" do
@@ -45,20 +47,21 @@ defmodule Gather.ExtractionTest do
     |> expect(:start_link, 4, fn _ -> Agent.start_link(fn -> :dummy end) end)
     |> expect(:write, 4, fn _server, _messages -> {:error, "failure to write"} end)
 
-    extract = Extract.new!(
-      id: "extract-1",
-      dataset_id: "ds1",
-      name: "test-extract",
-      steps: [
-        %{
-          "step" => "Fake.Step",
-          "values" => [
-            %{"name" => "joe", "age" => 21},
-            %{"name" => "pete", "age" => 28}
-          ]
-        }
-      ]
-    )
+    extract =
+      Extract.new!(
+        id: "extract-1",
+        dataset_id: "ds1",
+        name: "test-extract",
+        steps: [
+          %{
+            "step" => "Fake.Step",
+            "values" => [
+              %{"name" => "joe", "age" => 21},
+              %{"name" => "pete", "age" => 28}
+            ]
+          }
+        ]
+      )
 
     {:ok, pid} = Extraction.start_link(extract: extract)
 
@@ -69,20 +72,21 @@ defmodule Gather.ExtractionTest do
     Gather.WriterMock
     |> expect(:start_link, 4, fn _ -> {:error, "bad process"} end)
 
-    extract = Extract.new!(
-      id: "extract-1",
-      dataset_id: "ds1",
-      name: "test-extract",
-      steps: [
-        %{
-          "step" => "Fake.Step",
-          "values" => [
-            %{"name" => "joe", "age" => 21},
-            %{"name" => "pete", "age" => 28}
-          ]
-        }
-      ]
-    )
+    extract =
+      Extract.new!(
+        id: "extract-1",
+        dataset_id: "ds1",
+        name: "test-extract",
+        steps: [
+          %{
+            "step" => "Fake.Step",
+            "values" => [
+              %{"name" => "joe", "age" => 21},
+              %{"name" => "pete", "age" => 28}
+            ]
+          }
+        ]
+      )
 
     {:ok, pid} = Extraction.start_link(extract: extract)
 
