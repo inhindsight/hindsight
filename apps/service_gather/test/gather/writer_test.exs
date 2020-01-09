@@ -1,5 +1,5 @@
 defmodule Gather.WriterTest do
-  use ExUnit.Case
+  use Gather.Case
   import Mox
   import ExUnit.CaptureLog
 
