@@ -27,7 +27,7 @@ defmodule WriterPresto.MixProject do
       {:writer, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:prestige, "~> 1.0"},
-      {:tesla, github: "teamon/tesla", branch: "master", override: true},
+      {:tesla, "~> 1.3"},
       {:divo, "~> 1.1", only: [:dev, :test]},
       {:checkov, "~> 1.0", only: [:dev, :test]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}

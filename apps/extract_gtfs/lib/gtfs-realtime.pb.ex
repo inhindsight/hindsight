@@ -113,6 +113,7 @@ defmodule TransitRealtime.FeedMessage do
           header: TransitRealtime.FeedHeader.t() | nil,
           entity: [TransitRealtime.FeedEntity.t()]
         }
+  @derive Jason.Encoder
   defstruct [:header, :entity]
 
   field(:header, 1, required: true, type: TransitRealtime.FeedHeader)
@@ -128,6 +129,7 @@ defmodule TransitRealtime.FeedHeader do
           incrementality: atom | integer,
           timestamp: non_neg_integer
         }
+  @derive Jason.Encoder
   defstruct [:gtfs_realtime_version, :incrementality, :timestamp]
 
   field(:gtfs_realtime_version, 1, required: true, type: :string)
@@ -153,6 +155,7 @@ defmodule TransitRealtime.FeedEntity do
           vehicle: TransitRealtime.VehiclePosition.t() | nil,
           alert: TransitRealtime.Alert.t() | nil
         }
+  @derive Jason.Encoder
   defstruct [:id, :is_deleted, :trip_update, :vehicle, :alert]
 
   field(:id, 1, required: true, type: :string)
@@ -171,6 +174,7 @@ defmodule TransitRealtime.TripUpdate.StopTimeEvent do
           time: integer,
           uncertainty: integer
         }
+  @derive Jason.Encoder
   defstruct [:delay, :time, :uncertainty]
 
   field(:delay, 1, optional: true, type: :int32)
@@ -189,6 +193,7 @@ defmodule TransitRealtime.TripUpdate.StopTimeUpdate do
           departure: TransitRealtime.TripUpdate.StopTimeEvent.t() | nil,
           schedule_relationship: atom | integer
         }
+  @derive Jason.Encoder
   defstruct [:stop_sequence, :stop_id, :arrival, :departure, :schedule_relationship]
 
   field(:stop_sequence, 1, optional: true, type: :uint32)
@@ -215,6 +220,7 @@ defmodule TransitRealtime.TripUpdate do
           timestamp: non_neg_integer,
           delay: integer
         }
+  @derive Jason.Encoder
   defstruct [:trip, :vehicle, :stop_time_update, :timestamp, :delay]
 
   field(:trip, 1, required: true, type: TransitRealtime.TripDescriptor)
@@ -239,6 +245,7 @@ defmodule TransitRealtime.VehiclePosition do
           congestion_level: atom | integer,
           occupancy_status: atom | integer
         }
+  @derive Jason.Encoder
   defstruct [
     :trip,
     :vehicle,
@@ -295,6 +302,7 @@ defmodule TransitRealtime.Alert do
           tts_description_text: TransitRealtime.TranslatedString.t() | nil,
           severity_level: atom | integer
         }
+  @derive Jason.Encoder
   defstruct [
     :active_period,
     :informed_entity,
@@ -347,6 +355,7 @@ defmodule TransitRealtime.TimeRange do
           start: non_neg_integer,
           end: non_neg_integer
         }
+  @derive Jason.Encoder
   defstruct [:start, :end]
 
   field(:start, 1, optional: true, type: :uint64)
@@ -364,6 +373,7 @@ defmodule TransitRealtime.Position do
           odometer: float | :infinity | :negative_infinity | :nan,
           speed: float | :infinity | :negative_infinity | :nan
         }
+  @derive Jason.Encoder
   defstruct [:latitude, :longitude, :bearing, :odometer, :speed]
 
   field(:latitude, 1, required: true, type: :float)
@@ -385,6 +395,7 @@ defmodule TransitRealtime.TripDescriptor do
           start_date: String.t(),
           schedule_relationship: atom | integer
         }
+  @derive Jason.Encoder
   defstruct [:trip_id, :route_id, :direction_id, :start_time, :start_date, :schedule_relationship]
 
   field(:trip_id, 1, optional: true, type: :string)
@@ -409,6 +420,7 @@ defmodule TransitRealtime.VehicleDescriptor do
           label: String.t(),
           license_plate: String.t()
         }
+  @derive Jason.Encoder
   defstruct [:id, :label, :license_plate]
 
   field(:id, 1, optional: true, type: :string)
@@ -428,6 +440,7 @@ defmodule TransitRealtime.EntitySelector do
           stop_id: String.t(),
           direction_id: non_neg_integer
         }
+  @derive Jason.Encoder
   defstruct [:agency_id, :route_id, :route_type, :trip, :stop_id, :direction_id]
 
   field(:agency_id, 1, optional: true, type: :string)
@@ -446,6 +459,7 @@ defmodule TransitRealtime.TranslatedString.Translation do
           text: String.t(),
           language: String.t()
         }
+  @derive Jason.Encoder
   defstruct [:text, :language]
 
   field(:text, 1, required: true, type: :string)
@@ -459,6 +473,7 @@ defmodule TransitRealtime.TranslatedString do
   @type t :: %__MODULE__{
           translation: [TransitRealtime.TranslatedString.Translation.t()]
         }
+  @derive Jason.Encoder
   defstruct [:translation]
 
   field(:translation, 1, repeated: true, type: TransitRealtime.TranslatedString.Translation)
