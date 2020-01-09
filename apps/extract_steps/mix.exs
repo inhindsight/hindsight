@@ -29,7 +29,7 @@ defmodule Extract.Steps.MixProject do
     [
       {:ok, in_umbrella: true},
       {:definition, in_umbrella: true},
-      {:tesla, github: "teamon/tesla", branch: "master"},
+      {:tesla, "~> 1.3"},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end

@@ -10,8 +10,7 @@ defmodule DataTest do
       where [
         [:field, :value],
         [:version, -1],
-        [:gather_id, ""],
-        [:load_id, 9001],
+        [:extract_id, ""],
         [:payload, []]
       ]
     end

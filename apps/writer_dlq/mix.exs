@@ -24,9 +24,11 @@ defmodule WriterDlq.MixProject do
 
   defp deps do
     [
+      {:definition, in_umbrella: true},
       {:writer, in_umbrella: true},
       {:writer_kafka, in_umbrella: true},
-      {:mox, "~> 0.5.1", only: [:test]}
+      {:mox, "~> 0.5.1", only: [:test]},
+      {:checkov, "~> 1.0", only: [:test]}
     ]
   end
 

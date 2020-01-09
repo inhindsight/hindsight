@@ -5,8 +5,8 @@ defmodule Data.V1 do
   def s do
     schema(%Data{
       version: version(1),
-      gather_id: id(),
-      load_id: id(),
+      dataset_id: id(),
+      extract_id: id(),
       payload: schema(%{})
     })
   end
