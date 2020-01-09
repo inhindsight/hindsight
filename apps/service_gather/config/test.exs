@@ -1,6 +1,7 @@
 use Mix.Config
 
 config :service_gather,
+  kafka_endpoints: nil,
   brook: [
     driver: [
       module: Brook.Driver.Test,

@@ -1,5 +1,6 @@
 defmodule Writer.DLQ do
   @behaviour Writer
+  require Logger
 
   alias Writer.DLQ.DeadLetter
 
@@ -26,7 +27,12 @@ defmodule Writer.DLQ do
         |> Writer.DLQ.start_link()
       end
 
-      defdelegate child_spec(args), to: Writer.DLQ
+      def child_spec(args) do
+        %{
+          id: __MODULE__,
+          start: {__MODULE__, :start_link, [args]}
+        }
+      end
 
       defdelegate write(server, messages, opts \\ []), to: Writer.DLQ
 
@@ -47,7 +53,10 @@ defmodule Writer.DLQ do
 
   @impl Writer
   def child_spec(args) do
-    @writer.child_spec(args)
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [args]}
+    }
   end
 
   @impl Writer

@@ -24,7 +24,12 @@ defmodule Gather.Writer do
   end
 
   @impl Writer
-  defdelegate child_spec(args), to: @writer
+  def child_spec(args) do
+    %{
+      id: __MODULE__,
+      start: {__MODULE__, :start_link, [args]}
+    }
+  end
 
   @impl Writer
   def write(server, messages, _opts \\ []) do
