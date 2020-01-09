@@ -13,3 +13,9 @@ import Config
 #       abc: 123,
 #       foo: System.get_env("FOO", "bar:baz")
 #
+
+# SERVICE_GATHER
+
+config :service_gather,
+  app_name: "service_gather",
+  topic_prefix: "gather"
