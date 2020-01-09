@@ -1,5 +1,5 @@
 defmodule Gather.ExtractionTest do
-  use ExUnit.Case
+  use Gather.Case
   import Mox
 
   alias Gather.Extraction
