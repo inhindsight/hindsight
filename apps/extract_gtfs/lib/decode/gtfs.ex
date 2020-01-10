@@ -4,7 +4,7 @@ defmodule Decode.Gtfs do
   defimpl Extract.Step, for: Decode.Gtfs do
     import Extract.Steps.Context
 
-    def execute(%Decode.Gtfs{} = _step, context) do
+    def execute(%Decode.Gtfs{}, context) do
       source = fn opts ->
         opts = Keyword.put(opts, :read, :bytes)
 
