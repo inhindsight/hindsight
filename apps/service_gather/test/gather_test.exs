@@ -13,6 +13,14 @@ defmodule GatherTest do
   setup :verify_on_exit!
 
   setup do
+    on_exit(fn ->
+      __cleanup_supervisor__()
+    end)
+
+    :ok
+  end
+
+  setup do
     Brook.Test.clear_view_state(@instance, "extractions")
     [bypass: Bypass.open()]
   end

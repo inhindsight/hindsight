@@ -18,7 +18,7 @@ defmodule Http.GetTest do
     step = %Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
     {:ok, context} = Extract.Step.execute(step, Context.new())
 
-    assert ["hello"] == Enum.to_list(context.stream)
+    assert ["hello"] == Context.get_stream(context) |> Enum.to_list()
   end
 
   test "execute will replace variables in url", %{bypass: bypass} do
@@ -30,7 +30,7 @@ defmodule Http.GetTest do
     context = Context.new() |> Context.add_variable("id", "foo")
     {:ok, context} = Extract.Step.execute(step, context)
 
-    assert ["hello"] == Enum.to_list(context.stream)
+    assert ["hello"] == Context.get_stream(context) |> Enum.to_list()
   end
 
   test "execute will add headers to request", %{bypass: bypass} do
@@ -55,8 +55,9 @@ defmodule Http.GetTest do
     end)
 
     step = %Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
-    reason = "HTTP GET to http://localhost:#{bypass.port}/get-request returned a 404 status"
-    assert {:error, reason} == Extract.Step.execute(step, Context.new())
+
+    assert {:error, %Http.File.Downloader.InvalidStatusError{}} =
+             Extract.Step.execute(step, Context.new())
   end
 
   test "execute will return error tuple when error occurred during get" do
