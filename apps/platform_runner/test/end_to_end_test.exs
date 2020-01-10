@@ -33,9 +33,9 @@ defmodule PlatformRunner.EndToEndTest do
         )
 
       Gather.Application.instance()
-      |> Brook.Test.send(extract_start(), "e2e-csv", extract)
+      |> Brook.Event.send(extract_start(), "e2e-csv", extract)
 
-      assert_async debug: true do
+      assert_async debug: true, sleep: 500  do
         assert {:ok, _, messages} = Elsa.fetch(@kafka, "#{prefix}-e2e-csv-ds-name")
 
         assert [["a", "1"], ["b", "2"], ["c", "3"]] =
