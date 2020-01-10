@@ -8,20 +8,17 @@ defmodule Decode.Csv do
   defimpl Extract.Step, for: Decode.Csv do
     import Extract.Steps.Context
 
-    def execute(%Decode.Csv{} = step, %{stream: nil} = _context) do
-      message = "There is no stream available in the context."
-      {:error, Extract.InvalidContextError.exception(message: message, step: step)}
-    end
-
     def execute(%Decode.Csv{} = step, context) do
-      new_stream =
-        context.stream
-        |> Stream.flat_map(&String.split(&1, "\n"))
+      source = fn opts ->
+        get_stream(context, opts)
         |> Decode.Csv.Parser.parse_stream(skip_headers: step.skip_first_line)
         |> Stream.map(&Enum.zip(step.headers, &1))
         |> Stream.map(&Map.new/1)
+      end
 
-      {:ok, set_stream(context, new_stream)}
+      context
+      |> set_source(source)
+      |> Ok.ok()
     end
   end
 end

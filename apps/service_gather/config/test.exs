@@ -15,6 +15,9 @@ config :service_gather,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
+config :service_gather, Gather.Application,
+  init?: false
+
 config :service_gather, Gather.Writer,
   writer: WriterMock,
   dlq: DlqMock

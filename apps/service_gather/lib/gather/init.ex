@@ -5,7 +5,8 @@ defmodule Gather.Init do
   alias Gather.Extraction
 
   def start_link(args) do
-    GenServer.start_link(__MODULE__, args, name: __MODULE__)
+    name = Keyword.get(args, :name, __MODULE__)
+    GenServer.start_link(__MODULE__, args, name: name)
   end
 
   def init(_) do

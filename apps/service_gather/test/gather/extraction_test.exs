@@ -11,6 +11,11 @@ defmodule Gather.ExtractionTest do
 
   setup do
     Process.flag(:trap_exit, true)
+
+    on_exit(fn ->
+      __cleanup_supervisor__()
+    end)
+
     :ok
   end
 
