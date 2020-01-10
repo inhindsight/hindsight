@@ -11,7 +11,8 @@ defmodule PlatformRunner.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      test_paths: Mix.env() |> test_paths()
     ]
   end
 
@@ -26,7 +27,12 @@ defmodule PlatformRunner.MixProject do
   defp deps do
     [
       {:service_gather, in_umbrella: true},
-      {:divo, "~> 1.1"}
+      {:divo, "~> 1.1"},
+      {:assert_async, in_umbrella: true, only: [:integration]},
+      {:bypass, "~> 1.0", only: [:integration]},
     ]
   end
+
+  defp test_paths(:integration), do: ["test"]
+  defp test_paths(_), do: []
 end
