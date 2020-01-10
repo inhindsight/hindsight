@@ -4,7 +4,7 @@ defmodule Extract.Steps do
     steps
     |> parse_steps()
     |> Ok.reduce(Extract.Steps.Context.new(), &Extract.Step.execute/2)
-    |> Ok.map(fn c -> c.stream end)
+    |> Ok.map(&Extract.Steps.Context.get_stream/1)
   rescue
     e -> {:error, error_message(e)}
   end

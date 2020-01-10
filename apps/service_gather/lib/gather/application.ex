@@ -3,6 +3,8 @@ defmodule Gather.Application do
 
   use Application
 
+  @config Application.get_env(:service_gather, __MODULE__, [])
+
   def instance(), do: :gather_instance
 
   def start(_type, _args) do
@@ -10,12 +12,20 @@ defmodule Gather.Application do
       [
         Gather.Extraction.Supervisor,
         dlq(),
-        brook()
+        brook(),
+        init()
       ]
       |> List.flatten()
 
     opts = [strategy: :one_for_one, name: Gather.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp init() do
+    case Keyword.get(@config, :init?, true) do
+      true -> Gather.Init
+      false -> []
+    end
   end
 
   defp dlq() do

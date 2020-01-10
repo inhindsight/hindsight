@@ -33,7 +33,7 @@ defmodule Http.PostTest do
 
     {:ok, context} = Extract.Step.execute(step, context)
 
-    assert ["goodbye"] == Enum.to_list(context.stream)
+    assert ["goodbye"] == Context.get_stream(context) |> Enum.to_list()
   end
 
   test "execute will return error tuple for any status != 200", %{bypass: bypass} do
@@ -42,8 +42,9 @@ defmodule Http.PostTest do
     end)
 
     step = %Http.Post{url: "http://localhost:#{bypass.port}/post-request", body: "hello"}
-    reason = "HTTP POST to http://localhost:#{bypass.port}/post-request returned a 404 status"
-    assert {:error, reason} == Extract.Step.execute(step, Context.new())
+
+    assert {:error, %Http.File.Downloader.InvalidStatusError{}} =
+             Extract.Step.execute(step, Context.new())
   end
 
   test "execute will return error tuple when error occurred during get" do

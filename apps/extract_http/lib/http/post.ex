@@ -7,32 +7,30 @@ defmodule Http.Post do
   defimpl Extract.Step, for: Http.Post do
     use Tesla
     import Extract.Steps.Context
-    adapter Tesla.Adapter.Mint, body_as: :stream
-
-    plug Tesla.Middleware.FollowRedirects, max_redirects: 3
-    plug Tesla.Middleware.Logger, log_level: :debug
+    alias Http.File.Downloader
 
     def execute(%Http.Post{} = step, context) do
       url = apply_variables(context, step.url)
       body = apply_variables(context, step.body)
       headers = replace_variables_in_headers(context, step.headers)
 
-      case post(url, body, headers: headers) do
-        {:ok, %Tesla.Env{status: 200} = response} ->
-          set_response(context, response)
-          |> set_stream(response.body)
-          |> Ok.ok()
-
-        {:ok, response} ->
-          {:error, invalid_status_message(url, response)}
-
-        {:error, reason} ->
-          {:error, reason}
+      with {:ok, temp_path} <- Temp.path([]),
+           {:ok, response} <-
+             Downloader.download(url, headers: headers, method: "POST", body: body, to: temp_path) do
+        context
+        |> set_source(&stream_from_file(response, &1))
+        |> Ok.ok()
       end
     end
 
-    defp invalid_status_message(url, %Tesla.Env{status: status}) do
-      "HTTP POST to #{url} returned a #{status} status"
+    defp stream_from_file(response, opts) do
+      response.destination
+      |> File.stream!([], lines_or_bytes(opts))
+      |> Stream.transform(
+        fn -> :ok end,
+        fn line, acc -> {[line], acc} end,
+        fn _acc -> File.rm!(response.destination) end
+      )
     end
 
     defp replace_variables_in_headers(context, headers) do
