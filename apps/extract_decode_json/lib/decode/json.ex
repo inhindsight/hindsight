@@ -4,16 +4,16 @@ defmodule Decode.Json do
   defimpl Extract.Step, for: Decode.Json do
     import Extract.Steps.Context
 
-    def execute(%Decode.Json{} = step, %{stream: nil} = _context) do
-      Extract.InvalidContextError.exception(message: "Invalid stream", step: step)
-      |> Ok.error()
-    end
-
     def execute(%Decode.Json{}, context) do
-      context.stream
-      |> Enum.join()
-      |> Jason.decode()
-      |> Ok.map(&set_stream(context, &1))
+      source = fn opts ->
+        get_stream(context, opts)
+        |> Enum.join()
+        |> Jason.decode!()
+      end
+
+      context
+      |> set_source(source)
+      |> Ok.ok()
     end
   end
 end

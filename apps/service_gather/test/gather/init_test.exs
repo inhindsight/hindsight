@@ -11,6 +11,14 @@ defmodule Gather.InitTest do
   setup :set_mox_global
   setup :verify_on_exit!
 
+  setup do
+    on_exit(fn ->
+      __cleanup_supervisor__()
+    end)
+
+    :ok
+  end
+
   test "should start any existing extractions" do
     test = self()
 
@@ -33,11 +41,11 @@ defmodule Gather.InitTest do
       Agent.start_link(fn -> :dummy end)
     end)
 
-    {:ok, pid} = Gather.Init.start_link([])
+    {:ok, pid} = Gather.Init.start_link([name: :init_test])
     on_exit(fn -> assert_down(pid) end)
 
     Enum.each(extracts, fn extract ->
-      assert_receive {:start_link, [extract: ^extract]}, 1_000
+      assert_receive {:start_link, [extract: ^extract]}, 5_000
     end)
   end
 
@@ -63,7 +71,7 @@ defmodule Gather.InitTest do
       Agent.start_link(fn -> :dummy end)
     end)
 
-    {:ok, pid} = Gather.Init.start_link([])
+    {:ok, pid} = Gather.Init.start_link([name: :init_test])
     on_exit(fn -> assert_down(pid) end)
 
     Enum.each(extracts, fn extract ->

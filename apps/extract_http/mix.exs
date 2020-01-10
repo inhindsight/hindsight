@@ -24,11 +24,12 @@ defmodule ExtractHttp.MixProject do
   defp deps do
     [
       {:extract_steps, in_umbrella: true},
-      {:tesla, "~> 1.3"},
       {:mint, "~> 1.0", override: true},
       {:castore, "~> 0.1.4"},
+      {:temp, "~> 0.4.7"},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:bypass, "~> 1.0", only: [:test]}
+      {:bypass, "~> 1.0", only: [:test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:test]},
     ]
   end
 end

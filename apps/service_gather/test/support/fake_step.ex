@@ -5,7 +5,13 @@ defmodule Fake.Step do
     import Extract.Steps.Context
 
     def execute(step, context) do
-      set_stream(context, step.values)
+
+      source = fn _ ->
+        step.values
+      end
+
+      context
+      |> set_source(source)
       |> Ok.ok()
     end
   end

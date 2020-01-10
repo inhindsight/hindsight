@@ -20,17 +20,18 @@ defmodule Test.Steps do
   end
 
   defmodule SetStream do
-    defstruct [:stream]
+    defstruct [:values]
 
     defimpl Extract.Step, for: SetStream do
       def execute(step, context) do
-        stream =
-          case step.stream do
+        source = fn _opts ->
+          case step.values do
             nil -> context.response.body
             s -> s
           end
+        end
 
-        {:ok, Extract.Steps.Context.set_stream(context, stream)}
+        {:ok, Extract.Steps.Context.set_source(context, source)}
       end
     end
   end
@@ -39,9 +40,13 @@ defmodule Test.Steps do
     defstruct [:transform]
 
     defimpl Extract.Step, for: TransformStream do
+      alias Extract.Steps.Context
       def execute(step, context) do
-        new_stream = Stream.map(context.stream, step.transform)
-        {:ok, Extract.Steps.Context.set_stream(context, new_stream)}
+        source = fn opts ->
+          Context.get_stream(context, opts)
+          |> Stream.map(step.transform)
+        end
+        {:ok, Extract.Steps.Context.set_source(context, source)}
       end
     end
   end

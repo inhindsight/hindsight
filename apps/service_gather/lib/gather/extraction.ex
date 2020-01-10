@@ -7,7 +7,7 @@ defmodule Gather.Extraction do
 
   @writer Keyword.get(@config, :writer, Gather.Writer)
   @chunk_size Keyword.get(@config, :chunk_size, 100)
-  @max_tries Keyword.get(@config, :max_tries, 10)
+  @max_tries Keyword.get(@config, :max_tries, 10) |> IO.inspect(label: "max tries")
   @initial_delay Keyword.get(@config, :initial_delay, 500)
 
   def start_link(args) do
