@@ -4,7 +4,6 @@ defmodule Gather.Application do
   use Application
 
   @config Application.get_env(:service_gather, __MODULE__, [])
-  @init? Keyword.get(@config, :init?, true)
 
   def instance(), do: :gather_instance
 
@@ -23,7 +22,7 @@ defmodule Gather.Application do
   end
 
   defp init() do
-    case @init? do
+    case Keyword.get(@config, :init?, true) do
       true -> Gather.Init
       false -> []
     end
