@@ -1,5 +1,5 @@
 defmodule BroadcastWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :broadcast
+  use Phoenix.Endpoint, otp_app: :service_broadcast
 
   socket "/socket", BroadcastWeb.UserSocket,
     websocket: true,
@@ -11,7 +11,7 @@ defmodule BroadcastWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/",
-    from: :broadcast,
+    from: :service_broadcast,
     gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 
