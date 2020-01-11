@@ -8,3 +8,16 @@ config :service_broadcast, BroadcastWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :service_broadcast, Broadcast.Stream.Broadway,
+  broadway_config: [
+    producer: [
+      module: {Broadway.DummyProducer, []},
+      stages: 1
+    ],
+    processors: [
+      default: [
+        stages: 1
+      ]
+    ]
+  ]

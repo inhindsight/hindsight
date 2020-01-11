@@ -42,6 +42,7 @@ defmodule Broadcast.MixProject do
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       {:brook, "~> 0.4.9"},
+      {:off_broadway_kafka, "~> 0.5.0"},
       {:definition, in_umbrella: true},
       {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
