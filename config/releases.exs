@@ -14,6 +14,14 @@ import Config
 #       foo: System.get_env("FOO", "bar:baz")
 #
 
+# Configures Elixir's Logger
+config :logger, :console,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:request_id]
+
+# Use Jason for JSON parsing in Phoenix
+config :phoenix, :json_library, Jason
+
 # SERVICE_GATHER
 kafka_endpoints =
   System.get_env("KAFKA_ENDPOINTS", "localhost:9092")
@@ -46,3 +54,10 @@ config :service_gather,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
+
+# SERVICE BROADCAST
+config :broadcast, BroadcastWeb.Endpoint,
+  url: [host: "localhost"],
+  secret_key_base: "d2cgmPzW+bqVjs99FUeKJ0kOm0w8EZBvLS7UBM8EHi6uBKgW2oBAa9pR2KSu8Z2W",
+  render_errors: [view: BroadcastWeb.ErrorView, accepts: ~w(json)],
+  pubsub: [name: Broadcast.PubSub, adapter: Phoenix.PubSub.PG2]

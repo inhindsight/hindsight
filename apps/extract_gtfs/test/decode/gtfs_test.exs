@@ -16,5 +16,4 @@ defmodule Decode.GtfsTest do
     {:ok, context} = Extract.Step.execute(%Decode.Gtfs{}, context)
     assert expected.entity == Context.get_stream(context)
   end
-
 end

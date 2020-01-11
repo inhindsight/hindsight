@@ -29,7 +29,7 @@ defmodule ExtractHttp.MixProject do
       {:temp, "~> 0.4.7"},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:bypass, "~> 1.0", only: [:test]},
-      {:placebo, "~> 2.0.0-rc.2", only: [:test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:test]}
     ]
   end
 end

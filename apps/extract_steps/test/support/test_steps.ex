@@ -41,11 +41,13 @@ defmodule Test.Steps do
 
     defimpl Extract.Step, for: TransformStream do
       alias Extract.Steps.Context
+
       def execute(step, context) do
         source = fn opts ->
           Context.get_stream(context, opts)
           |> Stream.map(step.transform)
         end
+
         {:ok, Extract.Steps.Context.set_source(context, source)}
       end
     end

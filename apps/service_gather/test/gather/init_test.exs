@@ -41,7 +41,7 @@ defmodule Gather.InitTest do
       Agent.start_link(fn -> :dummy end)
     end)
 
-    {:ok, pid} = Gather.Init.start_link([name: :init_test])
+    {:ok, pid} = Gather.Init.start_link(name: :init_test)
     on_exit(fn -> assert_down(pid) end)
 
     Enum.each(extracts, fn extract ->
@@ -71,7 +71,7 @@ defmodule Gather.InitTest do
       Agent.start_link(fn -> :dummy end)
     end)
 
-    {:ok, pid} = Gather.Init.start_link([name: :init_test])
+    {:ok, pid} = Gather.Init.start_link(name: :init_test)
     on_exit(fn -> assert_down(pid) end)
 
     Enum.each(extracts, fn extract ->
