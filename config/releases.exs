@@ -61,3 +61,16 @@ config :service_broadcast, BroadcastWeb.Endpoint,
   secret_key_base: "d2cgmPzW+bqVjs99FUeKJ0kOm0w8EZBvLS7UBM8EHi6uBKgW2oBAa9pR2KSu8Z2W",
   render_errors: [view: BroadcastWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Broadcast.PubSub, adapter: Phoenix.PubSub.PG2]
+
+config :service_broadcast, Broadcast.Stream.Broadway,
+  broadway_config: [
+    producer: [
+      module: {Broadway.DummyProducer, []},
+      stages: 1
+    ],
+    processors: [
+      default: [
+        stages: 1
+      ]
+    ]
+  ]
