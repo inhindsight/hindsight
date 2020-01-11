@@ -14,7 +14,6 @@ defmodule Http.Get do
 
       with {:ok, temp_path} <- Temp.path([]),
            {:ok, response} <- download(temp_path, url, headers) do
-
         context
         |> set_source(&stream_from_file(response, &1))
         |> Ok.ok()
