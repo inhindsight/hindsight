@@ -56,7 +56,7 @@ config :service_gather,
   ]
 
 # SERVICE BROADCAST
-config :broadcast, BroadcastWeb.Endpoint,
+config :service_broadcast, BroadcastWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "d2cgmPzW+bqVjs99FUeKJ0kOm0w8EZBvLS7UBM8EHi6uBKgW2oBAa9pR2KSu8Z2W",
   render_errors: [view: BroadcastWeb.ErrorView, accepts: ~w(json)],
