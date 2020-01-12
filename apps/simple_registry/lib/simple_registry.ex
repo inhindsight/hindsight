@@ -2,18 +2,19 @@ defmodule SimpleRegistry do
   use GenServer
   require Logger
 
-
   defmacro __using__(opts) do
     registry = Keyword.fetch!(opts, :name)
     quote do
 
-      defdelegate start_link(init_arg), to: SimpleRegistry
+      def start_link(args \\ []) do
+        config = Keyword.put(args, :name, unquote(registry))
+        SimpleRegistry.start_link(config)
+      end
 
       def child_spec(init_arg) do
-        config = Keyword.put(init_arg, :name, unquote(registry))
         %{
           id: unquote(registry),
-          start: {__MODULE__, :start_link, [config]}
+          start: {__MODULE__, :start_link, []}
         }
       end
 
@@ -21,8 +22,16 @@ defmodule SimpleRegistry do
         SimpleRegistry.via(unquote(registry), name)
       end
 
+      def register_name(key, pid) do
+        SimpleRegistry.register_name({__MODULE__, key}, pid)
+      end
+
+      def whereis(key) do
+        SimpleRegistry.whereis_name({__MODULE__, key})
+      end
+
       def registered_processes() do
-        SimpleRegistry.select(__MODULE__, [{{:"$1", :_, :_}, [], [:"$1"]}])
+        SimpleRegistry.registered_processes(unquote(registry))
       end
 
     end
