@@ -1,43 +1,16 @@
 defmodule Gather.Init do
-  use GenServer
-  use Retry
+  use Initializer,
+    name: __MODULE__,
+    supervisor: Gather.Extraction.Supervisor
 
   alias Gather.Extraction
 
-  def start_link(args) do
-    name = Keyword.get(args, :name, __MODULE__)
-    GenServer.start_link(__MODULE__, args, name: name)
-  end
-
-  def init(_) do
-    supervisor_ref = setup_monitor()
-    start_extractions()
-    {:ok, %{supervisor_ref: supervisor_ref}}
-  end
-
-  @dialyzer {:nowarn_function, handle_info: 2}
-  def handle_info({:DOWN, supervisor_ref, _, _, _}, %{supervisor_ref: supervisor_ref} = state) do
-    retry with: constant_backoff(100) |> Stream.take(10), atoms: [false] do
-      Process.whereis(Extraction.Supervisor) != nil
-    after
-      _ ->
-        supervisor_ref = setup_monitor()
-        start_extractions()
-        {:noreply, Map.put(state, :supervisor_ref, supervisor_ref)}
-    else
-      _ -> {:stop, "Supervisor not available", state}
-    end
-  end
-
-  defp setup_monitor() do
-    Process.whereis(Extraction.Supervisor)
-    |> Process.monitor()
-  end
-
-  defp start_extractions() do
+  def on_start(state) do
     Extraction.Store.get_all!()
     |> Enum.each(fn extract ->
       Extraction.Supervisor.start_child({Extraction, extract: extract})
     end)
+
+    {:ok, state}
   end
 end
