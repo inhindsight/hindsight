@@ -46,6 +46,7 @@ defmodule Broadcast.MixProject do
       {:definition, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:simple_registry, in_umbrella: true},
+      {:initializer, in_umbrella: true},
       {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end

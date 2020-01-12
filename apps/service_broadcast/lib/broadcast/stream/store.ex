@@ -19,7 +19,7 @@ defmodule Broadcast.Stream.Store do
   end
 
   def get_all!() do
-    Brook.get_all!(@instance, @collection)
+    Brook.get_all_values!(@instance, @collection)
     |> Enum.map(&Map.get(&1, :load))
   end
 end
