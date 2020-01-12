@@ -42,6 +42,19 @@ defmodule Broadcast.Stream.BroadwayTest do
     assert_down(pid)
   end
 
+  test "registers itself under dataset_id and name" do
+    load = %Broadcast.Load{
+      id: "load-id",
+      dataset_id: "ds1",
+      name: "joey"
+    }
+
+    {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
+    assert pid == Broadcast.Stream.Registry.whereis(:ds1_joey)
+
+    assert_down(pid)
+  end
+
   defp assert_down(pid) do
     ref = Process.monitor(pid)
     Process.exit(pid, :normal)

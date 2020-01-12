@@ -5,10 +5,16 @@ defmodule Broadcast.Stream.Broadway do
   @broadway_config Keyword.fetch!(@config, :broadway_config)
 
   def start_link(args) do
-    %Broadcast.Load{id: id} = Keyword.fetch!(args, :load)
+    %Broadcast.Load{dataset_id: dataset_id, name: name} = Keyword.fetch!(args, :load)
 
-    config = Keyword.put(@broadway_config, :name, :"#{__MODULE__}-#{id}")
-    Broadway.start_link(__MODULE__, config)
+    process_name = :"#{dataset_id}_#{name}"
+
+    config = Keyword.put(@broadway_config, :name, process_name)
+
+    with {:ok, pid} <- Broadway.start_link(__MODULE__, config) do
+      Broadcast.Stream.Registry.register_name(process_name, pid)
+      {:ok, pid}
+    end
   end
 
   def handle_message(_processor, %Broadway.Message{data: data} = message, _context) do
@@ -16,9 +22,9 @@ defmodule Broadcast.Stream.Broadway do
       {:ok, decoded_value} ->
         BroadcastWeb.Endpoint.broadcast!("broadcast:#{data.topic}", "update", decoded_value)
         message
+
       {:error, reason} ->
         Broadway.Message.failed(message, reason)
     end
   end
-
 end

@@ -44,6 +44,8 @@ defmodule Broadcast.MixProject do
       {:brook, "~> 0.4.9"},
       {:off_broadway_kafka, "~> 0.5.0"},
       {:definition, in_umbrella: true},
+      {:definition_events, in_umbrella: true},
+      {:simple_registry, in_umbrella: true},
       {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
