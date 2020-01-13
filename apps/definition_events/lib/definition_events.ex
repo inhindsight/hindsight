@@ -10,13 +10,13 @@ defmodule Definition.Events do
     fun_name = type |> String.replace(":", "_") |> String.to_atom()
     defmacro unquote(fun_name)(), do: unquote(type)
 
-    fun_name = :"send_#{String.replace(type, ":", "_")}"
+    send_fun_name = :"send_#{String.replace(type, ":", "_")}"
 
-    def unquote(fun_name)(instance, author, %unquote(struct_module){} = data) do
+    def unquote(send_fun_name)(instance, author, %unquote(struct_module){} = data) do
       Brook.Event.send(instance, unquote(type), author, data)
     end
 
-    def unquote(fun_name)(_instance, _author, data) do
+    def unquote(send_fun_name)(_instance, _author, data) do
       raise "Invalid event being created: type = #{unquote(type)}, data = #{inspect(data)}"
     end
   end)

@@ -32,7 +32,7 @@ defmodule PlatformRunner.EndToEndTest do
         )
 
       Gather.Application.instance()
-      |> Brook.Event.send(extract_start(), "e2e-csv", extract)
+      |> Definition.Events.send_extract_start("e2e-csv", extract)
 
       assert_async debug: true, sleep: 500 do
         assert {:ok, _, messages} = Elsa.fetch(@kafka, "e2e-csv-topic")
@@ -67,7 +67,7 @@ defmodule PlatformRunner.EndToEndTest do
         )
 
       Gather.Application.instance()
-      |> Brook.Event.send(extract_start(), "e2e-json", extract)
+      |> Definition.Events.send_extract_start("e2e-json", extract)
 
       assert_async debug: true, sleep: 500 do
         assert {:ok, _, [message]} = Elsa.fetch(@kafka, "e2e-json-topic")
