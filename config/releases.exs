@@ -88,7 +88,18 @@ config :service_broadcast,
 config :service_broadcast, Broadcast.Stream.Broadway,
   broadway_config: [
     producer: [
-      module: {Broadway.DummyProducer, []},
+      module:
+        {OffBroadway.Kafka.Producer,
+         [
+           endpoints: kafka_endpoints,
+           group_consumer: [
+             config: [
+               begin_offset: :earliest,
+               prefetch_count: 0,
+               prefetch_bytes: 2_097_152
+             ]
+           ]
+         ]},
       stages: 1
     ],
     processors: [
