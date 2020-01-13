@@ -21,7 +21,7 @@ defmodule Decode.JsonTest do
       %{"name" => "Joe", "age" => 21},
       %{"name" => "Bobby", "age" => 62}
     ]
+
     assert Context.get_stream(context) == expected
   end
-
 end

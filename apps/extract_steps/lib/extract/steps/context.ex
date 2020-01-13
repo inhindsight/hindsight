@@ -1,8 +1,8 @@
 defmodule Extract.Steps.Context do
-  @type source_opts ::  [
-    read: :lines | :bytes,
-    byte_count: integer()
-  ]
+  @type source_opts :: [
+          read: :lines | :bytes,
+          byte_count: integer()
+        ]
 
   @type source :: (source_opts -> Enumerable.t())
 
