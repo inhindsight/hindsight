@@ -76,4 +76,5 @@ jobs:
           mix deps.get
       - name: Run dialyzer
         run: |
+          mix format --check-formatted
           mix dialyzer

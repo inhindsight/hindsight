@@ -34,7 +34,7 @@ defmodule PlatformRunner.EndToEndTest do
       Gather.Application.instance()
       |> Brook.Event.send(extract_start(), "e2e-csv", extract)
 
-      assert_async debug: true, sleep: 500  do
+      assert_async debug: true, sleep: 500 do
         assert {:ok, _, messages} = Elsa.fetch(@kafka, "#{pre}-e2e-csv-ds-name")
 
         assert [["a", "1"], ["b", "2"], ["c", "3"]] =
@@ -46,22 +46,24 @@ defmodule PlatformRunner.EndToEndTest do
 
   describe "JSON" do
     test "can be gathered", %{bypass: bp, prefix: pre} do
-      data = ~s|{"name":"LeBron","number":23,"teammates":[{"name":"Kyrie","number":2},{"name":"Kevin","number":0}]}|
+      data =
+        ~s|{"name":"LeBron","number":23,"teammates":[{"name":"Kyrie","number":2},{"name":"Kevin","number":0}]}|
 
       Bypass.expect(bp, "GET", "/json", fn conn ->
         Plug.Conn.resp(conn, 200, "[#{data}]")
       end)
 
-      extract = Extract.new!(
-        version: 1,
-        id: "e2e-json-extract-1",
-        dataset_id: "e2e-json-ds",
-        name: "name",
-        steps: [
-          %{"step" => "Http.Get", "url" => "http://localhost:#{bp.port}/json"},
-          %{"step" => "Decode.Json"}
-        ]
-      )
+      extract =
+        Extract.new!(
+          version: 1,
+          id: "e2e-json-extract-1",
+          dataset_id: "e2e-json-ds",
+          name: "name",
+          steps: [
+            %{"step" => "Http.Get", "url" => "http://localhost:#{bp.port}/json"},
+            %{"step" => "Decode.Json"}
+          ]
+        )
 
       Gather.Application.instance()
       |> Brook.Event.send(extract_start(), "e2e-json", extract)
