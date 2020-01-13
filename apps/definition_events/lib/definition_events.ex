@@ -1,9 +1,23 @@
 defmodule Definition.Events do
-  defmacro extract_start(), do: "extract:start"
+  @events [
+    {"extract:start", Extract},
+    {"extract:end", Extract},
+    {"load:broadcast:start", Load.Broadcast},
+    {"load:broadcast:end", Load.Broadcast}
+  ]
 
-  defmacro extract_end(), do: "extract:end"
+  Enum.map(@events, fn {type, struct_module} ->
+    fun_name = type |> String.replace(":", "_") |> String.to_atom()
+    defmacro unquote(fun_name)(), do: unquote(type)
 
-  defmacro load_stream_start(), do: "load:stream:start"
+    fun_name = :"send_#{String.replace(type, ":", "_")}"
 
-  defmacro load_stream_end(), do: "load:stream:end"
+    def unquote(fun_name)(instance, author, %unquote(struct_module){} = data) do
+      Brook.Event.send(instance, unquote(type), author, data)
+    end
+
+    def unquote(fun_name)(_instance, _author, data) do
+      raise "Invalid event being created: type = #{unquote(type)}, data = #{inspect(data)}"
+    end
+  end)
 end
