@@ -5,7 +5,6 @@ defmodule Fake.Step do
     import Extract.Steps.Context
 
     def execute(step, context) do
-
       source = fn _ ->
         step.values
       end

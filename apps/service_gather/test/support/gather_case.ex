@@ -18,7 +18,9 @@ defmodule Gather.Case do
 
         refs = Enum.map(child_pids, &Process.monitor/1)
 
-        Enum.each(child_pids, &Process.exit(&1, :kill))
+        Enum.each(child_pids, fn pid ->
+          DynamicSupervisor.terminate_child(Gather.Extraction.Supervisor, pid)
+        end)
 
         Enum.each(refs, fn ref ->
           assert_receive {:DOWN, ^ref, _, _, _}, 1_000

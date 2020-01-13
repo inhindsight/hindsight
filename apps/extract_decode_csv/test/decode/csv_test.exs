@@ -15,6 +15,7 @@ defmodule Decode.CsvTest do
     {:ok, context} = Extract.Step.execute(step, context)
 
     stream = Context.get_stream(context) |> Enum.to_list()
+
     assert stream == [
              %{"name" => "brian", "age" => "21"},
              %{"name" => "rick", "age" => "34"},
@@ -22,5 +23,4 @@ defmodule Decode.CsvTest do
              %{"name" => "greg", "age" => "89"}
            ]
   end
-
 end
