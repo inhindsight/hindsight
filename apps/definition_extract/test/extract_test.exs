@@ -13,7 +13,9 @@ defmodule ExtractTest do
         [:dataset_id, 2001],
         [:steps, 1],
         [:name, nil],
-        [:name, ""]
+        [:name, ""],
+        [:destination, nil],
+        [:destination, ""]
       ]
     end
   end

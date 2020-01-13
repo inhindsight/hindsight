@@ -27,8 +27,20 @@ defmodule Gather.InitTest do
     ]
 
     extracts = [
-      Extract.new!(id: "ex1", dataset_id: "init_ds1", name: "n1", steps: steps),
-      Extract.new!(id: "ex2", dataset_id: "init_ds2", name: "n2", steps: steps)
+      Extract.new!(
+        id: "ex1",
+        dataset_id: "init_ds1",
+        name: "n1",
+        steps: steps,
+        destination: "topic1"
+      ),
+      Extract.new!(
+        id: "ex2",
+        dataset_id: "init_ds2",
+        name: "n2",
+        steps: steps,
+        destination: "topic2"
+      )
     ]
 
     Brook.Test.with_event(@instance, fn ->

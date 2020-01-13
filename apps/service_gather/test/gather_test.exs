@@ -49,6 +49,7 @@ defmodule GatherTest do
         id: "extract-id-1",
         dataset_id: "test-ds1",
         name: "Johnny",
+        destination: "topic-1",
         steps: [
           %{
             "step" => "Http.Get",
@@ -79,6 +80,7 @@ defmodule GatherTest do
         id: "extract-45",
         dataset_id: "ds45",
         name: "get_some_data",
+        destination: "topic1",
         steps: []
       )
 
