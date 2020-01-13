@@ -38,6 +38,23 @@ jobs:
       - name: Run integration tests
         run: |
           mix test.int
+  e2e:
+    name: End to End Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-elixir@v1.2.0
+        with:
+          otp-version: 22.2
+          elixir-version: 1.9.4
+      - name: Get dependencies
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
+      - name: Run e2e tests
+        run: |
+          mix test.e2e
   static:
     name: Static Analysis
     runs-on: ubuntu-latest
