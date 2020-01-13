@@ -32,7 +32,6 @@ kafka_endpoints =
 
 config :service_gather,
   app_name: "service_gather",
-  topic_prefix: "gather",
   kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [

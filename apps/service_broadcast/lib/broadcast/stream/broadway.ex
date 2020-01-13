@@ -34,6 +34,7 @@ defmodule Broadcast.Stream.Broadway do
 
   defp setup_config(load) do
     name = name(load)
+
     Keyword.put(@broadway_config, :name, name)
     |> Keyword.update!(:producer, &update_producer(name, &1))
   end

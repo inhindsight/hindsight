@@ -8,6 +8,7 @@ defmodule Extract.V1 do
       id: id(),
       dataset_id: id(),
       name: required_string(),
+      destination: required_string(),
       steps: spec(is_list())
     })
   end
