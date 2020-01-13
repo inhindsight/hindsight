@@ -9,6 +9,7 @@ defmodule Decode.Json do
         get_stream(context, opts)
         |> Enum.join()
         |> Jason.decode!()
+        |> List.wrap()
       end
 
       context
