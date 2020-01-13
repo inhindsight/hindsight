@@ -5,13 +5,14 @@ defmodule Broadcast.Stream.Broadway do
   @broadway_config Keyword.fetch!(@config, :broadway_config)
 
   def start_link(args) do
-    %Broadcast.Load{dataset_id: dataset_id, name: name} = Keyword.fetch!(args, :load)
+    %Broadcast.Load{} = load = Keyword.fetch!(args, :load)
 
-    process_name = :"#{dataset_id}_#{name}"
-    config = Keyword.put(@broadway_config, :name, process_name)
+    config = setup_config(load)
 
     with {:ok, pid} <- Broadway.start_link(__MODULE__, config) do
-      Broadcast.Stream.Registry.register_name(process_name, pid)
+      name(load)
+      |> Broadcast.Stream.Registry.register_name(pid)
+
       {:ok, pid}
     end
   end
@@ -25,5 +26,31 @@ defmodule Broadcast.Stream.Broadway do
       {:error, reason} ->
         Broadway.Message.failed(message, reason)
     end
+  end
+
+  defp name(%Broadcast.Load{dataset_id: dataset_id, name: name}) do
+    :"#{dataset_id}_#{name}"
+  end
+
+  defp setup_config(load) do
+    name = name(load)
+    Keyword.put(@broadway_config, :name, name)
+    |> Keyword.update!(:producer, &update_producer(name, &1))
+  end
+
+  defp update_producer(name, producer_config) do
+    producer_config
+    |> Keyword.update!(:module, fn {module, config} ->
+      config =
+        config
+        |> Keyword.put(:connection, :"connection_#{name}")
+        |> Keyword.update(:group_consumer, [], fn group_consumer ->
+          group_consumer
+          |> Keyword.put(:group, "group-#{name}")
+          |> Keyword.put(:topics, ["topic-#{name}"])
+        end)
+
+      {module, config}
+    end)
   end
 end
