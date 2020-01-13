@@ -5,19 +5,18 @@ defmodule Gather.Writer do
 
   @writer Keyword.get(@config, :writer, Writer.Kafka.Topic)
   @dlq Keyword.get(@config, :dlq, Gather.DLQ)
-  @topic_prefix Application.fetch_env!(:service_gather, :topic_prefix)
 
   alias Writer.DLQ.DeadLetter
   require Logger
 
   @impl Writer
   def start_link(args) do
-    %Extract{dataset_id: dataset_id, name: name} = Keyword.fetch!(args, :extract)
+    %Extract{destination: destination} = Keyword.fetch!(args, :extract)
 
     writer_args = [
       endpoints: Application.fetch_env!(:service_gather, :kafka_endpoints),
       name: Keyword.get(args, :name, nil),
-      topic: "#{@topic_prefix}-#{dataset_id}-#{name}"
+      topic: destination
     ]
 
     @writer.start_link(writer_args)

@@ -2,15 +2,17 @@ defmodule Broadcast.Stream.BroadwayTest do
   use BroadcastWeb.ChannelCase
 
   test "sends message to channel" do
-    load = %Load.Broadcast{
+    load = Load.Broadcast.new!(
       id: "load-1",
       dataset_id: "ds1",
-      name: "fake-ds"
-    }
+      name: "fake-ds",
+      source: "topic-1",
+      destination: "channel-1"
+    )
 
     {:ok, _, socket} =
       socket(BroadcastWeb.UserSocket, %{}, %{})
-      |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:topic-1", %{})
+      |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:channel-1", %{})
 
     {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
 
@@ -26,11 +28,13 @@ defmodule Broadcast.Stream.BroadwayTest do
   end
 
   test "fails message if unable to decode" do
-    load = %Load.Broadcast{
+    load = Load.Broadcast.new!(
       id: "load-1",
       dataset_id: "ds1",
-      name: "fake-ds"
-    }
+      name: "fake-ds",
+      source: "topic-2",
+      destination: "channel-2"
+    )
 
     {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
 
@@ -43,15 +47,17 @@ defmodule Broadcast.Stream.BroadwayTest do
     assert_down(pid)
   end
 
-  test "registers itself under dataset_id and name" do
-    load = %Load.Broadcast{
+  test "registers itself under under source" do
+    load = Load.Broadcast.new!(
       id: "load-id",
       dataset_id: "ds1",
-      name: "joey"
-    }
+      name: "joey",
+      source: "topic-3",
+      destination: "channel-3"
+    )
 
     {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
-    assert pid == Broadcast.Stream.Registry.whereis(:ds1_joey)
+    assert pid == Broadcast.Stream.Registry.whereis(:"topic-3")
 
     assert_down(pid)
   end

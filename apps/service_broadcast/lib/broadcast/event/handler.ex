@@ -10,7 +10,7 @@ defmodule Broadcast.Event.Handler do
   end
 
   def handle_event(%Brook.Event{type: load_stream_end(), data: %Load.Broadcast{} = load}) do
-    case Broadcast.Stream.Registry.whereis(:"#{load.dataset_id}_#{load.name}") do
+    case Broadcast.Stream.Registry.whereis(:"#{load.source}") do
       :undefined ->
         :ok
 
