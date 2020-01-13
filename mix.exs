@@ -22,7 +22,8 @@ defmodule Doti.MixProject do
   defp aliases() do
     [
       "test.unit": "test --exclude integration",
-      "test.int": "test --only integration"
+      "test.int": "test --only integration",
+      "test.e2e": "cmd --app platform_runner mix test.integration --color"
     ]
   end
 end

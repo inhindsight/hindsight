@@ -7,13 +7,14 @@ defmodule BroadcastTest do
   @instance Broadcast.Application.instance()
 
   test "sending #{load_broadcast_start()} will stream data to channel" do
-    load = Load.Broadcast.new!(
-      id: "load-1",
-      dataset_id: "ds1",
-      name: "intersections",
-      source: "topic-intersections",
-      destination: "ds1_intersections"
-    )
+    load =
+      Load.Broadcast.new!(
+        id: "load-1",
+        dataset_id: "ds1",
+        name: "intersections",
+        source: "topic-intersections",
+        destination: "ds1_intersections"
+      )
 
     {:ok, _, socket} =
       socket(BroadcastWeb.UserSocket, %{}, %{})
