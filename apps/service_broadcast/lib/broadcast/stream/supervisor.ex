@@ -10,7 +10,7 @@ defmodule Broadcast.Stream.Supervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  @spec start_child(Supervisor.child_spec()) :: DynamicSupervisor.on_start_child()
+  @spec start_child(Supervisor.child_spec() | {module, arg :: term}) :: DynamicSupervisor.on_start_child()
   def start_child(child_spec) do
     DynamicSupervisor.start_child(__MODULE__, child_spec)
   end
