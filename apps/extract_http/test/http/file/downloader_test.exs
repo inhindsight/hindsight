@@ -6,12 +6,11 @@ defmodule Http.File.DownloaderTest do
   alias Http.File.Downloader
 
   setup do
+    on_exit(fn -> File.rm("test.output") end)
     [bypass: Bypass.open()]
   end
 
   test "downloads the file correctly", %{bypass: bypass} do
-    on_exit(fn -> File.rm("test.output") end)
-
     Bypass.stub(bypass, "GET", "/file/to/download", fn conn ->
       conn = Conn.send_chunked(conn, 200)
 
@@ -34,8 +33,6 @@ defmodule Http.File.DownloaderTest do
   end
 
   test "downloads file correctly with http post", %{bypass: bypass} do
-    on_exit(fn -> File.rm!("test.output") end)
-
     Bypass.stub(bypass, "POST", "/file/to/download", fn conn ->
       {:ok, body, conn} = Conn.read_body(conn)
       assert body == "This is the body!"
@@ -64,7 +61,6 @@ defmodule Http.File.DownloaderTest do
   end
 
   test "raises an error when unable to connect", %{bypass: bypass} do
-    on_exit(fn -> File.rm("fake.file") end)
     Bypass.down(bypass)
 
     assert {:error, %Mint.TransportError{}} =
@@ -75,8 +71,6 @@ defmodule Http.File.DownloaderTest do
 
   @tag capture_log: true
   test "raises an error when request returns a non 200 status code", %{bypass: bypass} do
-    on_exit(fn -> File.rm("test.output") end)
-
     Bypass.expect(bypass, fn conn ->
       Conn.send_resp(conn, 404, "Not Found")
     end)
@@ -108,7 +102,6 @@ defmodule Http.File.DownloaderTest do
   end
 
   test "raises an error when processing a stream message", %{bypass: bypass} do
-    on_exit(fn -> File.rm("test.output") end)
     allow(Mint.HTTP.connect(any(), any(), any(), any()), return: {:ok, :connection})
 
     allow(Mint.HTTP.request(:connection, any(), any(), any(), any()),
@@ -131,8 +124,6 @@ defmodule Http.File.DownloaderTest do
   end
 
   test "handles 301 redirects", %{bypass: bypass} do
-    on_exit(fn -> File.rm("test.output") end)
-
     Bypass.stub(bypass, "GET", "/some/file.csv", fn conn ->
       conn
       |> Conn.put_resp_header("location", "http://localhost:#{bypass.port}/some/other/file.csv")
@@ -149,8 +140,6 @@ defmodule Http.File.DownloaderTest do
   end
 
   test "handles 302 redirects", %{bypass: bypass} do
-    on_exit(fn -> File.rm("test.output") end)
-
     Bypass.stub(bypass, "GET", "/some/file.csv", fn conn ->
       conn
       |> Conn.put_resp_header("location", "http://localhost:#{bypass.port}/some/other/file.csv")
