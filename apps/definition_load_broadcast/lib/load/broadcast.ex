@@ -7,13 +7,17 @@ defmodule Load.Broadcast do
           version: integer,
           id: uuid,
           dataset_id: uuid,
-          name: String.t()
+          name: String.t(),
+          source: String.t(),
+          destination: String.t()
         }
 
   defstruct version: 1,
             id: nil,
             dataset_id: nil,
-            name: nil
+            name: nil,
+            source: nil,
+            destination: nil
 end
 
 defmodule Load.Broadcast.V1 do
@@ -25,7 +29,9 @@ defmodule Load.Broadcast.V1 do
       version: version(1),
       id: id(),
       dataset_id: id(),
-      name: required_string()
+      name: required_string(),
+      source: required_string(),
+      destination: required_string()
     })
   end
 end

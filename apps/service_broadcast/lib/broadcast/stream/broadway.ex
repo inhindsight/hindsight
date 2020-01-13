@@ -10,17 +10,17 @@ defmodule Broadcast.Stream.Broadway do
     config = setup_config(load)
 
     with {:ok, pid} <- Broadway.start_link(__MODULE__, config) do
-      name(load)
+      :"#{load.source}"
       |> Broadcast.Stream.Registry.register_name(pid)
 
       {:ok, pid}
     end
   end
 
-  def handle_message(_processor, %Broadway.Message{data: data} = message, _context) do
+  def handle_message(_processor, %Broadway.Message{data: data} = message, %{load: load}) do
     case Jason.decode(data.value) do
       {:ok, decoded_value} ->
-        BroadcastWeb.Endpoint.broadcast!("broadcast:#{data.topic}", "update", decoded_value)
+        BroadcastWeb.Endpoint.broadcast!("broadcast:#{load.destination}", "update", decoded_value)
         message
 
       {:error, reason} ->
@@ -28,27 +28,24 @@ defmodule Broadcast.Stream.Broadway do
     end
   end
 
-  defp name(%Load.Broadcast{dataset_id: dataset_id, name: name}) do
-    :"#{dataset_id}_#{name}"
-  end
-
   defp setup_config(load) do
-    name = name(load)
-
-    Keyword.put(@broadway_config, :name, name)
-    |> Keyword.update!(:producer, &update_producer(name, &1))
+    Keyword.put(@broadway_config, :name, :"broadway_#{load.source}")
+    |> Keyword.update!(:producer, &update_producer(load, &1))
+    |> Keyword.put(:context, %{
+      load: load
+    })
   end
 
-  defp update_producer(name, producer_config) do
+  defp update_producer(load, producer_config) do
     producer_config
     |> Keyword.update!(:module, fn {module, config} ->
       config =
         config
-        |> Keyword.put(:connection, :"connection_#{name}")
+        |> Keyword.put(:connection, :"connection_#{load.source}")
         |> Keyword.update(:group_consumer, [], fn group_consumer ->
           group_consumer
-          |> Keyword.put(:group, "group-#{name}")
-          |> Keyword.put(:topics, ["topic-#{name}"])
+          |> Keyword.put(:group, "group-#{load.source}")
+          |> Keyword.put(:topics, [load.source])
         end)
 
       {module, config}

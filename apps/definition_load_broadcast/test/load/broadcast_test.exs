@@ -14,7 +14,11 @@ defmodule Load.BroadcastTest do
         [:id, nil],
         [:dataset_id, ""],
         [:dataset_id, nil],
-        [:name, nil]
+        [:name, nil],
+        [:source, nil],
+        [:source, ""],
+        [:destination, nil],
+        [:destination, ""]
       ]
     end
   end

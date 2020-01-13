@@ -11,8 +11,20 @@ defmodule Broadcast.InitTest do
 
   test "will start all streams in store" do
     loads = [
-      %Load.Broadcast{id: "load1", dataset_id: "ds1", name: "one"},
-      %Load.Broadcast{id: "load2", dataset_id: "ds2", name: "two"}
+      Load.Broadcast.new!(
+        id: "load1",
+        dataset_id: "ds1",
+        name: "one",
+        source: "s1",
+        destination: "d1"
+      ),
+      Load.Broadcast.new!(
+        id: "load2",
+        dataset_id: "ds2",
+        name: "two",
+        source: "s2",
+        destination: "d2"
+      )
     ]
 
     Brook.Test.with_event(@instance, fn ->
