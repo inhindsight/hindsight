@@ -2,11 +2,11 @@ defmodule BroadcastTest do
   use BroadcastWeb.ChannelCase
   import AssertAsync
 
-  import Definition.Events, only: [load_stream_start: 0, load_stream_end: 0]
+  import Definition.Events, only: [load_broadcast_start: 0, load_broadcast_end: 0]
 
   @instance Broadcast.Application.instance()
 
-  test "sending #{load_stream_start()} will stream data to channel" do
+  test "sending #{load_broadcast_start()} will stream data to channel" do
     load = Load.Broadcast.new!(
       id: "load-1",
       dataset_id: "ds1",
@@ -19,7 +19,7 @@ defmodule BroadcastTest do
       socket(BroadcastWeb.UserSocket, %{}, %{})
       |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:ds1_intersections", %{})
 
-    Brook.Test.send(@instance, load_stream_start(), "testing", load)
+    Brook.Test.send(@instance, load_broadcast_start(), "testing", load)
 
     assert_async do
       :undefined != Broadcast.Stream.Registry.whereis(:"topic-intersections")
@@ -34,7 +34,7 @@ defmodule BroadcastTest do
     assert_push "update", %{"one" => 1, "two" => 2}
     assert load == Broadcast.Stream.Store.get!("load-1")
 
-    Brook.Test.send(@instance, load_stream_end(), "testing", load)
+    Brook.Test.send(@instance, load_broadcast_end(), "testing", load)
 
     assert_async do
       assert Process.alive?(broadway_pid) == false
