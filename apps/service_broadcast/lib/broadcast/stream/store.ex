@@ -1,5 +1,4 @@
 defmodule Broadcast.Stream.Store do
-
   @instance Broadcast.Application.instance()
   @collection "streams"
 

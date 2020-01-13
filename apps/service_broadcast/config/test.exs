@@ -24,8 +24,7 @@ config :service_broadcast,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_broadcast, Broadcast.Application,
-  init?: false
+config :service_broadcast, Broadcast.Application, init?: false
 
 config :service_broadcast, Broadcast.Stream.Broadway,
   broadway_config: [

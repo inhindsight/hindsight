@@ -62,6 +62,29 @@ config :service_broadcast, BroadcastWeb.Endpoint,
   render_errors: [view: BroadcastWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Broadcast.PubSub, adapter: Phoenix.PubSub.PG2]
 
+config :service_broadcast,
+  kafka_endpoints: kafka_endpoints,
+  brook: [
+    driver: [
+      module: Brook.Driver.Kafka,
+      init_arg: [
+        endpoints: kafka_endpoints,
+        topic: "event-stream",
+        group: "broadcast-event-stream",
+        consumer_config: [
+          begin_offset: :earliest,
+          offset_reset_policy: :reset_to_earliest
+        ]
+      ]
+    ],
+    handlers: [Broadcast.Event.Handler],
+    storage: [
+      module: Brook.Storage.Ets,
+      init_arg: []
+    ],
+    dispatcher: Brook.Dispatcher.Noop
+  ]
+
 config :service_broadcast, Broadcast.Stream.Broadway,
   broadway_config: [
     producer: [

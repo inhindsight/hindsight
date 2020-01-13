@@ -4,8 +4,8 @@ defmodule SimpleRegistry do
 
   defmacro __using__(opts) do
     registry = Keyword.fetch!(opts, :name)
-    quote do
 
+    quote do
       def start_link(args \\ []) do
         config = Keyword.put(args, :name, unquote(registry))
         SimpleRegistry.start_link(config)
@@ -33,7 +33,6 @@ defmodule SimpleRegistry do
       def registered_processes() do
         SimpleRegistry.registered_processes(unquote(registry))
       end
-
     end
   end
 
