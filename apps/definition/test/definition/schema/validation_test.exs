@@ -90,7 +90,7 @@ defmodule Definition.Schema.ValidationTest do
     test "returns false for any other input" do
       check all input <- term(),
                 input != [],
-                input != "",
+                input not in ["", "\n", "\t", " "],
                 input != %{} do
         refute empty?(input)
       end
@@ -112,7 +112,7 @@ defmodule Definition.Schema.ValidationTest do
     property "returns true for any other input" do
       check all input <- term(),
                 input != [],
-                input != "",
+                input not in ["", " ", "\t", "\n"],
                 input != %{} do
         assert not_empty?(input)
       end
