@@ -7,11 +7,13 @@ defmodule BroadcastTest do
   @instance Broadcast.Application.instance()
 
   test "sending #{load_stream_start()} will stream data to channel" do
-    load = %Load.Broadcast{
+    load = Load.Broadcast.new!(
       id: "load-1",
       dataset_id: "ds1",
-      name: "intersections"
-    }
+      name: "intersections",
+      source: "topic-intersections",
+      destination: "ds1_intersections"
+    )
 
     {:ok, _, socket} =
       socket(BroadcastWeb.UserSocket, %{}, %{})
@@ -20,13 +22,13 @@ defmodule BroadcastTest do
     Brook.Test.send(@instance, load_stream_start(), "testing", load)
 
     assert_async do
-      :undefined != Broadcast.Stream.Registry.whereis(:ds1_intersections)
+      :undefined != Broadcast.Stream.Registry.whereis(:"topic-intersections")
     end
 
-    broadway_pid = Broadcast.Stream.Registry.whereis(:ds1_intersections)
+    broadway_pid = Broadcast.Stream.Registry.whereis(:"topic-intersections")
 
     value = %{"one" => 1, "two" => 2} |> Jason.encode!()
-    message = %{topic: "ds1_intersections", value: value}
+    message = %{topic: "topic_intersections", value: value}
     Broadway.test_messages(broadway_pid, [message])
 
     assert_push "update", %{"one" => 1, "two" => 2}
