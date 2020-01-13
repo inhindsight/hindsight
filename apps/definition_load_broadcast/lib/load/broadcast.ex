@@ -1,5 +1,5 @@
-defmodule Broadcast.Load do
-  use Definition, schema: Broadcast.Load.V1
+defmodule Load.Broadcast do
+  use Definition, schema: Load.Broadcast.V1
 
   @type uuid :: String.t()
 
@@ -16,12 +16,12 @@ defmodule Broadcast.Load do
             name: nil
 end
 
-defmodule Broadcast.Load.V1 do
+defmodule Load.Broadcast.V1 do
   use Definition.Schema
 
   @impl Definition.Schema
   def s do
-    schema(%Broadcast.Load{
+    schema(%Load.Broadcast{
       version: version(1),
       id: id(),
       dataset_id: id(),

@@ -2,7 +2,7 @@ defmodule Broadcast.Stream.Store do
   @instance Broadcast.Application.instance()
   @collection "streams"
 
-  def persist(%Broadcast.Load{} = load) do
+  def persist(%Load.Broadcast{} = load) do
     Brook.ViewState.merge(@collection, load.id, %{load: load})
   end
 

@@ -1,11 +1,11 @@
-defmodule Broadcast.LoadTest do
+defmodule Load.BroadcastTest do
   use ExUnit.Case
   import Checkov
 
   describe "new/1" do
     data_test "validates #{field} against bad input" do
       input = put_in(%{}, [field], value)
-      assert {:error, [%{input: value, path: [field]} | _]} = Broadcast.Load.new(input)
+      assert {:error, [%{input: value, path: [field]} | _]} = Load.Broadcast.new(input)
 
       where [
         [:field, :value],
