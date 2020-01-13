@@ -26,6 +26,7 @@ defmodule WriterKafka.MixProject do
       {:writer, in_umbrella: true},
       {:elsa, "~> 0.11.1"},
       {:retry, "~> 0.13.0"},
+      {:ok, in_umbrella: true},
       {:assert_async, in_umbrella: true, only: [:test]},
       {:divo, "~> 1.1", only: [:dev, :test]},
       {:divo_kafka, "~> 0.1.6", only: [:test]}
