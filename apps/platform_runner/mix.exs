@@ -29,7 +29,7 @@ defmodule PlatformRunner.MixProject do
       {:service_gather, in_umbrella: true},
       {:divo, "~> 1.1"},
       {:assert_async, in_umbrella: true, only: [:integration]},
-      {:bypass, "~> 1.0", only: [:integration]},
+      {:bypass, "~> 1.0", only: [:integration]}
     ]
   end
 
