@@ -22,6 +22,7 @@ defmodule Gather.WriterTest do
           id: "extract-id-1",
           dataset_id: "test-ds1",
           name: "extract_name",
+          destination: "topic-1",
           steps: [
             %{
               "step" => "Extract.Http.Get",
@@ -41,7 +42,7 @@ defmodule Gather.WriterTest do
       assert_receive {:start_link, actual}
 
       assert Keyword.get(actual, :endpoints) == [localhost: 9092]
-      assert Keyword.get(actual, :topic) == "gather-#{extract.dataset_id}-#{extract.name}"
+      assert Keyword.get(actual, :topic) == "topic-1"
       assert Keyword.get(actual, :name) == :joe
     end
   end

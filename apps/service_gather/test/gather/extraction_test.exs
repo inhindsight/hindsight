@@ -34,6 +34,7 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         name: "happy-path",
+        destination: "topic1",
         steps: [
           %{
             "step" => "Fake.Step",
@@ -57,6 +58,7 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         name: "test-extract",
+        destination: "topic1",
         steps: [
           %{
             "step" => "Fake.Step",
@@ -82,6 +84,7 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         name: "test-extract",
+        destination: "topic1",
         steps: [
           %{
             "step" => "Fake.Step",
