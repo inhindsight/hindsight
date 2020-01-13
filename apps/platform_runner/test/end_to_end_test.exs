@@ -46,11 +46,10 @@ defmodule PlatformRunner.EndToEndTest do
 
   describe "JSON" do
     test "can be gathered", %{bypass: bp} do
-      data =
-        ~s|{"name":"LeBron","number":23,"teammates":[{"name":"Kyrie","number":2},{"name":"Kevin","number":0}]}|
+      data = ~s|{"name":"LeBron","number":23,"teammates":[{"name":"Kyrie"},{"name":"Kevin"}]}|
 
       Bypass.expect(bp, "GET", "/json", fn conn ->
-        Plug.Conn.resp(conn, 200, "[#{data}]")
+        Plug.Conn.resp(conn, 200, "#{data}")
       end)
 
       extract =
