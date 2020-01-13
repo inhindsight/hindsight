@@ -24,4 +24,19 @@ defmodule Decode.JsonTest do
 
     assert Context.get_stream(context) == expected
   end
+
+  test "decodes a non-list stream to json" do
+    source = fn _ ->
+      [
+        ~s({"name": "Jay",),
+        ~s("age": 42})
+      ]
+    end
+
+    context = Context.new() |> Context.set_source(source)
+    {:ok, context} = Extract.Step.execute(%Decode.Json{}, context)
+
+    expected = [%{"name" => "Jay", "age" => 42}]
+    assert Context.get_stream(context) == expected
+  end
 end
