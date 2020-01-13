@@ -2,7 +2,7 @@ defmodule Broadcast.Stream.BroadwayTest do
   use BroadcastWeb.ChannelCase
 
   test "sends message to channel" do
-    load = %Broadcast.Load{
+    load = %Load.Broadcast{
       id: "load-1",
       dataset_id: "ds1",
       name: "fake-ds"
@@ -26,7 +26,7 @@ defmodule Broadcast.Stream.BroadwayTest do
   end
 
   test "fails message if unable to decode" do
-    load = %Broadcast.Load{
+    load = %Load.Broadcast{
       id: "load-1",
       dataset_id: "ds1",
       name: "fake-ds"
@@ -44,7 +44,7 @@ defmodule Broadcast.Stream.BroadwayTest do
   end
 
   test "registers itself under dataset_id and name" do
-    load = %Broadcast.Load{
+    load = %Load.Broadcast{
       id: "load-id",
       dataset_id: "ds1",
       name: "joey"

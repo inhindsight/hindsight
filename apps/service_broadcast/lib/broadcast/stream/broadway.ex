@@ -5,7 +5,7 @@ defmodule Broadcast.Stream.Broadway do
   @broadway_config Keyword.fetch!(@config, :broadway_config)
 
   def start_link(args) do
-    %Broadcast.Load{} = load = Keyword.fetch!(args, :load)
+    %Load.Broadcast{} = load = Keyword.fetch!(args, :load)
 
     config = setup_config(load)
 
@@ -28,7 +28,7 @@ defmodule Broadcast.Stream.Broadway do
     end
   end
 
-  defp name(%Broadcast.Load{dataset_id: dataset_id, name: name}) do
+  defp name(%Load.Broadcast{dataset_id: dataset_id, name: name}) do
     :"#{dataset_id}_#{name}"
   end
 

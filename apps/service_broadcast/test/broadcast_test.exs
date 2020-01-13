@@ -7,7 +7,7 @@ defmodule BroadcastTest do
   @instance Broadcast.Application.instance()
 
   test "sending #{load_stream_start()} will stream data to channel" do
-    load = %Broadcast.Load{
+    load = %Load.Broadcast{
       id: "load-1",
       dataset_id: "ds1",
       name: "intersections"
