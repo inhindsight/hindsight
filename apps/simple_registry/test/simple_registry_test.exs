@@ -64,7 +64,9 @@ defmodule SimpleRegistryTest do
   end
 
   test "name can be unregisterd" do
-    {:ok, pid} = Agent.start_link(fn -> :agent1 end, name: {:via, SimpleRegistry, {@name, :agent1}})
+    {:ok, pid} =
+      Agent.start_link(fn -> :agent1 end, name: {:via, SimpleRegistry, {@name, :agent1}})
+
     assert ^pid = SimpleRegistry.whereis_name({@name, :agent1})
     assert :ok = SimpleRegistry.unregister_name({@name, :agent1})
 
@@ -87,7 +89,9 @@ defmodule SimpleRegistryTest do
   end
 
   test "registered processes will show all processes" do
-    {:ok, pid1} = Agent.start_link(fn -> :agent1 end, name: {:via, SimpleRegistry, {@name, :agent1}})
+    {:ok, pid1} =
+      Agent.start_link(fn -> :agent1 end, name: {:via, SimpleRegistry, {@name, :agent1}})
+
     {:ok, pid2} = TestServer.start_link(pid: self())
     SimpleRegistry.register_name({@name, :server1}, pid2)
 

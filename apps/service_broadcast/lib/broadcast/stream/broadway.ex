@@ -8,7 +8,6 @@ defmodule Broadcast.Stream.Broadway do
     %Broadcast.Load{dataset_id: dataset_id, name: name} = Keyword.fetch!(args, :load)
 
     process_name = :"#{dataset_id}_#{name}"
-
     config = Keyword.put(@broadway_config, :name, process_name)
 
     with {:ok, pid} <- Broadway.start_link(__MODULE__, config) do

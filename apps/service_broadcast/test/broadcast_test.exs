@@ -13,8 +13,9 @@ defmodule BroadcastTest do
       name: "intersections"
     }
 
-    {:ok, _, socket} = socket(BroadcastWeb.UserSocket, %{}, %{})
-    |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:ds1_intersections", %{})
+    {:ok, _, socket} =
+      socket(BroadcastWeb.UserSocket, %{}, %{})
+      |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:ds1_intersections", %{})
 
     Brook.Test.send(@instance, load_stream_start(), "testing", load)
 

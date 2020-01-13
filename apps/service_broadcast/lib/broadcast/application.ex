@@ -8,13 +8,15 @@ defmodule Broadcast.Application do
   def instance(), do: :broadcast_instance
 
   def start(_type, _args) do
-    children = [
-      Broadcast.Stream.Registry,
-      Broadcast.Stream.Supervisor,
-      BroadcastWeb.Endpoint,
-      brook(),
-      init()
-    ] |> List.flatten()
+    children =
+      [
+        Broadcast.Stream.Registry,
+        Broadcast.Stream.Supervisor,
+        BroadcastWeb.Endpoint,
+        brook(),
+        init()
+      ]
+      |> List.flatten()
 
     opts = [strategy: :one_for_one, name: Broadcast.Supervisor]
     Supervisor.start_link(children, opts)

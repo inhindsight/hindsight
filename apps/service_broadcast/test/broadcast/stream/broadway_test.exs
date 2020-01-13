@@ -8,7 +8,8 @@ defmodule Broadcast.Stream.BroadwayTest do
       name: "fake-ds"
     }
 
-    {:ok, _, socket} = socket(BroadcastWeb.UserSocket, %{}, %{})
+    {:ok, _, socket} =
+      socket(BroadcastWeb.UserSocket, %{}, %{})
       |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:topic-1", %{})
 
     {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
