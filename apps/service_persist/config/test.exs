@@ -24,6 +24,11 @@ config :service_persist, Persist.Writer,
   catalog: "test_catalog",
   schema: "test_schema"
 
+config :service_persist, Persist.Loader,
+  writer: Persist.WriterMock,
+  broadway: BroadwayMock,
+  max_retries: 3
+
 config :service_persist, Persist.Load.Broadway,
   dlq: Persist.DLQMock,
   broadway_config: [
