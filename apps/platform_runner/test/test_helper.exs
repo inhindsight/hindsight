@@ -5,12 +5,12 @@ defmodule TestHelper.Socket do
 
   def join(args) do
     pid = Keyword.fetch!(args, :caller)
+    topic = Keyword.fetch!(args, :topic)
 
-    {:ok, ws} =
-      WebSockex.start("ws://localhost:4000/socket/websocket", __MODULE__, %{pid: pid})
+    {:ok, ws} = WebSockex.start("ws://localhost:4000/socket/websocket", __MODULE__, %{pid: pid})
 
     msg = %{
-      topic: "broadcast:e2e_csv_broadcast",
+      topic: "broadcast:#{topic}",
       event: "phx_join",
       payload: %{},
       ref: 1
