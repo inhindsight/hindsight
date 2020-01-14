@@ -30,6 +30,10 @@ defmodule Dictionary do
     end
   end
 
+  def decode(%_struct{} = struct) do
+    Ok.ok(struct)
+  end
+
   @spec normalize(dictionary :: list, payload :: map) ::
           {:ok, map} | {:error, %{String.t() => term}}
   def normalize(dictionary, payload) when is_list(dictionary) and is_map(payload) do

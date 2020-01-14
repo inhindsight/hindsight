@@ -13,6 +13,7 @@ defmodule Load.Persist do
           schema: list()
         }
 
+  @derive Jason.Encoder
   defstruct version: 1,
             id: nil,
             dataset_id: nil,
@@ -20,6 +21,16 @@ defmodule Load.Persist do
             source: nil,
             destination: nil,
             schema: []
+
+  def on_new(%__MODULE__{schema: []} = persist), do: Ok.ok(persist)
+  def on_new(%__MODULE__{schema: schema} = persist) when is_list(schema) do
+    case Dictionary.decode(schema) do
+      {:ok, new_schema} -> Map.put(persist, :schema, new_schema) |> Ok.ok()
+      error -> error
+    end
+  end
+
+  def on_new(persist), do: Ok.ok(persist)
 end
 
 defmodule Load.Persist.V1 do
