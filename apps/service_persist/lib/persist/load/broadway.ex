@@ -13,7 +13,7 @@ defmodule Persist.Load.Broadway do
 
   def start_link(init_arg) do
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
-    # TODO put retry around this
+    # TODO move this to another process
     {:ok, writer} = @writer.start_link(load: load)
 
     config = setup_config(load, writer)

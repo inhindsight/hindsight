@@ -29,9 +29,11 @@ defmodule Persist.MixProject do
       {:writer_dlq, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:simple_registry, in_umbrella: true},
+      {:initializer, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:off_broadway_kafka, "~> 0.5.0"},
-      {:mox, "~> 0.5", only: [:test]}
+      {:mox, "~> 0.5", only: [:test]},
+      {:assert_async, in_umbrella: true}
     ]
   end
 

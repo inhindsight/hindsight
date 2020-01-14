@@ -24,17 +24,18 @@ defmodule Load.PersistTest do
     end
 
     test "will convert the schema back to structs" do
-      persist = Load.Persist.new!(
-        id: "load1",
-        dataset_id: "ds1",
-        name: "joe",
-        source: "topic",
-        destination: "table",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
-      )
+      persist =
+        Load.Persist.new!(
+          id: "load1",
+          dataset_id: "ds1",
+          name: "joe",
+          source: "topic",
+          destination: "table",
+          schema: [
+            %Dictionary.Type.String{name: "name"},
+            %Dictionary.Type.Integer{name: "age"}
+          ]
+        )
 
       json = Jason.encode!(persist)
 
