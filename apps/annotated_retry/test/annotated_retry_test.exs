@@ -49,13 +49,13 @@ defmodule Annotated.RetryTest do
         {s, max(0, s - 1)}
       end)
       |> case do
-           0 ->
-             {:ok, 0}
+        0 ->
+          {:ok, 0}
 
-           n ->
-             send(pid, {:attempt, n})
-             {:error, "attempts remaining #{n}"}
-         end
+        n ->
+          send(pid, {:attempt, n})
+          {:error, "attempts remaining #{n}"}
+      end
     end
   end
 
