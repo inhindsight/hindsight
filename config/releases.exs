@@ -107,3 +107,6 @@ config :service_broadcast, Broadcast.Stream.Broadway,
       ]
     ]
   ]
+
+config :service_persist,
+  app_name: "service_persist"
