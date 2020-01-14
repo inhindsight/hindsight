@@ -1,21 +1,35 @@
 # AssertAsync
 
-**TODO: Add description**
+Asynchronously check test outcomes that are expected to
+validate but may not immediately.
+
+AssertAsync implements a macro that injects the necessary
+retry logic for validating test assertions with a configurable
+delay between checks and maximum number of attempted checks.
+
+## Usage
+
+```elixir
+  defmodule Example do
+    use ExUnit.Case
+    import AssertAsync
+
+    test "tests a thing" do
+      do_something(args)
+
+      assert_async do
+        assert result == check_some_condition()
+      end
+    end
+  end
+```
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `assert_async` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:assert_async, "~> 0.1.0"}
+    {:assert_async, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/assert_async](https://hexdocs.pm/assert_async).
-
