@@ -6,6 +6,14 @@ defmodule OkTest do
       assert {:ok, 10} == Ok.map({:ok, 5}, fn x -> x * 2 end)
     end
 
+    test "will unwrap ok tuple return from function" do
+      assert {:ok, 10} == Ok.map({:ok, 5}, fn x -> {:ok, x * 2} end)
+    end
+
+    test "will return error tuple if returned from function" do
+      assert {:error, "bad"} == Ok.map({:ok, 5}, fn _ -> {:error, "bad"} end)
+    end
+
     test "will pass an error through" do
       assert {:error, "reason"} == Ok.map({:error, "reason"}, fn x -> x * 2 end)
     end

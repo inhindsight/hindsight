@@ -9,9 +9,13 @@ defmodule Ok do
   @spec error(reason) :: {:error, reason} when reason: term
   def error(reason), do: {:error, reason}
 
-  @spec map(result | :ok, (term -> term)) :: result
+  @spec map(result, (term -> term | result)) :: result
   def map({:ok, value}, function) when is_function(function, 1) do
-    {:ok, function.(value)}
+    case function.(value) do
+      {:ok, _} = ok -> ok
+      {:error, _} = error -> error
+      x -> {:ok, x}
+    end
   end
 
   def map({:error, _reason} = error, _function), do: error
