@@ -10,7 +10,14 @@ defmodule Persist.Load.Broadway do
   @broadway_config Keyword.fetch!(@config, :broadway_config)
   @dlq Keyword.get(@config, :dlq, Persist.DLQ)
 
+  @type init_opts :: [
+    load: %Load.Persist{},
+    writer: (list -> :ok | {:error, term})
+  ]
+
+  @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(init_arg) do
+    IO.puts("Broadway start_link")
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
     writer = Keyword.fetch!(init_arg, :writer)
 
@@ -22,6 +29,7 @@ defmodule Persist.Load.Broadway do
     end
   end
 
+  @impl Broadway
   def handle_message(_processor, %Message{data: data} = message, context) do
     case Jason.decode(data.value) do
       {:ok, decoded_data} ->
@@ -33,12 +41,14 @@ defmodule Persist.Load.Broadway do
     end
   end
 
+  @impl Broadway
   def handle_batch(_batch, messages, _info, context) do
     data_messages = Enum.map(messages, &Map.get(&1, :data))
     :ok = context.writer.(data_messages)
     messages
   end
 
+  @impl Broadway
   def handle_failed(messages, _context) do
     messages
     |> Enum.map(&Map.get(&1, :data))

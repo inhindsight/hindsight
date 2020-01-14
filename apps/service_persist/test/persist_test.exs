@@ -2,8 +2,8 @@ defmodule PersistTest do
   use ExUnit.Case
   import Mox
   import AssertAsync
-
   import Definition.Events
+  require Temp.Env
 
   @instance Persist.Application.instance()
   @moduletag capture_log: true
@@ -19,7 +19,7 @@ defmodule PersistTest do
     :ok
   end
 
-  test "load:pesist:start starts writing to presto" do
+  test "load:persist:start starts writing to presto" do
     test = self()
 
     load =

@@ -4,7 +4,7 @@ defmodule Persist.Event.Handler do
   import Definition.Events, only: [load_persist_start: 0, load_persist_end: 0]
 
   def handle_event(%Brook.Event{type: load_persist_start(), data: %Load.Persist{} = load}) do
-    Persist.Load.Supervisor.start_child({Persist.Load.Broadway, load: load})
+    Persist.Load.Supervisor.start_child({Persist.Loader, load: load})
     Persist.Load.Store.persist(load)
   end
 
