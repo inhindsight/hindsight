@@ -23,6 +23,7 @@ defmodule Load.Persist do
             schema: []
 
   def on_new(%__MODULE__{schema: []} = persist), do: Ok.ok(persist)
+
   def on_new(%__MODULE__{schema: schema} = persist) when is_list(schema) do
     case Dictionary.decode(schema) do
       {:ok, new_schema} -> Map.put(persist, :schema, new_schema) |> Ok.ok()

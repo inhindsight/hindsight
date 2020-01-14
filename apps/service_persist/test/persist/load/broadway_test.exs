@@ -3,6 +3,7 @@ defmodule Persist.Load.BroadwayTest do
   import Mox
 
   alias Writer.DLQ.DeadLetter
+  @moduletag capture_log: true
 
   setup :set_mox_global
   setup :verify_on_exit!

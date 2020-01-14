@@ -15,6 +15,8 @@ config :service_persist,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
+config :service_persist, Persist.Application, init?: false
+
 config :service_persist, Persist.Writer,
   writer: Writer.PrestoMock,
   url: "http://localhost:8080",
