@@ -4,8 +4,8 @@ defmodule Broadcast.Stream.Broadway do
   @config Application.get_env(:service_broadcast, __MODULE__, [])
   @broadway_config Keyword.fetch!(@config, :broadway_config)
 
-  def start_link(args) do
-    %Load.Broadcast{} = load = Keyword.fetch!(args, :load)
+  def start_link(init_arg) do
+    %Load.Broadcast{} = load = Keyword.fetch!(init_arg, :load)
 
     config = setup_config(load)
 
@@ -29,7 +29,7 @@ defmodule Broadcast.Stream.Broadway do
   end
 
   defp setup_config(load) do
-    Keyword.put(@broadway_config, :name, :"broadway_#{load.source}")
+    Keyword.put(@broadway_config, :name, :"broadcast_broadway_#{load.source}")
     |> Keyword.update!(:producer, &update_producer(load, &1))
     |> Keyword.put(:context, %{
       load: load
@@ -41,10 +41,10 @@ defmodule Broadcast.Stream.Broadway do
     |> Keyword.update!(:module, fn {module, config} ->
       config =
         config
-        |> Keyword.put(:connection, :"connection_#{load.source}")
+        |> Keyword.put(:connection, :"broadcast_connection_#{load.source}")
         |> Keyword.update(:group_consumer, [], fn group_consumer ->
           group_consumer
-          |> Keyword.put(:group, "group-#{load.source}")
+          |> Keyword.put(:group, "broadcast-#{load.source}")
           |> Keyword.put(:topics, [load.source])
         end)
 

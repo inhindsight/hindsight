@@ -1,15 +1,15 @@
-defmodule Writer.Presto.Dictionary.Translator.Result do
+defmodule Persist.Dictionary.Translator.Result do
   defstruct [:name, :type]
 end
 
-defprotocol Writer.Presto.Dictionary.Translator do
-  @spec translate(t) :: %Writer.Presto.Dictionary.Translator.Result{}
+defprotocol Persist.Dictionary.Translator do
+  @spec translate(t) :: %Persist.Dictionary.Translator.Result{}
   def translate(field)
 end
 
-defmodule Writer.Presto.Dictionary do
-  alias Writer.Presto.Dictionary.Translator
-  alias Writer.Presto.Dictionary.Translator.Result
+defmodule Persist.Dictionary do
+  alias Persist.Dictionary.Translator
+  alias Persist.Dictionary.Translator.Result
 
   defimpl Translator, for: Dictionary.Type.String do
     def translate(%{name: name}) do

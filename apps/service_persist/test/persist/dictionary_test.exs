@@ -1,16 +1,16 @@
-defmodule Writer.Presto.DictionaryTest do
+defmodule Persist.DictionaryTest do
   use ExUnit.Case
   import Checkov
 
-  alias Writer.Presto.Dictionary.Translator
-  alias Writer.Presto.Dictionary.Translator.Result
+  alias Persist.Dictionary.Translator
+  alias Persist.Dictionary.Translator.Result
 
   data_test "something, something, translate" do
     result = Translator.translate(field)
 
     assert expected == result
 
-    where [
+    where([
       [:field, :expected],
       [%Dictionary.Type.String{name: "name"}, %Result{name: "name", type: "varchar"}],
       [%Dictionary.Type.Integer{name: "age"}, %Result{name: "age", type: "integer"}],
@@ -33,6 +33,6 @@ defmodule Writer.Presto.DictionaryTest do
         },
         %Result{name: "friends", type: "array(row(name varchar,age integer))"}
       ]
-    ]
+    ])
   end
 end

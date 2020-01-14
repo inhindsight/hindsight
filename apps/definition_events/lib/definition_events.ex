@@ -3,7 +3,9 @@ defmodule Definition.Events do
     {"extract:start", Extract},
     {"extract:end", Extract},
     {"load:broadcast:start", Load.Broadcast},
-    {"load:broadcast:end", Load.Broadcast}
+    {"load:broadcast:end", Load.Broadcast},
+    {"load:persist:start", Load.Persist},
+    {"load:persist:end", Load.Persist}
   ]
 
   Enum.map(@events, fn {type, struct_module} ->

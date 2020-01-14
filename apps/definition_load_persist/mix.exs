@@ -1,9 +1,9 @@
-defmodule DefinitionEvents.MixProject do
+defmodule DefinitionLoadPersist.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :definition_events,
+      app: :definition_load_persist,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -23,10 +23,8 @@ defmodule DefinitionEvents.MixProject do
 
   defp deps do
     [
-      {:brook, "~> 0.4"},
-      {:definition_extract, in_umbrella: true},
-      {:definition_load_broadcast, in_umbrella: true},
-      {:definition_load_persist, in_umbrella: true}
+      {:definition, in_umbrella: true},
+      {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
 end
