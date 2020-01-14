@@ -27,7 +27,8 @@ defmodule Ok do
           Enum.t(),
           Enum.acc(),
           (Enum.element(), Enum.acc() -> {:ok, Enum.acc()} | {:error, reason})
-        ) :: {:ok, Enum.acc()} | {:error, reason} when reason: term
+        ) :: {:ok, Enum.acc()} | {:error, reason}
+        when reason: term
   def reduce(enum, initial, function) do
     Enum.reduce_while(enum, {:ok, initial}, fn item, {:ok, acc} ->
       case function.(item, acc) do
@@ -54,7 +55,8 @@ defmodule Ok do
   def each({:error, _} = error), do: error
 
   @spec transform(Enum.t(), (Enum.element() -> {:ok, Enum.element()} | {:error, reason})) ::
-          {:ok, Enum.t()} | {:error, reason} when reason: term
+          {:ok, Enum.t()} | {:error, reason}
+        when reason: term
   def transform(enum, function) when is_list(enum) and is_function(function, 1) do
     reduce(enum, [], fn item, acc ->
       function.(item)
