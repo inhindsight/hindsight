@@ -3,6 +3,7 @@ defmodule PlatformRunner.EndToEndTest do
   use Divo
 
   import AssertAsync
+  alias PlatformRunner.BroadcastClient
 
   @kafka [localhost: 9092]
   @moduletag e2e: true, divo: true
@@ -50,7 +51,7 @@ defmodule PlatformRunner.EndToEndTest do
           destination: "e2e_csv_broadcast"
         )
 
-      assert :ok = TestHelper.Socket.join(caller: self(), topic: load.destination)
+      assert {:ok, pid} = BroadcastClient.join(caller: self(), topic: load.destination)
 
       Broadcast.Application.instance()
       |> Definition.Events.send_load_broadcast_start("e2e-csv", load)
@@ -58,6 +59,8 @@ defmodule PlatformRunner.EndToEndTest do
       assert_receive %{"letter" => "a", "number" => "1"}, 1_000
       assert_receive %{"letter" => "b", "number" => "2"}, 1_000
       assert_receive %{"letter" => "c", "number" => "3"}, 1_000
+
+      BroadcastClient.kill(pid)
     end
   end
 
@@ -103,7 +106,7 @@ defmodule PlatformRunner.EndToEndTest do
           destination: "e2e_json_broadcast"
         )
 
-      assert :ok = TestHelper.Socket.join(caller: self(), topic: load.destination)
+      assert {:ok, pid} = BroadcastClient.join(caller: self(), topic: load.destination)
 
       Broadcast.Application.instance()
       |> Definition.Events.send_load_broadcast_start("e2e-json", load)
@@ -114,6 +117,8 @@ defmodule PlatformRunner.EndToEndTest do
                        "teammates" => [%{"name" => "Kyrie"}, %{"name" => "Kevin"}]
                      },
                      1_000
+
+      BroadcastClient.kill(pid)
     end
   end
 end
