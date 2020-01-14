@@ -11,7 +11,11 @@ defmodule Ok do
 
   @spec map(result | :ok, (term -> term)) :: result
   def map({:ok, value}, function) when is_function(function, 1) do
-    {:ok, function.(value)}
+    case function.(value) do
+      {:ok, _} = ok -> ok
+      {:error, _} = error -> error
+      x -> {:ok, x}
+    end
   end
 
   def map({:error, _reason} = error, _function), do: error
