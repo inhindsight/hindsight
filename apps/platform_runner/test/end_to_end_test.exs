@@ -50,7 +50,7 @@ defmodule PlatformRunner.EndToEndTest do
           destination: "e2e_csv_broadcast"
         )
 
-      assert :ok = TestHelper.Socket.join(caller: self())
+      assert :ok = TestHelper.Socket.join(caller: self(), topic: load.destination)
 
       Broadcast.Application.instance()
       |> Definition.Events.send_load_broadcast_start("e2e-csv", load)
@@ -91,6 +91,29 @@ defmodule PlatformRunner.EndToEndTest do
         assert {:ok, _, [message]} = Elsa.fetch(@kafka, "e2e-json-gather")
         assert message.value == data
       end
+    end
+
+    test "broadcasted" do
+      load =
+        Load.Broadcast.new!(
+          id: "e2e-json-broadcast-1",
+          dataset_id: "e2e-json-ds",
+          name: "broadcast",
+          source: "e2e-json-gather",
+          destination: "e2e_json_broadcast"
+        )
+
+      assert :ok = TestHelper.Socket.join(caller: self(), topic: load.destination)
+
+      Broadcast.Application.instance()
+      |> Definition.Events.send_load_broadcast_start("e2e-json", load)
+
+      assert_receive %{
+                       "name" => "LeBron",
+                       "number" => 23,
+                       "teammates" => [%{"name" => "Kyrie"}, %{"name" => "Kevin"}]
+                     },
+                     1_000
     end
   end
 end
