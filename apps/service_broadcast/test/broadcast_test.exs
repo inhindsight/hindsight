@@ -23,7 +23,7 @@ defmodule BroadcastTest do
     Brook.Test.send(@instance, load_broadcast_start(), "testing", load)
 
     assert_async do
-      :undefined != Broadcast.Stream.Registry.whereis(:"topic-intersections")
+      assert :undefined != Broadcast.Stream.Registry.whereis(:"topic-intersections")
     end
 
     broadway_pid = Broadcast.Stream.Registry.whereis(:"topic-intersections")
