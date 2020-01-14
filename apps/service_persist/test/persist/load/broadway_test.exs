@@ -24,17 +24,12 @@ defmodule Persist.Load.BroadwayTest do
         ]
       )
 
-    Persist.WriterMock
-    |> expect(:start_link, fn init_arg ->
-      send(test, {:start_link, init_arg})
-      {:ok, :writer_pid}
-    end)
-    |> expect(:write, fn server, messages ->
-      send(test, {:write, server, messages})
+    writer = fn msgs ->
+      send(test, {:write, msgs})
       :ok
-    end)
+    end
 
-    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load)
+    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load, writer: writer)
     on_exit(fn -> assert_down(broadway) end)
 
     messages = [
@@ -49,7 +44,7 @@ defmodule Persist.Load.BroadwayTest do
       %{"name" => "joe", "age" => 43}
     ]
 
-    assert_receive {:write, :writer_pid, ^expected}
+    assert_receive {:write, ^expected}
 
     assert_receive {:ack, ^ref, successful, []}
     assert 2 == length(successful)
@@ -69,12 +64,7 @@ defmodule Persist.Load.BroadwayTest do
         ]
       )
 
-    Persist.WriterMock
-    |> expect(:start_link, fn _init_arg ->
-      {:ok, :writer_pid}
-    end)
-
-    {:ok, pid} = Persist.Load.Broadway.start_link(load: load)
+    {:ok, pid} = Persist.Load.Broadway.start_link(load: load, writer: fn _ -> :ok end)
     on_exit(fn -> assert_down(pid) end)
 
     assert pid == Persist.Load.Registry.whereis(:"#{load.source}")
@@ -96,15 +86,10 @@ defmodule Persist.Load.BroadwayTest do
         ]
       )
 
-    Persist.WriterMock
-    |> expect(:start_link, fn init_arg ->
-      send(test, {:start_link, init_arg})
-      {:ok, :writer_pid}
-    end)
-    |> expect(:write, fn server, messages ->
-      send(test, {:write, server, messages})
+    writer = fn msgs ->
+      send(test, {:write, msgs})
       :ok
-    end)
+    end
 
     Persist.DLQMock
     |> expect(:write, fn messages ->
@@ -112,7 +97,7 @@ defmodule Persist.Load.BroadwayTest do
       :ok
     end)
 
-    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load)
+    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load, writer: writer)
     on_exit(fn -> assert_down(broadway) end)
 
     messages = [
@@ -132,7 +117,7 @@ defmodule Persist.Load.BroadwayTest do
         reason: reason
       )
 
-    assert_receive {:write, :writer_pid, [%{"name" => "bob", "age" => 21}]}
+    assert_receive {:write, [%{"name" => "bob", "age" => 21}]}
     assert_receive {:dlq, [^expected_dead_letter]}
 
     assert_receive {:ack, ^ref, [%{data: %{"name" => "bob", "age" => 21}}], []}

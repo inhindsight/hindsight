@@ -25,7 +25,6 @@ config :service_persist, Persist.Writer,
   schema: "test_schema"
 
 config :service_persist, Persist.Load.Broadway,
-  writer: Persist.WriterMock,
   dlq: Persist.DLQMock,
   broadway_config: [
     producer: [

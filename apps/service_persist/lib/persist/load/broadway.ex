@@ -8,13 +8,11 @@ defmodule Persist.Load.Broadway do
 
   @config Application.get_env(:service_persist, __MODULE__, [])
   @broadway_config Keyword.fetch!(@config, :broadway_config)
-  @writer Keyword.get(@config, :writer, Persist.Writer)
   @dlq Keyword.get(@config, :dlq, Persist.DLQ)
 
   def start_link(init_arg) do
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
-    # TODO move this to another process
-    {:ok, writer} = @writer.start_link(load: load)
+    writer = Keyword.fetch!(init_arg, :writer)
 
     config = setup_config(load, writer)
 
@@ -37,7 +35,7 @@ defmodule Persist.Load.Broadway do
 
   def handle_batch(_batch, messages, _info, context) do
     data_messages = Enum.map(messages, &Map.get(&1, :data))
-    :ok = @writer.write(context.writer, data_messages)
+    :ok = context.writer.(data_messages)
     messages
   end
 
