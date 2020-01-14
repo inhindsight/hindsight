@@ -107,3 +107,57 @@ config :service_broadcast, Broadcast.Stream.Broadway,
       ]
     ]
   ]
+
+config :service_persist,
+  app_name: "service_persist",
+  kafka_endpoints: kafka_endpoints,
+  brook: [
+    driver: [
+      module: Brook.Driver.Kafka,
+      init_arg: [
+        endpoints: kafka_endpoints,
+        topic: "event-stream",
+        group: "persist-event-stream",
+        consumer_config: [
+          begin_offset: :earliest,
+          offset_reset_policy: :reset_to_earliest
+        ]
+      ]
+    ],
+    handlers: [Persist.Event.Handler],
+    storage: [
+      module: Brook.Storage.Ets,
+      init_arg: []
+    ],
+    dispatcher: Brook.Dispatcher.Noop
+  ]
+
+config :service_persist, Persist.Writer,
+  url: "http://localhost:8080",
+  user: "doti",
+  catalog: "hive",
+  schema: "default"
+
+config :service_persist, Persist.Load.Broadway,
+  broadway_config: [
+    producer: [
+      module:
+        {OffBroadway.Kafka.Producer,
+         [
+           endpoints: kafka_endpoints,
+           group_consumer: [
+             config: [
+               begin_offset: :earliest,
+               prefetch_count: 0,
+               prefetch_bytes: 2_097_152
+             ]
+           ]
+         ]},
+      stages: 1
+    ],
+    processors: [
+      default: [
+        stages: 1
+      ]
+    ]
+  ]

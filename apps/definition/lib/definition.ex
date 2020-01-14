@@ -3,7 +3,8 @@ defmodule Definition do
   @callback new!(map | keyword) :: struct
   @callback from_json(String.t()) :: {:ok, struct} | {:error, term}
   @callback schema() :: %Norm.Schema{}
-  @callback migrate(struct) :: struct
+  @callback on_new(struct) :: {:ok, struct} | {:error, term}
+  @callback migrate(struct) :: {:ok, struct} | {:error, term}
 
   defmacro __using__(opts) do
     quote do
@@ -21,8 +22,9 @@ defmodule Definition do
         map = for {key, val} <- input, do: {:"#{key}", val}, into: %{}
 
         struct(__MODULE__, map)
-        |> migrate()
-        |> Norm.conform(@schema.s())
+        |> on_new()
+        |> Ok.map(&migrate/1)
+        |> Ok.map(&Norm.conform(&1, @schema.s()))
       end
 
       def new(input) when is_list(input) do
@@ -44,6 +46,11 @@ defmodule Definition do
       end
 
       @impl Definition
+      def on_new(input) do
+        {:ok, input}
+      end
+
+      @impl Definition
       def from_json(input) when is_binary(input) do
         with {:ok, map} <- Jason.decode(input) do
           new(map)
@@ -55,14 +62,14 @@ defmodule Definition do
         @schema.s()
       end
 
-      defoverridable Definition
+      defoverridable on_new: 1
     end
   end
 
   defmacro __before_compile__(_) do
     quote do
       @impl Definition
-      def migrate(arg), do: arg
+      def migrate(arg), do: {:ok, arg}
     end
   end
 end

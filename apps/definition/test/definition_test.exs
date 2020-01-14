@@ -3,10 +3,22 @@ defmodule DefinitionTest do
 
   defmodule Foo do
     use Definition, schema: Foo.V2
-    defstruct [:version, :bar]
+    defstruct [:version, :bar, :baz]
+
+    def on_new(foo) do
+      new_baz =
+        case foo.baz do
+          nil -> nil
+          x -> String.upcase(x)
+        end
+
+      %{foo | baz: new_baz}
+      |> Ok.ok()
+    end
 
     def migrate(%__MODULE__{version: 1} = old) do
       struct(__MODULE__, %{version: 2, bar: String.to_integer(old.bar)})
+      |> Ok.ok()
     end
 
     defmodule V1 do
@@ -50,6 +62,11 @@ defmodule DefinitionTest do
 
     test "accepts a Keyword list input" do
       assert {:ok, %Foo{bar: 42}} = Foo.new(version: 2, bar: 42)
+    end
+
+    test "calls on_new to allow custom transformation" do
+      input = %{"version" => 2, "bar" => 34, "baz" => "mike"}
+      assert {:ok, %Foo{baz: "MIKE"}} = Foo.new(input)
     end
 
     test "returns exception for other list input" do
