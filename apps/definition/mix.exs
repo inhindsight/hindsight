@@ -25,6 +25,7 @@ defmodule Definition.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:ok, in_umbrella: true},
       {:norm, "~> 0.9.0"},
       {:jason, "~> 1.1"},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
