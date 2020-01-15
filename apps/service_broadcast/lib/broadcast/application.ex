@@ -2,8 +2,7 @@ defmodule Broadcast.Application do
   @moduledoc false
 
   use Application
-
-  @config Application.get_env(:service_broadcast, __MODULE__, [])
+  use Properties, otp_app: :service_broadcast
 
   def instance(), do: :broadcast_instance
 
@@ -23,14 +22,14 @@ defmodule Broadcast.Application do
   end
 
   defp init() do
-    case Keyword.get(@config, :init?, true) do
+    case get_config_value(:init?, default: true) do
       true -> Broadcast.Init
       false -> []
     end
   end
 
   defp brook() do
-    case Application.get_env(:service_broadcast, :brook) do
+    case get_config_value(:brook) do
       nil -> []
       config -> {Brook, Keyword.put(config, :instance, instance())}
     end
