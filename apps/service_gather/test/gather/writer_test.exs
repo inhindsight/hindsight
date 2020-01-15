@@ -2,8 +2,21 @@ defmodule Gather.WriterTest do
   use Gather.Case
   import Mox
   import ExUnit.CaptureLog
+  require Temp.Env
 
   alias Writer.DLQ.DeadLetter
+
+  Temp.Env.modify([
+    %{
+      app: :service_gather,
+      key: Gather.Writer,
+      update: fn config ->
+        Keyword.put(config, :writer, WriterMock)
+        |> Keyword.put(:dlq, DlqMock)
+        |> Keyword.put(:kafka_endpoints, [localhost: 9092])
+      end
+    },
+  ])
 
   setup :verify_on_exit!
 
@@ -34,8 +47,6 @@ defmodule Gather.WriterTest do
             }
           ]
         )
-
-      Application.put_env(:service_gather, :kafka_endpoints, localhost: 9092)
 
       Gather.Writer.start_link(extract: extract, name: :joe)
 
@@ -88,7 +99,7 @@ defmodule Gather.WriterTest do
         DeadLetter.new(
           dataset_id: "ds1",
           original_message: List.first(messages),
-          app_name: Application.get_env(:service_gather, :app_name),
+          app_name: "service_gather",
           reason: reason
         )
 
@@ -137,7 +148,7 @@ defmodule Gather.WriterTest do
         DeadLetter.new(
           dataset_id: "ds1",
           original_message: List.first(messages),
-          app_name: Application.get_env(:service_gather, :app_name),
+          app_name: "service_gather",
           reason: reason
         )
 

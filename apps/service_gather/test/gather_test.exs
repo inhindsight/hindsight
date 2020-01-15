@@ -3,11 +3,18 @@ defmodule GatherTest do
   import Mox
   import Definition.Events, only: [extract_start: 0, extract_end: 0]
   import AssertAsync
+  require Temp.Env
 
   @instance Gather.Application.instance()
   @moduletag capture_log: true
 
   alias Gather.Extraction
+
+  Temp.Env.modify([
+    %{app: :service_gather, key: Gather.Extraction, update: fn config ->
+       Keyword.put(config, :writer, Gather.WriterMock)
+     end}
+  ])
 
   setup :set_mox_global
   setup :verify_on_exit!

@@ -1,6 +1,6 @@
 use Mix.Config
 
-config :service_gather,
+config :service_gather, Gather.Application,
   kafka_endpoints: nil,
   brook: [
     driver: [
@@ -17,11 +17,5 @@ config :service_gather,
 
 config :service_gather, Gather.Application, init?: false
 
-config :service_gather, Gather.Writer,
-  writer: WriterMock,
-  dlq: DlqMock
-
 config :service_gather, Gather.Extraction,
-  writer: Gather.WriterMock,
-  chunk_size: 10,
   max_tries: 3

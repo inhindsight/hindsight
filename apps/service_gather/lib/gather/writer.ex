@@ -1,10 +1,11 @@
 defmodule Gather.Writer do
   @behaviour Writer
+  use Properties, otp_app: :service_gather
 
-  @config Application.get_env(:service_gather, __MODULE__, [])
-
-  @writer Keyword.get(@config, :writer, Writer.Kafka.Topic)
-  @dlq Keyword.get(@config, :dlq, Gather.DLQ)
+  getter(:app_name, required: true)
+  getter(:writer, default: Writer.Kafka.Topic)
+  getter(:dlq, default: Gather.DLQ)
+  getter(:kafka_endpoints, required: true)
 
   alias Writer.DLQ.DeadLetter
   require Logger
@@ -14,12 +15,12 @@ defmodule Gather.Writer do
     %Extract{destination: destination} = Keyword.fetch!(args, :extract)
 
     writer_args = [
-      endpoints: Application.fetch_env!(:service_gather, :kafka_endpoints),
+      endpoints: kafka_endpoints(),
       name: Keyword.get(args, :name, nil),
       topic: destination
     ]
 
-    @writer.start_link(writer_args)
+    writer().start_link(writer_args)
   end
 
   @impl Writer
@@ -49,14 +50,14 @@ defmodule Gather.Writer do
   defp forward(_server, []), do: :ok
 
   defp forward(server, messages) do
-    @writer.write(server, messages)
+    writer().write(server, messages)
   end
 
   defp dlq([]), do: :ok
 
   defp dlq(errors) do
     with dead_letters <- Enum.map(errors, &to_dead_letter/1),
-         {:error, reason} <- @dlq.write(dead_letters) do
+         {:error, reason} <- dlq().write(dead_letters) do
       log_dlq_error(dead_letters, reason)
     end
   end
@@ -65,7 +66,7 @@ defmodule Gather.Writer do
     DeadLetter.new(
       dataset_id: dataset_id,
       original_message: og,
-      app_name: Application.get_env(:service_gather, :app_name),
+      app_name: app_name(),
       reason: reason
     )
   end
