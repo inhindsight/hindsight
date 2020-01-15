@@ -54,6 +54,8 @@ defmodule Gather.ExtractionTest do
     {:ok, pid} = Extraction.start_link(extract: extract)
 
     assert_receive {:EXIT, ^pid, :normal}, 2_000
+
+    assert_down(pid)
   end
 
   test "when child write return error tuple it retries and then dies" do
@@ -81,6 +83,8 @@ defmodule Gather.ExtractionTest do
     {:ok, pid} = Extraction.start_link(extract: extract)
 
     assert_receive {:EXIT, ^pid, "failure to write"}, 10_000
+
+    assert_down(pid)
   end
 
   test "when child writer fails to start extraction is retried" do
@@ -107,5 +111,12 @@ defmodule Gather.ExtractionTest do
     {:ok, pid} = Extraction.start_link(extract: extract)
 
     assert_receive {:EXIT, ^pid, "bad process"}, 10_000
+    assert_down(pid)
+  end
+
+  defp assert_down(pid) do
+    ref = Process.monitor(pid)
+    Process.exit(pid, :kill)
+    assert_receive {:DOWN, ^ref, _, _, _}
   end
 end
