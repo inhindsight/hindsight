@@ -37,7 +37,7 @@ defmodule Gather.Extraction do
 
   defp do_extract(writer, extract) do
     with {:ok, stream} <- Extract.Steps.execute(extract.steps),
-         {:error, reason} <- write(writer, stream) do
+         {:error, reason} <- write(writer, stream, extract.dataset_id) do
       warn_extract_failure(extract, reason)
       {:error, reason}
     end
@@ -47,10 +47,10 @@ defmodule Gather.Extraction do
     Process.exit(writer, :normal)
   end
 
-  defp write(writer, stream) do
+  defp write(writer, stream, dataset_id) do
     stream
     |> Stream.chunk_every(chunk_size())
-    |> Ok.each(&writer().write(writer, &1))
+    |> Ok.each(&writer().write(writer, &1, dataset_id: dataset_id))
   end
 
   defp warn_extract_failure(extract, reason) do
