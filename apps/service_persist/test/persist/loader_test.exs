@@ -34,6 +34,10 @@ defmodule Persist.LoaderTest do
         ]
       )
 
+    on_exit(fn ->
+      Persist.Load.Supervisor.kill_all_children()
+    end)
+
     [load: load]
   end
 

@@ -28,7 +28,6 @@ defmodule Persist.MixProject do
       {:writer_presto, in_umbrella: true},
       {:writer_dlq, in_umbrella: true},
       {:definition_events, in_umbrella: true},
-      {:simple_registry, in_umbrella: true},
       {:initializer, in_umbrella: true},
       {:annotated_retry, in_umbrella: true},
       {:properties, in_umbrella: true},
