@@ -9,7 +9,8 @@ config :service_broadcast, BroadcastWeb.Endpoint,
 # Print only warnings and errors during test
 config :logger, level: :warn
 
-config :service_broadcast,
+config :service_broadcast, Broadcast.Application,
+  init?: false,
   kafka_endpoints: nil,
   brook: [
     driver: [
@@ -23,8 +24,6 @@ config :service_broadcast,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
-
-config :service_broadcast, Broadcast.Application, init?: false
 
 config :service_broadcast, Broadcast.Stream.Broadway,
   broadway_config: [

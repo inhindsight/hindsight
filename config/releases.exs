@@ -61,7 +61,7 @@ config :service_broadcast, BroadcastWeb.Endpoint,
   render_errors: [view: BroadcastWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Broadcast.PubSub, adapter: Phoenix.PubSub.PG2]
 
-config :service_broadcast,
+config :service_broadcast, Broadcast.Application,
   kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [
