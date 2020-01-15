@@ -1,21 +1,23 @@
 # Ok
 
-**TODO: Add description**
+Provides functions for standardizing function
+results to `{:ok, result}` or `{:error, reason}`
+tuples.
+
+## Usage
+
+```elixir
+  {:ok, some_result} = some_result |> Ok.ok()
+
+  {:ok, 10} = Ok.map({:ok, 5}, fn x -> x * 2 end)
+```
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `ok` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:ok, "~> 0.1.0"}
+    {:ok, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/ok](https://hexdocs.pm/ok).
-
