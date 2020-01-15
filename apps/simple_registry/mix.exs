@@ -23,7 +23,7 @@ defmodule SimpleRegistry.MixProject do
 
   defp deps do
     [
-      {:assert_async, in_umbrella: true, only: [:test]}
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

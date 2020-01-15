@@ -11,7 +11,7 @@ defmodule Persist.Application do
       [
         Persist.Load.Registry,
         Persist.Load.Supervisor,
-        dlq(),
+        # dlq(),
         brook(),
         init()
       ]

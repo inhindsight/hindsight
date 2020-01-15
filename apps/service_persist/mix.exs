@@ -35,7 +35,7 @@ defmodule Persist.MixProject do
       {:jason, "~> 1.1"},
       {:off_broadway_kafka, "~> 0.5.0"},
       {:mox, "~> 0.5", only: [:test]},
-      {:assert_async, in_umbrella: true}
+      {:testing, in_umbrella: true}
     ]
   end
 
