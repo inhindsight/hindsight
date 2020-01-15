@@ -13,9 +13,9 @@ defmodule Gather.WriterTest do
       update: fn config ->
         Keyword.put(config, :writer, WriterMock)
         |> Keyword.put(:dlq, DlqMock)
-        |> Keyword.put(:kafka_endpoints, [localhost: 9092])
+        |> Keyword.put(:kafka_endpoints, localhost: 9092)
       end
-    },
+    }
   ])
 
   setup :verify_on_exit!
