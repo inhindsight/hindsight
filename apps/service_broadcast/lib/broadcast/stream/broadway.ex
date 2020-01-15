@@ -1,8 +1,8 @@
 defmodule Broadcast.Stream.Broadway do
   use Broadway
+  use Properties, otp_app: :service_broadcast
 
-  @config Application.get_env(:service_broadcast, __MODULE__, [])
-  @broadway_config Keyword.fetch!(@config, :broadway_config)
+  getter(:broadway_config, required: true)
 
   def start_link(init_arg) do
     %Load.Broadcast{} = load = Keyword.fetch!(init_arg, :load)
@@ -29,7 +29,7 @@ defmodule Broadcast.Stream.Broadway do
   end
 
   defp setup_config(load) do
-    Keyword.put(@broadway_config, :name, :"broadcast_broadway_#{load.source}")
+    Keyword.put(broadway_config(), :name, :"broadcast_broadway_#{load.source}")
     |> Keyword.update!(:producer, &update_producer(load, &1))
     |> Keyword.put(:context, %{
       load: load
