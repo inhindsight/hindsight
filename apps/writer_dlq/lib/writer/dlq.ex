@@ -1,12 +1,13 @@
 defmodule Writer.DLQ do
   @behaviour Writer
   require Logger
+  use Properties, otp_app: :writer_dlq
 
   alias Writer.DLQ.DeadLetter
 
-  @default_writer Writer.Kafka.Topic
-  @writer Application.get_env(:writer_dlq, :writer, @default_writer)
   @default_topic "dead-letter-queue"
+
+  getter(:writer, default: Writer.Kafka.Topic)
 
   defimpl Jason.Encoder, for: Tuple do
     def encode(value, opts) do
@@ -44,7 +45,7 @@ defmodule Writer.DLQ do
 
   @impl Writer
   def start_link(args) do
-    @writer.start_link(
+    writer().start_link(
       endpoints: Keyword.fetch!(args, :endpoints),
       topic: Keyword.get(args, :topic, @default_topic),
       name: Keyword.get(args, :name, nil)
@@ -62,7 +63,7 @@ defmodule Writer.DLQ do
   @impl Writer
   def write(server, dead_letters, opts \\ []) do
     messages = Enum.map(dead_letters, &format/1)
-    @writer.write(server, messages, opts)
+    writer().write(server, messages, opts)
   end
 
   defp format(%DeadLetter{} = dead_letter) do
