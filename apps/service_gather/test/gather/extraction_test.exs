@@ -8,10 +8,14 @@ defmodule Gather.ExtractionTest do
   @moduletag capture_log: true
 
   Temp.Env.modify([
-    %{app: :service_gather, key: Gather.Extraction, update: fn config ->
-       Keyword.put(config, :writer, Gather.WriterMock)
-       |> Keyword.put(:chunk_size, 10)
-     end}
+    %{
+      app: :service_gather,
+      key: Gather.Extraction,
+      update: fn config ->
+        Keyword.put(config, :writer, Gather.WriterMock)
+        |> Keyword.put(:chunk_size, 10)
+      end
+    }
   ])
 
   setup :set_mox_global

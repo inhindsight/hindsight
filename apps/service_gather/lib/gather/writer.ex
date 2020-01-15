@@ -34,6 +34,7 @@ defmodule Gather.Writer do
   @impl Writer
   def write(server, messages, opts) do
     dataset_id = Keyword.fetch!(opts, :dataset_id)
+
     results =
       Enum.reduce(messages, %{ok: [], error: []}, fn message, acc ->
         case Jason.encode(message) do

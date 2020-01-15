@@ -11,9 +11,13 @@ defmodule GatherTest do
   alias Gather.Extraction
 
   Temp.Env.modify([
-    %{app: :service_gather, key: Gather.Extraction, update: fn config ->
-       Keyword.put(config, :writer, Gather.WriterMock)
-     end}
+    %{
+      app: :service_gather,
+      key: Gather.Extraction,
+      update: fn config ->
+        Keyword.put(config, :writer, Gather.WriterMock)
+      end
+    }
   ])
 
   setup :set_mox_global
