@@ -11,7 +11,7 @@ defmodule Persist.Application do
       [
         Persist.Load.Registry,
         Persist.Load.Supervisor,
-        # dlq(),
+        dlq(),
         brook(),
         init()
       ]
@@ -29,7 +29,7 @@ defmodule Persist.Application do
   end
 
   defp dlq() do
-    case Application.get_env(:service_persist, :kafka_endpoints) do
+    case get_config_value(:kafka_endpoints) do
       nil -> []
       endpoints -> {Persist.DLQ, endpoints: endpoints}
     end

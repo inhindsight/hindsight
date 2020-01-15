@@ -36,5 +36,3 @@ config :service_persist, Persist.Load.Broadway,
       ]
     ]
   ]
-
-config :writer_dlq, Writer.DLQ, writer: Fake.Writer

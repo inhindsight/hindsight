@@ -11,8 +11,8 @@ defmodule Persist.Writer do
   getter(:schema, required: true)
 
   @type init_opts :: [
-    load: %Load.Persist{}
-  ]
+          load: %Load.Persist{}
+        ]
 
   @impl Writer
   def start_link(init_arg) do
