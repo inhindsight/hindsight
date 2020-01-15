@@ -1,9 +1,20 @@
 defmodule Persist.Load.BroadwayTest do
   use ExUnit.Case
   import Mox
+  require Temp.Env
 
   alias Writer.DLQ.DeadLetter
   @moduletag capture_log: true
+
+  Temp.Env.modify([
+    %{
+      app: :service_persist,
+      key: Persist.Load.Broadway,
+      update: fn config ->
+        Keyword.put(config, :dlq, Persist.DLQMock)
+      end
+    }
+  ])
 
   setup :set_mox_global
   setup :verify_on_exit!
@@ -50,26 +61,6 @@ defmodule Persist.Load.BroadwayTest do
     assert 2 == length(successful)
   end
 
-  test "broadway registers itself with the Persist.Load.Registry" do
-    load =
-      Load.Persist.new!(
-        id: "load-1",
-        dataset_id: "ds1",
-        name: "fake-name",
-        source: "topic-b",
-        destination: "table-a",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
-      )
-
-    {:ok, pid} = Persist.Load.Broadway.start_link(load: load, writer: fn _ -> :ok end)
-    on_exit(fn -> assert_down(pid) end)
-
-    assert pid == Persist.Load.Registry.whereis(:"#{load.source}")
-  end
-
   test "sends message to dlq if it fails to decode" do
     test = self()
 
@@ -113,7 +104,7 @@ defmodule Persist.Load.BroadwayTest do
       DeadLetter.new(
         dataset_id: "ds1",
         original_message: Enum.at(messages, 1),
-        app_name: Application.get_env(:service_persist, :app_name),
+        app_name: "service_persist",
         reason: reason
       )
 

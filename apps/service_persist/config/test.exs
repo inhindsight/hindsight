@@ -1,6 +1,7 @@
 use Mix.Config
 
-config :service_persist,
+config :service_persist, Persist.Application,
+  init?: false,
   kafka_endpoints: nil,
   brook: [
     driver: [
@@ -15,22 +16,9 @@ config :service_persist,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_persist, Persist.Application, init?: false
-
-config :service_persist, Persist.Writer,
-  writer: Writer.PrestoMock,
-  url: "http://localhost:8080",
-  user: "test_user",
-  catalog: "test_catalog",
-  schema: "test_schema"
-
-config :service_persist, Persist.Loader,
-  writer: Persist.WriterMock,
-  broadway: BroadwayMock,
-  max_retries: 3
+config :service_persist, Persist.Loader, max_retries: 3
 
 config :service_persist, Persist.Load.Broadway,
-  dlq: Persist.DLQMock,
   broadway_config: [
     producer: [
       module: {Broadway.DummyProducer, []},
@@ -48,3 +36,6 @@ config :service_persist, Persist.Load.Broadway,
       ]
     ]
   ]
+
+config :writer_dlq, Writer.DLQ,
+  writer: WriterMock

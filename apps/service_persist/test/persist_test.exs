@@ -8,6 +8,23 @@ defmodule PersistTest do
   @instance Persist.Application.instance()
   @moduletag capture_log: true
 
+  Temp.Env.modify([
+    %{
+      app: :service_persist,
+      key: Persist.Load.Broadway,
+      update: fn config ->
+        Keyword.put(config, :dlq, Persist.DLQMock)
+      end
+    },
+    %{
+      app: :service_persist,
+      key: Persist.Writer,
+      update: fn config ->
+        Keyword.put(config, :writer, Writer.PrestoMock)
+      end
+    }
+  ])
+
   setup :set_mox_global
   setup :verify_on_exit!
 
@@ -35,23 +52,20 @@ defmodule PersistTest do
         ]
       )
 
-    Persist.WriterMock
-    |> expect(:start_link, fn args ->
-      send(test, {:start_link, args})
-      {:ok, :writer_pid}
-    end)
-    |> expect(:write, fn :writer_pid, messages ->
-      send(test, {:write, messages})
+    Writer.PrestoMock
+    |> stub(:start_link, fn _args -> {:ok, :writer_presto_pid} end)
+    |> stub(:write, fn :writer_presto_pid, msgs, _opts ->
+      send(test, {:write, msgs})
       :ok
     end)
 
     Brook.Test.send(@instance, load_persist_start(), "testing", load)
 
-    assert_async max_tries: 50 do
+    assert_async do
       assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
     end
 
-    broadway = Persist.Load.Registry.whereis(:"#{load.source}")
+    broadway = Process.whereis(:"persist_broadway_#{load.source}")
 
     messages = [
       %{value: %{"one" => 1} |> Jason.encode!()}
@@ -82,10 +96,11 @@ defmodule PersistTest do
         ]
       )
 
-    Persist.WriterMock
-    |> expect(:start_link, fn args ->
-      send(test, {:start_link, args})
-      {:ok, :writer_pid}
+    Writer.PrestoMock
+    |> stub(:start_link, fn _args -> {:ok, :writer_presto_pid} end)
+    |> stub(:write, fn :writer_presto_pid, msgs, _opts ->
+      send(test, {:write, msgs})
+      :ok
     end)
 
     Brook.Test.send(@instance, load_persist_start(), "testing", load)
