@@ -1,6 +1,21 @@
-defmodule Persiste.WriterTest do
+defmodule Persist.WriterTest do
   use ExUnit.Case
+  require Temp.Env
   import Mox
+
+  Temp.Env.modify([
+    %{
+      app: :service_persist,
+      key: Persist.Writer,
+      set: [
+        writer: Writer.PrestoMock,
+        url: "http://localhost:8080",
+        user: "test_user",
+        catalog: "test_catalog",
+        schema: "test_schema"
+      ]
+    }
+  ])
 
   setup :set_mox_global
   setup :verify_on_exit!

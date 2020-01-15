@@ -108,8 +108,9 @@ config :service_broadcast, Broadcast.Stream.Broadway,
     ]
   ]
 
+config :service_persist, Persist.Load.Broadway, app_name: "service_persist"
+
 config :service_persist,
-  app_name: "service_persist",
   kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [

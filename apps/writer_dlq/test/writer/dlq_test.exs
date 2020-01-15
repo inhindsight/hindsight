@@ -1,8 +1,13 @@
 defmodule WriterDlqTest do
   use ExUnit.Case
   import Mox
+  require Temp.Env
 
   alias Writer.DLQ.DeadLetter
+
+  Temp.Env.modify([
+    %{app: :writer_dlq, key: Writer.DLQ, set: [writer: WriterMock]}
+  ])
 
   setup :verify_on_exit!
 
