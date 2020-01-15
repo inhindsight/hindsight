@@ -1,9 +1,20 @@
 defmodule Persist.Load.BroadwayTest do
   use ExUnit.Case
   import Mox
+  require Temp.Env
 
   alias Writer.DLQ.DeadLetter
   @moduletag capture_log: true
+
+  Temp.Env.modify([
+    %{
+      app: :service_persist,
+      key: Persist.Load.Broadway,
+      update: fn config ->
+        Keyword.put(config, :dlq, Persist.DLQMock)
+      end
+    }
+  ])
 
   setup :set_mox_global
   setup :verify_on_exit!
@@ -24,17 +35,12 @@ defmodule Persist.Load.BroadwayTest do
         ]
       )
 
-    Persist.WriterMock
-    |> expect(:start_link, fn init_arg ->
-      send(test, {:start_link, init_arg})
-      {:ok, :writer_pid}
-    end)
-    |> expect(:write, fn server, messages ->
-      send(test, {:write, server, messages})
+    writer = fn msgs ->
+      send(test, {:write, msgs})
       :ok
-    end)
+    end
 
-    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load)
+    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load, writer: writer)
     on_exit(fn -> assert_down(broadway) end)
 
     messages = [
@@ -49,35 +55,10 @@ defmodule Persist.Load.BroadwayTest do
       %{"name" => "joe", "age" => 43}
     ]
 
-    assert_receive {:write, :writer_pid, ^expected}
+    assert_receive {:write, ^expected}
 
     assert_receive {:ack, ^ref, successful, []}
     assert 2 == length(successful)
-  end
-
-  test "broadway registers itself with the Persist.Load.Registry" do
-    load =
-      Load.Persist.new!(
-        id: "load-1",
-        dataset_id: "ds1",
-        name: "fake-name",
-        source: "topic-b",
-        destination: "table-a",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
-      )
-
-    Persist.WriterMock
-    |> expect(:start_link, fn _init_arg ->
-      {:ok, :writer_pid}
-    end)
-
-    {:ok, pid} = Persist.Load.Broadway.start_link(load: load)
-    on_exit(fn -> assert_down(pid) end)
-
-    assert pid == Persist.Load.Registry.whereis(:"#{load.source}")
   end
 
   test "sends message to dlq if it fails to decode" do
@@ -96,15 +77,10 @@ defmodule Persist.Load.BroadwayTest do
         ]
       )
 
-    Persist.WriterMock
-    |> expect(:start_link, fn init_arg ->
-      send(test, {:start_link, init_arg})
-      {:ok, :writer_pid}
-    end)
-    |> expect(:write, fn server, messages ->
-      send(test, {:write, server, messages})
+    writer = fn msgs ->
+      send(test, {:write, msgs})
       :ok
-    end)
+    end
 
     Persist.DLQMock
     |> expect(:write, fn messages ->
@@ -112,7 +88,7 @@ defmodule Persist.Load.BroadwayTest do
       :ok
     end)
 
-    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load)
+    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load, writer: writer)
     on_exit(fn -> assert_down(broadway) end)
 
     messages = [
@@ -128,11 +104,11 @@ defmodule Persist.Load.BroadwayTest do
       DeadLetter.new(
         dataset_id: "ds1",
         original_message: Enum.at(messages, 1),
-        app_name: Application.get_env(:service_persist, :app_name),
+        app_name: "service_persist",
         reason: reason
       )
 
-    assert_receive {:write, :writer_pid, [%{"name" => "bob", "age" => 21}]}
+    assert_receive {:write, [%{"name" => "bob", "age" => 21}]}
     assert_receive {:dlq, [^expected_dead_letter]}
 
     assert_receive {:ack, ^ref, [%{data: %{"name" => "bob", "age" => 21}}], []}

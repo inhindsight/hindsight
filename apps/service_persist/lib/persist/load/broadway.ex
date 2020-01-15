@@ -1,29 +1,31 @@
 defmodule Persist.Load.Broadway do
   use Broadway
+  use Properties, otp_app: :service_persist
 
   alias Broadway.Message
   alias Writer.DLQ.DeadLetter
 
-  @app_name Application.get_env(:service_persist, :app_name)
+  @app_name get_config_value(:app_name, required: true)
 
-  @config Application.get_env(:service_persist, __MODULE__, [])
-  @broadway_config Keyword.fetch!(@config, :broadway_config)
-  @writer Keyword.get(@config, :writer, Persist.Writer)
-  @dlq Keyword.get(@config, :dlq, Persist.DLQ)
+  getter(:broadway_config, required: true)
+  getter(:dlq, default: Persist.DLQ)
 
+  @type init_opts :: [
+          load: %Load.Persist{},
+          writer: (list -> :ok | {:error, term})
+        ]
+
+  @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(init_arg) do
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
-    # TODO move this to another process
-    {:ok, writer} = @writer.start_link(load: load)
+    writer = Keyword.fetch!(init_arg, :writer)
 
     config = setup_config(load, writer)
 
-    with {:ok, pid} <- Broadway.start_link(__MODULE__, config) do
-      Persist.Load.Registry.register_name(:"#{load.source}", pid)
-      {:ok, pid}
-    end
+    Broadway.start_link(__MODULE__, config)
   end
 
+  @impl Broadway
   def handle_message(_processor, %Message{data: data} = message, context) do
     case Jason.decode(data.value) do
       {:ok, decoded_data} ->
@@ -35,16 +37,18 @@ defmodule Persist.Load.Broadway do
     end
   end
 
+  @impl Broadway
   def handle_batch(_batch, messages, _info, context) do
     data_messages = Enum.map(messages, &Map.get(&1, :data))
-    :ok = @writer.write(context.writer, data_messages)
+    :ok = context.writer.(data_messages)
     messages
   end
 
+  @impl Broadway
   def handle_failed(messages, _context) do
     messages
     |> Enum.map(&Map.get(&1, :data))
-    |> @dlq.write()
+    |> dlq().write()
 
     messages
   end
@@ -59,7 +63,7 @@ defmodule Persist.Load.Broadway do
   end
 
   defp setup_config(load, writer) do
-    Keyword.put(@broadway_config, :name, :"persist_broadway_#{load.source}")
+    Keyword.put(broadway_config(), :name, :"persist_broadway_#{load.source}")
     |> Keyword.update!(:producer, &update_producer(load, &1))
     |> Keyword.put(:context, %{
       load: load,

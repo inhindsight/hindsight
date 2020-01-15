@@ -2,8 +2,7 @@ defmodule Persist.Application do
   @moduledoc false
 
   use Application
-
-  @config Application.get_env(:service_persist, __MODULE__, [])
+  use Properties, otp_app: :service_persist
 
   def instance(), do: :persist_instance
 
@@ -23,21 +22,21 @@ defmodule Persist.Application do
   end
 
   defp init() do
-    case Keyword.get(@config, :init?, true) do
+    case get_config_value(:init?, default: true) do
       true -> Persist.Init
       false -> []
     end
   end
 
   defp dlq() do
-    case Application.get_env(:service_persist, :kafka_endpoints) do
+    case get_config_value(:kafka_endpoints) do
       nil -> []
       endpoints -> {Persist.DLQ, endpoints: endpoints}
     end
   end
 
   defp brook() do
-    case Application.get_env(:service_persist, :brook) do
+    case get_config_value(:brook, required: true) do
       nil -> []
       config -> {Brook, Keyword.put(config, :instance, instance())}
     end
