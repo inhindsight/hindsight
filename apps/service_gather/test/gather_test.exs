@@ -21,7 +21,7 @@ defmodule GatherTest do
 
   setup do
     on_exit(fn ->
-      __cleanup_supervisor__()
+      Gather.Extraction.Supervisor.kill_all_children()
     end)
 
     :ok
@@ -45,8 +45,8 @@ defmodule GatherTest do
       send(test, {:start_link, args})
       {:ok, dummy_process}
     end)
-    |> expect(:write, fn server, messages ->
-      send(test, {:write, server, messages})
+    |> expect(:write, fn server, messages, opts ->
+      send(test, {:write, server, messages, opts})
       :ok
     end)
 
@@ -71,7 +71,7 @@ defmodule GatherTest do
 
     Brook.Test.send(@instance, extract_start(), "testing", extract)
 
-    assert_receive {:write, ^dummy_process, messages}, 5_000
+    assert_receive {:write, ^dummy_process, messages, [dataset_id: "test-ds1"]}, 5_000
 
     assert messages == [
              %{"A" => "one", "B" => "two", "C" => "three"},

@@ -21,7 +21,7 @@ defmodule Gather.ExtractionTest do
     Process.flag(:trap_exit, true)
 
     on_exit(fn ->
-      __cleanup_supervisor__()
+      Gather.Extraction.Supervisor.kill_all_children()
     end)
 
     :ok
@@ -32,8 +32,8 @@ defmodule Gather.ExtractionTest do
 
     Gather.WriterMock
     |> expect(:start_link, 1, fn _ -> Agent.start_link(fn -> :dummy end) end)
-    |> expect(:write, 10, fn server, messages ->
-      send(test, {:write, server, messages})
+    |> expect(:write, 10, fn server, messages, opts ->
+      send(test, {:write, server, messages, opts})
       :ok
     end)
 
@@ -61,7 +61,7 @@ defmodule Gather.ExtractionTest do
   test "when child write return error tuple it retries and then dies" do
     Gather.WriterMock
     |> expect(:start_link, 4, fn _ -> Agent.start_link(fn -> :dummy end) end)
-    |> expect(:write, 4, fn _server, _messages -> {:error, "failure to write"} end)
+    |> expect(:write, 4, fn _server, _messages, _opts -> {:error, "failure to write"} end)
 
     extract =
       Extract.new!(

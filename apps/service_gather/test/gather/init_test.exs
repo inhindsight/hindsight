@@ -19,9 +19,7 @@ defmodule Gather.InitTest do
   setup :verify_on_exit!
 
   setup do
-    on_exit(fn ->
-      __cleanup_supervisor__()
-    end)
+    Process.flag(:trap_exit, true)
 
     :ok
   end
@@ -61,11 +59,13 @@ defmodule Gather.InitTest do
     end)
 
     {:ok, pid} = Gather.Init.start_link(name: :init_test)
-    on_exit(fn -> assert_down(pid) end)
 
     Enum.each(extracts, fn extract ->
       assert_receive {:start_link, [extract: ^extract]}, 5_000
     end)
+
+    assert_down(pid)
+    Gather.Extraction.Supervisor.kill_all_children()
   end
 
   defp assert_down(pid) do

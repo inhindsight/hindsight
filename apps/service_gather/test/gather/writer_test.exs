@@ -63,11 +63,11 @@ defmodule Gather.WriterTest do
       stub_writer(:ok)
 
       messages = [
-        Data.new!(version: 1, dataset_id: "ds1", extract_id: "A", payload: %{"one" => "two"}),
-        Data.new!(version: 1, dataset_id: "ds1", extract_id: "A", payload: %{"one" => "three"})
+        %{"one" => "two"},
+        %{"one" => "three"}
       ]
 
-      :ok = Gather.Writer.write(:pid, messages)
+      :ok = Gather.Writer.write(:pid, messages, dataset_id: "ds1")
 
       assert_receive {:write, :pid, actuals}
       assert actuals == Enum.map(messages, &Jason.encode!/1)
@@ -78,16 +78,11 @@ defmodule Gather.WriterTest do
       stub_dlq(:ok)
 
       messages = [
-        Data.new!(
-          version: 1,
-          dataset_id: "ds1",
-          extract_id: "A",
-          payload: %{"one" => unencodable_value()}
-        ),
-        Data.new!(version: 1, dataset_id: "ds1", extract_id: "A", payload: %{"one" => "three"})
+        %{"one" => unencodable_value()},
+        %{"one" => "three"}
       ]
 
-      :ok = Gather.Writer.write(:pid, messages)
+      :ok = Gather.Writer.write(:pid, messages, dataset_id: "ds1")
 
       assert_receive {:write, :pid, actuals}
       assert actuals = messages |> Enum.at(1) |> Jason.encode!() |> List.wrap()
@@ -111,16 +106,11 @@ defmodule Gather.WriterTest do
       stub_dlq(:ok)
 
       messages = [
-        Data.new!(
-          version: 1,
-          dataset_id: "ds1",
-          extract_id: "A",
-          payload: %{"one" => unencodable_value()}
-        ),
-        Data.new!(version: 1, dataset_id: "ds1", extract_id: "A", payload: %{"one" => "three"})
+        %{"one" => unencodable_value()},
+        %{"one" => "three"}
       ]
 
-      assert {:error, "failure to write"} = Gather.Writer.write(:pid, messages)
+      assert {:error, "failure to write"} = Gather.Writer.write(:pid, messages, dataset_id: "ds1")
 
       refute_receive {:dlq, _}
     end
@@ -129,17 +119,12 @@ defmodule Gather.WriterTest do
       stub_dlq({:error, "failure to dlq"})
 
       messages = [
-        Data.new!(
-          version: 1,
-          dataset_id: "ds1",
-          extract_id: "A",
-          payload: %{"one" => unencodable_value()}
-        )
+        %{"one" => unencodable_value()}
       ]
 
       log =
         capture_log(fn ->
-          assert :ok == Gather.Writer.write(:pid, messages)
+          assert :ok == Gather.Writer.write(:pid, messages, dataset_id: "ds1")
         end)
 
       {:error, reason} = messages |> List.first() |> Jason.encode()
