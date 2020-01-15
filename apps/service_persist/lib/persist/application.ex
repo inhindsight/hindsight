@@ -2,8 +2,9 @@ defmodule Persist.Application do
   @moduledoc false
 
   use Application
+  use Properties, otp_app: :service_persist
 
-  @config Application.get_env(:service_persist, __MODULE__, [])
+  # @config Application.get_env(:service_persist, __MODULE__, [])
 
   def instance(), do: :persist_instance
 
@@ -12,7 +13,7 @@ defmodule Persist.Application do
       [
         Persist.Load.Registry,
         Persist.Load.Supervisor,
-        dlq(),
+        # dlq(),
         brook(),
         init()
       ]
@@ -23,7 +24,7 @@ defmodule Persist.Application do
   end
 
   defp init() do
-    case Keyword.get(@config, :init?, true) do
+    case get_config_value(:init?, default: true) do
       true -> Persist.Init
       false -> []
     end
@@ -37,7 +38,7 @@ defmodule Persist.Application do
   end
 
   defp brook() do
-    case Application.get_env(:service_persist, :brook) do
+    case get_config_value(:brook, required: true) do
       nil -> []
       config -> {Brook, Keyword.put(config, :instance, instance())}
     end

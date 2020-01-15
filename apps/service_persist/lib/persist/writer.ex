@@ -1,24 +1,24 @@
 defmodule Persist.Writer do
   @behaviour Writer
+  use Properties, otp_app: :service_persist
 
   alias Persist.Dictionary.Translator
 
-  @config Application.get_env(:service_persist, __MODULE__, [])
-  @writer Keyword.get(@config, :writer, Writer.Presto)
-  @url Keyword.fetch!(@config, :url)
-  @user Keyword.fetch!(@config, :user)
-  @catalog Keyword.fetch!(@config, :catalog)
-  @schema Keyword.fetch!(@config, :schema)
+  getter(:writer, default: Writer.Presto)
+  getter(:url, required: true)
+  getter(:user, required: true)
+  getter(:catalog, required: true)
+  getter(:schema, required: true)
 
   @impl Writer
   def start_link(init_arg) do
     %Load.Persist{destination: destination, schema: schema} = Keyword.get(init_arg, :load)
 
     [
-      url: @url,
-      user: @user,
-      catalog: @catalog,
-      schema: @schema,
+      url: url(),
+      user: user(),
+      catalog: catalog(),
+      schema: schema(),
       table: destination,
       table_schema:
         Enum.map(schema, fn type ->
@@ -26,7 +26,7 @@ defmodule Persist.Writer do
           {result.name, result.type}
         end)
     ]
-    |> @writer.start_link()
+    |> writer().start_link()
   end
 
   @impl Writer
@@ -37,5 +37,8 @@ defmodule Persist.Writer do
     }
   end
 
-  defdelegate write(server, messages, opts \\ []), to: @writer
+  @impl Writer
+  def write(server, messages, opts \\ []) do
+    writer().write(server, messages, opts)
+  end
 end
