@@ -30,8 +30,7 @@ kafka_endpoints =
   |> Enum.map(fn entry -> String.split(entry, ":") end)
   |> Enum.map(fn [host, port] -> {String.to_atom(host), String.to_integer(port)} end)
 
-config :service_gather,
-  app_name: "service_gather",
+config :service_gather, Gather.Application,
   kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [
@@ -53,6 +52,10 @@ config :service_gather,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
+
+config :service_gather, Gather.Writer,
+  app_name: "service_gather",
+  kafka_endpoints: kafka_endpoints
 
 # SERVICE BROADCAST
 config :service_broadcast, BroadcastWeb.Endpoint,

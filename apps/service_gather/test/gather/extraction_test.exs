@@ -1,10 +1,18 @@
 defmodule Gather.ExtractionTest do
   use Gather.Case
   import Mox
+  require Temp.Env
 
   alias Gather.Extraction
 
   @moduletag capture_log: true
+
+  Temp.Env.modify([
+    %{app: :service_gather, key: Gather.Extraction, update: fn config ->
+       Keyword.put(config, :writer, Gather.WriterMock)
+       |> Keyword.put(:chunk_size, 10)
+     end}
+  ])
 
   setup :set_mox_global
   setup :verify_on_exit!
