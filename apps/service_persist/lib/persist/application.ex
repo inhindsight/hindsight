@@ -4,8 +4,6 @@ defmodule Persist.Application do
   use Application
   use Properties, otp_app: :service_persist
 
-  # @config Application.get_env(:service_persist, __MODULE__, [])
-
   def instance(), do: :persist_instance
 
   def start(_type, _args) do
@@ -13,7 +11,7 @@ defmodule Persist.Application do
       [
         Persist.Load.Registry,
         Persist.Load.Supervisor,
-        # dlq(),
+        dlq(),
         brook(),
         init()
       ]

@@ -44,6 +44,7 @@ defmodule Writer.DLQ do
 
   @impl Writer
   def start_link(args) do
+    IO.inspect(@writer, label: "DLQ Writer")
     @writer.start_link(
       endpoints: Keyword.fetch!(args, :endpoints),
       topic: Keyword.get(args, :topic, @default_topic),

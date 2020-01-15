@@ -42,6 +42,7 @@ defmodule Properties do
             |> Keyword.fetch!(unquote(key))
           end
         end
+
       false ->
         quote do
           defp unquote(key)() do
