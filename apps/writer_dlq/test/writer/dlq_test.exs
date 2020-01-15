@@ -6,7 +6,7 @@ defmodule WriterDlqTest do
   alias Writer.DLQ.DeadLetter
 
   Temp.Env.modify([
-    %{app: :writer_dlq, key: :writer, set: [writer: WriterMock]}
+    %{app: :writer_dlq, key: Writer.DLQ, set: [writer: WriterMock]}
   ])
 
   setup :verify_on_exit!
