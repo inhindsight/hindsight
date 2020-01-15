@@ -10,6 +10,10 @@ defmodule Persist.Writer do
   getter(:catalog, required: true)
   getter(:schema, required: true)
 
+  @type init_opts :: [
+    load: %Load.Persist{}
+  ]
+
   @impl Writer
   def start_link(init_arg) do
     %Load.Persist{destination: destination, schema: schema} = Keyword.get(init_arg, :load)
