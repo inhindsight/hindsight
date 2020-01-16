@@ -1,6 +1,7 @@
 defmodule Gather.InitTest do
   use Gather.Case
   import Mox
+  require Temp.Env
 
   alias Gather.Extraction
 
@@ -8,13 +9,21 @@ defmodule Gather.InitTest do
 
   @instance Gather.Application.instance()
 
+  Temp.Env.modify([
+    %{
+      app: :service_gather,
+      key: Gather.Extraction,
+      update: fn config ->
+        Keyword.put(config, :writer, Gather.WriterMock)
+      end
+    }
+  ])
+
   setup :set_mox_global
   setup :verify_on_exit!
 
   setup do
-    on_exit(fn ->
-      __cleanup_supervisor__()
-    end)
+    Process.flag(:trap_exit, true)
 
     :ok
   end
@@ -54,11 +63,13 @@ defmodule Gather.InitTest do
     end)
 
     {:ok, pid} = Gather.Init.start_link(name: :init_test)
-    on_exit(fn -> assert_down(pid) end)
 
     Enum.each(extracts, fn extract ->
       assert_receive {:start_link, [extract: ^extract]}, 5_000
     end)
+
+    assert_down(pid)
+    Gather.Extraction.Supervisor.kill_all_children()
   end
 
   defp assert_down(pid) do

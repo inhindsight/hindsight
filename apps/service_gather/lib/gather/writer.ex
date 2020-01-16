@@ -1,10 +1,11 @@
 defmodule Gather.Writer do
   @behaviour Writer
+  use Properties, otp_app: :service_gather
 
-  @config Application.get_env(:service_gather, __MODULE__, [])
-
-  @writer Keyword.get(@config, :writer, Writer.Kafka.Topic)
-  @dlq Keyword.get(@config, :dlq, Gather.DLQ)
+  getter(:app_name, required: true)
+  getter(:writer, default: Writer.Kafka.Topic)
+  getter(:dlq, default: Gather.DLQ)
+  getter(:kafka_endpoints, required: true)
 
   alias Writer.DLQ.DeadLetter
   require Logger
@@ -14,12 +15,12 @@ defmodule Gather.Writer do
     %Extract{destination: destination} = Keyword.fetch!(args, :extract)
 
     writer_args = [
-      endpoints: Application.fetch_env!(:service_gather, :kafka_endpoints),
+      endpoints: kafka_endpoints(),
       name: Keyword.get(args, :name, nil),
       topic: destination
     ]
 
-    @writer.start_link(writer_args)
+    writer().start_link(writer_args)
   end
 
   @impl Writer
@@ -31,7 +32,9 @@ defmodule Gather.Writer do
   end
 
   @impl Writer
-  def write(server, messages, _opts \\ []) do
+  def write(server, messages, opts \\ []) do
+    dataset_id = Keyword.fetch!(opts, :dataset_id)
+
     results =
       Enum.reduce(messages, %{ok: [], error: []}, fn message, acc ->
         case Jason.encode(message) do
@@ -41,7 +44,7 @@ defmodule Gather.Writer do
       end)
 
     with :ok <- forward(server, Enum.reverse(results.ok)) do
-      dlq(Enum.reverse(results.error))
+      dlq(dataset_id, Enum.reverse(results.error))
       :ok
     end
   end
@@ -49,23 +52,23 @@ defmodule Gather.Writer do
   defp forward(_server, []), do: :ok
 
   defp forward(server, messages) do
-    @writer.write(server, messages)
+    writer().write(server, messages)
   end
 
-  defp dlq([]), do: :ok
+  defp dlq(_, []), do: :ok
 
-  defp dlq(errors) do
-    with dead_letters <- Enum.map(errors, &to_dead_letter/1),
-         {:error, reason} <- @dlq.write(dead_letters) do
+  defp dlq(dataset_id, errors) do
+    with dead_letters <- Enum.map(errors, &to_dead_letter(dataset_id, &1)),
+         {:error, reason} <- dlq().write(dead_letters) do
       log_dlq_error(dead_letters, reason)
     end
   end
 
-  defp to_dead_letter({%Data{dataset_id: dataset_id} = og, reason}) do
+  defp to_dead_letter(dataset_id, {og, reason}) do
     DeadLetter.new(
       dataset_id: dataset_id,
       original_message: og,
-      app_name: Application.get_env(:service_gather, :app_name),
+      app_name: app_name(),
       reason: reason
     )
   end

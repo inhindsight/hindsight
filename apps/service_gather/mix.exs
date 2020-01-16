@@ -37,6 +37,8 @@ defmodule Gather.MixProject do
       {:writer, in_umbrella: true},
       {:writer_kafka, in_umbrella: true},
       {:writer_dlq, in_umbrella: true},
+      {:properties, in_umbrella: true},
+      {:annotated_retry, in_umbrella: true},
       {:elixir_uuid, "~> 1.2"},
       {:retry, "~> 0.13.0"},
       {:initializer, in_umbrella: true},
