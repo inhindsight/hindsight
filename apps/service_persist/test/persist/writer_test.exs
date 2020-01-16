@@ -56,7 +56,7 @@ defmodule Persist.WriterTest do
   end
 
   describe "writer/2" do
-    test "will send message to presto writer" do
+    setup do
       test = self()
 
       Writer.PrestoMock
@@ -65,19 +65,71 @@ defmodule Persist.WriterTest do
         :ok
       end)
 
+      :ok
+    end
+
+    test "will send message to presto writer" do
+      schema = [
+        %Dictionary.Type.String{name: "name"},
+        %Dictionary.Type.Integer{name: "age"}
+      ]
+
       messages = [
         %{"name" => "john", "age" => 21},
         %{"name" => "kelly", "age" => 43}
       ]
 
-      assert :ok = Persist.Writer.write(:pid, messages)
+      assert :ok = Persist.Writer.write(:pid, messages, schema: schema)
 
       expected = [
-        %{"name" => "john", "age" => 21},
-        %{"name" => "kelly", "age" => 43}
+        {"john", 21},
+        {"kelly", 43}
       ]
 
       assert_receive {:write, :pid, ^expected, _}
+    end
+
+    test "will support hierarchichal data" do
+      schema = [
+        %Dictionary.Type.String{name: "name"},
+        %Dictionary.Type.Integer{name: "age"},
+        %Dictionary.Type.List{name: "colors", item_type: Dictionary.Type.String},
+        %Dictionary.Type.Map{
+          name: "spouse",
+          fields: [
+            %Dictionary.Type.String{name: "name"},
+            %Dictionary.Type.Integer{name: "age"},
+            %Dictionary.Type.List{name: "colors", item_type: Dictionary.Type.String}
+          ]
+        },
+        %Dictionary.Type.List{
+          name: "friends",
+          item_type: Dictionary.Type.Map,
+          fields: [
+            %Dictionary.Type.String{name: "name"},
+            %Dictionary.Type.Integer{name: "age"}
+          ]
+        }
+      ]
+
+      messages = [
+        %{
+          "name" => "george",
+          "age" => 21,
+          "colors" => ["red", "blue"],
+          "spouse" => %{"name" => "shirley", "age" => 23, "colors" => ["yellow", "green"]},
+          "friends" => [%{"name" => "joe", "age" => 47}, %{"name" => "frank", "age" => 51}]
+        }
+      ]
+
+      assert :ok = Persist.Writer.write(:pid, messages, schema: schema)
+
+      expected = [
+        {"george", 21, ["red", "blue"], {"shirley", 23, ["yellow", "green"]}, [{"joe", 47}, {"frank", 51}]}
+      ]
+
+      assert_receive {:write, :pid, ^expected, _}
+
     end
   end
 end
