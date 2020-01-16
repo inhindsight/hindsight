@@ -26,7 +26,7 @@ defmodule Persist.Writer do
       table: destination,
       table_schema:
         Enum.map(schema, fn type ->
-          result = Translator.translate(type)
+          result = Translator.translate_type(type)
           {result.name, result.type}
         end)
     ]
@@ -49,25 +49,7 @@ defmodule Persist.Writer do
   end
 
   defp format_message(schema, message) do
-    schema
-    |> Enum.map(fn field -> {field, Map.get(message, field.name)} end)
-    |> Enum.map(fn {field, value} -> format(field, value) end)
-    |> List.to_tuple()
+    map_type = %Dictionary.Type.Map{fields: schema}
+    Translator.translate_value(map_type, message)
   end
-
-  defp format(%Dictionary.Type.Map{fields: fields}, value) do
-    format_message(fields, value)
-
-    fields
-    |> Enum.map(fn %{name: name} = field -> {field, Map.get(value, name)} end)
-    |> Enum.map(fn {field, value} -> format(field, value) end)
-    |> List.to_tuple()
-  end
-
-  defp format(%Dictionary.Type.List{item_type: Dictionary.Type.Map, fields: fields}, value) do
-    map_type = %Dictionary.Type.Map{fields: fields}
-    Enum.map(value, &format(map_type, &1))
-  end
-
-  defp format(_schema, value), do: value
 end
