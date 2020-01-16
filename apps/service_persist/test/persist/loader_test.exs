@@ -102,15 +102,15 @@ defmodule Persist.LoaderTest do
 
       Persist.WriterMock
       |> stub(:start_link, fn _ -> {:ok, :writer_pid} end)
-      |> stub(:write, fn :writer_pid, msgs ->
-        send(test, {:write, msgs})
+      |> stub(:write, fn :writer_pid, msgs, opts ->
+        send(test, {:write, msgs, opts})
         :ok
       end)
 
       :ok
     end
 
-    test "will start broadway", %{load: load} do
+    test "will start broadway", %{load: %{schema: schema} = load} do
       test = self()
 
       BroadwayMock
@@ -125,7 +125,7 @@ defmodule Persist.LoaderTest do
       write_function = Keyword.get(init_arg, :writer)
       write_function.([:ok])
 
-      assert_receive {:write, [:ok]}
+      assert_receive {:write, [:ok], [schema: ^schema]}
       assert_down(pid)
     end
 

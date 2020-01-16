@@ -22,10 +22,10 @@ defmodule Persist.Loader do
   @impl GenServer
   def init(init_arg) do
     Process.flag(:trap_exit, true)
-    load = Keyword.fetch!(init_arg, :load)
+    %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
 
     with {:ok, writer_pid} <- start_writer(load),
-         writer_function <- fn msgs -> writer().write(writer_pid, msgs) end,
+         writer_function <- fn msgs -> writer().write(writer_pid, msgs, schema: load.schema) end,
          {:ok, broadway_pid} <- start_broadway(load, writer_function) do
       {:ok, %{writer_pid: writer_pid, broadway_pid: broadway_pid}}
     else
