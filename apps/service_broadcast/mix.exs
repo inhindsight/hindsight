@@ -47,8 +47,10 @@ defmodule Broadcast.MixProject do
       {:simple_registry, in_umbrella: true},
       {:initializer, in_umbrella: true},
       {:properties, in_umbrella: true},
+      {:writer_dlq, in_umbrella: true},
       {:checkov, "~> 1.0", only: [:dev, :test]},
-      {:testing, in_umbrella: true, only: [:test]}
+      {:testing, in_umbrella: true, only: [:test]},
+      {:mox, "~> 0.5.1", only: [:test]}
     ]
   end
 end
