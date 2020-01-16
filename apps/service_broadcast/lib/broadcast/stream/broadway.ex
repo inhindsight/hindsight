@@ -2,7 +2,14 @@ defmodule Broadcast.Stream.Broadway do
   use Broadway
   use Properties, otp_app: :service_broadcast
 
+  alias Writer.DLQ.DeadLetter
+  alias BroadcastWeb.Endpoint
+  alias Broadway.Message
+
+  @app_name get_config_value(:app_name, required: true)
+
   getter(:broadway_config, required: true)
+  getter(:dlq, default: Broadcast.DLQ)
 
   def start_link(init_arg) do
     %Load.Broadcast{} = load = Keyword.fetch!(init_arg, :load)
@@ -17,15 +24,24 @@ defmodule Broadcast.Stream.Broadway do
     end
   end
 
-  def handle_message(_processor, %Broadway.Message{data: data} = message, %{load: load}) do
-    case Jason.decode(data.value) do
-      {:ok, decoded_value} ->
-        BroadcastWeb.Endpoint.broadcast!("broadcast:#{load.destination}", "update", decoded_value)
-        message
-
+  def handle_message(_processor, %Message{data: data} = message, %{load: load}) do
+    with {:ok, decoded_value} <- Jason.decode(data.value),
+         {:ok, normalized_data} <- Dictionary.normalize(load.schema, decoded_value) do
+      Endpoint.broadcast!("broadcast:#{load.destination}", "update", normalized_data)
+      message
+    else
       {:error, reason} ->
-        Broadway.Message.failed(message, reason)
+        Message.update_data(message, &to_dead_letter(load, &1, reason))
+        |> Message.failed(reason)
     end
+  end
+
+  def handle_failed(messages, _context) do
+    messages
+    |> Enum.map(fn message -> message.data end)
+    |> dlq().write()
+
+    messages
   end
 
   defp setup_config(load) do
@@ -50,5 +66,14 @@ defmodule Broadcast.Stream.Broadway do
 
       {module, config}
     end)
+  end
+
+  defp to_dead_letter(load, data, reason) do
+    DeadLetter.new(
+      dataset_id: load.dataset_id,
+      original_message: data,
+      app_name: @app_name,
+      reason: reason
+    )
   end
 end
