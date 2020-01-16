@@ -1,6 +1,7 @@
 defmodule Persist.Load.Broadway do
   use Broadway
   use Properties, otp_app: :service_persist
+  require Logger
 
   alias Broadway.Message
   alias Writer.DLQ.DeadLetter
@@ -17,16 +18,20 @@ defmodule Persist.Load.Broadway do
 
   @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(init_arg) do
+    Logger.debug(fn -> "#{__MODULE__}: start_link is invoked" end)
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
     writer = Keyword.fetch!(init_arg, :writer)
 
     config = setup_config(load, writer)
 
+    Logger.debug(fn -> "#{__MODULE__}: calling Broadway.start_link" end)
     Broadway.start_link(__MODULE__, config)
   end
 
   @impl Broadway
   def handle_message(_processor, %Message{data: data} = message, context) do
+    Logger.debug(fn -> "#{__MODULE__}: handling message #{inspect(message)}" end)
+
     case Jason.decode(data.value) do
       {:ok, decoded_data} ->
         Message.update_data(message, fn _ -> decoded_data end)

@@ -43,6 +43,29 @@ defmodule Persist.Writer do
 
   @impl Writer
   def write(server, messages, opts \\ []) do
-    writer().write(server, messages, opts)
+    schema = Keyword.fetch!(opts, :schema)
+    formatted_messages = Enum.map(messages, &format_message(schema, &1))
+    writer().write(server, formatted_messages, opts)
   end
+
+  defp format_message(schema, message) do
+    schema
+    |> Enum.map(fn field -> {field, Map.get(message, field.name)} end)
+    |> Enum.map(fn {field, value} -> format(field, value) end)
+    |> List.to_tuple()
+  end
+
+  defp format(%Dictionary.Type.Map{fields: fields}, value) do
+    fields
+    |> Enum.map(fn %{name: name} = field -> {field, Map.get(value, name)} end)
+    |> Enum.map(fn {field, value} -> format(field, value) end)
+    |> List.to_tuple()
+  end
+
+  defp format(%Dictionary.Type.List{item_type: Dictionary.Type.Map, fields: fields}, value) do
+    map_type = %Dictionary.Type.Map{fields: fields}
+    Enum.map(value, &format(map_type, &1))
+  end
+
+  defp format(_schema, value), do: value
 end

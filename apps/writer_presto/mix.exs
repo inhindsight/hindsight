@@ -28,6 +28,7 @@ defmodule WriterPresto.MixProject do
       {:definition_dictionary, in_umbrella: true},
       {:prestige, "~> 1.0"},
       {:tesla, "~> 1.3"},
+      {:hackney, "~> 1.15.2"},
       {:divo, "~> 1.1", only: [:dev, :test]},
       {:checkov, "~> 1.0", only: [:dev, :test]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}

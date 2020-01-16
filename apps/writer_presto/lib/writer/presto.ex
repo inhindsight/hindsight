@@ -46,7 +46,7 @@ defmodule Writer.Presto do
       |> Enum.map(fn {name, _} -> name end)
       |> Enum.join(",")
 
-    values = format_rows(state.table_schema, messages)
+    values = format_rows(messages)
     insert_stmt = "INSERT INTO #{state.table}(#{columns}) VALUES #{values}"
 
     case Prestige.execute(state.session, insert_stmt) do
@@ -65,24 +65,24 @@ defmodule Writer.Presto do
     Prestige.execute(state.session, create_table)
   end
 
-  defp format_rows(schema, rows) do
+  defp format_rows(rows) do
     rows
-    |> Enum.map(&format_row(schema, &1))
+    |> Enum.map(&format_row/1)
     |> Enum.map(fn row -> "(#{row})" end)
     |> Enum.join(",")
   end
 
-  defp format_row(schema, row) do
-    schema
-    |> Enum.map(fn {column, _} -> Map.get(row, column) end)
-    |> Enum.map(fn value -> format(value) end)
+  defp format_row(row) when is_tuple(row) do
+    row
+    |> Tuple.to_list()
+    |> Enum.map(&format/1)
     |> Enum.join(",")
   end
 
-  defp format([{_a, _b} | _t] = values) do
+  defp format(value) when is_tuple(value) do
     value_string =
-      values
-      |> Enum.map(fn {_name, value} -> value end)
+      value
+      |> Tuple.to_list()
       |> Enum.map(&format/1)
       |> Enum.join(",")
 
