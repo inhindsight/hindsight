@@ -32,10 +32,10 @@ defmodule Persist.Load.Broadway do
   def handle_message(_processor, %Message{data: data} = message, context) do
     Logger.debug(fn -> "#{__MODULE__}: handling message #{inspect(message)}" end)
 
-    case Jason.decode(data.value) do
-      {:ok, decoded_data} ->
-        Message.update_data(message, fn _ -> decoded_data end)
-
+    with {:ok, decoded_data} <- Jason.decode(data.value),
+         {:ok, normalized_data} <- Dictionary.normalize(context.load.schema, decoded_data) do
+      Message.update_data(message, fn _ -> normalized_data end)
+    else
       {:error, reason} ->
         Message.update_data(message, &to_dead_letter(context.load, &1, reason))
         |> Message.failed(reason)
