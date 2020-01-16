@@ -88,6 +88,7 @@ config :service_broadcast, Broadcast.Application,
   ]
 
 config :service_broadcast, Broadcast.Stream.Broadway,
+  app_name: "service_broadcast",
   broadway_config: [
     producer: [
       module:
@@ -110,8 +111,6 @@ config :service_broadcast, Broadcast.Stream.Broadway,
       ]
     ]
   ]
-
-config :service_persist, Persist.Load.Broadway, app_name: "service_persist"
 
 config :service_persist, Persist.Application,
   kafka_endpoints: kafka_endpoints,
@@ -144,6 +143,7 @@ config :service_persist, Persist.Writer,
   schema: "default"
 
 config :service_persist, Persist.Load.Broadway,
+  app_name: "service_persist",
   broadway_config: [
     producer: [
       module:

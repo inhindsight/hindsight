@@ -1,5 +1,34 @@
 defmodule Broadcast.Stream.BroadwayTest do
   use BroadcastWeb.ChannelCase
+  import Mox
+  require Temp.Env
+
+  alias Writer.DLQ.DeadLetter
+
+  Temp.Env.modify([
+    %{
+      app: :service_broadcast,
+      key: Broadcast.Stream.Broadway,
+      update: fn config ->
+        Keyword.put(config, :dlq, Broadcast.DLQMock)
+      end
+    }
+  ])
+
+  setup :set_mox_global
+  setup :verify_on_exit!
+
+  setup do
+    Process.flag(:trap_exit, true)
+    test = self()
+
+    Broadcast.DLQMock
+    |> stub(:write, fn msgs ->
+      send(test, {:dlq, msgs})
+    end)
+
+    :ok
+  end
 
   test "sends message to channel" do
     load =
@@ -8,7 +37,10 @@ defmodule Broadcast.Stream.BroadwayTest do
         dataset_id: "ds1",
         name: "fake-ds",
         source: "topic-1",
-        destination: "channel-1"
+        destination: "channel-1",
+        schema: [
+          %Dictionary.Type.Integer{name: "one"}
+        ]
       )
 
     {:ok, _, socket} =
@@ -44,6 +76,51 @@ defmodule Broadcast.Stream.BroadwayTest do
     message = %{topic: "topic-2", value: value}
     msg_ref = Broadway.test_messages(pid, [message])
 
+    {:error, reason} = Jason.decode(value)
+
+    expected_dead_letter =
+      DeadLetter.new(
+        dataset_id: "ds1",
+        original_message: message,
+        app_name: "service_broadcast",
+        reason: reason
+      )
+
+    assert_receive {:dlq, [^expected_dead_letter]}
+    assert_receive {:ack, ^msg_ref, _successful, [message] = _failed}
+
+    assert_down(pid)
+  end
+
+  test "fails message if fails normaliztion" do
+    load =
+      Load.Broadcast.new!(
+        id: "load-1",
+        dataset_id: "ds1",
+        name: "fake-ds",
+        source: "topic-2",
+        destination: "channel-2",
+        schema: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ]
+      )
+
+    {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
+
+    value = %{"name" => "joe", "age" => "twenty-seven"} |> Jason.encode!()
+    message = %{topic: "topic-2", value: value}
+    msg_ref = Broadway.test_messages(pid, [message])
+
+    expected_dead_letter =
+      DeadLetter.new(
+        dataset_id: "ds1",
+        original_message: message,
+        app_name: "service_broadcast",
+        reason: %{"age" => :invalid_integer}
+      )
+
+    assert_receive {:dlq, [^expected_dead_letter]}
     assert_receive {:ack, ^msg_ref, _successful, [message] = _failed}
 
     assert_down(pid)
