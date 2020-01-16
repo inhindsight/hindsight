@@ -40,5 +40,4 @@ defmodule Writer.PrestoTest do
 
     assert {:error, "failed to query"} == Presto.write(pid, [{"bob"}])
   end
-
 end

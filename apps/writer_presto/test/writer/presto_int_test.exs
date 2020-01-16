@@ -22,7 +22,9 @@ defmodule Writer.PrestoIntTest do
       {"friends", "array(row(name varchar, age integer))"}
     ]
 
-    record = {"george", 21, ["red", "blue"], {"shirley", 23, ["yellow", "green"]}, [{"joe", 47}, {"frank", 51}]}
+    record =
+      {"george", 21, ["red", "blue"], {"shirley", 23, ["yellow", "green"]},
+       [{"joe", 47}, {"frank", 51}]}
 
     {:ok, pid} =
       Presto.start_link(

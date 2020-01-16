@@ -62,6 +62,44 @@ defmodule PlatformRunner.EndToEndTest do
 
       BroadcastClient.kill(pid)
     end
+
+    test "persisted" do
+      load =
+        Load.Persist.new!(
+          id: "e2e-csv-persist-1",
+          dataset_id: "e2e-csv-ds",
+          name: "persist",
+          source: "e2e-csv-gather",
+          destination: "e2e_csv",
+          schema: [
+            %Dictionary.Type.String{name: "letter"},
+            %Dictionary.Type.String{name: "number"}
+          ]
+        )
+
+      Persist.Application.instance()
+      |> Definition.Events.send_load_persist_start("e2e-csv", load)
+
+      session =
+        Prestige.new_session(
+          url: "http://localhost:8080",
+          user: "doti",
+          catalog: "hive",
+          schema: "default"
+        )
+
+      assert_async sleep: 1_000, max_tries: 30, debug: true do
+        with {:ok, result} <- Prestige.query(session, "select * from e2e_csv order by letter") do
+          assert Prestige.Result.as_maps(result) == [
+                   %{"letter" => "a", "number" => "1"},
+                   %{"letter" => "b", "number" => "2"},
+                   %{"letter" => "c", "number" => "3"}
+                 ]
+        else
+          {:error, reason} -> flunk(inspect(reason))
+        end
+      end
+    end
   end
 
   describe "JSON" do
@@ -119,6 +157,54 @@ defmodule PlatformRunner.EndToEndTest do
                      1_000
 
       BroadcastClient.kill(pid)
+    end
+
+    test "persisted" do
+      load =
+        Load.Persist.new!(
+          id: "e2e-json-persist-1",
+          dataset_id: "e2e-json-ds",
+          name: "persist",
+          source: "e2e-json-gather",
+          destination: "e2e_json",
+          schema: [
+            %Dictionary.Type.String{name: "name"},
+            %Dictionary.Type.Integer{name: "number"},
+            %Dictionary.Type.List{
+              name: "teammates",
+              item_type: Dictionary.Type.Map,
+              fields: [%Dictionary.Type.String{name: "name"}]
+            }
+          ]
+        )
+
+      Persist.Application.instance()
+      |> Definition.Events.send_load_persist_start("e2e-json", load)
+
+      session =
+        Prestige.new_session(
+          url: "http://localhost:8080",
+          user: "doti",
+          catalog: "hive",
+          schema: "default"
+        )
+
+      assert_async sleep: 1_000, max_tries: 30, debug: true do
+        with {:ok, result} <- Prestige.query(session, "select * from e2e_json") do
+          assert Prestige.Result.as_maps(result) == [
+                   %{
+                     "name" => "LeBron",
+                     "number" => 23,
+                     "teammates" => [
+                       %{"name" => "Kyrie"},
+                       %{"name" => "Kevin"}
+                     ]
+                   }
+                 ]
+        else
+          {:error, reason} -> flunk(inspect(reason))
+        end
+      end
     end
   end
 end
