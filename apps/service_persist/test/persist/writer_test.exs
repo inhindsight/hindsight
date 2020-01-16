@@ -125,11 +125,11 @@ defmodule Persist.WriterTest do
       assert :ok = Persist.Writer.write(:pid, messages, schema: schema)
 
       expected = [
-        {"george", 21, ["red", "blue"], {"shirley", 23, ["yellow", "green"]}, [{"joe", 47}, {"frank", 51}]}
+        {"george", 21, ["red", "blue"], {"shirley", 23, ["yellow", "green"]},
+         [{"joe", 47}, {"frank", 51}]}
       ]
 
       assert_receive {:write, :pid, ^expected, _}
-
     end
   end
 end
