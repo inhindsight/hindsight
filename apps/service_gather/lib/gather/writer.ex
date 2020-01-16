@@ -32,7 +32,7 @@ defmodule Gather.Writer do
   end
 
   @impl Writer
-  def write(server, messages, opts) do
+  def write(server, messages, opts \\ []) do
     dataset_id = Keyword.fetch!(opts, :dataset_id)
 
     results =
