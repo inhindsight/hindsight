@@ -1,14 +1,13 @@
 defmodule Gather.Extraction do
   use GenServer, restart: :transient
-  use Retry
   require Logger
+  use Properties, otp_app: :service_gather
+  use Annotated.Retry
 
-  @config Application.get_env(:service_gather, __MODULE__, [])
-
-  @writer Keyword.get(@config, :writer, Gather.Writer)
-  @chunk_size Keyword.get(@config, :chunk_size, 100)
-  @max_tries Keyword.get(@config, :max_tries, 10)
-  @initial_delay Keyword.get(@config, :initial_delay, 500)
+  @max_tries get_config_value(:max_tries, default: 10)
+  @initial_delay get_config_value(:initial_delay, default: 500)
+  getter(:writer, default: Gather.Writer)
+  getter(:chunk_size, default: 100)
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
@@ -16,26 +15,29 @@ defmodule Gather.Extraction do
 
   @impl GenServer
   def init(args) do
+    Process.flag(:trap_exit, true)
     {:ok, Map.new(args), {:continue, :extract}}
   end
 
   @dialyzer {:nowarn_function, handle_continue: 2}
   @impl GenServer
   def handle_continue(:extract, %{extract: extract} = state) do
-    retry with: exponential_backoff(@initial_delay) |> Stream.take(@max_tries) do
-      with {:ok, writer} <- @writer.start_link(extract: extract) do
-        extract(writer, extract)
-      end
-    after
+    case extract(extract) do
       :ok -> {:stop, :normal, state}
-    else
       {:error, reason} -> {:stop, reason, state}
     end
   end
 
-  defp extract(writer, extract) do
+  @retry with: exponential_backoff(@initial_delay) |> take(@max_tries)
+  defp extract(extract) do
+    with {:ok, writer} <- writer().start_link(extract: extract) do
+      do_extract(writer, extract)
+    end
+  end
+
+  defp do_extract(writer, extract) do
     with {:ok, stream} <- Extract.Steps.execute(extract.steps),
-         {:error, reason} <- write(writer, stream) do
+         {:error, reason} <- write(writer, stream, extract.dataset_id) do
       warn_extract_failure(extract, reason)
       {:error, reason}
     end
@@ -45,10 +47,10 @@ defmodule Gather.Extraction do
     Process.exit(writer, :normal)
   end
 
-  defp write(writer, stream) do
+  defp write(writer, stream, dataset_id) do
     stream
-    |> Stream.chunk_every(@chunk_size)
-    |> Ok.each(&@writer.write(writer, &1))
+    |> Stream.chunk_every(chunk_size())
+    |> Ok.each(&writer().write(writer, &1, dataset_id: dataset_id))
   end
 
   defp warn_extract_failure(extract, reason) do

@@ -3,18 +3,29 @@ defmodule GatherTest do
   import Mox
   import Definition.Events, only: [extract_start: 0, extract_end: 0]
   import AssertAsync
+  require Temp.Env
 
   @instance Gather.Application.instance()
   @moduletag capture_log: true
 
   alias Gather.Extraction
 
+  Temp.Env.modify([
+    %{
+      app: :service_gather,
+      key: Gather.Extraction,
+      update: fn config ->
+        Keyword.put(config, :writer, Gather.WriterMock)
+      end
+    }
+  ])
+
   setup :set_mox_global
   setup :verify_on_exit!
 
   setup do
     on_exit(fn ->
-      __cleanup_supervisor__()
+      Gather.Extraction.Supervisor.kill_all_children()
     end)
 
     :ok
@@ -38,8 +49,8 @@ defmodule GatherTest do
       send(test, {:start_link, args})
       {:ok, dummy_process}
     end)
-    |> expect(:write, fn server, messages ->
-      send(test, {:write, server, messages})
+    |> expect(:write, fn server, messages, opts ->
+      send(test, {:write, server, messages, opts})
       :ok
     end)
 
@@ -64,7 +75,7 @@ defmodule GatherTest do
 
     Brook.Test.send(@instance, extract_start(), "testing", extract)
 
-    assert_receive {:write, ^dummy_process, messages}, 5_000
+    assert_receive {:write, ^dummy_process, messages, [dataset_id: "test-ds1"]}, 5_000
 
     assert messages == [
              %{"A" => "one", "B" => "two", "C" => "three"},
