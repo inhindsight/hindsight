@@ -56,6 +56,8 @@ defmodule Persist.Writer do
   end
 
   defp format(%Dictionary.Type.Map{fields: fields}, value) do
+    format_message(fields, value)
+
     fields
     |> Enum.map(fn %{name: name} = field -> {field, Map.get(value, name)} end)
     |> Enum.map(fn {field, value} -> format(field, value) end)
