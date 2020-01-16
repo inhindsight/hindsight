@@ -54,8 +54,8 @@ defmodule PersistTest do
 
     Writer.PrestoMock
     |> stub(:start_link, fn _args -> {:ok, :writer_presto_pid} end)
-    |> stub(:write, fn :writer_presto_pid, msgs, _opts ->
-      send(test, {:write, msgs})
+    |> stub(:write, fn :writer_presto_pid, msgs, opts ->
+      send(test, {:write, msgs, opts})
       :ok
     end)
 
@@ -68,12 +68,13 @@ defmodule PersistTest do
     broadway = Process.whereis(:"persist_broadway_#{load.source}")
 
     messages = [
-      %{value: %{"one" => 1} |> Jason.encode!()}
+      %{value: %{"name" => "bob", "age" => 12} |> Jason.encode!()}
     ]
 
     ref = Broadway.test_messages(broadway, messages)
 
-    assert_receive {:write, [%{"one" => 1}]}
+    schema = load.schema
+    assert_receive {:write, [{"bob", 12}], [schema: ^schema]}
     assert_receive {:ack, ^ref, success, failed}
     assert 1 == length(success)
 
