@@ -1,8 +1,5 @@
 name: CI
-on:
-  pull_request:
-    branches:
-      - master
+on: pull_request
 jobs:
   unit:
     name: Unit Test
