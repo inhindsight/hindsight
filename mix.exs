@@ -1,4 +1,4 @@
-defmodule Doti.MixProject do
+defmodule Hindsight.MixProject do
   use Mix.Project
 
   def project do
