@@ -7,7 +7,8 @@ defmodule Definition.Events do
     {"load:persist:start", Load.Persist},
     {"load:persist:end", Load.Persist},
     {"schedule:start", Schedule},
-    {"schedule:end", Schedule}
+    {"schedule:end", Schedule},
+    {"transform:define", Transform}
   ]
 
   Enum.map(@events, fn {type, struct_module} ->
