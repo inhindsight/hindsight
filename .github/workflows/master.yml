@@ -1,7 +1,8 @@
 name: Master
 on:
-  schedule:
-    - cron: "1 */24 * * *"
+  push:
+    branches:
+      - master
 jobs:
   dialyzer:
     name: Cache PLT
