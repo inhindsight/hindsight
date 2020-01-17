@@ -138,7 +138,7 @@ config :service_persist, Persist.Application,
 
 config :service_persist, Persist.Writer,
   url: "http://localhost:8080",
-  user: "doti",
+  user: "hindsight",
   catalog: "hive",
   schema: "default"
 
