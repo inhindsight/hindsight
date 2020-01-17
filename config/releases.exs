@@ -112,6 +112,7 @@ config :service_broadcast, Broadcast.Stream.Broadway,
     ]
   ]
 
+# SERVICE PERSIST
 config :service_persist, Persist.Application,
   kafka_endpoints: kafka_endpoints,
   brook: [
@@ -172,4 +173,27 @@ config :service_persist, Persist.Load.Broadway,
         batch_timeout: 1_000
       ]
     ]
+  ]
+
+# SERVICE ORCHESTRATE
+config :service_orchestrate, Orchestrate.Application,
+  brook: [
+    driver: [
+      module: Brook.Driver.Kafka,
+      init_arg: [
+        endpoints: kafka_endpoints,
+        topic: "event-stream",
+        group: "orchestrate-event-stream",
+        consumer_config: [
+          begin_offset: :earliest,
+          offset_reset_policy: :reset_to_earliest
+        ]
+      ]
+    ],
+    handlers: [Orchestrate.Event.Handler],
+    storage: [
+      module: Brook.Storage.Ets,
+      init_arg: []
+    ],
+    dispatcher: Brook.Dispatcher.Noop
   ]
