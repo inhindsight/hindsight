@@ -4,12 +4,12 @@ defmodule Transform do
   @type uuid :: String.t()
 
   @type t :: %__MODULE__{
-    version: integer,
-    id: uuid,
-    dataset_id: uuid,
-    dictionary: list,
-    steps: list
-  }
+          version: integer,
+          id: uuid,
+          dataset_id: uuid,
+          dictionary: list,
+          steps: list
+        }
 
   defstruct version: 1,
             id: nil,
