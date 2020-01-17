@@ -25,7 +25,7 @@ defmodule Gather.MixProject do
 
   defp deps do
     [
-      {:brook, "~> 0.4.9"},
+      {:brook, "~> 0.5"},
       {:definition_data, in_umbrella: true},
       {:definition_extract, in_umbrella: true},
       {:definition_events, in_umbrella: true},
