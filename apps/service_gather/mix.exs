@@ -31,7 +31,7 @@ defmodule Gather.MixProject do
       {:definition_events, in_umbrella: true},
       {:extract_steps, in_umbrella: true},
       {:extract_http, in_umbrella: true},
-      {:extract_gtfs, in_umbrella: true},
+      {:extract_decode_gtfs, in_umbrella: true},
       {:extract_decode_csv, in_umbrella: true},
       {:extract_decode_json, in_umbrella: true},
       {:writer, in_umbrella: true},
