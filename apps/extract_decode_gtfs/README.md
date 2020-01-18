@@ -10,7 +10,7 @@ by adding `extract_gtfs` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:extract_gtfs, "~> 0.1.0"}
+    {:extract_decode_gtfs, "~> 0.1.0"}
   ]
 end
 ```
