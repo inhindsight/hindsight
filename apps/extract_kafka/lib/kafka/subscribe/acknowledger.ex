@@ -1,18 +1,26 @@
 defmodule Kafka.Subscribe.Acknowledger do
   use GenServer
 
+  @type init_opts :: [
+    connection: atom
+  ]
+
+  @spec cache(GenServer.server(), [%Elsa.Message{}]) :: :ok
   def cache(server, messages) do
     GenServer.cast(server, {:cache, messages})
   end
 
+  @spec ack(GenServer.server(), list) :: :ok
   def ack(server, values) do
     GenServer.call(server, {:ack, values})
   end
 
+  @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(init_arg) do
     GenServer.start_link(__MODULE__, init_arg)
   end
 
+  @impl GenServer
   def init(init_arg) do
     Process.flag(:trap_exit, true)
 
@@ -23,6 +31,7 @@ defmodule Kafka.Subscribe.Acknowledger do
      }}
   end
 
+  @impl GenServer
   def handle_cast({:cache, messages}, state) do
     Enum.each(messages, fn message ->
       :ets.insert(state.table, {message.value, message})
@@ -31,6 +40,7 @@ defmodule Kafka.Subscribe.Acknowledger do
     {:noreply, state}
   end
 
+  @impl GenServer
   def handle_call({:ack, values}, _from, state) do
     max_offset_message =
       values
