@@ -2,8 +2,8 @@ defmodule Kafka.Subscribe.Acknowledger do
   use GenServer
 
   @type init_opts :: [
-    connection: atom
-  ]
+          connection: atom
+        ]
 
   @spec cache(GenServer.server(), [%Elsa.Message{}]) :: :ok
   def cache(server, messages) do
