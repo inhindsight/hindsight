@@ -1,4 +1,4 @@
 # Hindsight
 
-**TODO: Add description**
+Data is clearer in Hindsight
 
