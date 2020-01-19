@@ -64,6 +64,20 @@ defmodule Orchestrate.Event.HandlerTest do
     end
   end
 
+  test "sends transform:define event on schedule:start", %{schedule: schedule} do
+    Brook.Test.send(@instance, schedule_start(), "testing", schedule)
+
+    transform = schedule.transform
+    assert_receive {:brook_event, %{type: "transform:define", data: ^transform}}
+  end
+
+  test "sends load:persist:start event on schedule:start", %{schedule: schedule} do
+    Brook.Test.send(@instance, schedule_start(), "testing", schedule)
+
+    persist = schedule.load |> List.first()
+    assert_receive {:brook_event, %{type: "load:persist:start", data: ^persist}}
+  end
+
   test "logs error when unable to process event", %{schedule: schedule} do
     bad_schedule = Map.put(schedule, :cron, "run once a day")
 
