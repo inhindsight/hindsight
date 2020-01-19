@@ -25,4 +25,17 @@ defmodule Definition.Events do
       raise "Invalid event being created: type = #{unquote(type)}, data = #{inspect(data)}"
     end
   end)
+
+  Enum.map(@events, fn {type, struct_module} ->
+    parts = String.split(type, ":")
+    action = List.last(parts)
+
+    def get_event_type(unquote(action), %unquote(struct_module){}) do
+      unquote(type)
+    end
+  end)
+
+  def get_event_type(action, struct) do
+    raise "Unknown event type: action: #{inspect(action)}, struct: #{inspect(struct)}"
+  end
 end
