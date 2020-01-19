@@ -4,27 +4,36 @@ defmodule Kafka.Subscribe do
 
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Steps.Context
+    alias Kafka.Subscribe.Acknowledger
 
     def execute(%{endpoints: endpoints, topic: topic}, context) do
       ensure_topic(endpoints, topic)
+      connection = :"kafka_subscribe_#{topic}"
+
+      {:ok, acknowledger} = Kafka.Subscribe.Acknowledger.start_link(connection: connection)
 
       source = fn _opts ->
         Stream.resource(
-          initialize_elsa(endpoints, topic),
+          initialize(endpoints, topic, connection, acknowledger),
           &receive_messages/1,
-          &stop_elsa/1
+          &shutdown/1
         )
       end
 
       context
+      |> register_after_function(&acknowledge_values(acknowledger, &1))
       |> set_source(source)
       |> Ok.ok()
     end
 
-    defp receive_messages(acc) do
+    defp acknowledge_values(acknowledger, values) do
+      Acknowledger.ack(acknowledger, values)
+    end
+
+    defp receive_messages(%{acknowledger: acknowledger} = acc) do
       receive do
         {:kafka_subscribe, messages} ->
-          # TODO possibly write value and meta data to ets table
+          Acknowledger.cache(acknowledger, messages)
           {messages, acc}
       end
     end
@@ -35,11 +44,11 @@ defmodule Kafka.Subscribe do
       end
     end
 
-    defp initialize_elsa(endpoints, topic) do
+    defp initialize(endpoints, topic, connection, acknowledger) do
       fn ->
-        {:ok, pid} =
+        {:ok, elsa} =
           Elsa.Supervisor.start_link(
-            connection: :"kafka_subscribe_#{topic}",
+            connection: connection,
             endpoints: endpoints,
             group_consumer: [
               group: "kafka_subscribe_#{topic}",
@@ -55,12 +64,13 @@ defmodule Kafka.Subscribe do
             ]
           )
 
-        %{elsa_supervisor: pid}
+        %{elsa_supervisor: elsa, acknowledger: acknowledger}
       end
     end
 
-    defp stop_elsa(%{elsa_supervisor: pid} = acc) do
-      Process.exit(pid, :normal)
+    defp shutdown(%{elsa_supervisor: elsa, acknowledger: acknowledger} = acc) do
+      Process.exit(elsa, :normal)
+      Process.exit(acknowledger, :normal)
       acc
     end
   end
@@ -71,6 +81,6 @@ defmodule Kafka.Subscribe.Handler do
 
   def handle_messages(messages, state) do
     send(state.pid, {:kafka_subscribe, messages})
-    {:ack, state}
+    {:no_ack, state}
   end
 end
