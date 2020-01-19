@@ -7,7 +7,6 @@ defmodule OrchestrateTest do
   @instance Orchestrate.Application.instance()
 
   describe "run_schedule/1" do
-
     setup do
       Brook.Test.clear_view_state(@instance, "schedules")
 
@@ -17,20 +16,20 @@ defmodule OrchestrateTest do
           dataset_id: "ds1",
           cron: "* * * * *",
           extract:
-          Extract.new!(
-            id: "extract-1",
-            dataset_id: "ds1",
-            name: "kpi",
-            destination: "topic-1",
-            steps: []
-          ),
+            Extract.new!(
+              id: "extract-1",
+              dataset_id: "ds1",
+              name: "kpi",
+              destination: "topic-1",
+              steps: []
+            ),
           transform:
-          Transform.new!(
-            id: "transform-1",
-            dataset_id: "ds1",
-            dictionary: [],
-            steps: []
-          ),
+            Transform.new!(
+              id: "transform-1",
+              dataset_id: "ds1",
+              dictionary: [],
+              steps: []
+            ),
           load: [
             Load.Persist.new!(
               id: "persist-1",
@@ -48,6 +47,7 @@ defmodule OrchestrateTest do
 
     test "should send extract:start event", %{schedule: schedule} do
       allow UUID.uuid4(), return: "uuid-1"
+
       Brook.Test.with_event(@instance, fn ->
         Orchestrate.Schedule.Store.persist(schedule)
       end)
@@ -60,12 +60,12 @@ defmodule OrchestrateTest do
     end
 
     test "should log an error if schedule does not exist", %{schedule: schedule} do
-      log = capture_log([level: :error], fn ->
-        Orchestrate.run_schedule(schedule.id)
-      end)
+      log =
+        capture_log([level: :error], fn ->
+          Orchestrate.run_schedule(schedule.id)
+        end)
 
       assert log =~ "Unable to find schedule with id: #{schedule.id}"
     end
-
   end
 end
