@@ -6,6 +6,8 @@ defmodule Kafka.Subscribe do
     import Extract.Steps.Context
 
     def execute(%{endpoints: endpoints, topic: topic}, context) do
+      ensure_topic(endpoints, topic)
+
       source = fn _opts ->
         Stream.resource(
           initialize_elsa(endpoints, topic),
@@ -27,6 +29,12 @@ defmodule Kafka.Subscribe do
         {:kafka_subscribe, messages} ->
           #TODO possibly write value and meta data to ets table
           {messages, acc}
+      end
+    end
+
+    defp ensure_topic(endpoints, topic) do
+      unless Elsa.topic?(endpoints, topic) do
+        Elsa.create_topic(endpoints, topic)
       end
     end
 
