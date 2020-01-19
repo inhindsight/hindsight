@@ -1,10 +1,9 @@
 defmodule Extract.Steps do
-  @spec execute(Enum.t()) :: {:ok, Enum.t()} | {:error, term}
+  @spec execute(Enum.t()) :: {:ok, Extract.Steps.Context.t()} | {:error, term}
   def execute(steps) do
     steps
     |> parse_steps()
     |> Ok.reduce(Extract.Steps.Context.new(), &Extract.Step.execute/2)
-    |> Ok.map(&Extract.Steps.Context.get_stream/1)
   rescue
     e -> {:error, error_message(e)}
   end
