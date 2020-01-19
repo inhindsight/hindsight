@@ -9,8 +9,10 @@ defmodule Orchestrate do
     case Orchestrate.Schedule.Store.get(id) do
       {:ok, nil} ->
         Logger.error("#{__MODULE__}: Unable to find schedule with id: #{id}")
+
       {:ok, schedule} ->
         send_extract(schedule.extract)
+
       {:error, reason} ->
         Logger.error("#{__MODULE__}: unknown error: #{inspect(reason)}")
     end
