@@ -42,22 +42,26 @@ defmodule Kafka.Subscribe.Acknowledger do
 
   @impl GenServer
   def handle_call({:ack, values}, _from, state) do
-    max_offset_message =
-      values
-      |> Enum.map(fn value ->
-        case :ets.lookup(state.table, value) do
-          [{_, message}] ->
-            :ets.delete(state.table, value)
-            message
-
-          _ ->
-            nil
-        end
-      end)
-      |> Enum.reject(&is_nil/1)
-      |> Enum.max_by(fn msg -> msg.offset end)
-
+    max_offset_message = get_max_offset_message(state, values)
     Elsa.Group.Acknowledger.ack(state.connection, max_offset_message)
     {:reply, :ok, state}
+  end
+
+  defp get_max_offset_message(state, keys) do
+    keys
+    |> Enum.map(&get_and_delete_key(state.table, &1))
+    |> Enum.reject(&is_nil/1)
+    |> Enum.max_by(fn msg -> msg.offset end)
+  end
+
+  defp get_and_delete_key(table, key) do
+    case :ets.lookup(table, key) do
+      [{_, value}] ->
+        :ets.delete(table, key)
+        value
+
+      _ ->
+        nil
+    end
   end
 end
