@@ -12,10 +12,7 @@ defmodule Kafka.Subscribe do
         Stream.resource(
           initialize_elsa(endpoints, topic),
           &receive_messages/1,
-          fn %{elsa_supervisor: pid} = acc ->
-            Process.exit(pid, :normal)
-            acc
-          end
+          &stop_elsa/1
         )
       end
 
@@ -60,6 +57,11 @@ defmodule Kafka.Subscribe do
 
         %{elsa_supervisor: pid}
       end
+    end
+
+    defp stop_elsa(%{elsa_supervisor: pid} = acc) do
+      Process.exit(pid, :normal)
+      acc
     end
   end
 end

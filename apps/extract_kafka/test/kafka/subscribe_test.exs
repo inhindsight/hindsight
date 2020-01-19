@@ -1,6 +1,7 @@
 defmodule Kafka.SubscribeTest do
   use ExUnit.Case
   use Divo
+  import AssertAsync
 
   alias Extract.Steps.Context
 
@@ -27,5 +28,9 @@ defmodule Kafka.SubscribeTest do
     expected = Enum.map(1..100, fn i -> "message-#{i}" end)
 
     assert expected == messages
+
+    assert_async do
+      assert {:links, []} == Process.info(self(), :links)
+    end
   end
 end
