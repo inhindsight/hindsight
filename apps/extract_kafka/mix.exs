@@ -27,7 +27,8 @@ defmodule Kafka.Subscribe.MixProject do
       {:ok, in_umbrella: true},
       {:extract_steps, in_umbrella: true},
       {:divo, "~> 1.1", only: [:dev, :test]},
-      {:divo_kafka, "~> 0.1.6", only: [:test]}
+      {:divo_kafka, "~> 0.1.6", only: [:test]},
+      {:testing, in_umbrella: true}
     ]
   end
 end
