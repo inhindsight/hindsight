@@ -50,6 +50,7 @@ defmodule Gather.ExtractionTest do
         steps: [
           %{
             "step" => "Fake.Step",
+            "pid" => self(),
             "values" => Stream.cycle([%{"one" => 1}]) |> Stream.take(100)
           }
         ]
@@ -58,6 +59,11 @@ defmodule Gather.ExtractionTest do
     {:ok, pid} = Extraction.start_link(extract: extract)
 
     assert_receive {:EXIT, ^pid, :normal}, 2_000
+    expected = Enum.map(1..10, fn _ -> %{"one" => 1} end)
+
+    Enum.each(1..10, fn _ ->
+      assert_receive {:after, ^expected}
+    end)
 
     assert_down(pid)
   end

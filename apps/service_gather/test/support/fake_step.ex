@@ -1,5 +1,5 @@
 defmodule Fake.Step do
-  defstruct [:values]
+  defstruct [:values, :pid]
 
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Steps.Context
@@ -10,6 +10,9 @@ defmodule Fake.Step do
       end
 
       context
+      |> register_after_function(fn msgs ->
+        send(step.pid, {:after, msgs})
+      end)
       |> set_source(source)
       |> Ok.ok()
     end

@@ -24,7 +24,7 @@ defmodule Kafka.Subscribe do
     defp receive_messages(acc) do
       receive do
         {:kafka_subscribe, messages} ->
-          #TODO possibly write value and meta data to ets table
+          # TODO possibly write value and meta data to ets table
           {messages, acc}
       end
     end

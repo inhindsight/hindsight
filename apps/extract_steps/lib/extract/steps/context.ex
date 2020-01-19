@@ -9,9 +9,10 @@ defmodule Extract.Steps.Context do
   @type t() :: %__MODULE__{
           response: Tesla.Env.t(),
           variables: map,
-          source: source
+          source: source,
+          after_functions: [(list -> no_return())]
         }
-  defstruct response: nil, variables: %{}, source: nil
+  defstruct response: nil, variables: %{}, source: nil, after_functions: []
 
   @spec new() :: %__MODULE__{}
   def new() do
@@ -37,6 +38,23 @@ defmodule Extract.Steps.Context do
   @spec set_source(context :: t, source) :: t
   def set_source(context, source) do
     Map.put(context, :source, source)
+  end
+
+  @spec register_after_function(context :: t, (list -> no_return)) :: t
+  def register_after_function(context, after_function) do
+    Map.update!(context, :after_functions, fn functions ->
+      functions ++ [after_function]
+    end)
+  end
+
+  @spec run_after_functions(context :: t, list) :: t
+  def run_after_functions(context, messages) do
+    context.after_functions
+    |> Enum.each(fn fun ->
+      fun.(messages)
+    end)
+
+    context
   end
 
   @spec apply_variables(context :: t, string :: String.t()) :: String.t()

@@ -3,6 +3,8 @@ defmodule Kafka.SubscribeTest do
   use Divo
   import AssertAsync
 
+  @module_tag integration: true, divo: true
+
   alias Extract.Steps.Context
 
   test "Kafka.Subscribe" do
