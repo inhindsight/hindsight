@@ -23,6 +23,7 @@ defmodule Persist.WriterIntTest do
       Dictionary.Type.String.new!(name: "name"),
       Dictionary.Type.Integer.new!(name: "age"),
       Dictionary.Type.Date.new!(name: "birthdate", format: "%0m/%0d/%Y"),
+      Dictionary.Type.Timestamp.new!(name: "arrival_time", format: "%0m/%0d/%Y %0H:%0M:%0S"),
       Dictionary.Type.Map.new!(
         name: "spouse",
         fields: [
@@ -44,6 +45,7 @@ defmodule Persist.WriterIntTest do
     message = %{
       "name" => "johnny",
       "birthdate" => "1999-02-23",
+      "arrival_time" => "2020-01-02T05:12:24",
       "age" => 21,
       "spouse" => %{
         "name" => "shirley",
@@ -55,6 +57,8 @@ defmodule Persist.WriterIntTest do
         %{"name" => "fred", "age" => 31}
       ]
     }
+
+    expected = Map.put(message, "arrival_time", "2020-01-02 05:12:24.000")
 
     persist =
       Load.Persist.new!(
@@ -81,6 +85,6 @@ defmodule Persist.WriterIntTest do
       Prestige.query!(session, "SELECT * FROM table1")
       |> Prestige.Result.as_maps()
 
-    assert [message] == result
+    assert [expected] == result
   end
 end
