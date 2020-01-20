@@ -2,7 +2,6 @@ defmodule Dictionary.Type.Date do
   use Definition, schema: Dictionary.Type.Date.V1
   use Dictionary.JsonEncoder
 
-
   defstruct version: 1,
             name: nil,
             description: "",
