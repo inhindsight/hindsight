@@ -14,7 +14,9 @@ defmodule Orchestrate.Event.Handler do
   @instance Orchestrate.Application.instance()
 
   def handle_event(%Brook.Event{type: schedule_start(), data: %Schedule{} = schedule} = event) do
-    Logger.debug(fn -> "#{__MODULE__}: Received event #{schedule_start()}: #{inspect(schedule)}" end)
+    Logger.debug(fn ->
+      "#{__MODULE__}: Received event #{schedule_start()}: #{inspect(schedule)}"
+    end)
 
     case parse_cron(schedule.cron) do
       {:ok, cron} ->
