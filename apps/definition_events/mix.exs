@@ -23,10 +23,11 @@ defmodule DefinitionEvents.MixProject do
 
   defp deps do
     [
-      {:brook, "~> 0.4"},
+      {:brook, "~> 0.5"},
       {:definition_extract, in_umbrella: true},
       {:definition_load_broadcast, in_umbrella: true},
-      {:definition_load_persist, in_umbrella: true}
+      {:definition_load_persist, in_umbrella: true},
+      {:definition_schedule, in_umbrella: true}
     ]
   end
 end

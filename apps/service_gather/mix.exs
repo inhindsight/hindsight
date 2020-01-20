@@ -25,7 +25,7 @@ defmodule Gather.MixProject do
 
   defp deps do
     [
-      {:brook, "~> 0.4.9"},
+      {:brook, "~> 0.5"},
       {:definition_data, in_umbrella: true},
       {:definition_extract, in_umbrella: true},
       {:definition_events, in_umbrella: true},
@@ -39,7 +39,6 @@ defmodule Gather.MixProject do
       {:writer_dlq, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:annotated_retry, in_umbrella: true},
-      {:elixir_uuid, "~> 1.2"},
       {:retry, "~> 0.13.0"},
       {:initializer, in_umbrella: true},
       {:bypass, "~> 1.0", only: [:test]},
