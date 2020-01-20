@@ -2,6 +2,8 @@ defmodule Extract.StepsTest do
   use ExUnit.Case
   doctest Extract.Steps
 
+  alias Extract.Steps.Context
+
   describe "execute/1" do
     test "parses and executes steps" do
       steps = [
@@ -20,9 +22,10 @@ defmodule Extract.StepsTest do
         }
       ]
 
-      {:ok, result} = Extract.Steps.execute(steps)
+      {:ok, context} = Extract.Steps.execute(steps)
 
-      assert Enum.to_list(result) == [2, 4, 6, 8, 10, 12]
+      actual = Context.get_stream(context) |> Enum.to_list()
+      assert actual == [2, 4, 6, 8, 10, 12]
     end
 
     test "returns error tuple when given invalid key to step" do
