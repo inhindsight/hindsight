@@ -19,7 +19,7 @@ defmodule Persist.Dictionary do
       %Result{name: name, type: "varchar"}
     end
 
-    def translate_value(_field, value), do: value
+    def translate_value(_field, value), do: "'#{value}'"
   end
 
   defimpl Translator, for: Dictionary.Type.Integer do
@@ -35,7 +35,9 @@ defmodule Persist.Dictionary do
       %Result{name: name, type: "date"}
     end
 
-    def translate_value(_field, value), do: value
+    def translate_value(_field, value) do
+      "date('#{value}')"
+    end
   end
 
   defimpl Translator, for: Dictionary.Type.Map do
@@ -50,10 +52,12 @@ defmodule Persist.Dictionary do
     end
 
     def translate_value(%{fields: fields}, value) do
-      fields
-      |> Enum.map(fn field -> {field, Map.get(value, field.name)} end)
-      |> Enum.map(fn {field, value} -> Translator.translate_value(field, value) end)
-      |> List.to_tuple()
+      values =
+        fields
+        |> Enum.map(fn field -> {field, Map.get(value, field.name)} end)
+        |> Enum.map(fn {field, value} -> Translator.translate_value(field, value) end)
+
+      "row(#{Enum.join(values, ",")})"
     end
   end
 
@@ -64,11 +68,18 @@ defmodule Persist.Dictionary do
       %Result{name: name, type: "array(#{sub_result.type})"}
     end
 
-    def translate_value(%{item_type: Dictionary.Type.Map, fields: fields}, value) do
+    def translate_value(%{item_type: Dictionary.Type.Map, fields: fields}, list) do
       map_type = %Dictionary.Type.Map{fields: fields}
-      Enum.map(value, &Translator.translate_value(map_type, &1))
+      values = Enum.map(list, &Translator.translate_value(map_type, &1))
+
+      "array[#{Enum.join(values, ",")}]"
     end
 
-    def translate_value(_, value), do: value
+    def translate_value(%{item_type: item_type}, list) do
+      struct = struct(item_type)
+      values = Enum.map(list, &Translator.translate_value(struct, &1))
+
+      "array[#{Enum.join(values, ",")}]"
+    end
   end
 end
