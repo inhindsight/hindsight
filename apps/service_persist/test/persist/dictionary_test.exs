@@ -14,6 +14,7 @@ defmodule Persist.DictionaryTest do
       [:field, :expected],
       [%Dictionary.Type.String{name: "name"}, %Result{name: "name", type: "varchar"}],
       [%Dictionary.Type.Integer{name: "age"}, %Result{name: "age", type: "integer"}],
+      [%Dictionary.Type.Date{name: "date", format: "%Y"}, %Result{name: "date", type: "date"}],
       [
         %Dictionary.Type.Map{
           name: "spouse",

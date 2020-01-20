@@ -30,6 +30,14 @@ defmodule Persist.Dictionary do
     def translate_value(_field, value), do: value
   end
 
+  defimpl Translator, for: Dictionary.Type.Date do
+    def translate_type(%{name: name}) do
+      %Result{name: name, type: "date"}
+    end
+
+    def translate_value(_field, value), do: value
+  end
+
   defimpl Translator, for: Dictionary.Type.Map do
     def translate_type(%{name: name, fields: fields}) do
       row_def =
