@@ -7,6 +7,14 @@ defmodule Dictionary.Type.List do
             item_type: nil,
             fields: []
 
+  def on_new(data) do
+    case data.item_type == "" || is_atom(data.item_type) do
+      true -> data
+      false -> Map.update!(data, :item_type, &String.to_existing_atom/1)
+    end
+    |> Ok.ok()
+  end
+
   defimpl Jason.Encoder, for: __MODULE__ do
     alias Dictionary.Type
 
