@@ -4,6 +4,7 @@ defmodule Annotated.Retry do
       import Retry.DelayStreams
       import Stream, only: [take: 2]
       require Retry
+      require Logger
 
       Module.register_attribute(__MODULE__, :retry_funs, accumulate: true)
 
@@ -87,8 +88,15 @@ defmodule Annotated.Retry do
     quote do
       Retry.retry_while unquote(fun.retry_opts) do
         case super(unquote_splicing(fun.args)) do
-          {:error, _} = error -> {:cont, error}
-          result -> {:halt, result}
+          {:error, reason} = error ->
+            Logger.info(fn ->
+              "#{__MODULE__}: Retrying function #{unquote(fun.name)}: #{inspect(reason)}"
+            end)
+
+            {:cont, error}
+
+          result ->
+            {:halt, result}
         end
       end
     end
