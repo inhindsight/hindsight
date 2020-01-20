@@ -22,26 +22,6 @@ defmodule Dictionary.Type.ListTest do
     end
   end
 
-  describe "Dictionary.Type.Decoder.decode/2" do
-    data_test "validates #{inspect(field)} against bad input" do
-      {:error, errors} = put_in(%{}, [field], value) |> decode()
-      atom_field = String.to_atom(field)
-      assert Enum.any?(errors, &match?(%{input: ^value, path: [^atom_field]}, &1))
-
-      where [
-        [:field, :value],
-        ["version", "1"],
-        ["name", ""],
-        ["name", nil],
-        ["description", nil],
-        ["item_type", ""],
-        ["item_type", nil],
-        ["fields", nil],
-        ["fields", "one"]
-      ]
-    end
-  end
-
   test "can be encoded to json" do
     expected = %{
       "version" => 1,
@@ -69,31 +49,32 @@ defmodule Dictionary.Type.ListTest do
   end
 
   test "can be decoded back into struct" do
-    list = %{
-      "version" => 1,
-      "name" => "name",
-      "description" => "description",
-      "type" => "list",
-      "item_type" => "map",
-      "fields" => [
-        %{"version" => 1, "name" => "name", "description" => "", "type" => "string"},
-        %{"version" => 1, "name" => "age", "description" => "", "type" => "integer"}
+    list = Dictionary.Type.List.new!(
+      name: "name",
+      description: "description",
+      item_type: Dictionary.Type.Map,
+      fields: [
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
       ]
-    }
+    )
+    json = Jason.encode!(list)
 
-    expected =
-      {:ok,
-       %Dictionary.Type.List{
-         name: "name",
-         description: "description",
-         item_type: Dictionary.Type.Map,
-         fields: [
-           %Dictionary.Type.String{name: "name"},
-           %Dictionary.Type.Integer{name: "age"}
-         ]
-       }}
+    assert {:ok, list} == Jason.decode!(json) |> Dictionary.Type.List.new()
+  end
 
-    assert expected == Dictionary.Type.Decoder.decode(struct(Dictionary.Type.List), list)
+  test "brook serializer can serialize and deserialize" do
+    list = Dictionary.Type.List.new!(
+      name: "name",
+      description: "description",
+      item_type: Dictionary.Type.Map,
+      fields: [
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
+      ]
+    )
+
+    assert {:ok, list} == Brook.Serializer.serialize(list) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   data_test "normalizes data in maps according to field rules" do
@@ -137,9 +118,5 @@ defmodule Dictionary.Type.ListTest do
     ]
 
     assert {:ok, ["one", "two"]} == Dictionary.Type.Normalizer.normalize(field, value)
-  end
-
-  defp decode(map) do
-    Dictionary.Type.Decoder.decode(struct(Dictionary.Type.List), map)
   end
 end

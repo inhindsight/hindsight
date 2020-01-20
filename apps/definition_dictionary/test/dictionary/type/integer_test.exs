@@ -18,22 +18,6 @@ defmodule Dictionary.Type.IntegerTest do
     end
   end
 
-  describe "Dictionary.Type.Decoder.decode/2" do
-    data_test "validates #{inspect(field)} against bad input" do
-      assert {:error, [%{input: value, path: [field]} | _]} =
-               put_in(%{}, [field], value)
-               |> decode()
-
-      where [
-        [:field, :value],
-        ["version", "1"],
-        ["name", ""],
-        ["name", nil],
-        ["description", nil]
-      ]
-    end
-  end
-
   test "can be encoded to json" do
     expected = %{
       "version" => 1,
@@ -48,16 +32,16 @@ defmodule Dictionary.Type.IntegerTest do
   end
 
   test "can be decoded back into struct" do
-    map = %{
-      "version" => 1,
-      "name" => "name",
-      "description" => "description",
-      "type" => "integer"
-    }
+    integer = Dictionary.Type.Integer.new!(name: "name", description: "description")
+    json = Jason.encode!(integer)
 
-    expected = {:ok, %Dictionary.Type.Integer{name: "name", description: "description"}}
+    assert {:ok, integer} == Jason.decode!(json) |> Dictionary.Type.Integer.new()
+  end
 
-    assert expected == Dictionary.Type.Decoder.decode(struct(Dictionary.Type.Integer), map)
+  test "brook serializer can serialize and deserialize" do
+    integer = Dictionary.Type.Integer.new!(name: "name", description: "description")
+
+    assert {:ok, integer} == Brook.Serializer.serialize(integer) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   data_test "validates integers -- #{inspect(value)} --> #{inspect(result)}" do
@@ -69,9 +53,5 @@ defmodule Dictionary.Type.IntegerTest do
       ["123", {:ok, 123}],
       ["one", {:error, :invalid_integer}]
     ]
-  end
-
-  defp decode(map) do
-    Dictionary.Type.Decoder.decode(struct(Dictionary.Type.Integer), map)
   end
 end

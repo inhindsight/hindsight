@@ -12,7 +12,7 @@ defmodule Dictionary do
     Jason.encode(fields)
   end
 
-  @spec decode(binary | list | map) :: {:ok, Dictionary.Type.Decoder.t()} | {:error, term}
+  @spec decode(binary | list | map) :: {:ok, term} | {:error, term}
   def decode(json) when is_binary(json) do
     with {:ok, decoded_json} <- Jason.decode(json) do
       decode(decoded_json)
@@ -25,8 +25,7 @@ defmodule Dictionary do
 
   def decode(%{"type" => type} = field) do
     with {:ok, module} <- Dictionary.Type.from_string(type) do
-      struct(module)
-      |> Dictionary.Type.Decoder.decode(field)
+      module.new(field)
     end
   end
 
