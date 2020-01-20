@@ -7,6 +7,7 @@ defmodule Dictionary.Type.List do
             item_type: nil,
             fields: []
 
+  @impl Definition
   def on_new(data) do
     with {:ok, item_type_module} <- get_item_type(data.item_type),
          {:ok, fields} <- decode_fields(data.fields) do
