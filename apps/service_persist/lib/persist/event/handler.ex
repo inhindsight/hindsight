@@ -6,7 +6,9 @@ defmodule Persist.Event.Handler do
 
   @impl Brook.Event.Handler
   def handle_event(%Brook.Event{type: load_persist_start(), data: %Load.Persist{} = load}) do
-    Logger.debug(fn -> "#{__MODULE__}: Received event #{load_persist_start()}: #{inspect(load)}" end)
+    Logger.debug(fn ->
+      "#{__MODULE__}: Received event #{load_persist_start()}: #{inspect(load)}"
+    end)
 
     Persist.Load.Supervisor.start_child({Persist.Loader, load: load})
     Persist.Load.Store.persist(load)
