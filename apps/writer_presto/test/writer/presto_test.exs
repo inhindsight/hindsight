@@ -38,6 +38,6 @@ defmodule Writer.PrestoTest do
         table: "table1"
       )
 
-    assert {:error, "failed to query"} == Presto.write(pid, [{"bob"}])
+    assert {:error, "failed to query"} == Presto.write(pid, [["bob"]])
   end
 end

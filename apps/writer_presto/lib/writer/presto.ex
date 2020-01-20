@@ -67,38 +67,10 @@ defmodule Writer.Presto do
 
   defp format_rows(rows) do
     rows
-    |> Enum.map(&format_row/1)
+    |> Enum.map(fn row -> Enum.join(row, ",") end)
     |> Enum.map(fn row -> "(#{row})" end)
     |> Enum.join(",")
   end
-
-  defp format_row(row) when is_tuple(row) do
-    row
-    |> Tuple.to_list()
-    |> Enum.map(&format/1)
-    |> Enum.join(",")
-  end
-
-  defp format(value) when is_tuple(value) do
-    value_string =
-      value
-      |> Tuple.to_list()
-      |> Enum.map(&format/1)
-      |> Enum.join(",")
-
-    "row(#{value_string})"
-  end
-
-  defp format(values) when is_list(values) do
-    value_string =
-      Enum.map(values, &format/1)
-      |> Enum.join(",")
-
-    "array[#{value_string}]"
-  end
-
-  defp format(value) when is_binary(value), do: "'#{value}'"
-  defp format(value), do: value
 
   defp reply(message, state), do: {:reply, message, state}
 end
