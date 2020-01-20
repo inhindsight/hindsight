@@ -40,6 +40,24 @@ defmodule Persist.Dictionary do
     end
   end
 
+  defimpl Translator, for: Dictionary.Type.Timestamp do
+    def translate_type(%{name: name}) do
+      %Result{name: name, type: "timestamp"}
+    end
+
+    def translate_value(_field, value) do
+      date_format =
+        cond do
+          String.length(value) == 19 -> "'%Y-%m-%dT%H:%i:%S'"
+          String.length(value) == 20 -> "'%Y-%m-%dT%H:%i:%SZ'"
+          String.ends_with?(value, "Z") -> "'%Y-%m-%dT%H:%i:%S.%fZ'"
+          true -> "'%Y-%m-%dT%H:%i:%S.%f'"
+        end
+
+      "date_parse('#{value}', #{date_format})"
+    end
+  end
+
   defimpl Translator, for: Dictionary.Type.Map do
     def translate_type(%{name: name, fields: fields}) do
       row_def =
