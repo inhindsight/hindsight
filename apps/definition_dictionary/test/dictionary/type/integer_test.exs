@@ -41,7 +41,8 @@ defmodule Dictionary.Type.IntegerTest do
   test "brook serializer can serialize and deserialize" do
     integer = Dictionary.Type.Integer.new!(name: "name", description: "description")
 
-    assert {:ok, integer} == Brook.Serializer.serialize(integer) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert {:ok, integer} ==
+             Brook.Serializer.serialize(integer) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   data_test "validates integers -- #{inspect(value)} --> #{inspect(result)}" do

@@ -45,30 +45,34 @@ defmodule Dictionary.Type.MapTest do
   end
 
   test "can be decoded back into struct" do
-    map = Dictionary.Type.Map.new!(
-      name: "name",
-      description: "description",
-      fields: [
-        Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age")
-      ]
-    )
+    map =
+      Dictionary.Type.Map.new!(
+        name: "name",
+        description: "description",
+        fields: [
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age")
+        ]
+      )
+
     json = Jason.encode!(map)
 
     assert {:ok, map} == Jason.decode!(json) |> Dictionary.Type.Map.new()
   end
 
   test "brook serializer can serialize and deserialize" do
-    map = Dictionary.Type.Map.new!(
-      name: "name",
-      description: "description",
-      fields: [
-        Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age")
-      ]
-    )
+    map =
+      Dictionary.Type.Map.new!(
+        name: "name",
+        description: "description",
+        fields: [
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age")
+        ]
+      )
 
-    assert {:ok, map} == Brook.Serializer.serialize(map) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert {:ok, map} ==
+             Brook.Serializer.serialize(map) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   data_test "normalizes all fields inside map" do

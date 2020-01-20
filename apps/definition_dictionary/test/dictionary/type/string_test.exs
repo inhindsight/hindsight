@@ -41,7 +41,8 @@ defmodule Dictionary.Type.StringTest do
   test "brook serializer can serialize and deserialize" do
     string = Dictionary.Type.String.new!(name: "name", description: "description")
 
-    assert {:ok, string} = Brook.Serializer.serialize(string) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert {:ok, string} =
+             Brook.Serializer.serialize(string) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   data_test "validates strings - #{inspect(value)} --> #{inspect(result)}" do

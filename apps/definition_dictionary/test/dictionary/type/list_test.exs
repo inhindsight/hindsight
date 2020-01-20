@@ -49,32 +49,36 @@ defmodule Dictionary.Type.ListTest do
   end
 
   test "can be decoded back into struct" do
-    list = Dictionary.Type.List.new!(
-      name: "name",
-      description: "description",
-      item_type: Dictionary.Type.Map,
-      fields: [
-        Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age")
-      ]
-    )
+    list =
+      Dictionary.Type.List.new!(
+        name: "name",
+        description: "description",
+        item_type: Dictionary.Type.Map,
+        fields: [
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age")
+        ]
+      )
+
     json = Jason.encode!(list)
 
     assert {:ok, list} == Jason.decode!(json) |> Dictionary.Type.List.new()
   end
 
   test "brook serializer can serialize and deserialize" do
-    list = Dictionary.Type.List.new!(
-      name: "name",
-      description: "description",
-      item_type: Dictionary.Type.Map,
-      fields: [
-        Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age")
-      ]
-    )
+    list =
+      Dictionary.Type.List.new!(
+        name: "name",
+        description: "description",
+        item_type: Dictionary.Type.Map,
+        fields: [
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age")
+        ]
+      )
 
-    assert {:ok, list} == Brook.Serializer.serialize(list) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert {:ok, list} ==
+             Brook.Serializer.serialize(list) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   data_test "normalizes data in maps according to field rules" do
