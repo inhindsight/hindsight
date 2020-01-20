@@ -24,9 +24,15 @@ defmodule Gather.Extraction do
   @dialyzer {:nowarn_function, handle_continue: 2}
   @impl GenServer
   def handle_continue(:extract, %{extract: extract} = state) do
+    Logger.debug(fn -> "#{__MODULE__}: Started extraction: #{inspect(extract)}" end)
+
     case extract(extract) do
-      :ok -> {:stop, :normal, state}
-      {:error, reason} -> {:stop, reason, state}
+      :ok ->
+        {:stop, :normal, state}
+
+      {:error, reason} ->
+        Logger.warn("#{__MODULE__}: Extraction Stopping: #{inspect(extract)}")
+        {:stop, reason, state}
     end
   end
 

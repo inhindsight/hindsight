@@ -95,6 +95,7 @@ config :service_broadcast, Broadcast.Stream.Broadway,
         {OffBroadway.Kafka.Producer,
          [
            endpoints: kafka_endpoints,
+           create_topics: true,
            group_consumer: [
              config: [
                begin_offset: :earliest,
@@ -151,6 +152,7 @@ config :service_persist, Persist.Load.Broadway,
         {OffBroadway.Kafka.Producer,
          [
            endpoints: kafka_endpoints,
+           create_topics: true,
            group_consumer: [
              config: [
                begin_offset: :earliest,
