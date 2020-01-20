@@ -20,24 +20,6 @@ defmodule Dictionary.Type.MapTest do
     end
   end
 
-  describe "Dictionary.Type.Decoder.decode/2" do
-    data_test "validates #{inspect(field)} against bad input" do
-      assert {:error, [%{input: value, path: [field]} | _]} =
-               put_in(%{}, [field], value)
-               |> decode()
-
-      where [
-        [:field, :value],
-        ["version", "1"],
-        ["name", ""],
-        ["name", nil],
-        ["description", nil],
-        ["fields", nil],
-        ["fields", "one"]
-      ]
-    end
-  end
-
   test "can be encoded to json" do
     expected = %{
       "version" => 1,
@@ -63,29 +45,30 @@ defmodule Dictionary.Type.MapTest do
   end
 
   test "can be decoded back into struct" do
-    map = %{
-      "version" => 1,
-      "name" => "name",
-      "description" => "description",
-      "type" => "map",
-      "fields" => [
-        %{"version" => 1, "name" => "name", "description" => "", "type" => "string"},
-        %{"version" => 1, "name" => "age", "description" => "", "type" => "integer"}
+    map = Dictionary.Type.Map.new!(
+      name: "name",
+      description: "description",
+      fields: [
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
       ]
-    }
+    )
+    json = Jason.encode!(map)
 
-    expected =
-      {:ok,
-       %Dictionary.Type.Map{
-         name: "name",
-         description: "description",
-         fields: [
-           %Dictionary.Type.String{name: "name"},
-           %Dictionary.Type.Integer{name: "age"}
-         ]
-       }}
+    assert {:ok, map} == Jason.decode!(json) |> Dictionary.Type.Map.new()
+  end
 
-    assert expected == Dictionary.Type.Decoder.decode(struct(Dictionary.Type.Map), map)
+  test "brook serializer can serialize and deserialize" do
+    map = Dictionary.Type.Map.new!(
+      name: "name",
+      description: "description",
+      fields: [
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
+      ]
+    )
+
+    assert {:ok, map} == Brook.Serializer.serialize(map) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   data_test "normalizes all fields inside map" do
@@ -109,9 +92,5 @@ defmodule Dictionary.Type.MapTest do
       ["george", 21, {:ok, %{"name" => "george", "age" => 21}}],
       ["fred", "abc", {:error, %{"age" => :invalid_integer}}]
     ]
-  end
-
-  defp decode(map) do
-    Dictionary.Type.Decoder.decode(struct(Dictionary.Type.Map), map)
   end
 end

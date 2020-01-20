@@ -7,23 +7,18 @@ defmodule Dictionary.Type.Map do
             description: "",
             fields: []
 
-  defimpl Dictionary.Type.Decoder, for: __MODULE__ do
-    def decode(_, values) do
-      with {:ok, fields} <- decode_fields(Map.get(values, "fields", [])) do
-        values
-        |> Enum.map(fn {key, value} -> {String.to_existing_atom(key), value} end)
-        |> Map.new()
-        |> Map.put(:fields, fields)
-        |> Dictionary.Type.Map.new()
-      end
+  def on_new(data) do
+    with {:ok, fields} <- decode_fields(data.fields) do
+      Map.put(data, :fields, fields)
+      |> Ok.ok()
     end
-
-    defp decode_fields(fields) when is_list(fields) do
-      Ok.transform(fields, &Dictionary.decode/1)
-    end
-
-    defp decode_fields(fields), do: Ok.ok(fields)
   end
+
+  defp decode_fields(fields) when is_list(fields) do
+    Ok.transform(fields, &Dictionary.decode/1)
+  end
+
+  defp decode_fields(fields), do: Ok.ok(fields)
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
     def normalize(%{fields: fields}, map) do
