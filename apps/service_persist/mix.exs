@@ -32,7 +32,7 @@ defmodule Persist.MixProject do
       {:annotated_retry, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:jason, "~> 1.1"},
-      {:off_broadway_kafka, "~> 0.5.0"},
+      {:off_broadway_kafka, "~> 0.5"},
       {:mox, "~> 0.5", only: [:test]},
       {:testing, in_umbrella: true, only: [:test]}
     ]

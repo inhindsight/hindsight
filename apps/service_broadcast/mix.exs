@@ -42,7 +42,7 @@ defmodule Broadcast.MixProject do
       {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       {:brook, "~> 0.5"},
-      {:off_broadway_kafka, "~> 0.5.0"},
+      {:off_broadway_kafka, "~> 0.5"},
       {:definition_events, in_umbrella: true},
       {:simple_registry, in_umbrella: true},
       {:initializer, in_umbrella: true},

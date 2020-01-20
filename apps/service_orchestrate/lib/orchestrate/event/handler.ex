@@ -14,6 +14,8 @@ defmodule Orchestrate.Event.Handler do
   @instance Orchestrate.Application.instance()
 
   def handle_event(%Brook.Event{type: schedule_start(), data: %Schedule{} = schedule} = event) do
+    Logger.debug(fn -> "#{__MODULE__}: Received event #{schedule_start()}: #{inspect(schedule)}" end)
+
     case parse_cron(schedule.cron) do
       {:ok, cron} ->
         create_schedule_job(schedule.id, cron)
@@ -33,7 +35,8 @@ defmodule Orchestrate.Event.Handler do
   end
 
   defp parse_cron(cron) do
-    Crontab.CronExpression.Parser.parse(cron)
+    number_of_fields = String.split(cron) |> length()
+    Crontab.CronExpression.Parser.parse(cron, number_of_fields == 7)
   end
 
   defp create_schedule_job(id, cron) do

@@ -1,6 +1,7 @@
 defmodule Broadcast.Stream.Broadway do
   use Broadway
   use Properties, otp_app: :service_broadcast
+  require Logger
 
   alias Writer.DLQ.DeadLetter
   alias BroadcastWeb.Endpoint
@@ -25,8 +26,14 @@ defmodule Broadcast.Stream.Broadway do
   end
 
   def handle_message(_processor, %Message{data: data} = message, %{load: load}) do
+    Logger.debug(fn -> "#{__MODULE__}: Received message: #{inspect(message)}" end)
+
     with {:ok, decoded_value} <- Jason.decode(data.value),
          {:ok, normalized_data} <- Dictionary.normalize(load.schema, decoded_value) do
+      Logger.debug(fn ->
+        "#{__MODULE__}: Broadcasting to broadcast:#{load.destination}: #{inspect(normalized_data)}"
+      end)
+
       Endpoint.broadcast!("broadcast:#{load.destination}", "update", normalized_data)
       message
     else
