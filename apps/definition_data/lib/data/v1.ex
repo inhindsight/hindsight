@@ -1,4 +1,14 @@
 defmodule Data.V1 do
+  @moduledoc """
+  Defines the data message implementation of
+  the `Definition.Schema` behaviour and provides
+  the data message implementation of the `s/0`
+  function.
+
+  Returns a valid Norm schema representing a data
+  message for validation and defaults the valid
+  struct version.
+  """
   use Definition.Schema
 
   @impl Definition.Schema
