@@ -5,8 +5,8 @@ defmodule Dictionary.Type.DateTest do
   describe "new/1" do
     data_test "validates #{inspect(field)} against bad input" do
       assert {:error, [%{input: value, path: [field]} | _]} =
-        put_in(%{}, [field], value)
-        |> Dictionary.Type.Date.new()
+               put_in(%{}, [field], value)
+               |> Dictionary.Type.Date.new()
 
       where [
         [:field, :value],
@@ -30,8 +30,12 @@ defmodule Dictionary.Type.DateTest do
     }
 
     assert expected ==
-      Jason.encode!(%Dictionary.Type.Date{name: "name", description: "description", format: "%Y-%0m-%0d" })
-      |> Jason.decode!()
+             Jason.encode!(%Dictionary.Type.Date{
+               name: "name",
+               description: "description",
+               format: "%Y-%0m-%0d"
+             })
+             |> Jason.decode!()
   end
 
   test "can be decoded back into struct" do
@@ -44,7 +48,8 @@ defmodule Dictionary.Type.DateTest do
   test "brook serializer can serialize and deserialize" do
     string = Dictionary.Type.Date.new!(name: "name", description: "description", format: "%Y")
 
-    assert {:ok, string} = Brook.Serializer.serialize(string) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert {:ok, string} =
+             Brook.Serializer.serialize(string) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   data_test "validates dates - #{inspect(value)} --> #{inspect(result)}" do
