@@ -5,6 +5,7 @@ defmodule Orchestrate do
   @instance Orchestrate.Application.instance()
   @author "orchestrate"
 
+  @spec run_schedule(String.t()) :: no_return
   def run_schedule(id) do
     case Orchestrate.Schedule.Store.get(id) do
       {:ok, nil} ->
