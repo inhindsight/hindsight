@@ -39,14 +39,17 @@ defmodule Dictionary.Type.TimestampTest do
   end
 
   test "can be decoded back into struct" do
-    string = Dictionary.Type.Timestamp.new!(name: "name", description: "description", format: "%Y")
+    string =
+      Dictionary.Type.Timestamp.new!(name: "name", description: "description", format: "%Y")
+
     json = Jason.encode!(string)
 
     assert {:ok, string} == Jason.decode!(json) |> Dictionary.Type.Timestamp.new()
   end
 
   test "brook serializer can serialize and deserialize" do
-    string = Dictionary.Type.Timestamp.new!(name: "name", description: "description", format: "%Y")
+    string =
+      Dictionary.Type.Timestamp.new!(name: "name", description: "description", format: "%Y")
 
     assert {:ok, string} =
              Brook.Serializer.serialize(string) |> elem(1) |> Brook.Deserializer.deserialize()
