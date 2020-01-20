@@ -7,6 +7,7 @@ defmodule Dictionary.Type.Map do
             description: "",
             fields: []
 
+  @impl Definition
   def on_new(data) do
     with {:ok, fields} <- decode_fields(data.fields) do
       Map.put(data, :fields, fields)
