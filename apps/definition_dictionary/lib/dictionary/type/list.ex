@@ -7,13 +7,29 @@ defmodule Dictionary.Type.List do
             item_type: nil,
             fields: []
 
+  @impl Definition
   def on_new(data) do
-    case data.item_type == "" || is_atom(data.item_type) do
-      true -> data
-      false -> Map.update!(data, :item_type, &String.to_existing_atom/1)
+    with {:ok, item_type_module} <- get_item_type(data.item_type),
+         {:ok, fields} <- decode_fields(data.fields) do
+      data
+      |> Map.put(:fields, fields)
+      |> Map.put(:item_type, item_type_module)
+      |> Ok.ok()
     end
-    |> Ok.ok()
   end
+
+  defp get_item_type(item_type) do
+    case is_binary(item_type) && item_type != "" do
+      true -> Dictionary.Type.from_string(item_type)
+      false -> {:ok, item_type}
+    end
+  end
+
+  defp decode_fields(fields) when is_list(fields) do
+    Ok.transform(fields, &Dictionary.decode/1)
+  end
+
+  defp decode_fields(fields), do: Ok.ok(fields)
 
   defimpl Jason.Encoder, for: __MODULE__ do
     alias Dictionary.Type
@@ -27,33 +43,11 @@ defmodule Dictionary.Type.List do
     end
   end
 
-  defimpl Dictionary.Type.Decoder, for: __MODULE__ do
-    alias Dictionary.Type
-
-    def decode(_, values) do
-      with {:ok, item_type_module} <- get_item_type(Map.get(values, "item_type")),
-           {:ok, fields} <- decode_fields(Map.get(values, "fields", [])) do
-        values
-        |> Enum.map(fn {key, value} -> {String.to_existing_atom(key), value} end)
-        |> Map.new()
-        |> Map.put(:fields, fields)
-        |> Map.put(:item_type, item_type_module)
-        |> Dictionary.Type.List.new()
-      end
+  defimpl Brook.Serializer.Protocol, for: __MODULE__ do
+    def serialize(data) do
+      Map.put(data, :item_type, Dictionary.Type.to_string(data.item_type))
+      |> Brook.Serializer.Protocol.Any.serialize()
     end
-
-    defp get_item_type(item_type) do
-      case is_binary(item_type) && item_type != "" do
-        true -> Type.from_string(item_type)
-        false -> {:ok, item_type}
-      end
-    end
-
-    defp decode_fields(fields) when is_list(fields) do
-      Ok.transform(fields, &Dictionary.decode/1)
-    end
-
-    defp decode_fields(fields), do: Ok.ok(fields)
   end
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
