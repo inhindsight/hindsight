@@ -1,25 +1,24 @@
 # Data
 
-Data is a library for defining the structure of data messages
-within the Hindsight ingestion pipeline. Definition Data
-inherits the schema validation as well as the struct instance
-creation and lifecycle management functions from the root Definition
-library.
+Data defines the structure of data messages within the Hindsight
+ingestion pipeline. Data inherits the schema validation as well
+as the struct instance creation and lifecycle management functions
+from the root Definition library.
 
 ```
     Definition
-        |_ Definition.Data
+        |_ Data
 ```
 
 ## Usage
 
 ```elixir
   iex> Data.new(
-            version: 1,
-            dataset_id: "123-456",
-            extract_id: "567-890",
-            payload: %{hello: "world"}
-          )
+                 version: 1,
+                 dataset_id: "123-456",
+                 extract_id: "567-890",
+                 payload: %{hello: "world"}
+               )
 
   {:ok, %Data{dataset_id: "123-456", extract_id: "567-890", payload: %{hello: "world"}, version: 1}}
 ```

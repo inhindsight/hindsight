@@ -9,6 +9,7 @@ defmodule Data do
   ingested.
 
   # Examples
+
     iex> Data.new(
     ...>           version: 1,
     ...>           dataset_id: "123-456",
