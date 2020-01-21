@@ -1,6 +1,16 @@
 defmodule Http.Post do
-  @enforce_keys [:url, :body]
-  defstruct url: nil,
+  use Definition, schema: Http.Post.V1
+
+  @type t :: %__MODULE__{
+          version: integer,
+          url: String.t(),
+          headers: map,
+          body: binary
+        }
+
+  @derive Jason.Encoder
+  defstruct version: 1,
+            url: nil,
             headers: [],
             body: nil
 
@@ -37,5 +47,18 @@ defmodule Http.Post do
       headers
       |> Enum.map(fn {name, value} -> {name, apply_variables(context, value)} end)
     end
+  end
+end
+
+defmodule Http.Post.V1 do
+  use Definition.Schema
+
+  def s do
+    schema(%Http.Post{
+      version: version(1),
+      url: required_string(),
+      headers: spec(is_map()),
+      body: spec(is_binary())
+    })
   end
 end
