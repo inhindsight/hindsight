@@ -1,6 +1,7 @@
 defmodule Kafka.SubscribeTest do
   use ExUnit.Case
   use Divo
+  import Checkov
   import AssertAsync
   require Logger
 
@@ -14,34 +15,67 @@ defmodule Kafka.SubscribeTest do
     :ok
   end
 
-  test "Kafka.Subscribe" do
-    step = %Kafka.Subscribe{endpoints: [localhost: 9092], topic: "topic-a"}
+  describe "new/1" do
+    data_test "validates #{inspect(field)} against bad input" do
+      assert {:error, [%{input: value, path: [field]} | _]} =
+        put_in(%{}, [field], value)
+        |> Kafka.Subscribe.new()
 
-    {:ok, context} = Extract.Step.execute(step, Context.new())
+      where([
+        [:field, :value],
+        [:version, "1"],
+        [:endpoints, "a"],
+        [:endpoints, nil],
+        [:topic, ""],
+        [:topic, nil]
+      ])
+    end
+  end
 
-    messages = Enum.map(1..100, fn i -> "message-#{i}" end)
+  test "can be decoded back into struct" do
+    struct = Kafka.Subscribe.new!(endpoints: [localhost: 8080], topic: "topic")
+    json = Jason.encode!(struct)
 
-    Task.async(fn ->
-      Process.sleep(2_000)
-      Elsa.produce([localhost: 9092], "topic-a", messages, partition: 0)
-    end)
+    assert {:ok, struct} == Jason.decode!(json) |> Kafka.Subscribe.new()
+  end
 
-    actuals =
-      context
-      |> Context.get_stream()
-      |> Stream.take(100)
-      |> Stream.map(&Map.get(&1, :value))
-      |> Stream.chunk_every(10)
-      |> Stream.each(fn chunk ->
-        Context.run_after_functions(context, chunk)
+  test "brook serializer can serialize and deserialize" do
+    struct = Kafka.Subscribe.new!(endpoints: [localhost: 8080], topic: "topic")
+
+    assert {:ok, struct} =
+      Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
+  end
+
+  describe "Extract.Step" do
+    test "Kafka.Subscribe" do
+      step = %Kafka.Subscribe{endpoints: [localhost: 9092], topic: "topic-a"}
+
+      {:ok, context} = Extract.Step.execute(step, Context.new())
+
+      messages = Enum.map(1..100, fn i -> "message-#{i}" end)
+
+      Task.async(fn ->
+        Process.sleep(2_000)
+        Elsa.produce([localhost: 9092], "topic-a", messages, partition: 0)
       end)
-      |> Enum.to_list()
-      |> List.flatten()
 
-    assert actuals == messages
+      actuals =
+        context
+        |> Context.get_stream()
+        |> Stream.take(100)
+        |> Stream.map(&Map.get(&1, :value))
+        |> Stream.chunk_every(10)
+        |> Stream.each(fn chunk ->
+          Context.run_after_functions(context, chunk)
+        end)
+        |> Enum.to_list()
+        |> List.flatten()
 
-    assert_async do
-      assert {:links, []} == Process.info(self(), :links)
+      assert actuals == messages
+
+      assert_async do
+        assert {:links, []} == Process.info(self(), :links)
+      end
     end
   end
 end

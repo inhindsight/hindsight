@@ -1,6 +1,47 @@
 defmodule Kafka.Subscribe do
-  @enforce_keys [:endpoints, :topic]
-  defstruct [:endpoints, :topic]
+  use Definition, schema: Kafka.Subscribe.V1
+
+  @type t :: %__MODULE__{
+          version: integer,
+          endpoints: keyword,
+          topic: String.t()
+        }
+
+  defstruct version: 1, endpoints: nil, topic: nil
+
+  def on_new(data) do
+    data
+    |> Map.update(:endpoints, [], &transform_endpoints/1)
+    |> Ok.ok()
+  end
+
+  defp transform_endpoints(list) when is_list(list) do
+    Enum.map(list, &transform_endpoint/1)
+  end
+  defp transform_endpoints(other), do: other
+
+  defp transform_endpoint([host, port]), do: {String.to_atom(host), port}
+  defp transform_endpoint(other), do: other
+
+  defimpl Jason.Encoder, for: __MODULE__ do
+    def encode(value, opts) do
+      Map.from_struct(value)
+      |> Map.update!(:endpoints, fn list ->
+        Enum.map(list, fn {host, port} -> [host, port] end)
+      end)
+      |> Jason.Encode.map(opts)
+    end
+  end
+
+  defimpl Brook.Serializer.Protocol, for: __MODULE__ do
+    def serialize(value) do
+      Map.from_struct(value)
+      |> Map.update!(:endpoints, fn list ->
+        Enum.map(list, fn {host, port} -> [host, port] end)
+      end)
+      |> Ok.ok()
+    end
+  end
 
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Steps.Context
@@ -82,5 +123,17 @@ defmodule Kafka.Subscribe.Handler do
   def handle_messages(messages, state) do
     send(state.pid, {:kafka_subscribe, messages})
     {:no_ack, state}
+  end
+end
+
+defmodule Kafka.Subscribe.V1 do
+  use Definition.Schema
+
+  def s do
+    schema(%Kafka.Subscribe{
+      version: version(1),
+      endpoints: spec(is_list() and not_nil?()),
+      topic: required_string()
+    })
   end
 end

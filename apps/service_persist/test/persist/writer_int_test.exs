@@ -19,7 +19,7 @@ defmodule Persist.WriterIntTest do
   ])
 
   setup do
-    Application.ensure_all_started(:hackney) |> IO.inspect(label: "start hackney")
+    Application.ensure_all_started(:hackney)
 
     :ok
   end
