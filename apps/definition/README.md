@@ -5,6 +5,24 @@ throughout Hindsight as Elixir structs, validating their contents,
 and managing their behavior and functionality throughout the life
 of the system as requirements change.
 
+```
+    Definition
+        |_ Data
+        |_ Dataset
+        |_ Dataset.Owner
+        |_ Dictionary.Type.Integer
+        |_ Dictionary.Type.List
+        |_ Dictionary.Type.Map
+        |_ Dictionary.Type.String
+        |_ Dictionary.Type.Date
+        |_ Dictionary.Type.Timestamp
+        |_ Extract
+        |_ Load.Broadcast
+        |_ Load.Persist
+        |_ Schedule
+        |_ Transform
+```
+
 The primary module defines a `__using__/1` macro that accepts a
 schema definition for the definition type being implemented and
 implements functions for creating new instances of the definition
@@ -12,7 +30,7 @@ struct from maps, keyword lists, or JSON-formatted strings.
 
 The basic default functions include a pre-compile `migrate/1` function
 for defining a migration path to upgrade the specification of the
-definition as its needs change and a getter function for quickly
+definition as its needs change and a getter function for
 returning the schema definition of the struct instance.
 
 Finally, definition provides an overridable `on_new/1` function that allows

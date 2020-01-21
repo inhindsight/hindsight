@@ -1,4 +1,13 @@
 defmodule Dataset.V1 do
+  @moduledoc """
+  Defines the dataset implementation of the
+  `Definition.Schema` behaviour and the
+  dataset `s/0` function.
+
+  Returns a valid Norm schema representing a
+  dataset for validation and defaults the current
+  struct version.
+  """
   use Definition.Schema
 
   @impl Definition.Schema

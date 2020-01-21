@@ -20,7 +20,7 @@ defmodule DatasetTest do
         [[:created_ts], ""],
         [[:profile, :updated_ts], "bar"],
         [[:profile, :profiled_ts], "foo"],
-        [[:profile, :modified_ts], "bar"],
+        [[:profile, :modified_meta_ts], "bar"],
         [[:profile, :spatial], [[]]],
         [[:profile, :temporal], ["foo", "bar"]]
       ]
