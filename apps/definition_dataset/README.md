@@ -5,14 +5,14 @@ logical group) within Hindsight. Dataset inherits the schema validation
 as well as the struct instance creation and lifecycle management functions
 from the root Definition library.
 
-The dataset definition collects the information about the source of the
-data (including contact information), a usage license, and profile information
-for discoverability, and any relevant temporal or spatial boundaries to the data.
-
 ```
     Definition
         |_ Dataset
 ```
+
+The dataset definition collects the information about the source of the
+data (including contact information), a usage license, and profile information
+for discoverability, and any relevant temporal or spatial boundaries to the data.
 
 ## Usage
 
@@ -21,7 +21,7 @@ for discoverability, and any relevant temporal or spatial boundaries to the data
                     version: 1,
                     id: "123-456",
                     owner_id: "456-789"
-                    title: "Cool Data",
+                    name: "Cool Data",
                     description: "This data is the coolest",
                     keywords: ["awesome", "fun", "inspirational"],
                     license: "GPL",
