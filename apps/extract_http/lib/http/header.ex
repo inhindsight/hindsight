@@ -1,6 +1,14 @@
 defmodule Http.Header do
-  @enforce_keys [:name, :into]
-  defstruct [:name, :into]
+  use Definition, schema: Http.Header.V1
+
+  @type t :: %__MODULE__{
+    version: integer,
+    name: String.t(),
+    into: String.t()
+  }
+
+  @derive Jason.Encoder
+  defstruct version: 1, name: nil, into: nil
 
   defmodule HeaderNotAvailableError do
     defexception message: "Header not available",
@@ -35,5 +43,17 @@ defmodule Http.Header do
           |> Ok.error()
       end
     end
+  end
+end
+
+defmodule Http.Header.V1 do
+  use Definition.Schema
+
+  def s do
+    schema(%Http.Header{
+      version: version(1),
+      name: required_string(),
+      into: required_string()
+    })
   end
 end
