@@ -49,7 +49,8 @@ defmodule Persist.Writer do
   end
 
   defp format_message(schema, message) do
-    map_type = %Dictionary.Type.Map{fields: schema}
-    Translator.translate_value(map_type, message)
+    schema
+    |> Enum.map(fn %{name: name} = field -> {field, Map.get(message, name)} end)
+    |> Enum.map(fn {field, value} -> Translator.translate_value(field, value) end)
   end
 end

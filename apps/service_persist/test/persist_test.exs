@@ -74,7 +74,7 @@ defmodule PersistTest do
     ref = Broadway.test_messages(broadway, messages)
 
     schema = load.schema
-    assert_receive {:write, [{"bob", 12}], [schema: ^schema]}
+    assert_receive {:write, [["'bob'", 12]], [schema: ^schema]}
     assert_receive {:ack, ^ref, success, failed}
     assert 1 == length(success)
 
