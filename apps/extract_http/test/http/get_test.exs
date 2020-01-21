@@ -1,6 +1,7 @@
 defmodule Http.GetTest do
   use ExUnit.Case
   import Plug.Conn
+  import Checkov
 
   alias Extract.Steps.Context
 
@@ -10,59 +11,92 @@ defmodule Http.GetTest do
     [bypass: Bypass.open()]
   end
 
-  test "execute will send request and set in context", %{bypass: bypass} do
-    Bypass.expect(bypass, "GET", "/get-request", fn conn ->
-      resp(conn, 200, "hello")
-    end)
+  describe "new/1" do
+    data_test "validates #{inspect(field)} against bad input" do
+      assert {:error, [%{input: value, path: [field]} | _]} =
+        put_in(%{}, [field], value)
+        |> Http.Get.new()
 
-    step = %Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
-    {:ok, context} = Extract.Step.execute(step, Context.new())
-
-    assert ["hello"] == Context.get_stream(context) |> Enum.to_list()
+      where [
+        [:field, :value],
+        [:version, "1"],
+        [:url, ""],
+        [:url, nil],
+        [:headers, nil],
+        [:headers, ""]
+      ]
+    end
   end
 
-  test "execute will replace variables in url", %{bypass: bypass} do
-    Bypass.expect(bypass, "GET", "/get/foo", fn conn ->
-      resp(conn, 200, "hello")
-    end)
+  test "can be decoded back into struct" do
+    get = Http.Get.new!(url: "http://localhsot", headers: %{"name" => "some_name"})
+    json = Jason.encode!(get)
 
-    step = %Http.Get{url: "http://localhost:#{bypass.port}/get/<id>"}
-    context = Context.new() |> Context.add_variable("id", "foo")
-    {:ok, context} = Extract.Step.execute(step, context)
-
-    assert ["hello"] == Context.get_stream(context) |> Enum.to_list()
+    assert {:ok, get} == Jason.decode!(json) |> Http.Get.new()
   end
 
-  test "execute will add headers to request", %{bypass: bypass} do
-    Bypass.expect(bypass, "GET", "/get-request", fn conn ->
-      assert ["value1"] == get_req_header(conn, "header1")
+  test "brook serializer can serialize and deserialize" do
+    get = Http.Get.new!(url: "http://localhsot", headers: %{"name" => "some_name"})
 
-      resp(conn, 200, "hello")
-    end)
-
-    step = %Http.Get{
-      url: "http://localhost:#{bypass.port}/get-request",
-      headers: [{"header1", "<var1>"}]
-    }
-
-    context = Context.new() |> Context.add_variable("var1", "value1")
-    {:ok, _context} = Extract.Step.execute(step, context)
+    assert {:ok, get} =
+      Brook.Serializer.serialize(get) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
-  test "execute will return error tuple for any status != 200", %{bypass: bypass} do
-    Bypass.expect(bypass, "GET", "/get-request", fn conn ->
-      resp(conn, 404, "Not Found")
-    end)
+  describe "Extract.Step" do
+    test "execute will send request and set in context", %{bypass: bypass} do
+      Bypass.expect(bypass, "GET", "/get-request", fn conn ->
+        resp(conn, 200, "hello")
+      end)
 
-    step = %Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
+      step = %Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
+      {:ok, context} = Extract.Step.execute(step, Context.new())
 
-    assert {:error, %Http.File.Downloader.InvalidStatusError{}} =
-             Extract.Step.execute(step, Context.new())
-  end
+      assert ["hello"] == Context.get_stream(context) |> Enum.to_list()
+    end
 
-  test "execute will return error tuple when error occurred during get" do
-    step = %Http.Get{url: "http://localhost/get-request"}
-    reason = Mint.TransportError.exception(reason: :econnrefused)
-    assert {:error, reason} == Extract.Step.execute(step, Context.new())
+    test "execute will replace variables in url", %{bypass: bypass} do
+      Bypass.expect(bypass, "GET", "/get/foo", fn conn ->
+        resp(conn, 200, "hello")
+      end)
+
+      step = %Http.Get{url: "http://localhost:#{bypass.port}/get/<id>"}
+      context = Context.new() |> Context.add_variable("id", "foo")
+      {:ok, context} = Extract.Step.execute(step, context)
+
+      assert ["hello"] == Context.get_stream(context) |> Enum.to_list()
+    end
+
+    test "execute will add headers to request", %{bypass: bypass} do
+      Bypass.expect(bypass, "GET", "/get-request", fn conn ->
+        assert ["value1"] == get_req_header(conn, "header1")
+
+        resp(conn, 200, "hello")
+      end)
+
+      step = %Http.Get{
+        url: "http://localhost:#{bypass.port}/get-request",
+        headers: %{"header1" => "<var1>"}
+      }
+
+      context = Context.new() |> Context.add_variable("var1", "value1")
+      {:ok, _context} = Extract.Step.execute(step, context)
+    end
+
+    test "execute will return error tuple for any status != 200", %{bypass: bypass} do
+      Bypass.expect(bypass, "GET", "/get-request", fn conn ->
+        resp(conn, 404, "Not Found")
+      end)
+
+      step = %Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
+
+      assert {:error, %Http.File.Downloader.InvalidStatusError{}} =
+               Extract.Step.execute(step, Context.new())
+    end
+
+    test "execute will return error tuple when error occurred during get" do
+      step = %Http.Get{url: "http://localhost/get-request"}
+      reason = Mint.TransportError.exception(reason: :econnrefused)
+      assert {:error, reason} == Extract.Step.execute(step, Context.new())
+    end
   end
 end

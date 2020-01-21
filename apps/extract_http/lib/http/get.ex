@@ -1,6 +1,15 @@
 defmodule Http.Get do
-  @enforce_keys [:url]
-  defstruct url: nil,
+  use Definition, schema: Http.Get.V1
+
+  @type t :: %__MODULE__{
+    version: integer,
+    url: String.t(),
+    headers: map
+  }
+
+  @derive Jason.Encoder
+  defstruct version: 1,
+            url: nil,
             headers: []
 
   defimpl Extract.Step, for: Http.Get do
@@ -38,5 +47,17 @@ defmodule Http.Get do
       headers
       |> Enum.map(fn {name, value} -> {name, apply_variables(context, value)} end)
     end
+  end
+end
+
+defmodule Http.Get.V1 do
+  use Definition.Schema
+
+  def s do
+    schema(%Http.Get{
+      version: version(1),
+      url: required_string(),
+      headers: spec(is_map())
+    })
   end
 end
