@@ -1,4 +1,4 @@
-defmodule Kafka.SubscribeTest do
+defmodule Extract.Kafka.SubscribeTest do
   use ExUnit.Case
   use Divo
   import Checkov
@@ -19,7 +19,7 @@ defmodule Kafka.SubscribeTest do
     data_test "validates #{inspect(field)} against bad input" do
       assert {:error, [%{input: value, path: [field]} | _]} =
         put_in(%{}, [field], value)
-        |> Kafka.Subscribe.new()
+        |> Extract.Kafka.Subscribe.new()
 
       where([
         [:field, :value],
@@ -33,22 +33,22 @@ defmodule Kafka.SubscribeTest do
   end
 
   test "can be decoded back into struct" do
-    struct = Kafka.Subscribe.new!(endpoints: [localhost: 8080], topic: "topic")
+    struct = Extract.Kafka.Subscribe.new!(endpoints: [localhost: 8080], topic: "topic")
     json = Jason.encode!(struct)
 
-    assert {:ok, struct} == Jason.decode!(json) |> Kafka.Subscribe.new()
+    assert {:ok, struct} == Jason.decode!(json) |> Extract.Kafka.Subscribe.new()
   end
 
   test "brook serializer can serialize and deserialize" do
-    struct = Kafka.Subscribe.new!(endpoints: [localhost: 8080], topic: "topic")
+    struct = Extract.Kafka.Subscribe.new!(endpoints: [localhost: 8080], topic: "topic")
 
     assert {:ok, struct} =
       Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   describe "Extract.Step" do
-    test "Kafka.Subscribe" do
-      step = %Kafka.Subscribe{endpoints: [localhost: 9092], topic: "topic-a"}
+    test "Extract.Kafka.Subscribe" do
+      step = %Extract.Kafka.Subscribe{endpoints: [localhost: 9092], topic: "topic-a"}
 
       {:ok, context} = Extract.Step.execute(step, Context.new())
 

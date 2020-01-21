@@ -1,4 +1,4 @@
-defmodule Kafka.Subscribe.Acknowledger do
+defmodule Extract.Kafka.Subscribe.Acknowledger do
   use GenServer
 
   @type init_opts :: [

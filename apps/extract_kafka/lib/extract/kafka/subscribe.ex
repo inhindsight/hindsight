@@ -1,5 +1,5 @@
-defmodule Kafka.Subscribe do
-  use Definition, schema: Kafka.Subscribe.V1
+defmodule Extract.Kafka.Subscribe do
+  use Definition, schema: Extract.Kafka.Subscribe.V1
 
   @type t :: %__MODULE__{
           version: integer,
@@ -45,13 +45,13 @@ defmodule Kafka.Subscribe do
 
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Steps.Context
-    alias Kafka.Subscribe.Acknowledger
+    alias Extract.Kafka.Subscribe.Acknowledger
 
     def execute(%{endpoints: endpoints, topic: topic}, context) do
       ensure_topic(endpoints, topic)
       connection = :"kafka_subscribe_#{topic}"
 
-      {:ok, acknowledger} = Kafka.Subscribe.Acknowledger.start_link(connection: connection)
+      {:ok, acknowledger} = Acknowledger.start_link(connection: connection)
 
       source = fn _opts ->
         Stream.resource(
@@ -94,7 +94,7 @@ defmodule Kafka.Subscribe do
             group_consumer: [
               group: "kafka_subscribe_#{topic}",
               topics: [topic],
-              handler: Kafka.Subscribe.Handler,
+              handler: Extract.Kafka.Subscribe.Handler,
               handler_init_args: %{pid: self()},
               config: [
                 begin_offset: :earliest,
@@ -117,7 +117,7 @@ defmodule Kafka.Subscribe do
   end
 end
 
-defmodule Kafka.Subscribe.Handler do
+defmodule Extract.Kafka.Subscribe.Handler do
   use Elsa.Consumer.MessageHandler
 
   def handle_messages(messages, state) do
@@ -126,11 +126,11 @@ defmodule Kafka.Subscribe.Handler do
   end
 end
 
-defmodule Kafka.Subscribe.V1 do
+defmodule Extract.Kafka.Subscribe.V1 do
   use Definition.Schema
 
   def s do
-    schema(%Kafka.Subscribe{
+    schema(%Extract.Kafka.Subscribe{
       version: version(1),
       endpoints: spec(is_list() and not_nil?()),
       topic: required_string()
