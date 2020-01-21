@@ -28,8 +28,8 @@ defmodule PlatformRunner.EndToEndTest do
             name: "gather",
             destination: "e2e-csv-gather",
             steps: [
-              %{"step" => "Http.Get", "url" => "http://localhost:#{bp.port}/file.csv"},
-              %{"step" => "Decode.Csv", "headers" => ["letter", "number"]}
+              Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/file.csv"),
+              Extract.Decode.Csv.new!(headers: ["letter", "number"])
             ]
           ),
         transform:
@@ -127,8 +127,8 @@ defmodule PlatformRunner.EndToEndTest do
           name: "gather",
           destination: "e2e-json-gather",
           steps: [
-            %{"step" => "Http.Get", "url" => "http://localhost:#{bp.port}/json"},
-            %{"step" => "Decode.Json"}
+            Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/json"),
+            Extract.Decode.Json.new!([])
           ]
         )
 
