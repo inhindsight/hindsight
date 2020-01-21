@@ -30,7 +30,7 @@ defmodule Kafka.Subscribe.MixProject do
       {:divo, "~> 1.1", only: [:dev, :test]},
       {:divo_kafka, "~> 0.1.6", only: [:test]},
       {:testing, in_umbrella: true, only: [:test]},
-      {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
 end

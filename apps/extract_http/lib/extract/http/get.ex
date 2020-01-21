@@ -2,10 +2,10 @@ defmodule Extract.Http.Get do
   use Definition, schema: Extract.Http.Get.V1
 
   @type t :: %__MODULE__{
-    version: integer,
-    url: String.t(),
-    headers: map
-  }
+          version: integer,
+          url: String.t(),
+          headers: map
+        }
 
   @derive Jason.Encoder
   defstruct version: 1,

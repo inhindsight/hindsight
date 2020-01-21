@@ -18,8 +18,8 @@ defmodule Extract.Kafka.SubscribeTest do
   describe "new/1" do
     data_test "validates #{inspect(field)} against bad input" do
       assert {:error, [%{input: value, path: [field]} | _]} =
-        put_in(%{}, [field], value)
-        |> Extract.Kafka.Subscribe.new()
+               put_in(%{}, [field], value)
+               |> Extract.Kafka.Subscribe.new()
 
       where([
         [:field, :value],
@@ -43,7 +43,7 @@ defmodule Extract.Kafka.SubscribeTest do
     struct = Extract.Kafka.Subscribe.new!(endpoints: [localhost: 8080], topic: "topic")
 
     assert {:ok, struct} =
-      Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
+             Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   describe "Extract.Step" do

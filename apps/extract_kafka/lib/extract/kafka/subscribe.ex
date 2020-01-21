@@ -18,6 +18,7 @@ defmodule Extract.Kafka.Subscribe do
   defp transform_endpoints(list) when is_list(list) do
     Enum.map(list, &transform_endpoint/1)
   end
+
   defp transform_endpoints(other), do: other
 
   defp transform_endpoint([host, port]), do: {String.to_atom(host), port}

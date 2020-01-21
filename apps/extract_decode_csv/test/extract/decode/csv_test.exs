@@ -31,7 +31,7 @@ defmodule Extract.Decode.CsvTest do
     struct = Extract.Decode.Csv.new!(headers: ["name"])
 
     assert {:ok, struct} =
-      Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
+             Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   describe "Extract.Step" do

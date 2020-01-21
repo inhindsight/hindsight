@@ -14,17 +14,17 @@ defmodule Extract.Http.GetTest do
   describe "new/1" do
     data_test "validates #{inspect(field)} against bad input" do
       assert {:error, [%{input: value, path: [field]} | _]} =
-        put_in(%{}, [field], value)
-        |> Extract.Http.Get.new()
+               put_in(%{}, [field], value)
+               |> Extract.Http.Get.new()
 
-      where [
+      where([
         [:field, :value],
         [:version, "1"],
         [:url, ""],
         [:url, nil],
         [:headers, nil],
         [:headers, ""]
-      ]
+      ])
     end
   end
 
@@ -39,7 +39,7 @@ defmodule Extract.Http.GetTest do
     get = Extract.Http.Get.new!(url: "http://localhsot", headers: %{"name" => "some_name"})
 
     assert {:ok, get} =
-      Brook.Serializer.serialize(get) |> elem(1) |> Brook.Deserializer.deserialize()
+             Brook.Serializer.serialize(get) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   describe "Extract.Step" do

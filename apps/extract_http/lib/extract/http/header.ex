@@ -2,10 +2,10 @@ defmodule Extract.Http.Header do
   use Definition, schema: Extract.Http.Header.V1
 
   @type t :: %__MODULE__{
-    version: integer,
-    name: String.t(),
-    into: String.t()
-  }
+          version: integer,
+          name: String.t(),
+          into: String.t()
+        }
 
   @derive Jason.Encoder
   defstruct version: 1, name: nil, into: nil

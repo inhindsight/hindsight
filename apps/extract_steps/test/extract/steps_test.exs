@@ -7,7 +7,7 @@ defmodule Extract.StepsTest do
   describe "execute/1" do
     test "parses and executes steps" do
       steps = [
-        %Test.Steps.CreateResponse{response: %{body: [1,2,3,4,5,6]}},
+        %Test.Steps.CreateResponse{response: %{body: [1, 2, 3, 4, 5, 6]}},
         %Test.Steps.SetStream{},
         %Test.Steps.TransformStream{transform: fn x -> x * 2 end}
       ]

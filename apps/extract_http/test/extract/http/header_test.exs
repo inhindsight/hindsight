@@ -7,8 +7,8 @@ defmodule Extract.Http.HeaderTest do
   describe "new/1" do
     data_test "validates #{inspect(field)} against bad input" do
       assert {:error, [%{input: value, path: [field]} | _]} =
-        put_in(%{}, [field], value)
-        |> Extract.Http.Header.new()
+               put_in(%{}, [field], value)
+               |> Extract.Http.Header.new()
 
       where([
         [:field, :value],
@@ -32,7 +32,7 @@ defmodule Extract.Http.HeaderTest do
     struct = Extract.Http.Header.new!(name: "name", into: "NAME")
 
     assert {:ok, struct} =
-      Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
+             Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   describe "Extract.Step" do

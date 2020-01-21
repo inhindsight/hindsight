@@ -30,17 +30,28 @@ defmodule Extract.Http.PostTest do
   end
 
   test "can be decoded back into struct" do
-    struct = Extract.Http.Post.new!(url: "http://localhsot", headers: %{"name" => "some_name"}, body: "hello")
+    struct =
+      Extract.Http.Post.new!(
+        url: "http://localhsot",
+        headers: %{"name" => "some_name"},
+        body: "hello"
+      )
+
     json = Jason.encode!(struct)
 
     assert {:ok, struct} == Jason.decode!(json) |> Extract.Http.Post.new()
   end
 
   test "brook serializer can serialize and deserialize" do
-    struct = Extract.Http.Post.new!(url: "http://localhsot", headers: %{"name" => "some_name"}, body: "howdy")
+    struct =
+      Extract.Http.Post.new!(
+        url: "http://localhsot",
+        headers: %{"name" => "some_name"},
+        body: "howdy"
+      )
 
     assert {:ok, struct} =
-      Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
+             Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   describe "Extract.Step" do
@@ -75,7 +86,10 @@ defmodule Extract.Http.PostTest do
         resp(conn, 404, "Not Found")
       end)
 
-      step = %Extract.Http.Post{url: "http://localhost:#{bypass.port}/post-request", body: "hello"}
+      step = %Extract.Http.Post{
+        url: "http://localhost:#{bypass.port}/post-request",
+        body: "hello"
+      }
 
       assert {:error, %Extract.Http.File.Downloader.InvalidStatusError{}} =
                Extract.Step.execute(step, Context.new())

@@ -14,7 +14,7 @@ defmodule Extract.Decode.GtfsTest do
     struct = Extract.Decode.Gtfs.new!([])
 
     assert {:ok, struct} =
-      Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
+             Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
   end
 
   describe "Extract.Step" do
