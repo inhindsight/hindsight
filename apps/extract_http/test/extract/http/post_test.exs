@@ -1,4 +1,4 @@
-defmodule Http.PostTest do
+defmodule Extract.Http.PostTest do
   use ExUnit.Case
   import Plug.Conn
   import Checkov
@@ -15,7 +15,7 @@ defmodule Http.PostTest do
     data_test "validates #{inspect(field)} against bad input" do
       assert {:error, [%{input: value, path: [field]} | _]} =
                put_in(%{}, [field], value)
-               |> Http.Post.new()
+               |> Extract.Http.Post.new()
 
       where([
         [:field, :value],
@@ -30,14 +30,14 @@ defmodule Http.PostTest do
   end
 
   test "can be decoded back into struct" do
-    struct = Http.Post.new!(url: "http://localhsot", headers: %{"name" => "some_name"}, body: "hello")
+    struct = Extract.Http.Post.new!(url: "http://localhsot", headers: %{"name" => "some_name"}, body: "hello")
     json = Jason.encode!(struct)
 
-    assert {:ok, struct} == Jason.decode!(json) |> Http.Post.new()
+    assert {:ok, struct} == Jason.decode!(json) |> Extract.Http.Post.new()
   end
 
   test "brook serializer can serialize and deserialize" do
-    struct = Http.Post.new!(url: "http://localhsot", headers: %{"name" => "some_name"}, body: "howdy")
+    struct = Extract.Http.Post.new!(url: "http://localhsot", headers: %{"name" => "some_name"}, body: "howdy")
 
     assert {:ok, struct} =
       Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
@@ -53,7 +53,7 @@ defmodule Http.PostTest do
         resp(conn, 200, "goodbye")
       end)
 
-      step = %Http.Post{
+      step = %Extract.Http.Post{
         url: "http://localhost:#{bypass.port}/post/<id>",
         body: "Hello <name> <name>",
         headers: [{"header1", "<header_value>"}]
@@ -75,14 +75,14 @@ defmodule Http.PostTest do
         resp(conn, 404, "Not Found")
       end)
 
-      step = %Http.Post{url: "http://localhost:#{bypass.port}/post-request", body: "hello"}
+      step = %Extract.Http.Post{url: "http://localhost:#{bypass.port}/post-request", body: "hello"}
 
-      assert {:error, %Http.File.Downloader.InvalidStatusError{}} =
+      assert {:error, %Extract.Http.File.Downloader.InvalidStatusError{}} =
                Extract.Step.execute(step, Context.new())
     end
 
     test "execute will return error tuple when error occurred during get" do
-      step = %Http.Post{url: "http://localhost/get-request", body: "hello"}
+      step = %Extract.Http.Post{url: "http://localhost/get-request", body: "hello"}
       reason = Mint.TransportError.exception(reason: :econnrefused)
       assert {:error, reason} == Extract.Step.execute(step, Context.new())
     end

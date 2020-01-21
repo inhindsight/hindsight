@@ -1,4 +1,4 @@
-defmodule Http.File.Downloader do
+defmodule Extract.Http.File.Downloader do
   @moduledoc """
   Will download large files over http to a file on disk.
   """

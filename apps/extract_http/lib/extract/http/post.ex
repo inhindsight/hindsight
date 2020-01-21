@@ -1,5 +1,5 @@
-defmodule Http.Post do
-  use Definition, schema: Http.Post.V1
+defmodule Extract.Http.Post do
+  use Definition, schema: Extract.Http.Post.V1
 
   @type t :: %__MODULE__{
           version: integer,
@@ -14,12 +14,12 @@ defmodule Http.Post do
             headers: [],
             body: nil
 
-  defimpl Extract.Step, for: Http.Post do
+  defimpl Extract.Step, for: __MODULE__ do
     use Tesla
     import Extract.Steps.Context
-    alias Http.File.Downloader
+    alias Extract.Http.File.Downloader
 
-    def execute(%Http.Post{} = step, context) do
+    def execute(step, context) do
       url = apply_variables(context, step.url)
       body = apply_variables(context, step.body)
       headers = replace_variables_in_headers(context, step.headers)
@@ -50,11 +50,11 @@ defmodule Http.Post do
   end
 end
 
-defmodule Http.Post.V1 do
+defmodule Extract.Http.Post.V1 do
   use Definition.Schema
 
   def s do
-    schema(%Http.Post{
+    schema(%Extract.Http.Post{
       version: version(1),
       url: required_string(),
       headers: spec(is_map()),

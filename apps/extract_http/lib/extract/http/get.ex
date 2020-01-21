@@ -15,7 +15,7 @@ defmodule Extract.Http.Get do
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Steps.Context
 
-    alias Http.File.Downloader
+    alias Extract.Http.File.Downloader
 
     def execute(step, context) do
       url = apply_variables(context, step.url)

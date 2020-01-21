@@ -1,9 +1,9 @@
-defmodule Http.File.DownloaderTest do
+defmodule Extract.Http.File.DownloaderTest do
   use ExUnit.Case
   use Placebo
 
   alias Plug.Conn
-  alias Http.File.Downloader
+  alias Extract.Http.File.Downloader
 
   setup do
     on_exit(fn -> File.rm("test.output") end)
