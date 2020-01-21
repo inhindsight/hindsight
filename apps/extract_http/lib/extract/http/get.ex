@@ -1,5 +1,5 @@
-defmodule Http.Get do
-  use Definition, schema: Http.Get.V1
+defmodule Extract.Http.Get do
+  use Definition, schema: Extract.Http.Get.V1
 
   @type t :: %__MODULE__{
     version: integer,
@@ -12,12 +12,12 @@ defmodule Http.Get do
             url: nil,
             headers: []
 
-  defimpl Extract.Step, for: Http.Get do
+  defimpl Extract.Step, for: __MODULE__ do
     import Extract.Steps.Context
 
     alias Http.File.Downloader
 
-    def execute(%Http.Get{} = step, context) do
+    def execute(step, context) do
       url = apply_variables(context, step.url)
       headers = replace_variables_in_headers(context, step.headers)
 
@@ -50,11 +50,11 @@ defmodule Http.Get do
   end
 end
 
-defmodule Http.Get.V1 do
+defmodule Extract.Http.Get.V1 do
   use Definition.Schema
 
   def s do
-    schema(%Http.Get{
+    schema(%Extract.Http.Get{
       version: version(1),
       url: required_string(),
       headers: spec(is_map())

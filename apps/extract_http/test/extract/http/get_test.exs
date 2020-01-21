@@ -1,4 +1,4 @@
-defmodule Http.GetTest do
+defmodule Extract.Http.GetTest do
   use ExUnit.Case
   import Plug.Conn
   import Checkov
@@ -15,7 +15,7 @@ defmodule Http.GetTest do
     data_test "validates #{inspect(field)} against bad input" do
       assert {:error, [%{input: value, path: [field]} | _]} =
         put_in(%{}, [field], value)
-        |> Http.Get.new()
+        |> Extract.Http.Get.new()
 
       where [
         [:field, :value],
@@ -29,14 +29,14 @@ defmodule Http.GetTest do
   end
 
   test "can be decoded back into struct" do
-    get = Http.Get.new!(url: "http://localhsot", headers: %{"name" => "some_name"})
+    get = Extract.Http.Get.new!(url: "http://localhsot", headers: %{"name" => "some_name"})
     json = Jason.encode!(get)
 
-    assert {:ok, get} == Jason.decode!(json) |> Http.Get.new()
+    assert {:ok, get} == Jason.decode!(json) |> Extract.Http.Get.new()
   end
 
   test "brook serializer can serialize and deserialize" do
-    get = Http.Get.new!(url: "http://localhsot", headers: %{"name" => "some_name"})
+    get = Extract.Http.Get.new!(url: "http://localhsot", headers: %{"name" => "some_name"})
 
     assert {:ok, get} =
       Brook.Serializer.serialize(get) |> elem(1) |> Brook.Deserializer.deserialize()
@@ -48,7 +48,7 @@ defmodule Http.GetTest do
         resp(conn, 200, "hello")
       end)
 
-      step = %Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
+      step = %Extract.Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
       {:ok, context} = Extract.Step.execute(step, Context.new())
 
       assert ["hello"] == Context.get_stream(context) |> Enum.to_list()
@@ -59,7 +59,7 @@ defmodule Http.GetTest do
         resp(conn, 200, "hello")
       end)
 
-      step = %Http.Get{url: "http://localhost:#{bypass.port}/get/<id>"}
+      step = %Extract.Http.Get{url: "http://localhost:#{bypass.port}/get/<id>"}
       context = Context.new() |> Context.add_variable("id", "foo")
       {:ok, context} = Extract.Step.execute(step, context)
 
@@ -73,7 +73,7 @@ defmodule Http.GetTest do
         resp(conn, 200, "hello")
       end)
 
-      step = %Http.Get{
+      step = %Extract.Http.Get{
         url: "http://localhost:#{bypass.port}/get-request",
         headers: %{"header1" => "<var1>"}
       }
@@ -87,14 +87,14 @@ defmodule Http.GetTest do
         resp(conn, 404, "Not Found")
       end)
 
-      step = %Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
+      step = %Extract.Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
 
       assert {:error, %Http.File.Downloader.InvalidStatusError{}} =
                Extract.Step.execute(step, Context.new())
     end
 
     test "execute will return error tuple when error occurred during get" do
-      step = %Http.Get{url: "http://localhost/get-request"}
+      step = %Extract.Http.Get{url: "http://localhost/get-request"}
       reason = Mint.TransportError.exception(reason: :econnrefused)
       assert {:error, reason} == Extract.Step.execute(step, Context.new())
     end
