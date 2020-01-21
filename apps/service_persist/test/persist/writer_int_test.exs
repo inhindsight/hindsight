@@ -18,6 +18,12 @@ defmodule Persist.WriterIntTest do
     }
   ])
 
+  setup do
+    Application.ensure_all_started(:hackney) |> IO.inspect(label: "start hackney")
+
+    :ok
+  end
+
   test "can write data to presto" do
     schema = [
       Dictionary.Type.String.new!(name: "name"),
@@ -66,7 +72,7 @@ defmodule Persist.WriterIntTest do
         dataset_id: "ds1",
         name: "testing",
         source: "topic-a",
-        destination: "table1",
+        destination: "table2",
         schema: schema
       )
 
@@ -82,7 +88,7 @@ defmodule Persist.WriterIntTest do
       )
 
     result =
-      Prestige.query!(session, "SELECT * FROM table1")
+      Prestige.query!(session, "SELECT * FROM table2")
       |> Prestige.Result.as_maps()
 
     assert [expected] == result
