@@ -89,7 +89,7 @@ defmodule Extract.Http.GetTest do
 
       step = %Extract.Http.Get{url: "http://localhost:#{bypass.port}/get-request"}
 
-      assert {:error, %Http.File.Downloader.InvalidStatusError{}} =
+      assert {:error, %Extract.Http.File.Downloader.InvalidStatusError{}} =
                Extract.Step.execute(step, Context.new())
     end
 

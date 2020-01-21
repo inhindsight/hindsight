@@ -10,7 +10,7 @@ defmodule Extract.Http.Get do
   @derive Jason.Encoder
   defstruct version: 1,
             url: nil,
-            headers: []
+            headers: %{}
 
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Steps.Context

@@ -48,11 +48,7 @@ defmodule Gather.ExtractionTest do
         name: "happy-path",
         destination: "topic1",
         steps: [
-          %{
-            "step" => "Fake.Step",
-            "pid" => self(),
-            "values" => Stream.cycle([%{"one" => 1}]) |> Stream.take(100)
-          }
+          %Fake.Step{pid: self(), values: Stream.cycle([%{"one" => 1}]) |> Stream.take(100)}
         ]
       )
 
@@ -80,9 +76,8 @@ defmodule Gather.ExtractionTest do
         name: "test-extract",
         destination: "topic1",
         steps: [
-          %{
-            "step" => "Fake.Step",
-            "values" => [
+          %Fake.Step{
+            values: [
               %{"name" => "joe", "age" => 21},
               %{"name" => "pete", "age" => 28}
             ]
