@@ -1,10 +1,13 @@
-defmodule Decode.Gtfs do
+defmodule Extract.Decode.Gtfs do
+  use Definition, schema: Extract.Decode.Gtfs.V1
+
+  @derive Jason.Encoder
   defstruct []
 
-  defimpl Extract.Step, for: Decode.Gtfs do
+  defimpl Extract.Step, for: __MODULE__ do
     import Extract.Steps.Context
 
-    def execute(%Decode.Gtfs{}, context) do
+    def execute(_step, context) do
       source = fn opts ->
         opts = Keyword.put(opts, :read, :bytes)
 
@@ -18,5 +21,13 @@ defmodule Decode.Gtfs do
       |> set_source(source)
       |> Ok.ok()
     end
+  end
+end
+
+defmodule Extract.Decode.Gtfs.V1 do
+  use Definition.Schema
+
+  def s do
+    schema(%Extract.Decode.Gtfs{})
   end
 end
