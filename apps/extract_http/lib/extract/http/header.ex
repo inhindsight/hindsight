@@ -1,5 +1,5 @@
-defmodule Http.Header do
-  use Definition, schema: Http.Header.V1
+defmodule Extract.Http.Header do
+  use Definition, schema: Extract.Http.Header.V1
 
   @type t :: %__MODULE__{
     version: integer,
@@ -16,11 +16,11 @@ defmodule Http.Header do
                  response: nil
   end
 
-  defimpl Extract.Step, for: Http.Header do
+  defimpl Extract.Step, for: __MODULE__ do
     require Logger
     import Extract.Steps.Context
 
-    def execute(%Http.Header{} = step, context) do
+    def execute(step, context) do
       with {:response, %Tesla.Env{} = response} <- {:response, context.response},
            {:header, value} when value != nil <- {:header, Tesla.get_header(response, step.name)} do
         value = Tesla.get_header(response, step.name)
@@ -46,11 +46,11 @@ defmodule Http.Header do
   end
 end
 
-defmodule Http.Header.V1 do
+defmodule Extract.Http.Header.V1 do
   use Definition.Schema
 
   def s do
-    schema(%Http.Header{
+    schema(%Extract.Http.Header{
       version: version(1),
       name: required_string(),
       into: required_string()
