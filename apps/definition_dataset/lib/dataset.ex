@@ -3,10 +3,10 @@ defmodule Dataset do
   Defines the structure of a dataset within Hindsight.
 
   Datasets track the metadata attached to a collection of data
-  including the source, contact information for the source, a
-  description and keywords for catagorizing and discoverability,
-  and a profile of updates to the data and its metadata, as well
-  as relevant temporal or spatial boundaries represented by the data.
+  including the owning entity (source) for the data, a description
+  and keywords for catagorizing and discoverability, and a profile
+  of updates to the data and its metadata, as well as relevant
+  temporal or spatial boundaries represented by the data.
 
   The "updated_ts" records the last data/time the data was
   amended. The "modified_meta_ts" reflects the last time the
@@ -18,7 +18,7 @@ defmodule Dataset do
     ...>              version: 1,
     ...>              id: "123-456",
     ...>              owner_id: "456-789",
-    ...>              title: "Cool data",
+    ...>              name: "Cooldata",
     ...>              description: "The coolest data",
     ...>              keywords: ["cool", "awesome", "inspirational"],
     ...>              license: "GPL",
@@ -36,7 +36,7 @@ defmodule Dataset do
                 version: 1,
                 id: "123-456",
                 owner_id: "456-789",
-                title: "Cool data",
+                name: "Cooldata",
                 description: "The coolest data",
                 keywords: ["cool", "awesome", "inspirational"],
                 license: "GPL",
@@ -56,7 +56,7 @@ defmodule Dataset do
   defstruct version: nil,
             id: nil,
             owner_id: nil,
-            title: nil,
+            name: nil,
             description: "",
             keywords: [],
             license: nil,
