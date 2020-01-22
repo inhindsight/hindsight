@@ -91,25 +91,25 @@ defmodule Persist.WriterTest do
 
     test "will support hierarchichal data" do
       schema = [
-        %Dictionary.Type.String{name: "name"},
-        %Dictionary.Type.Integer{name: "age"},
-        %Dictionary.Type.List{name: "colors", item_type: Dictionary.Type.String},
-        %Dictionary.Type.Map{
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age"),
+        Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String),
+        Dictionary.Type.Map.new!(
           name: "spouse",
-          fields: [
-            %Dictionary.Type.String{name: "name"},
-            %Dictionary.Type.Integer{name: "age"},
-            %Dictionary.Type.List{name: "colors", item_type: Dictionary.Type.String}
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "age"),
+            Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String)
           ]
-        },
-        %Dictionary.Type.List{
+        ),
+        Dictionary.Type.List.new!(
           name: "friends",
           item_type: Dictionary.Type.Map,
-          fields: [
-            %Dictionary.Type.String{name: "name"},
-            %Dictionary.Type.Integer{name: "age"}
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "age")
           ]
-        }
+        )
       ]
 
       messages = [

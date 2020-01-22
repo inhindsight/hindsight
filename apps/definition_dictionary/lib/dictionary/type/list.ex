@@ -1,18 +1,26 @@
 defmodule Dictionary.Type.List do
   use Definition, schema: Dictionary.Type.List.V1
 
+  @type t :: %__MODULE__{
+          version: integer,
+          name: String.t(),
+          description: String.t(),
+          item_type: module,
+          dictionary: Dictionary.t()
+        }
+
   defstruct version: 1,
             name: nil,
             description: "",
             item_type: nil,
-            fields: []
+            dictionary: Dictionary.from_list([])
 
   @impl Definition
   def on_new(data) do
     with {:ok, item_type_module} <- get_item_type(data.item_type),
-         {:ok, fields} <- decode_fields(data.fields) do
+         {:ok, dictionary} <- decode_dictionary(data.dictionary) do
       data
-      |> Map.put(:fields, fields)
+      |> Map.put(:dictionary, dictionary)
       |> Map.put(:item_type, item_type_module)
       |> Ok.ok()
     end
@@ -25,11 +33,14 @@ defmodule Dictionary.Type.List do
     end
   end
 
-  defp decode_fields(fields) when is_list(fields) do
-    Ok.transform(fields, &Dictionary.decode/1)
+  defp decode_dictionary(list) when is_list(list) do
+    with {:ok, decoded_dictionary} <- Dictionary.decode(list) do
+      Dictionary.from_list(decoded_dictionary)
+      |> Ok.ok()
+    end
   end
 
-  defp decode_fields(fields), do: Ok.ok(fields)
+  defp decode_dictionary(other), do: Ok.ok(other)
 
   defimpl Jason.Encoder, for: __MODULE__ do
     alias Dictionary.Type
@@ -83,7 +94,7 @@ defmodule Dictionary.Type.List.V1 do
       name: required_string(),
       description: string(),
       item_type: spec(is_atom() and not_nil?()),
-      fields: spec(is_list())
+      dictionary: struct?(Dictionary.Impl)
     })
   end
 end

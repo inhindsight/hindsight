@@ -85,4 +85,16 @@ defmodule Dictionary.Impl do
       Enumerable.slice(ordered)
     end
   end
+
+  defimpl Jason.Encoder, for: __MODULE__ do
+    def encode(%{ordered: ordered}, opts) do
+      Jason.Encode.list(ordered, opts)
+    end
+  end
+
+  defimpl Brook.Serializer.Protocol, for: __MODULE__ do
+    def serialize(%{ordered: ordered}) do
+      Brook.Serializer.Protocol.List.serialize(ordered)
+    end
+  end
 end

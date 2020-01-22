@@ -109,7 +109,7 @@ defmodule DictionaryTest do
           "name" => "pet",
           "description" => "",
           "version" => 1,
-          "fields" => [
+          "dictionary" => [
             %{"type" => "animal", "species" => "canine"}
           ]
         }
@@ -157,16 +157,16 @@ defmodule DictionaryTest do
 
     test "reports all errors found during normalization" do
       dictionary = [
-        %Dictionary.Type.String{name: "name"},
-        %Dictionary.Type.Integer{name: "age"},
-        %Dictionary.Type.Map{
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age"),
+        Dictionary.Type.Map.new!(
           name: "spouse",
-          fields: [
+          dictionary: [
             %Dictionary.Type.String{name: "name"},
             %Dictionary.Type.Integer{name: "age"}
           ]
-        }
-      ]
+        )
+      ] |> Dictionary.from_list()
 
       payload = %{
         "name" => {:one, :two},

@@ -14,6 +14,7 @@ defmodule Broadcast.Stream.Broadway do
 
   def start_link(init_arg) do
     %Load.Broadcast{} = load = Keyword.fetch!(init_arg, :load)
+    Logger.debug(fn -> "#{__MODULE__}: Starting for #{inspect(load)}" end)
 
     config = setup_config(load)
 

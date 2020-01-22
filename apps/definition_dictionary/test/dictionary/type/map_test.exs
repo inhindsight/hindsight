@@ -14,8 +14,8 @@ defmodule Dictionary.Type.MapTest do
         [:name, ""],
         [:name, nil],
         [:description, nil],
-        [:fields, nil],
-        [:fields, "one"]
+        [:dictionary, nil],
+        [:dictionary, "one"]
       ]
     end
   end
@@ -26,20 +26,20 @@ defmodule Dictionary.Type.MapTest do
       "name" => "name",
       "description" => "description",
       "type" => "map",
-      "fields" => [
+      "dictionary" => [
         %{"version" => 1, "name" => "name", "description" => "", "type" => "string"},
         %{"version" => 1, "name" => "age", "description" => "", "type" => "integer"}
       ]
     }
 
-    map = %Dictionary.Type.Map{
+    map = Dictionary.Type.Map.new!(
       name: "name",
       description: "description",
-      fields: [
+      dictionary: Dictionary.from_list([
         %Dictionary.Type.String{name: "name"},
         %Dictionary.Type.Integer{name: "age"}
-      ]
-    }
+      ])
+    )
 
     assert expected == Jason.encode!(map) |> Jason.decode!()
   end
@@ -49,10 +49,10 @@ defmodule Dictionary.Type.MapTest do
       Dictionary.Type.Map.new!(
         name: "name",
         description: "description",
-        fields: [
+        dictionary: Dictionary.from_list([
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Integer.new!(name: "age")
-        ]
+        ])
       )
 
     json = Jason.encode!(map)
@@ -65,10 +65,10 @@ defmodule Dictionary.Type.MapTest do
       Dictionary.Type.Map.new!(
         name: "name",
         description: "description",
-        fields: [
+        dictionary: Dictionary.from_list([
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Integer.new!(name: "age")
-        ]
+        ])
       )
 
     assert {:ok, map} ==
@@ -81,13 +81,13 @@ defmodule Dictionary.Type.MapTest do
       "age" => age
     }
 
-    field = %Dictionary.Type.Map{
+    field = Dictionary.Type.Map.new!(
       name: "spouse",
-      fields: [
+      dictionary: [
         %Dictionary.Type.String{name: "name"},
         %Dictionary.Type.Integer{name: "age"}
       ]
-    }
+    )
 
     assert result == Dictionary.Type.Normalizer.normalize(field, value)
 

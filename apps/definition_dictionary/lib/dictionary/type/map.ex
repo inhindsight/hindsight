@@ -2,28 +2,34 @@ defmodule Dictionary.Type.Map do
   use Definition, schema: Dictionary.Type.Map.V1
   use Dictionary.JsonEncoder
 
+  @type t :: %__MODULE__{
+          version: integer,
+          name: String.t(),
+          description: String.t(),
+          dictionary: Dictionary.t()
+        }
+
   defstruct version: 1,
             name: nil,
             description: "",
-            fields: []
+            dictionary: Dictionary.from_list([])
 
   @impl Definition
-  def on_new(data) do
-    with {:ok, fields} <- decode_fields(data.fields) do
-      Map.put(data, :fields, fields)
+  def on_new(%{dictionary: list} = map) when is_list(list) do
+    with {:ok, decoded_dictionary} <- Dictionary.decode(list),
+         dictionary <- Dictionary.from_list(decoded_dictionary) do
+      Map.put(map, :dictionary, dictionary)
       |> Ok.ok()
     end
   end
 
-  defp decode_fields(fields) when is_list(fields) do
-    Ok.transform(fields, &Dictionary.decode/1)
+  def on_new(map) do
+    Ok.ok(map)
   end
 
-  defp decode_fields(fields), do: Ok.ok(fields)
-
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
-    def normalize(%{fields: fields}, map) do
-      Dictionary.normalize(fields, map)
+    def normalize(%{dictionary: dictionary}, map) do
+      Dictionary.normalize(dictionary, map)
     end
   end
 end
@@ -36,7 +42,7 @@ defmodule Dictionary.Type.Map.V1 do
       version: version(1),
       name: required_string(),
       description: string(),
-      fields: spec(is_list())
+      dictionary: struct?(Dictionary.Impl)
     })
   end
 end
