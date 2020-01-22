@@ -7,12 +7,15 @@ defmodule Gather.ExtractionTest do
 
   @moduletag capture_log: true
 
+  alias Writer.DLQ.DeadLetter
+
   Temp.Env.modify([
     %{
       app: :service_gather,
       key: Gather.Extraction,
       update: fn config ->
         Keyword.put(config, :writer, Gather.WriterMock)
+        |> Keyword.put(:dlq, DlqMock)
         |> Keyword.put(:chunk_size, 10)
       end
     }
@@ -31,7 +34,7 @@ defmodule Gather.ExtractionTest do
     :ok
   end
 
-  test "sends chunks of data to writer and then dies" do
+  test "normalizes chunks of data to writer and then dies" do
     test = self()
 
     Gather.WriterMock
@@ -48,7 +51,10 @@ defmodule Gather.ExtractionTest do
         name: "happy-path",
         destination: "topic1",
         steps: [
-          %Fake.Step{pid: self(), values: Stream.cycle([%{"one" => 1}]) |> Stream.take(100)}
+          %Fake.Step{pid: self(), values: Stream.cycle([%{"one" => "1"}]) |> Stream.take(100)}
+        ],
+        dictionary: [
+          Dictionary.Type.Integer.new!(name: "one")
         ]
       )
 
@@ -56,12 +62,56 @@ defmodule Gather.ExtractionTest do
 
     assert_receive {:EXIT, ^pid, :normal}, 2_000
     expected = Enum.map(1..10, fn _ -> %{"one" => 1} end)
+    Enum.each(1..10, fn _ -> assert_receive {:write, _, ^expected, _} end)
 
-    Enum.each(1..10, fn _ ->
-      assert_receive {:after, ^expected}
-    end)
+    originals = Enum.map(1..10, fn _ -> %{"one" => "1"} end)
+    Enum.each(1..10, fn _ -> assert_receive {:after, ^originals} end)
 
     assert_down(pid)
+  end
+
+  test "any messages failing normalization will be written to dlq" do
+    test = self()
+
+    Gather.WriterMock
+    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
+    |> stub(:write, fn server, messages, opts ->
+      send(test, {:write, server, messages, opts})
+      :ok
+    end)
+
+    DlqMock
+    |> stub(:write, fn messages ->
+      send(test, {:dlq, messages})
+    end)
+
+    extract =
+      Extract.new!(
+        id: "extract-1",
+        dataset_id: "ds1",
+        name: "happy-path",
+        destination: "topic1",
+        steps: [
+          %Fake.Step{pid: self(), values: [%{"one" => "2"}, %{"one" => "abc"}]}
+        ],
+        dictionary: [
+          Dictionary.Type.Integer.new!(name: "one")
+        ]
+      )
+
+    {:ok, pid} = Extraction.start_link(extract: extract)
+    assert_receive {:EXIT, ^pid, :normal}, 2_000
+
+    assert_receive {:write, _, [%{"one" => 2}], _}
+
+    expected_dead_letter = %DeadLetter{
+      dataset_id: "ds1",
+      original_message: %{"one" => "abc"},
+      app_name: "service_gather",
+      reason: %{"one" => :invalid_integer}
+    }
+
+    assert_receive {:dlq, [^expected_dead_letter]}
   end
 
   test "when child write return error tuple it retries and then dies" do

@@ -53,6 +53,9 @@ config :service_gather, Gather.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
+config :service_gather, Gather.Extraction,
+  app_name: "service_gather"
+
 config :service_gather, Gather.Writer,
   app_name: "service_gather",
   kafka_endpoints: kafka_endpoints

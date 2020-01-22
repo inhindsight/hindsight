@@ -64,6 +64,11 @@ defmodule GatherTest do
         steps: [
           Extract.Http.Get.new!(url: "http://localhost:#{bypass.port}/file.csv"),
           Extract.Decode.Csv.new!(headers: ["A", "B", "C"])
+        ],
+        dictionary: [
+          Dictionary.Type.String.new!(name: "A"),
+          Dictionary.Type.String.new!(name: "B"),
+          Dictionary.Type.String.new!(name: "C")
         ]
       )
 

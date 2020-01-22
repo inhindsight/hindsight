@@ -30,6 +30,10 @@ defmodule PlatformRunner.EndToEndTest do
             steps: [
               Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/file.csv"),
               Extract.Decode.Csv.new!(headers: ["letter", "number"])
+            ],
+            dictionary: [
+              %Dictionary.Type.String{name: "letter"},
+              %Dictionary.Type.String{name: "number"}
             ]
           ),
         transform:
@@ -129,6 +133,15 @@ defmodule PlatformRunner.EndToEndTest do
           steps: [
             Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/json"),
             Extract.Decode.Json.new!([])
+          ],
+          dictionary: [
+            %Dictionary.Type.String{name: "name"},
+            %Dictionary.Type.Integer{name: "number"},
+            %Dictionary.Type.List{
+              name: "teammates",
+              item_type: Dictionary.Type.Map,
+              fields: [%Dictionary.Type.String{name: "name"}]
+            }
           ]
         )
 
