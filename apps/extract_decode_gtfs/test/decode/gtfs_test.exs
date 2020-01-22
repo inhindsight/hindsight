@@ -13,7 +13,7 @@ defmodule Decode.GtfsTest do
 
     expected = File.read!("VehiclePositions.pb") |> TransitRealtime.FeedMessage.decode()
 
-    {:ok, context} = Extract.Step.execute(%Decode.Gtfs{}, context)
+    {:ok, context} = Extract.Step.execute(%Extract.Decode.Gtfs{}, context)
     assert expected.entity == Context.get_stream(context)
   end
 end
