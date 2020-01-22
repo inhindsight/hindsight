@@ -1,7 +1,7 @@
 defmodule OrchestrateTest do
   use ExUnit.Case
   use Placebo
-  import Definition.Events, only: [extract_start: 0]
+  import Events, only: [extract_start: 0]
   import ExUnit.CaptureLog
 
   @instance Orchestrate.Application.instance()

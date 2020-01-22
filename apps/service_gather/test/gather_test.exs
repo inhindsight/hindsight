@@ -1,7 +1,7 @@
 defmodule GatherTest do
   use Gather.Case
   import Mox
-  import Definition.Events, only: [extract_start: 0, extract_end: 0]
+  import Events, only: [extract_start: 0, extract_end: 0]
   import AssertAsync
   require Temp.Env
 
