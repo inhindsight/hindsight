@@ -1,5 +1,9 @@
 defprotocol Transform.Step do
-  @spec execute(step :: t, context :: Transform.Steps.Context.t()) ::
+  @spec transform_dictionary(step :: t, dictionary :: Dictionary.t()) ::
+          {:ok, Dictionary.t()} | {:error, term}
+  def transform_dictionary(step, dictionary)
+
+  @spec transform(step :: t, context :: Transform.Steps.Context.t()) ::
           {:ok, Transform.Steps.Context.t()} | {:error, term}
-  def execute(step, context)
+  def transform(step, context)
 end
