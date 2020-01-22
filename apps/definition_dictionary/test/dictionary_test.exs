@@ -1,6 +1,45 @@
 defmodule DictionaryTest do
   use ExUnit.Case
 
+  describe "dictionary data structure" do
+    test "get_field returns field by name" do
+      dictionary = [
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
+      ] |> Dictionary.from_list()
+
+      assert Dictionary.Type.String.new!(name: "name") == Dictionary.get_field(dictionary, "name")
+
+    end
+
+    test "update_field update field in dictionary" do
+      dictionary = [
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
+      ] |> Dictionary.from_list()
+
+      dictionary = Dictionary.update_field(dictionary, "name", Dictionary.Type.String.new!(name: "full_name"))
+
+      assert Dictionary.Type.String.new!(name: "full_name") == Dictionary.get_field(dictionary, "full_name")
+      assert nil == Dictionary.get_field(dictionary, "name")
+
+    end
+
+    test "update_field can also update field via function" do
+      dictionary = [
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
+      ] |> Dictionary.from_list()
+
+      dictionary = Dictionary.update_field(dictionary, "name", fn field ->
+        %{field | name: "full_name"}
+      end)
+
+      assert Dictionary.Type.String.new!(name: "full_name") == Dictionary.get_field(dictionary, "full_name")
+      assert nil == Dictionary.get_field(dictionary, "name")
+    end
+  end
+
   describe "encode/1" do
     test "encodes list of dictionary types to json" do
       dictionary = [

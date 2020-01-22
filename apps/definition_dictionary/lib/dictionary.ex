@@ -7,6 +7,7 @@ defmodule Dictionary do
   Normalizer protocol to normalize the supplied message
   data against the expected type based on its schema.
   """
+
   defmodule InvalidFieldError do
     defexception [:message, :field]
   end
@@ -14,6 +15,10 @@ defmodule Dictionary do
   defmodule InvalidTypeError do
     defexception [:message]
   end
+
+  defdelegate from_list(list), to: Dictionary.Impl
+  defdelegate get_field(dictionary, name), to: Dictionary.Impl
+  defdelegate update_field(dictionary, name, field_or_function), to: Dictionary.Impl
 
   @doc """
   Encode a list of dictionary fields to json format.
