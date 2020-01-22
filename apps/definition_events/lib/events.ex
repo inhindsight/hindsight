@@ -1,4 +1,4 @@
-defmodule Definition.Events do
+defmodule Events do
   @events [
     {"extract:start", Extract},
     {"extract:end", Extract},

@@ -1,5 +1,5 @@
 defmodule Orchestrate do
-  import Definition.Events, only: [send_extract_start: 3]
+  import Events, only: [send_extract_start: 3]
   require Logger
 
   @instance Orchestrate.Application.instance()

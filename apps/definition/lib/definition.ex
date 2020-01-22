@@ -1,4 +1,11 @@
 defmodule Definition do
+  @moduledoc """
+  Defines a base module for extensibly defining struct types,
+  their schemas (validation performed by Norm), and functions
+  for managing the lifecycle of those structs across revisions
+  over the lifetime of a system.
+  """
+
   @callback new(map | keyword) :: {:ok, struct} | {:error, term}
   @callback new!(map | keyword) :: struct
   @callback from_json(String.t()) :: {:ok, struct} | {:error, term}

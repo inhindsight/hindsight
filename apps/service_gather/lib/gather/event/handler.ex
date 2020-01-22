@@ -3,7 +3,7 @@ defmodule Gather.Event.Handler do
   require Logger
 
   alias Gather.Extraction
-  import Definition.Events, only: [extract_start: 0, extract_end: 0]
+  import Events, only: [extract_start: 0, extract_end: 0]
 
   def handle_event(%Brook.Event{type: extract_start(), data: %Extract{} = extract}) do
     Logger.debug(fn -> "#{__MODULE__}: Received event #{extract_start()}: #{inspect(extract)}" end)

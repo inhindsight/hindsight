@@ -68,7 +68,7 @@ defmodule PlatformRunner.EndToEndTest do
     assert {:ok, pid} = BroadcastClient.join(caller: self(), topic: "e2e_csv_broadcast")
 
     Orchestrate.Application.instance()
-    |> Definition.Events.send_schedule_start("e2e", schedule)
+    |> Events.send_schedule_start("e2e", schedule)
 
     assert_async debug: true, sleep: 500 do
       assert Orchestrate.Scheduler.find_job(:"e2e-csv-schedule-1") != nil
@@ -133,7 +133,7 @@ defmodule PlatformRunner.EndToEndTest do
         )
 
       Gather.Application.instance()
-      |> Definition.Events.send_extract_start("e2e-json", extract)
+      |> Events.send_extract_start("e2e-json", extract)
 
       assert_async debug: true, sleep: 500 do
         assert {:ok, _, [message]} = Elsa.fetch(@kafka, "e2e-json-gather")
@@ -163,7 +163,7 @@ defmodule PlatformRunner.EndToEndTest do
       assert {:ok, pid} = BroadcastClient.join(caller: self(), topic: load.destination)
 
       Broadcast.Application.instance()
-      |> Definition.Events.send_load_broadcast_start("e2e-json", load)
+      |> Events.send_load_broadcast_start("e2e-json", load)
 
       assert_receive %{
                        "name" => "LeBron",
@@ -195,7 +195,7 @@ defmodule PlatformRunner.EndToEndTest do
         )
 
       Persist.Application.instance()
-      |> Definition.Events.send_load_persist_start("e2e-json", load)
+      |> Events.send_load_persist_start("e2e-json", load)
 
       session =
         Prestige.new_session(

@@ -2,7 +2,7 @@ defmodule PersistTest do
   use ExUnit.Case
   import Mox
   import AssertAsync
-  import Definition.Events
+  import Events
   require Temp.Env
 
   @instance Persist.Application.instance()

@@ -2,7 +2,7 @@ defmodule Orchestrate.Event.Handler do
   use Brook.Event.Handler
   require Logger
 
-  import Definition.Events,
+  import Events,
     only: [
       schedule_start: 0,
       schedule_end: 0,
@@ -50,7 +50,7 @@ defmodule Orchestrate.Event.Handler do
   end
 
   defp send_load_event(load) do
-    type = Definition.Events.get_event_type("start", load)
+    type = Events.get_event_type("start", load)
     Brook.Event.send(@instance, type, "orchestrate", load)
   end
 end

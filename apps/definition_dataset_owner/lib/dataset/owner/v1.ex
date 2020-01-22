@@ -1,4 +1,13 @@
 defmodule Dataset.Owner.V1 do
+  @moduledoc """
+  Defines the dataset owner implementation of the
+  `Definition.Schema` behaviour and the owner entity
+  `s/0` function.
+
+  Returns a valid Norm schema representing a dataset
+  owner for validation and defaults the current
+  struct version.
+  """
   use Definition.Schema
 
   @impl Definition.Schema
@@ -7,10 +16,9 @@ defmodule Dataset.Owner.V1 do
       version: version(1),
       id: id(),
       name: required_string(),
-      title: required_string(),
-      description: spec(is_binary()),
-      url: spec(is_binary()),
-      image: spec(is_binary()),
+      description: string(),
+      url: string(),
+      image: string(),
       contact:
         schema(%{
           name: required_string(),

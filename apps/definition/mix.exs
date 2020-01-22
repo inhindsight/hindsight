@@ -15,20 +15,18 @@ defmodule Definition.MixProject do
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:ok, in_umbrella: true},
-      {:norm, "~> 0.9.0"},
+      {:norm, "~> 0.10.2"},
       {:jason, "~> 1.1"},
-      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:stream_data, "~> 0.4.0", only: [:dev, :test]}
     ]
   end

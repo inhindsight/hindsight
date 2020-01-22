@@ -1,6 +1,7 @@
 defmodule Definition.Schema.ValidationTest do
   use ExUnit.Case
   use ExUnitProperties
+  doctest Definition.Schema.Validation
 
   import Definition.Schema.Validation
 
