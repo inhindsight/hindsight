@@ -28,13 +28,12 @@ defmodule Broadcast.Stream.Broadway do
   def handle_message(_processor, %Message{data: data} = message, %{load: load}) do
     Logger.debug(fn -> "#{__MODULE__}: Received message: #{inspect(message)}" end)
 
-    with {:ok, decoded_value} <- Jason.decode(data.value),
-         {:ok, normalized_data} <- Dictionary.normalize(load.schema, decoded_value) do
+    with {:ok, decoded_value} <- Jason.decode(data.value) do
       Logger.debug(fn ->
-        "#{__MODULE__}: Broadcasting to broadcast:#{load.destination}: #{inspect(normalized_data)}"
+        "#{__MODULE__}: Broadcasting to broadcast:#{load.destination}: #{inspect(decoded_value)}"
       end)
 
-      Endpoint.broadcast!("broadcast:#{load.destination}", "update", normalized_data)
+      Endpoint.broadcast!("broadcast:#{load.destination}", "update", decoded_value)
       message
     else
       {:error, reason} ->

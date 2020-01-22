@@ -13,11 +13,7 @@ defmodule BroadcastTest do
         dataset_id: "ds1",
         name: "intersections",
         source: "topic-intersections",
-        destination: "ds1_intersections",
-        schema: [
-          %Dictionary.Type.Integer{name: "one"},
-          %Dictionary.Type.Integer{name: "two"}
-        ]
+        destination: "ds1_intersections"
       )
 
     {:ok, _, socket} =

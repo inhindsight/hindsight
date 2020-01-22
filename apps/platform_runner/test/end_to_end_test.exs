@@ -49,11 +49,7 @@ defmodule PlatformRunner.EndToEndTest do
             dataset_id: "e2e-csv-ds",
             name: "broadcast",
             source: "e2e-csv-gather",
-            destination: "e2e_csv_broadcast",
-            schema: [
-              %Dictionary.Type.String{name: "letter"},
-              %Dictionary.Type.String{name: "number"}
-            ]
+            destination: "e2e_csv_broadcast"
           ),
           Load.Persist.new!(
             id: "e2e-csv-persist-1",
@@ -161,16 +157,7 @@ defmodule PlatformRunner.EndToEndTest do
           dataset_id: "e2e-json-ds",
           name: "broadcast",
           source: "e2e-json-gather",
-          destination: "e2e_json_broadcast",
-          schema: [
-            %Dictionary.Type.String{name: "name"},
-            %Dictionary.Type.Integer{name: "number"},
-            %Dictionary.Type.List{
-              name: "teammates",
-              item_type: Dictionary.Type.Map,
-              fields: [%Dictionary.Type.String{name: "name"}]
-            }
-          ]
+          destination: "e2e_json_broadcast"
         )
 
       assert {:ok, pid} = BroadcastClient.join(caller: self(), topic: load.destination)
