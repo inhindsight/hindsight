@@ -9,7 +9,8 @@ defmodule Extract.V1 do
       dataset_id: id(),
       name: required_string(),
       destination: required_string(),
-      steps: spec(is_list())
+      steps: spec(is_list() and not_nil?()),
+      dictionary: spec(is_list() and not_nil?())
     })
   end
 end

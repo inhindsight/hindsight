@@ -9,7 +9,8 @@ defmodule Extract do
           dataset_id: uuid,
           name: String.t(),
           destination: String.t(),
-          steps: [Extract.Step.t()]
+          steps: [Extract.Step.t()],
+          dictionary: [Dictionary.Type.Normalizer.t()]
         }
 
   defstruct version: 1,
@@ -17,5 +18,6 @@ defmodule Extract do
             dataset_id: nil,
             name: nil,
             destination: nil,
-            steps: []
+            steps: [],
+            dictionary: []
 end
