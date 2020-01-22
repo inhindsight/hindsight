@@ -1,4 +1,11 @@
 defmodule Definition.Schema do
+  @moduledoc """
+  Defines a behaviour for for returning a schema
+  compatible with the Norm library and implements
+  a `__using__/1` macro for including the necessary
+  behaviour declaration and base imports.
+  """
+
   @callback s() :: %Norm.Schema{}
 
   defmacro __using__(_) do

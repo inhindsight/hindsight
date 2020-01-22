@@ -1,4 +1,9 @@
 defmodule Definition.Schema.Type do
+  @moduledoc """
+  Defines specifications according to the Norm
+  library for `string`, `required_string`, `id`, and `version`
+  """
+
   import Norm
   import Definition.Schema.Validation
 
