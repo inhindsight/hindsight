@@ -92,9 +92,9 @@ defmodule Transform.StepsTest do
       assert {:ok, stream} = Transform.Steps.transform(prepared_steps, stream)
 
       assert Enum.to_list(stream) == [
-        %{"name" => "joe", "some_number" => 20},
-        %{"name" => "bob", "some_number" => 54}
-      ]
+               %{"name" => "joe", "some_number" => 20},
+               %{"name" => "bob", "some_number" => 54}
+             ]
     end
   end
 end

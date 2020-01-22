@@ -88,6 +88,7 @@ defmodule Gather.Extraction do
     unless bad == [] do
       dlq().write(Enum.reverse(bad))
     end
+
     Enum.reverse(good)
   end
 

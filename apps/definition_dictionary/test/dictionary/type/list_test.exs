@@ -35,15 +35,16 @@ defmodule Dictionary.Type.ListTest do
       ]
     }
 
-    list = Dictionary.Type.List.new!(
-      name: "name",
-      description: "description",
-      item_type: Dictionary.Type.Map,
-      dictionary: [
-        %Dictionary.Type.String{name: "name"},
-        %Dictionary.Type.Integer{name: "age"}
-      ]
-    )
+    list =
+      Dictionary.Type.List.new!(
+        name: "name",
+        description: "description",
+        item_type: Dictionary.Type.Map,
+        dictionary: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ]
+      )
 
     assert expected == Jason.encode!(list) |> Jason.decode!()
   end

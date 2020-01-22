@@ -32,14 +32,16 @@ defmodule Dictionary.Type.MapTest do
       ]
     }
 
-    map = Dictionary.Type.Map.new!(
-      name: "name",
-      description: "description",
-      dictionary: Dictionary.from_list([
-        %Dictionary.Type.String{name: "name"},
-        %Dictionary.Type.Integer{name: "age"}
-      ])
-    )
+    map =
+      Dictionary.Type.Map.new!(
+        name: "name",
+        description: "description",
+        dictionary:
+          Dictionary.from_list([
+            %Dictionary.Type.String{name: "name"},
+            %Dictionary.Type.Integer{name: "age"}
+          ])
+      )
 
     assert expected == Jason.encode!(map) |> Jason.decode!()
   end
@@ -49,10 +51,11 @@ defmodule Dictionary.Type.MapTest do
       Dictionary.Type.Map.new!(
         name: "name",
         description: "description",
-        dictionary: Dictionary.from_list([
-          Dictionary.Type.String.new!(name: "name"),
-          Dictionary.Type.Integer.new!(name: "age")
-        ])
+        dictionary:
+          Dictionary.from_list([
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "age")
+          ])
       )
 
     json = Jason.encode!(map)
@@ -65,10 +68,11 @@ defmodule Dictionary.Type.MapTest do
       Dictionary.Type.Map.new!(
         name: "name",
         description: "description",
-        dictionary: Dictionary.from_list([
-          Dictionary.Type.String.new!(name: "name"),
-          Dictionary.Type.Integer.new!(name: "age")
-        ])
+        dictionary:
+          Dictionary.from_list([
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "age")
+          ])
       )
 
     assert {:ok, map} ==
@@ -81,13 +85,14 @@ defmodule Dictionary.Type.MapTest do
       "age" => age
     }
 
-    field = Dictionary.Type.Map.new!(
-      name: "spouse",
-      dictionary: [
-        %Dictionary.Type.String{name: "name"},
-        %Dictionary.Type.Integer{name: "age"}
-      ]
-    )
+    field =
+      Dictionary.Type.Map.new!(
+        name: "spouse",
+        dictionary: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ]
+      )
 
     assert result == Dictionary.Type.Normalizer.normalize(field, value)
 

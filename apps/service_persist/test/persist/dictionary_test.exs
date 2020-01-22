@@ -14,11 +14,17 @@ defmodule Persist.DictionaryTest do
       [:field, :expected],
       [Dictionary.Type.String.new!(name: "name"), %Result{name: "name", type: "varchar"}],
       [Dictionary.Type.Integer.new!(name: "age"), %Result{name: "age", type: "integer"}],
-      [Dictionary.Type.Date.new!(name: "date", format: "%Y"), %Result{name: "date", type: "date"}],
+      [
+        Dictionary.Type.Date.new!(name: "date", format: "%Y"),
+        %Result{name: "date", type: "date"}
+      ],
       [
         Dictionary.Type.Map.new!(
           name: "spouse",
-          dictionary: [Dictionary.Type.String.new!(name: "name"), Dictionary.Type.Integer.new!(name: "age")]
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "age")
+          ]
         ),
         %Result{name: "spouse", type: "row(name varchar,age integer)"}
       ],
@@ -30,7 +36,10 @@ defmodule Persist.DictionaryTest do
         Dictionary.Type.List.new!(
           name: "friends",
           item_type: Dictionary.Type.Map,
-          dictionary: [Dictionary.Type.String.new!(name: "name"), Dictionary.Type.Integer.new!(name: "age")]
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "age")
+          ]
         ),
         %Result{name: "friends", type: "array(row(name varchar,age integer))"}
       ]

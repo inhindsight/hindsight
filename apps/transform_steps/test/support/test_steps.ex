@@ -77,6 +77,7 @@ defmodule Transform.Test.Steps do
       def transform(%{name: name, transform: transform}, context) do
         dictionary = get_dictionary(context)
         field = Dictionary.get_field(dictionary, name)
+
         case validate_struct(field, Dictionary.Type.Integer) do
           true ->
             new_stream =
@@ -86,6 +87,7 @@ defmodule Transform.Test.Steps do
             context
             |> set_stream(new_stream)
             |> Ok.ok()
+
           false ->
             Ok.error("#{name} is not defined as an integer")
         end
@@ -93,7 +95,6 @@ defmodule Transform.Test.Steps do
 
       defp validate_struct(%struct_module{}, struct_module), do: true
       defp validate_struct(_, _), do: false
-
     end
   end
 end

@@ -9,7 +9,7 @@ defmodule Load.Broadcast do
           dataset_id: uuid,
           name: String.t(),
           source: String.t(),
-          destination: String.t(),
+          destination: String.t()
         }
 
   defstruct version: 1,
@@ -18,7 +18,6 @@ defmodule Load.Broadcast do
             name: nil,
             source: nil,
             destination: nil
-
 end
 
 defmodule Load.Broadcast.V1 do
@@ -32,7 +31,7 @@ defmodule Load.Broadcast.V1 do
       dataset_id: id(),
       name: required_string(),
       source: required_string(),
-      destination: required_string(),
+      destination: required_string()
     })
   end
 end
