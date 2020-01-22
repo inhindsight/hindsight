@@ -15,11 +15,6 @@ defmodule Transform.Steps.Context do
     Map.get(context, :dictionary)
   end
 
-  @spec set_dictionary(context :: t, dictionary :: Dictionary.t()) :: t
-  def set_dictionary(context, dictionary) do
-    Map.put(context, :dictionary, dictionary)
-  end
-
   @spec get_stream(context :: t) :: Enumerable.t()
   def get_stream(context) do
     Map.get(context, :stream)
