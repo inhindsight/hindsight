@@ -9,7 +9,7 @@ defmodule Dictionary.Type.Boolean do
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
     def normalize(_field, value) when is_boolean(value), do: Ok.ok(value)
 
-    def normalize(_field, value) when value == "true" or value == "false" do
+    def normalize(_field, value) when value in ["true", "false"] do
       value |> String.to_atom() |> Ok.ok()
     end
 
