@@ -62,14 +62,8 @@ defmodule GatherTest do
         name: "Johnny",
         destination: "topic-1",
         steps: [
-          %{
-            "step" => "Http.Get",
-            "url" => "http://localhost:#{bypass.port}/file.csv"
-          },
-          %{
-            "step" => "Decode.Csv",
-            "headers" => ["A", "B", "C"]
-          }
+          Extract.Http.Get.new!(url: "http://localhost:#{bypass.port}/file.csv"),
+          Extract.Decode.Csv.new!(headers: ["A", "B", "C"])
         ]
       )
 

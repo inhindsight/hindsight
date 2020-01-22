@@ -48,16 +48,18 @@ defmodule Gather.ExtractionTest do
         name: "happy-path",
         destination: "topic1",
         steps: [
-          %{
-            "step" => "Fake.Step",
-            "values" => Stream.cycle([%{"one" => 1}]) |> Stream.take(100)
-          }
+          %Fake.Step{pid: self(), values: Stream.cycle([%{"one" => 1}]) |> Stream.take(100)}
         ]
       )
 
     {:ok, pid} = Extraction.start_link(extract: extract)
 
     assert_receive {:EXIT, ^pid, :normal}, 2_000
+    expected = Enum.map(1..10, fn _ -> %{"one" => 1} end)
+
+    Enum.each(1..10, fn _ ->
+      assert_receive {:after, ^expected}
+    end)
 
     assert_down(pid)
   end
@@ -74,9 +76,8 @@ defmodule Gather.ExtractionTest do
         name: "test-extract",
         destination: "topic1",
         steps: [
-          %{
-            "step" => "Fake.Step",
-            "values" => [
+          %Fake.Step{
+            values: [
               %{"name" => "joe", "age" => 21},
               %{"name" => "pete", "age" => 28}
             ]

@@ -4,6 +4,8 @@ defmodule Gather.Extraction do
   use Properties, otp_app: :service_gather
   use Annotated.Retry
 
+  alias Extract.Steps.Context
+
   @max_tries get_config_value(:max_tries, default: 10)
   @initial_delay get_config_value(:initial_delay, default: 500)
   getter(:writer, default: Gather.Writer)
@@ -22,9 +24,15 @@ defmodule Gather.Extraction do
   @dialyzer {:nowarn_function, handle_continue: 2}
   @impl GenServer
   def handle_continue(:extract, %{extract: extract} = state) do
+    Logger.debug(fn -> "#{__MODULE__}: Started extraction: #{inspect(extract)}" end)
+
     case extract(extract) do
-      :ok -> {:stop, :normal, state}
-      {:error, reason} -> {:stop, reason, state}
+      :ok ->
+        {:stop, :normal, state}
+
+      {:error, reason} ->
+        Logger.warn("#{__MODULE__}: Extraction Stopping: #{inspect(extract)}")
+        {:stop, reason, state}
     end
   end
 
@@ -36,8 +44,8 @@ defmodule Gather.Extraction do
   end
 
   defp do_extract(writer, extract) do
-    with {:ok, stream} <- Extract.Steps.execute(extract.steps),
-         {:error, reason} <- write(writer, stream, extract.dataset_id) do
+    with {:ok, context} <- Extract.Steps.execute(extract.steps),
+         {:error, reason} <- write(writer, context, extract.dataset_id) do
       warn_extract_failure(extract, reason)
       {:error, reason}
     end
@@ -47,10 +55,16 @@ defmodule Gather.Extraction do
     Process.exit(writer, :normal)
   end
 
-  defp write(writer, stream, dataset_id) do
-    stream
+  defp write(writer, context, dataset_id) do
+    context
+    |> Context.get_stream()
     |> Stream.chunk_every(chunk_size())
-    |> Ok.each(&writer().write(writer, &1, dataset_id: dataset_id))
+    |> Ok.each(fn chunk ->
+      with :ok <- writer().write(writer, chunk, dataset_id: dataset_id) do
+        Context.run_after_functions(context, chunk)
+        :ok
+      end
+    end)
   end
 
   defp warn_extract_failure(extract, reason) do
