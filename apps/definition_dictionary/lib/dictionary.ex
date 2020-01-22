@@ -1,4 +1,12 @@
 defmodule Dictionary do
+  @moduledoc """
+  Provides the functionality for retrieving dictionary
+  data types to determine the correct Type module to
+  cast payload fields to, as well as the `normalize/2`
+  function for invoking a field's implementation of the
+  Normalizer protocol to normalize the supplied message
+  data against the expected type based on its schema.
+  """
   defmodule InvalidFieldError do
     defexception [:message, :field]
   end
@@ -7,6 +15,9 @@ defmodule Dictionary do
     defexception [:message]
   end
 
+  @doc """
+  Encode a list of dictionary fields to json format.
+  """
   @spec encode(list) :: {:ok, String.t()} | {:error, term}
   def encode(fields) do
     Jason.encode(fields)
