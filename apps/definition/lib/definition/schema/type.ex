@@ -24,4 +24,12 @@ defmodule Definition.Schema.Type do
 
   @spec id() :: spec
   def id, do: required_string()
+
+  @spec struct?(module) :: spec
+  def struct?(module) do
+    spec(fn
+      %{} = m -> Map.get(m, :__struct__) == module
+      _other -> false
+    end)
+  end
 end

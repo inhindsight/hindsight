@@ -7,6 +7,9 @@ defmodule Dictionary do
   Normalizer protocol to normalize the supplied message
   data against the expected type based on its schema.
   """
+
+  @type t :: Dictionary.Impl.t()
+
   defmodule InvalidFieldError do
     defexception [:message, :field]
   end
@@ -14,6 +17,10 @@ defmodule Dictionary do
   defmodule InvalidTypeError do
     defexception [:message]
   end
+
+  defdelegate from_list(list), to: Dictionary.Impl
+  defdelegate get_field(dictionary, name), to: Dictionary.Impl
+  defdelegate update_field(dictionary, name, field_or_function), to: Dictionary.Impl
 
   @doc """
   Encode a list of dictionary fields to json format.
@@ -44,9 +51,9 @@ defmodule Dictionary do
     Ok.ok(struct)
   end
 
-  @spec normalize(dictionary :: list, payload :: map) ::
+  @spec normalize(dictionary :: Dictionary.t(), payload :: map) ::
           {:ok, map} | {:error, %{String.t() => term}}
-  def normalize(dictionary, payload) when is_list(dictionary) and is_map(payload) do
+  def normalize(dictionary, payload) when is_map(payload) do
     dictionary
     |> Enum.reduce(%{data: %{}, errors: %{}}, &normalize_field(payload, &1, &2))
     |> handle_normalization_context()

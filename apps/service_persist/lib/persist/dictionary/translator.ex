@@ -59,9 +59,9 @@ defmodule Persist.Dictionary do
   end
 
   defimpl Translator, for: Dictionary.Type.Map do
-    def translate_type(%{name: name, fields: fields}) do
+    def translate_type(%{name: name, dictionary: dictionary}) do
       row_def =
-        fields
+        dictionary
         |> Enum.map(&Translator.translate_type(&1))
         |> Enum.map(fn result -> "#{result.name} #{result.type}" end)
         |> Enum.join(",")
@@ -69,9 +69,9 @@ defmodule Persist.Dictionary do
       %Result{name: name, type: "row(#{row_def})"}
     end
 
-    def translate_value(%{fields: fields}, value) do
+    def translate_value(%{dictionary: dictionary}, value) do
       values =
-        fields
+        dictionary
         |> Enum.map(fn field -> {field, Map.get(value, field.name)} end)
         |> Enum.map(fn {field, value} -> Translator.translate_value(field, value) end)
 
@@ -80,14 +80,14 @@ defmodule Persist.Dictionary do
   end
 
   defimpl Translator, for: Dictionary.Type.List do
-    def translate_type(%{name: name, item_type: item_type, fields: fields}) do
-      sub_field = struct(item_type, name: "fake", fields: fields)
+    def translate_type(%{name: name, item_type: item_type, dictionary: dictionary}) do
+      sub_field = struct(item_type, name: "fake", dictionary: dictionary)
       sub_result = Translator.translate_type(sub_field)
       %Result{name: name, type: "array(#{sub_result.type})"}
     end
 
-    def translate_value(%{item_type: Dictionary.Type.Map, fields: fields}, list) do
-      map_type = %Dictionary.Type.Map{fields: fields}
+    def translate_value(%{item_type: Dictionary.Type.Map, dictionary: dictionary}, list) do
+      map_type = %Dictionary.Type.Map{dictionary: dictionary}
       values = Enum.map(list, &Translator.translate_value(map_type, &1))
 
       "array[#{Enum.join(values, ",")}]"

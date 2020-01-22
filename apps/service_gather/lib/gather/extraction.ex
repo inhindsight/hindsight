@@ -5,11 +5,14 @@ defmodule Gather.Extraction do
   use Annotated.Retry
 
   alias Extract.Steps.Context
+  alias Writer.DLQ.DeadLetter
 
   @max_tries get_config_value(:max_tries, default: 10)
   @initial_delay get_config_value(:initial_delay, default: 500)
   getter(:writer, default: Gather.Writer)
+  getter(:dlq, default: Gather.DLQ)
   getter(:chunk_size, default: 100)
+  getter(:app_name, required: true)
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
@@ -45,7 +48,7 @@ defmodule Gather.Extraction do
 
   defp do_extract(writer, extract) do
     with {:ok, context} <- Extract.Steps.execute(extract.steps),
-         {:error, reason} <- write(writer, context, extract.dataset_id) do
+         {:error, reason} <- write(writer, extract, context) do
       warn_extract_failure(extract, reason)
       {:error, reason}
     end
@@ -55,16 +58,47 @@ defmodule Gather.Extraction do
     Process.exit(writer, :normal)
   end
 
-  defp write(writer, context, dataset_id) do
-    context
-    |> Context.get_stream()
+  defp write(writer, extract, context) do
+    writer_opts = [dataset_id: extract.dataset_id]
+
+    Context.get_stream(context)
     |> Stream.chunk_every(chunk_size())
     |> Ok.each(fn chunk ->
-      with :ok <- writer().write(writer, chunk, dataset_id: dataset_id) do
+      with normalized_messages <- normalize(extract, chunk),
+           :ok <- writer().write(writer, normalized_messages, writer_opts) do
         Context.run_after_functions(context, chunk)
         :ok
       end
     end)
+  end
+
+  defp normalize(extract, messages) do
+    %{good: good, bad: bad} =
+      Enum.reduce(messages, %{good: [], bad: []}, fn message, acc ->
+        case Dictionary.normalize(extract.dictionary, message) do
+          {:ok, normalized_message} ->
+            %{acc | good: [normalized_message | acc.good]}
+
+          {:error, reason} ->
+            dead_letter = to_dead_letter(extract.dataset_id, message, reason)
+            %{acc | bad: [dead_letter | acc.bad]}
+        end
+      end)
+
+    unless bad == [] do
+      dlq().write(Enum.reverse(bad))
+    end
+
+    Enum.reverse(good)
+  end
+
+  defp to_dead_letter(dataset_id, og, reason) do
+    DeadLetter.new(
+      dataset_id: dataset_id,
+      original_message: og,
+      app_name: app_name(),
+      reason: reason
+    )
   end
 
   defp warn_extract_failure(extract, reason) do

@@ -9,8 +9,7 @@ defmodule Load.Broadcast do
           dataset_id: uuid,
           name: String.t(),
           source: String.t(),
-          destination: String.t(),
-          schema: list
+          destination: String.t()
         }
 
   defstruct version: 1,
@@ -18,19 +17,7 @@ defmodule Load.Broadcast do
             dataset_id: nil,
             name: nil,
             source: nil,
-            destination: nil,
-            schema: []
-
-  def on_new(%__MODULE__{schema: []} = broadcast), do: Ok.ok(broadcast)
-
-  def on_new(%__MODULE__{schema: schema} = broadcast) when is_list(schema) do
-    case Dictionary.decode(schema) do
-      {:ok, new_schema} -> Map.put(broadcast, :schema, new_schema) |> Ok.ok()
-      error -> error
-    end
-  end
-
-  def on_new(broadcast), do: Ok.ok(broadcast)
+            destination: nil
 end
 
 defmodule Load.Broadcast.V1 do
@@ -44,8 +31,7 @@ defmodule Load.Broadcast.V1 do
       dataset_id: id(),
       name: required_string(),
       source: required_string(),
-      destination: required_string(),
-      schema: spec(is_list())
+      destination: required_string()
     })
   end
 end

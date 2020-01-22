@@ -30,6 +30,10 @@ defmodule PlatformRunner.EndToEndTest do
             steps: [
               Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/file.csv"),
               Extract.Decode.Csv.new!(headers: ["letter", "number"])
+            ],
+            dictionary: [
+              Dictionary.Type.String.new!(name: "letter"),
+              Dictionary.Type.String.new!(name: "number")
             ]
           ),
         transform:
@@ -45,11 +49,7 @@ defmodule PlatformRunner.EndToEndTest do
             dataset_id: "e2e-csv-ds",
             name: "broadcast",
             source: "e2e-csv-gather",
-            destination: "e2e_csv_broadcast",
-            schema: [
-              %Dictionary.Type.String{name: "letter"},
-              %Dictionary.Type.String{name: "number"}
-            ]
+            destination: "e2e_csv_broadcast"
           ),
           Load.Persist.new!(
             id: "e2e-csv-persist-1",
@@ -58,8 +58,8 @@ defmodule PlatformRunner.EndToEndTest do
             source: "e2e-csv-gather",
             destination: "e2e_csv",
             schema: [
-              %Dictionary.Type.String{name: "letter"},
-              %Dictionary.Type.String{name: "number"}
+              Dictionary.Type.String.new!(name: "letter"),
+              Dictionary.Type.String.new!(name: "number")
             ]
           )
         ]
@@ -82,7 +82,7 @@ defmodule PlatformRunner.EndToEndTest do
                |> Enum.map(&Map.values(&1))
     end
 
-    assert_receive %{"letter" => "a", "number" => "1"}, 11_000
+    assert_receive %{"letter" => "a", "number" => "1"}, 12_000
     assert_receive %{"letter" => "b", "number" => "2"}, 1_000
     assert_receive %{"letter" => "c", "number" => "3"}, 1_000
 
@@ -129,6 +129,15 @@ defmodule PlatformRunner.EndToEndTest do
           steps: [
             Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/json"),
             Extract.Decode.Json.new!([])
+          ],
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "number"),
+            Dictionary.Type.List.new!(
+              name: "teammates",
+              item_type: Dictionary.Type.Map,
+              dictionary: [Dictionary.Type.String.new!(name: "name")]
+            )
           ]
         )
 
@@ -148,16 +157,7 @@ defmodule PlatformRunner.EndToEndTest do
           dataset_id: "e2e-json-ds",
           name: "broadcast",
           source: "e2e-json-gather",
-          destination: "e2e_json_broadcast",
-          schema: [
-            %Dictionary.Type.String{name: "name"},
-            %Dictionary.Type.Integer{name: "number"},
-            %Dictionary.Type.List{
-              name: "teammates",
-              item_type: Dictionary.Type.Map,
-              fields: [%Dictionary.Type.String{name: "name"}]
-            }
-          ]
+          destination: "e2e_json_broadcast"
         )
 
       assert {:ok, pid} = BroadcastClient.join(caller: self(), topic: load.destination)
@@ -184,13 +184,13 @@ defmodule PlatformRunner.EndToEndTest do
           source: "e2e-json-gather",
           destination: "e2e_json",
           schema: [
-            %Dictionary.Type.String{name: "name"},
-            %Dictionary.Type.Integer{name: "number"},
-            %Dictionary.Type.List{
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "number"),
+            Dictionary.Type.List.new!(
               name: "teammates",
               item_type: Dictionary.Type.Map,
-              fields: [%Dictionary.Type.String{name: "name"}]
-            }
+              dictionary: [Dictionary.Type.String.new!(name: "name")]
+            )
           ]
         )
 

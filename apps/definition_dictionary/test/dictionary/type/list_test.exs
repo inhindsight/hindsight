@@ -16,8 +16,8 @@ defmodule Dictionary.Type.ListTest do
         [:description, nil],
         [:item_type, ""],
         [:item_type, nil],
-        [:fields, nil],
-        [:fields, "one"]
+        [:dictionary, nil],
+        [:dictionary, "one"]
       ]
     end
   end
@@ -29,21 +29,22 @@ defmodule Dictionary.Type.ListTest do
       "description" => "description",
       "type" => "list",
       "item_type" => "map",
-      "fields" => [
+      "dictionary" => [
         %{"version" => 1, "name" => "name", "description" => "", "type" => "string"},
         %{"version" => 1, "name" => "age", "description" => "", "type" => "integer"}
       ]
     }
 
-    list = %Dictionary.Type.List{
-      name: "name",
-      description: "description",
-      item_type: Dictionary.Type.Map,
-      fields: [
-        %Dictionary.Type.String{name: "name"},
-        %Dictionary.Type.Integer{name: "age"}
-      ]
-    }
+    list =
+      Dictionary.Type.List.new!(
+        name: "name",
+        description: "description",
+        item_type: Dictionary.Type.Map,
+        dictionary: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ]
+      )
 
     assert expected == Jason.encode!(list) |> Jason.decode!()
   end
@@ -54,7 +55,7 @@ defmodule Dictionary.Type.ListTest do
         name: "name",
         description: "description",
         item_type: Dictionary.Type.Map,
-        fields: [
+        dictionary: [
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Integer.new!(name: "age")
         ]
@@ -71,7 +72,7 @@ defmodule Dictionary.Type.ListTest do
         name: "name",
         description: "description",
         item_type: Dictionary.Type.Map,
-        fields: [
+        dictionary: [
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Integer.new!(name: "age")
         ]
@@ -85,7 +86,7 @@ defmodule Dictionary.Type.ListTest do
     field = %Dictionary.Type.List{
       name: "friends",
       item_type: Dictionary.Type.Map,
-      fields: [
+      dictionary: [
         %Dictionary.Type.String{name: "name"},
         %Dictionary.Type.Integer{name: "age"}
       ]

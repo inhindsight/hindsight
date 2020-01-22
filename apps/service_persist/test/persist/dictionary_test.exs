@@ -12,26 +12,35 @@ defmodule Persist.DictionaryTest do
 
     where([
       [:field, :expected],
-      [%Dictionary.Type.String{name: "name"}, %Result{name: "name", type: "varchar"}],
-      [%Dictionary.Type.Integer{name: "age"}, %Result{name: "age", type: "integer"}],
-      [%Dictionary.Type.Date{name: "date", format: "%Y"}, %Result{name: "date", type: "date"}],
+      [Dictionary.Type.String.new!(name: "name"), %Result{name: "name", type: "varchar"}],
+      [Dictionary.Type.Integer.new!(name: "age"), %Result{name: "age", type: "integer"}],
       [
-        %Dictionary.Type.Map{
+        Dictionary.Type.Date.new!(name: "date", format: "%Y"),
+        %Result{name: "date", type: "date"}
+      ],
+      [
+        Dictionary.Type.Map.new!(
           name: "spouse",
-          fields: [%Dictionary.Type.String{name: "name"}, %Dictionary.Type.Integer{name: "age"}]
-        },
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "age")
+          ]
+        ),
         %Result{name: "spouse", type: "row(name varchar,age integer)"}
       ],
       [
-        %Dictionary.Type.List{name: "colors", item_type: Dictionary.Type.String},
+        Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String),
         %Result{name: "colors", type: "array(varchar)"}
       ],
       [
-        %Dictionary.Type.List{
+        Dictionary.Type.List.new!(
           name: "friends",
           item_type: Dictionary.Type.Map,
-          fields: [%Dictionary.Type.String{name: "name"}, %Dictionary.Type.Integer{name: "age"}]
-        },
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "age")
+          ]
+        ),
         %Result{name: "friends", type: "array(row(name varchar,age integer))"}
       ]
     ])

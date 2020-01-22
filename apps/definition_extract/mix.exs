@@ -24,6 +24,7 @@ defmodule Extract.MixProject do
   defp deps do
     [
       {:definition, in_umbrella: true},
+      {:definition_dictionary, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:checkov, "~> 1.0", only: [:dev, :test]}
     ]

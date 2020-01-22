@@ -32,7 +32,7 @@ defmodule Persist.WriterIntTest do
       Dictionary.Type.Timestamp.new!(name: "arrival_time", format: "%0m/%0d/%Y %0H:%0M:%0S"),
       Dictionary.Type.Map.new!(
         name: "spouse",
-        fields: [
+        dictionary: [
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Integer.new!(name: "age")
         ]
@@ -41,7 +41,7 @@ defmodule Persist.WriterIntTest do
       Dictionary.Type.List.new!(
         name: "friends",
         item_type: Dictionary.Type.Map,
-        fields: [
+        dictionary: [
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Integer.new!(name: "age")
         ]
