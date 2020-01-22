@@ -23,7 +23,8 @@ defmodule Orchestrate.Event.HandlerTest do
             dataset_id: "ds1",
             name: "kpi",
             destination: "topic-1",
-            steps: []
+            steps: [],
+            dictionary: []
           ),
         transform:
           Transform.new!(
