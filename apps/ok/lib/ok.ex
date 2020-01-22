@@ -52,10 +52,9 @@ defmodule Ok do
   def map_if_error({:ok, _} = result, _function), do: result
 
   @doc """
-  Receives an enumerable, an accumulator, and a function and
-  calls with the function with each element of the enumerable and the
-  accumulator as its inputs. It continues to reduce over the enumerable
-  until it reaches the end or an instance where the function call returns
+  Receives an enumerable, an accumulator, and a function and calls
+  `Enum.reduce_while/3`. Continues to reduce as long as the reducer function
+  returns an ok tuple, or calls halt if any call to the reducer returns
   an error tuple.
 
   Returns the accumulator as an ok tuple or else returns an error tuple

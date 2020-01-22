@@ -5,24 +5,6 @@ throughout Hindsight as Elixir structs, validating their contents,
 and managing their behavior and functionality throughout the life
 of the system as requirements change.
 
-```
-    Definition
-        |_ Data
-        |_ Dataset
-        |_ Dataset.Owner
-        |_ Dictionary.Type.Integer
-        |_ Dictionary.Type.List
-        |_ Dictionary.Type.Map
-        |_ Dictionary.Type.String
-        |_ Dictionary.Type.Date
-        |_ Dictionary.Type.Timestamp
-        |_ Extract
-        |_ Load.Broadcast
-        |_ Load.Persist
-        |_ Schedule
-        |_ Transform
-```
-
 The primary module defines a `__using__/1` macro that accepts a
 schema definition for the definition type being implemented and
 implements functions for creating new instances of the definition
