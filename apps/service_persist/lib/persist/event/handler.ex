@@ -2,7 +2,7 @@ defmodule Persist.Event.Handler do
   use Brook.Event.Handler
   require Logger
 
-  import Definition.Events, only: [load_persist_start: 0, load_persist_end: 0]
+  import Events, only: [load_persist_start: 0, load_persist_end: 0]
 
   @impl Brook.Event.Handler
   def handle_event(%Brook.Event{type: load_persist_start(), data: %Load.Persist{} = load}) do

@@ -2,7 +2,7 @@ defmodule Broadcast.Event.Handler do
   use Brook.Event.Handler
   require Logger
 
-  import Definition.Events, only: [load_broadcast_start: 0, load_broadcast_end: 0]
+  import Events, only: [load_broadcast_start: 0, load_broadcast_end: 0]
 
   def handle_event(%Brook.Event{type: load_broadcast_start(), data: %Load.Broadcast{} = load}) do
     Logger.debug(fn ->

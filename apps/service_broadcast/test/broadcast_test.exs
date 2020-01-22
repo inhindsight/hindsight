@@ -2,7 +2,7 @@ defmodule BroadcastTest do
   use BroadcastWeb.ChannelCase
   import AssertAsync
 
-  import Definition.Events, only: [load_broadcast_start: 0, load_broadcast_end: 0]
+  import Events, only: [load_broadcast_start: 0, load_broadcast_end: 0]
 
   @instance Broadcast.Application.instance()
 

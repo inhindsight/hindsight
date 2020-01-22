@@ -1,6 +1,6 @@
 defmodule Orchestrate.Event.HandlerTest do
   use ExUnit.Case
-  import Definition.Events, only: [schedule_start: 0, schedule_end: 0]
+  import Events, only: [schedule_start: 0, schedule_end: 0]
   import AssertAsync
   import ExUnit.CaptureLog
 
