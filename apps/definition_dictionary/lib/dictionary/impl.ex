@@ -1,4 +1,6 @@
 defmodule Dictionary.Impl do
+  @behaviour Access
+
   @type t :: %__MODULE__{
           by_name: map,
           ordered: list,
@@ -45,6 +47,41 @@ defmodule Dictionary.Impl do
     |> Map.update!(:ordered, fn list ->
       List.replace_at(list, index, new_field)
     end)
+  end
+
+  @spec delete_field(t, String.t()) :: t
+  def delete_field(%__MODULE__{} = dictionary, name) do
+    {index, _field} = Map.get(dictionary.by_name, name)
+
+    dictionary.ordered
+    |> List.delete_at(index)
+    |> from_list()
+  end
+
+  @impl Access
+  def fetch(term, key) do
+    case get_field(term, key) do
+      nil -> :error
+      value -> Ok.ok(value)
+    end
+  end
+
+  @impl Access
+  def get_and_update(data, key, function) do
+    field = get_field(data, key)
+
+    case function.(field) do
+      {get_value, update_value} ->
+        {get_value, update_field(data, key, update_value)}
+
+      :pop ->
+        {field, delete_field(data, key)}
+    end
+  end
+
+  @impl Access
+  def pop(data, key) do
+    delete_field(data, key)
   end
 
   defimpl Collectable, for: __MODULE__ do
