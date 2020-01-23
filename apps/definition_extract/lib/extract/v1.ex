@@ -10,7 +10,7 @@ defmodule Extract.V1 do
       name: required_string(),
       destination: required_string(),
       steps: spec(is_list() and not_nil?()),
-      dictionary: struct?(Dictionary.Impl)
+      dictionary: of_struct(Dictionary.Impl)
     })
   end
 end

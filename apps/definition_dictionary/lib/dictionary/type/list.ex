@@ -95,7 +95,7 @@ defmodule Dictionary.Type.List.V1 do
       name: required_string(),
       description: string(),
       item_type: spec(is_atom() and not_nil?()),
-      dictionary: struct?(Dictionary.Impl)
+      dictionary: of_struct(Dictionary.Impl)
     })
   end
 end
