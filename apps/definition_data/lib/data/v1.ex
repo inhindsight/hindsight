@@ -10,7 +10,7 @@ defmodule Data.V1 do
   """
   use Definition.Schema
 
-  @impl Definition.Schema
+  @impl true
   def s do
     schema(%Data{
       version: version(1),
