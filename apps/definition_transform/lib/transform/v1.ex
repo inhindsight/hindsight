@@ -7,7 +7,7 @@ defmodule Transform.V1 do
       version: version(1),
       id: id(),
       dataset_id: id(),
-      dictionary: struct?(Dictionary.Impl),
+      dictionary: of_struct(Dictionary.Impl),
       steps: spec(is_list() and not_nil?())
     })
   end

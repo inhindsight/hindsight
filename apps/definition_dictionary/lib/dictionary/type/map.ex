@@ -42,7 +42,7 @@ defmodule Dictionary.Type.Map.V1 do
       version: version(1),
       name: required_string(),
       description: string(),
-      dictionary: struct?(Dictionary.Impl)
+      dictionary: of_struct(Dictionary.Impl)
     })
   end
 end
