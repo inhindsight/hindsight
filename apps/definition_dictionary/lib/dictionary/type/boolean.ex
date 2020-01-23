@@ -20,6 +20,7 @@ end
 defmodule Dictionary.Type.Boolean.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Dictionary.Type.Boolean{
       version: version(1),

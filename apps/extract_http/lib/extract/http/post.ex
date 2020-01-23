@@ -53,6 +53,7 @@ end
 defmodule Extract.Http.Post.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Extract.Http.Post{
       version: version(1),

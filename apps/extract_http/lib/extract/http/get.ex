@@ -53,6 +53,7 @@ end
 defmodule Extract.Http.Get.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Extract.Http.Get{
       version: version(1),

@@ -21,6 +21,7 @@ end
 defmodule Dictionary.Type.Integer.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Dictionary.Type.Integer{
       version: version(1),

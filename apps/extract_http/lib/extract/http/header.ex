@@ -49,6 +49,7 @@ end
 defmodule Extract.Http.Header.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Extract.Http.Header{
       version: version(1),

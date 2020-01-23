@@ -27,6 +27,7 @@ end
 defmodule Extract.Decode.Gtfs.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Extract.Decode.Gtfs{})
   end

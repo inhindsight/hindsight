@@ -23,7 +23,7 @@ end
 defmodule Load.Broadcast.V1 do
   use Definition.Schema
 
-  @impl Definition.Schema
+  @impl true
   def s do
     schema(%Load.Broadcast{
       version: version(1),

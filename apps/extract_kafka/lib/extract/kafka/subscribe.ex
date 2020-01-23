@@ -130,6 +130,7 @@ end
 defmodule Extract.Kafka.Subscribe.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Extract.Kafka.Subscribe{
       version: version(1),

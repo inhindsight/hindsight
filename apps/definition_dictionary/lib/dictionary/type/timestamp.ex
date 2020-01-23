@@ -29,6 +29,7 @@ end
 defmodule Dictionary.Type.Timestamp.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Dictionary.Type.Timestamp{
       version: version(1),

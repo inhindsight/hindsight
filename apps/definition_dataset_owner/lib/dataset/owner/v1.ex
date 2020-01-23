@@ -10,7 +10,7 @@ defmodule Dataset.Owner.V1 do
   """
   use Definition.Schema
 
-  @impl Definition.Schema
+  @impl true
   def s do
     schema(%Dataset.Owner{
       version: version(1),

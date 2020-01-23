@@ -37,6 +37,7 @@ end
 defmodule Dictionary.Type.Map.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Dictionary.Type.Map{
       version: version(1),

@@ -23,6 +23,7 @@ end
 defmodule Dictionary.Type.Float.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Dictionary.Type.Float{
       version: version(1),
