@@ -27,6 +27,7 @@ end
 defmodule Dictionary.Type.Date.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Dictionary.Type.Date{
       version: version(1),

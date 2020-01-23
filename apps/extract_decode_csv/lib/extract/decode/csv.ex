@@ -35,6 +35,7 @@ end
 defmodule Extract.Decode.Csv.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Extract.Decode.Csv{
       version: version(1),

@@ -88,6 +88,7 @@ end
 defmodule Dictionary.Type.List.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Dictionary.Type.List{
       version: version(1),

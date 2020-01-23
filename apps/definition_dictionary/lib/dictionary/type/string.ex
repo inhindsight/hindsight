@@ -19,6 +19,7 @@ end
 defmodule Dictionary.Type.String.V1 do
   use Definition.Schema
 
+  @impl true
   def s do
     schema(%Dictionary.Type.String{
       version: version(1),
