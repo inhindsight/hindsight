@@ -39,7 +39,7 @@ defmodule Transform.DeleteFieldsTest do
     end
   end
 
-  describe "transform" do
+  describe "transform_function" do
     test "will delete the configured fields from the payload", %{dictionary: dictionary} do
       step = %Transform.DeleteFields{names: ["birthdate", "spouse.nickname", "colors", "friends.age"]}
 
@@ -60,9 +60,10 @@ defmodule Transform.DeleteFieldsTest do
         }
       ]
 
-      {:ok, stream} = Transform.Step.transform(step, dictionary, values)
+      {:ok, function} = Transform.Step.transform_function(step, dictionary)
+      result = function.(values) |> Enum.to_list()
 
-      assert Enum.to_list(stream) == [
+      assert result == [
                %{
                  "name" => "Gary",
                  "age" => 34,

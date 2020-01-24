@@ -1,6 +1,8 @@
 defmodule Transform.DeleteFields do
   defstruct [:names]
 
+  import Dictionary.Access, only: [key: 1]
+
   defimpl Transform.Step, for: __MODULE__ do
     def transform_dictionary(%{names: names}, dictionary) do
       names
@@ -9,16 +11,21 @@ defmodule Transform.DeleteFields do
       |> Ok.ok()
     end
 
-    def transform(%{names: names}, _dictionary, stream) do
+    def transform_function(%{names: names}, _dictionary) do
       paths = convert_to_paths(names)
 
-      stream
-      |> Stream.map(&delete_paths(paths, &1))
+      fn stream ->
+        stream
+        |> Stream.map(&delete_paths(paths, &1))
+      end
       |> Ok.ok()
     end
 
     defp convert_to_paths(names) do
-      Enum.map(names, &String.split(&1, "."))
+      Enum.map(names, fn name ->
+        String.split(name, ".")
+        |> Enum.map(&key/1)
+      end)
     end
 
     defp delete_paths(paths, data) do
