@@ -2,6 +2,15 @@ defmodule AcquireWeb.V2.DataControllerTest do
   use AcquireWeb.ConnCase
 
   import Mox
+  require Temp.Env
+
+  Temp.Env.modify([
+    %{
+      app: :service_acquire,
+      key: AcquireWeb.V2.DataController,
+      set: [presto_client: Acquire.Presto.Mock]
+    }
+  ])
 
   setup :verify_on_exit!
 
