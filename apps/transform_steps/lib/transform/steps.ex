@@ -1,6 +1,4 @@
 defmodule Transform.Steps do
-  alias Transform.Steps.Context
-
   @type t :: %__MODULE__{
           steps: [{Dictionary.t(), Transform.Step.t()}],
           dictionary: Dictionary.t()
@@ -22,12 +20,9 @@ defmodule Transform.Steps do
 
   @spec transform(t, list(map)) :: {:ok, Enumerable.t()} | {:error, term}
   def transform(%__MODULE__{steps: steps}, values) do
-    context = Context.new(values)
-
-    Ok.reduce(steps, context, fn {dictionary, step}, ctx ->
-      Transform.Step.transform(step, Context.set_dictionary(ctx, dictionary))
+    Ok.reduce(steps, values, fn {dictionary, step}, stream ->
+      Transform.Step.transform(step, dictionary, stream)
     end)
-    |> Ok.map(&Context.get_stream/1)
   end
 
   @spec outgoing_dictionary(t) :: Dictionary.t()

@@ -34,13 +34,16 @@ defmodule Dictionary.Type.Map do
   end
 
   @impl Access
-  def get_and_update(%{dictionary: dictionary}, key, function) do
-    Dictionary.Impl.get_and_update(dictionary ,key, function)
+  def get_and_update(map, key, function) do
+    {return, new_dictionary} = Dictionary.Impl.get_and_update(map.dictionary, key, function)
+    {return, Map.put(map, :dictionary, new_dictionary)}
   end
 
   @impl Access
-  def pop(%{dictionary: dictionary}, key) do
-    Dictionary.Impl.pop(dictionary, key)
+  def pop(map, key) do
+    field = Dictionary.get_field(map.dictionary, key)
+    new_dict = Dictionary.delete_field(map.dictionary, key)
+    {field, Map.put(map, :dictionary, new_dict)}
   end
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do

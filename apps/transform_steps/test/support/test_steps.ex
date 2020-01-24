@@ -3,8 +3,6 @@ defmodule Transform.Test.Steps do
     defstruct [:from, :to]
 
     defimpl Transform.Step, for: __MODULE__ do
-      import Transform.Steps.Context
-
       def transform_dictionary(%{from: from, to: to}, dictionary) do
         Dictionary.update_field(dictionary, from, fn field ->
           %{field | name: to}
@@ -12,17 +10,13 @@ defmodule Transform.Test.Steps do
         |> Ok.ok()
       end
 
-      def transform(%{from: from, to: to}, context) do
-        new_stream =
-          get_stream(context)
-          |> Stream.map(fn entry ->
-            entry
-            |> Map.put(to, Map.get(entry, from))
-            |> Map.delete(from)
-          end)
-
-        context
-        |> set_stream(new_stream)
+      def transform(%{from: from, to: to}, _dictionary, stream) do
+        stream
+        |> Stream.map(fn entry ->
+          entry
+          |> Map.put(to, Map.get(entry, from))
+          |> Map.delete(from)
+        end)
         |> Ok.ok()
       end
     end
@@ -36,7 +30,7 @@ defmodule Transform.Test.Steps do
         {:error, error}
       end
 
-      def transform(%{error: error}, _) do
+      def transform(%{error: error}, _, _) do
         {:error, error}
       end
     end
@@ -46,19 +40,13 @@ defmodule Transform.Test.Steps do
     defstruct [:transform]
 
     defimpl Transform.Step, for: __MODULE__ do
-      import Transform.Steps.Context
-
       def transform_dictionary(_, dictionary) do
         Ok.ok(dictionary)
       end
 
-      def transform(%{transform: transform}, context) do
-        new_stream =
-          get_stream(context)
-          |> Stream.map(transform)
-
-        context
-        |> set_stream(new_stream)
+      def transform(%{transform: transform}, _dictionary, stream) do
+        stream
+        |> Stream.map(transform)
         |> Ok.ok()
       end
     end
@@ -68,24 +56,17 @@ defmodule Transform.Test.Steps do
     defstruct [:name, :transform]
 
     defimpl Transform.Step, for: __MODULE__ do
-      import Transform.Steps.Context
-
       def transform_dictionary(_, dictionary) do
         Ok.ok(dictionary)
       end
 
-      def transform(%{name: name, transform: transform}, context) do
-        dictionary = get_dictionary(context)
+      def transform(%{name: name, transform: transform}, dictionary, stream) do
         field = Dictionary.get_field(dictionary, name)
 
         case validate_struct(field, Dictionary.Type.Integer) do
           true ->
-            new_stream =
-              get_stream(context)
-              |> Stream.map(transform)
-
-            context
-            |> set_stream(new_stream)
+            stream
+            |> Stream.map(transform)
             |> Ok.ok()
 
           false ->

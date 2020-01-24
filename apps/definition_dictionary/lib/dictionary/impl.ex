@@ -51,11 +51,15 @@ defmodule Dictionary.Impl do
 
   @spec delete_field(t, String.t()) :: t
   def delete_field(%__MODULE__{} = dictionary, name) do
-    {index, _field} = Map.get(dictionary.by_name, name)
+    case Map.get(dictionary.by_name, name) do
+      {index, _field} ->
+        dictionary.ordered
+        |> List.delete_at(index)
+        |> from_list()
 
-    dictionary.ordered
-    |> List.delete_at(index)
-    |> from_list()
+      _ ->
+        dictionary
+    end
   end
 
   @impl Access
@@ -81,7 +85,8 @@ defmodule Dictionary.Impl do
 
   @impl Access
   def pop(data, key) do
-    delete_field(data, key)
+    field = get_field(data, key)
+    {field, delete_field(data, key)}
   end
 
   defimpl Collectable, for: __MODULE__ do
