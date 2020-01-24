@@ -70,7 +70,7 @@ defmodule Dictionary.AccessTest do
         [:path, :value, :expected],
         [["hair"], "red", "red"],
         [["spouse", "hair"], "gray", "gray"],
-        [["friends", "hair"], "blue", ["blue", "blue"]],
+        [["friends", "hair"], "blue", ["blue", "blue"]]
       ]
     end
   end

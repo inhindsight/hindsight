@@ -41,7 +41,9 @@ defmodule Transform.DeleteFieldsTest do
 
   describe "transform_function" do
     test "will delete the configured fields from the payload", %{dictionary: dictionary} do
-      step = %Transform.DeleteFields{names: ["birthdate", "spouse.nickname", "colors", "friends.age"]}
+      step = %Transform.DeleteFields{
+        names: ["birthdate", "spouse.nickname", "colors", "friends.age"]
+      }
 
       values = [
         %{

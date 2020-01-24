@@ -3,11 +3,12 @@ defmodule DictionaryTest do
 
   describe "dictionary data structure" do
     setup do
-      dictionary = Dictionary.from_list([
-        Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age"),
-        Dictionary.Type.Date.new!(name: "birthdate", format: "%Y-%m-%d")
-      ])
+      dictionary =
+        Dictionary.from_list([
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age"),
+          Dictionary.Type.Date.new!(name: "birthdate", format: "%Y-%m-%d")
+        ])
 
       [dictionary: dictionary]
     end
@@ -42,13 +43,15 @@ defmodule DictionaryTest do
       assert nil == Dictionary.get_field(new_dictionary, "name")
     end
 
-    test "delete_field will remove the field from thje dictionary and maintain the indexes", %{dictionary: dictionary} do
-     new_dictionary = Dictionary.delete_field(dictionary, "age")
+    test "delete_field will remove the field from thje dictionary and maintain the indexes", %{
+      dictionary: dictionary
+    } do
+      new_dictionary = Dictionary.delete_field(dictionary, "age")
 
-     assert Enum.to_list(new_dictionary) == [
-       Dictionary.Type.String.new!(name: "name"),
-       Dictionary.Type.Date.new!(name: "birthdate", format: "%Y-%m-%d")
-     ]
+      assert Enum.to_list(new_dictionary) == [
+               Dictionary.Type.String.new!(name: "name"),
+               Dictionary.Type.Date.new!(name: "birthdate", format: "%Y-%m-%d")
+             ]
     end
   end
 
@@ -240,8 +243,7 @@ defmodule DictionaryTest do
     end
 
     test "can pop field in dictionary", %{dictionary: dictionary} do
-      {_, result} =
-        pop_in(dictionary, ["birthdate"])
+      {_, result} = pop_in(dictionary, ["birthdate"])
 
       assert nil == Dictionary.get_field(result, "birthdate")
     end

@@ -14,13 +14,13 @@ defmodule Transform.Steps do
     Ok.reduce(steps, initial, fn step, acc ->
       with {:ok, new_dictionary} <- Transform.Step.transform_dictionary(step, acc.dictionary),
            {:ok, transform_function} <- Transform.Step.transform_function(step, acc.dictionary) do
-
-        %{acc |
-          dictionary: new_dictionary,
-          function: fn stream ->
-            acc.function.(stream)
-            |> transform_function.()
-          end
+        %{
+          acc
+          | dictionary: new_dictionary,
+            function: fn stream ->
+              acc.function.(stream)
+              |> transform_function.()
+            end
         }
         |> Ok.ok()
       end
