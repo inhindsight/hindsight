@@ -10,13 +10,15 @@ defmodule Transform.Test.Steps do
         |> Ok.ok()
       end
 
-      def transform(%{from: from, to: to}, _dictionary, stream) do
-        stream
-        |> Stream.map(fn entry ->
-          entry
-          |> Map.put(to, Map.get(entry, from))
-          |> Map.delete(from)
-        end)
+      def transform_function(%{from: from, to: to}, _dictionary) do
+        fn stream ->
+          stream
+          |> Stream.map(fn entry ->
+            entry
+            |> Map.put(to, Map.get(entry, from))
+            |> Map.delete(from)
+          end)
+        end
         |> Ok.ok()
       end
     end
@@ -30,7 +32,7 @@ defmodule Transform.Test.Steps do
         {:error, error}
       end
 
-      def transform(%{error: error}, _, _) do
+      def transform_function(%{error: error}, _) do
         {:error, error}
       end
     end
@@ -44,9 +46,11 @@ defmodule Transform.Test.Steps do
         Ok.ok(dictionary)
       end
 
-      def transform(%{transform: transform}, _dictionary, stream) do
-        stream
-        |> Stream.map(transform)
+      def transform_function(%{transform: transform}, _dictionary) do
+        fn stream ->
+          stream
+          |> Stream.map(transform)
+        end
         |> Ok.ok()
       end
     end
@@ -60,13 +64,15 @@ defmodule Transform.Test.Steps do
         Ok.ok(dictionary)
       end
 
-      def transform(%{name: name, transform: transform}, dictionary, stream) do
+      def transform_function(%{name: name, transform: transform}, dictionary) do
         field = Dictionary.get_field(dictionary, name)
 
         case validate_struct(field, Dictionary.Type.Integer) do
           true ->
-            stream
-            |> Stream.map(transform)
+            fn stream ->
+              stream
+              |> Stream.map(transform)
+            end
             |> Ok.ok()
 
           false ->

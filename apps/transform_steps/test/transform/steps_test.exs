@@ -14,8 +14,8 @@ defmodule Transform.StepsTest do
         ]
         |> Dictionary.from_list()
 
-      assert {:ok, steps} = Transform.Steps.prepare(steps, dictionary)
-      result = Transform.Steps.outgoing_dictionary(steps)
+      assert {:ok, transformer} = Transform.Steps.create_transformer(steps, dictionary)
+      result = Transform.Steps.outgoing_dictionary(transformer)
 
       assert result ==
                [
@@ -38,11 +38,11 @@ defmodule Transform.StepsTest do
         ]
         |> Dictionary.from_list()
 
-      assert {:error, "failed"} = Transform.Steps.prepare(steps, dictionary)
+      assert {:error, "failed"} = Transform.Steps.create_transformer(steps, dictionary)
     end
   end
 
-  describe "transform" do
+  describe "transform_function" do
     test "transforms stream" do
       steps = [
         %Transform.Test.Steps.TransformStream{
@@ -60,8 +60,8 @@ defmodule Transform.StepsTest do
 
       stream = [%{"name" => "joe", "age" => 10}, %{"name" => "bob", "age" => 27}]
 
-      assert {:ok, prepared_steps} = Transform.Steps.prepare(steps, dictionary)
-      assert {:ok, stream} = Transform.Steps.transform(prepared_steps, stream)
+      assert {:ok, transformer} = Transform.Steps.create_transformer(steps, dictionary)
+      assert {:ok, stream} = Transform.Steps.transform(transformer, stream)
 
       assert Enum.to_list(stream) == [
                %{"name" => "joe", "years_alive" => 20},
@@ -88,8 +88,8 @@ defmodule Transform.StepsTest do
 
       stream = [%{"name" => "joe", "age" => 10}, %{"name" => "bob", "age" => 27}]
 
-      assert {:ok, prepared_steps} = Transform.Steps.prepare(steps, dictionary)
-      assert {:ok, stream} = Transform.Steps.transform(prepared_steps, stream)
+      assert {:ok, transformer} = Transform.Steps.create_transformer(steps, dictionary)
+      assert {:ok, stream} = Transform.Steps.transform(transformer, stream)
 
       assert Enum.to_list(stream) == [
                %{"name" => "joe", "some_number" => 20},

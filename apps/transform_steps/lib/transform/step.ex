@@ -3,7 +3,7 @@ defprotocol Transform.Step do
           {:ok, Dictionary.t()} | {:error, term}
   def transform_dictionary(step, dictionary)
 
-  @spec transform(step :: t, dictionary :: Dictionary.t(), stream :: Enumerable.t()) ::
-          {:ok, Enumerable.t()} | {:error, term}
-  def transform(step, dictionary, stream)
+  @spec transform_function(step :: t, dictionary :: Dictionary.t()) ::
+          {:ok, (Enumerable.t() -> Enumerable.t())} | {:error, term}
+  def transform_function(step, dictionary)
 end
