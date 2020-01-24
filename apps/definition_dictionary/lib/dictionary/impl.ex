@@ -37,16 +37,23 @@ defmodule Dictionary.Impl do
   end
 
   def update_field(%__MODULE__{} = dictionary, name, new_field) do
-    {index, _} = Map.get(dictionary.by_name, name)
+    {index, new_ordered} =
+      case Map.get(dictionary.by_name, name) do
+        {index, _} ->
+          {index, List.replace_at(dictionary.ordered, index, new_field)}
+
+        nil ->
+          index = length(dictionary.ordered)
+          {index, List.insert_at(dictionary.ordered, index, new_field)}
+      end
+
     new_name = new_field.name
 
     Map.update!(dictionary, :by_name, fn bn ->
       Map.delete(bn, name)
       |> Map.put(new_name, {index, new_field})
     end)
-    |> Map.update!(:ordered, fn list ->
-      List.replace_at(list, index, new_field)
-    end)
+    |> Map.put(:ordered, new_ordered)
   end
 
   @spec delete_field(t, String.t()) :: t

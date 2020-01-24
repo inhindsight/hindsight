@@ -47,8 +47,62 @@ defmodule Dictionary.AccessTest do
     [dictionary: dictionary, data: data]
   end
 
-  describe "pop_in" do
+  describe "put_in" do
+    data_test "can add fields to dictionary", %{dictionary: dictionary} do
+      keyed_path = Enum.map(path, &key/1)
+      result = put_in(dictionary, keyed_path, value)
+      assert value == get_in(result, keyed_path)
 
+      where [
+        [:path, :value],
+        [["hair"], Dictionary.Type.String.new!(name: "hair")],
+        [["spouse", "hair"], Dictionary.Type.String.new!(name: "hair")],
+        [["friends", "hair"], Dictionary.Type.String.new!(name: "hair")]
+      ]
+    end
+
+    data_test "can add fields to raw datastructures", %{data: data} do
+      keyed_path = Enum.map(path, &key/1)
+      result = put_in(data, keyed_path, value)
+      assert expected == get_in(result, keyed_path)
+
+      where [
+        [:path, :value, :expected],
+        [["hair"], "red", "red"],
+        [["spouse", "hair"], "gray", "gray"],
+        [["friends", "hair"], "blue", ["blue", "blue"]],
+      ]
+    end
+  end
+
+  describe "pop_in" do
+    data_test "can remove field from dictionary", %{dictionary: dictionary} do
+      keyed_path = Enum.map(path, &key/1)
+      {popped, result} = pop_in(dictionary, keyed_path)
+      assert popped == Dictionary.Type.Integer.new!(name: "age")
+      assert nil == get_in(result, keyed_path)
+
+      where [
+        [:path],
+        [["age"]],
+        [["spouse", "age"]],
+        [["friends", "age"]]
+      ]
+    end
+
+    data_test "can remove fields from raw datastructures", %{data: data} do
+      keyed_path = Enum.map(path, &key/1)
+      {popped, result} = pop_in(data, keyed_path)
+      assert popped == expected_popped
+      assert get_in(result, keyed_path) == expected
+
+      where [
+        [:path, :expected_popped, :expected],
+        [["age"], 34, nil],
+        [["spouse", "age"], 32, nil],
+        [["friends", "age"], [40, 30], [nil, nil]]
+      ]
+    end
   end
 
   describe "get_and_update_in" do
