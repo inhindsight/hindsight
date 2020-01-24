@@ -12,16 +12,15 @@ defmodule Acquire.Presto.Client do
   # TODO
   @moduledoc false
 
-  @behaviour Acquire.Presto
+  use Properties, otp_app: :service_acquire
+  getter(:presto, required: true)
 
-  @url "http://localhost:8080"
-  @user "acquire"
-  @catalog "hive"
-  @schema "default"
+  @behaviour Acquire.Presto
 
   @impl true
   def execute(statement) do
-    Prestige.new_session(url: @url, user: @user, catalog: @catalog, schema: @schema)
+    presto()
+    |> Prestige.new_session()
     |> Prestige.query(statement)
     |> Ok.map(&Prestige.Result.as_maps/1)
   end

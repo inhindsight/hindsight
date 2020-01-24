@@ -37,6 +37,7 @@ defmodule Acquire.MixProject do
   defp deps do
     [
       {:ok, in_umbrella: true},
+      {:properties, in_umbrella: true},
       {:prestige, "~> 1.0"},
       {:phoenix, "~> 1.4.11"},
       {:phoenix_pubsub, "~> 1.1"},

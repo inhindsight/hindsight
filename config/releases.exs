@@ -22,6 +22,8 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+presto_db = [url: "http://localhost:8080", catalog: "hive", schema: "default"]
+
 # SERVICE_GATHER
 kafka_endpoints =
   System.get_env("KAFKA_ENDPOINTS", "localhost:9092")
@@ -141,10 +143,7 @@ config :service_persist, Persist.Application,
   ]
 
 config :service_persist, Persist.Writer,
-  url: "http://localhost:8080",
-  user: "hindsight",
-  catalog: "hive",
-  schema: "default"
+  Keyword.put(presto_db, :user, "hindsight")
 
 config :service_persist, Persist.Load.Broadway,
   app_name: "service_persist",
@@ -201,3 +200,7 @@ config :service_orchestrate, Orchestrate.Application,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
+
+# SERVICE ACQUIRE
+config :service_acquire, Acquire.Presto.Client,
+  presto: Keyword.put(presto_db, :user, "acquire")
