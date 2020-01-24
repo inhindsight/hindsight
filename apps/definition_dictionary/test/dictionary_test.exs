@@ -240,7 +240,7 @@ defmodule DictionaryTest do
     end
 
     test "can pop field in dictionary", %{dictionary: dictionary} do
-      result =
+      {_, result} =
         pop_in(dictionary, ["birthdate"])
 
       assert nil == Dictionary.get_field(result, "birthdate")
