@@ -8,3 +8,6 @@ config :service_acquire, AcquireWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :service_acquire, AcquireWeb.V2.DataController,
+  presto_client: Acquire.Presto.Mock
