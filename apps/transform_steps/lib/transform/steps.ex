@@ -1,6 +1,6 @@
 defmodule Transform.Steps do
   @type t :: %__MODULE__{
-          function: (Enumerable.t() -> Enumberable.t()),
+          function: (Enumerable.t() -> Enumerable.t()),
           dictionary: Dictionary.t()
         }
 

@@ -1,4 +1,5 @@
 defmodule Dictionary.Access do
+  @spec key(term, term) :: Access.access_fun(data :: struct | map, get_value :: term())
   def key(key, default \\ nil) do
     &access_fun(key, default, &1, &2, &3)
   end
