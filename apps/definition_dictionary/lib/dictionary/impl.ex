@@ -27,6 +27,10 @@ defmodule Dictionary.Impl do
   end
 
   @spec update_field(t, String.t(), field | (field -> field)) :: t
+  def update_field(%__MODULE__{} = dictionary, _name, nil) do
+    dictionary
+  end
+
   def update_field(%__MODULE__{} = dictionary, name, update_function)
       when is_function(update_function, 1) do
     new_field =

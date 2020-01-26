@@ -2,7 +2,7 @@ defmodule Dictionary.AccessTest do
   use ExUnit.Case
   import Checkov
 
-  import Dictionary.Access, only: [key: 1]
+  import Dictionary.Access, only: [key: 1, key: 3]
 
   setup do
     dictionary =
@@ -62,15 +62,17 @@ defmodule Dictionary.AccessTest do
     end
 
     data_test "can add fields to raw datastructures", %{data: data} do
-      keyed_path = Enum.map(path, &key/1)
+      keyed_path = Enum.map(path, &key(&1, nil, opts))
       result = put_in(data, keyed_path, value)
       assert expected == get_in(result, keyed_path)
 
       where [
-        [:path, :value, :expected],
-        [["hair"], "red", "red"],
-        [["spouse", "hair"], "gray", "gray"],
-        [["friends", "hair"], "blue", ["blue", "blue"]]
+        [:path, :value, :expected, :opts],
+        [["hair"], "red", "red", []],
+        [["spouse", "hair"], "gray", "gray", []],
+        [["friends", "hair"], "blue", ["blue", "blue"], []],
+        [["friends", "hair"], ["red", "green"], [["red", "green"], ["red", "green"]], []],
+        [["friends", "hair"], ["red", "green"], ["red", "green"], [spread: true]]
       ]
     end
   end
