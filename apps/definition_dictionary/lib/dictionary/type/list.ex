@@ -1,5 +1,6 @@
 defmodule Dictionary.Type.List do
   use Definition, schema: Dictionary.Type.List.V1
+  @behaviour Access
 
   @type t :: %__MODULE__{
           version: integer,
@@ -24,6 +25,24 @@ defmodule Dictionary.Type.List do
       |> Map.put(:item_type, item_type_module)
       |> Ok.ok()
     end
+  end
+
+  @impl Access
+  def fetch(%{dictionary: dictionary}, key) do
+    Dictionary.Impl.fetch(dictionary, key)
+  end
+
+  @impl Access
+  def get_and_update(list, key, function) do
+    {return, new_dictionary} = Dictionary.Impl.get_and_update(list.dictionary, key, function)
+    {return, Map.put(list, :dictionary, new_dictionary)}
+  end
+
+  @impl Access
+  def pop(list, key) do
+    field = Dictionary.get_field(list.dictionary, key)
+    new_dict = Dictionary.delete_field(list.dictionary, key)
+    {field, Map.put(list, :dictionary, new_dict)}
   end
 
   defp get_item_type(item_type) do

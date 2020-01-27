@@ -1,6 +1,7 @@
 defmodule Dictionary.Type.Map do
   use Definition, schema: Dictionary.Type.Map.V1
   use Dictionary.JsonEncoder
+  @behaviour Access
 
   @type t :: %__MODULE__{
           version: integer,
@@ -25,6 +26,24 @@ defmodule Dictionary.Type.Map do
 
   def on_new(map) do
     Ok.ok(map)
+  end
+
+  @impl Access
+  def fetch(%{dictionary: dictionary}, key) do
+    Dictionary.Impl.fetch(dictionary, key)
+  end
+
+  @impl Access
+  def get_and_update(map, key, function) do
+    {return, new_dictionary} = Dictionary.Impl.get_and_update(map.dictionary, key, function)
+    {return, Map.put(map, :dictionary, new_dictionary)}
+  end
+
+  @impl Access
+  def pop(map, key) do
+    field = Dictionary.get_field(map.dictionary, key)
+    new_dict = Dictionary.delete_field(map.dictionary, key)
+    {field, Map.put(map, :dictionary, new_dict)}
   end
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
