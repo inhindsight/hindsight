@@ -18,8 +18,7 @@ defmodule Load.PersistTest do
         [:source, nil],
         [:source, ""],
         [:destination, nil],
-        [:destination, ""],
-        [:schema, 1]
+        [:destination, ""]
       ])
     end
 

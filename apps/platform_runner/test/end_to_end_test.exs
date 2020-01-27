@@ -61,11 +61,7 @@ defmodule PlatformRunner.EndToEndTest do
             dataset_id: "e2e-csv-ds",
             name: "persist",
             source: "e2e-csv-gather",
-            destination: "e2e_csv",
-            schema: [
-              Dictionary.Type.String.new!(name: "letter"),
-              Dictionary.Type.String.new!(name: "number")
-            ]
+            destination: "e2e_csv"
           )
         ]
       )
@@ -102,11 +98,12 @@ defmodule PlatformRunner.EndToEndTest do
       )
 
     assert_async sleep: 1_000, max_tries: 30, debug: true do
-      with {:ok, result} <- Prestige.query(session, "select * from e2e_csv order by letter") do
+      with {:ok, result} <-
+             Prestige.query(session, "select * from e2e_csv order by single_letter") do
         assert Prestige.Result.as_maps(result) == [
-                 %{"letter" => "a", "number" => "1"},
-                 %{"letter" => "b", "number" => "2"},
-                 %{"letter" => "c", "number" => "3"}
+                 %{"single_letter" => "a", "number" => "1"},
+                 %{"single_letter" => "b", "number" => "2"},
+                 %{"single_letter" => "c", "number" => "3"}
                ]
       else
         {:error, reason} -> flunk(inspect(reason))
@@ -148,6 +145,25 @@ defmodule PlatformRunner.EndToEndTest do
 
       Gather.Application.instance()
       |> Events.send_extract_start("e2e-json", extract)
+
+      transform =
+        Transform.new!(
+          id: "e2e-json-transform-1",
+          dataset_id: "e2e-json-ds",
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "number"),
+            Dictionary.Type.List.new!(
+              name: "teammates",
+              item_type: Dictionary.Type.Map,
+              dictionary: [Dictionary.Type.String.new!(name: "name")]
+            )
+          ],
+          steps: []
+        )
+
+      Gather.Application.instance()
+      |> Events.send_transform_define("e2e-json", transform)
 
       assert_async debug: true, sleep: 500 do
         assert {:ok, _, [message]} = Elsa.fetch(@kafka, "e2e-json-gather")

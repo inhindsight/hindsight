@@ -39,6 +39,26 @@ defmodule PersistTest do
   test "load:persist:start starts writing to presto" do
     test = self()
 
+    transform =
+      Transform.new!(
+        id: "transform-1",
+        dataset_id: "ds1",
+        dictionary: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ],
+        steps: [
+          Transform.RenameField.new!(from: "name", to: "fullname")
+        ]
+      )
+
+    {:ok, dictionary} =
+      Transform.Steps.transform_dictionary(transform.steps, transform.dictionary)
+
+    Brook.Test.with_event(@instance, fn ->
+      Persist.Transformations.persist(transform)
+    end)
+
     load =
       Load.Persist.new!(
         id: "persist-1",
@@ -73,8 +93,7 @@ defmodule PersistTest do
 
     ref = Broadway.test_messages(broadway, messages)
 
-    schema = load.schema
-    assert_receive {:write, [["'bob'", 12]], [schema: ^schema]}
+    assert_receive {:write, [["'bob'", 12]], [dictionary: ^dictionary]}
     assert_receive {:ack, ^ref, success, failed}
     assert 1 == length(success)
 

@@ -11,12 +11,14 @@ defmodule Persist.Writer do
   getter(:schema, required: true)
 
   @type init_opts :: [
-          load: %Load.Persist{}
+          load: Load.Persist.t(),
+          dictionary: Dictionary.t()
         ]
 
   @impl Writer
   def start_link(init_arg) do
-    %Load.Persist{destination: destination, schema: schema} = Keyword.get(init_arg, :load)
+    %Load.Persist{destination: destination} = Keyword.fetch!(init_arg, :load)
+    dictionary = Keyword.fetch!(init_arg, :dictionary)
 
     [
       url: url(),
@@ -25,7 +27,7 @@ defmodule Persist.Writer do
       schema: schema(),
       table: destination,
       table_schema:
-        Enum.map(schema, fn type ->
+        Enum.map(dictionary, fn type ->
           result = Translator.translate_type(type)
           {result.name, result.type}
         end)
@@ -43,13 +45,13 @@ defmodule Persist.Writer do
 
   @impl Writer
   def write(server, messages, opts \\ []) do
-    schema = Keyword.fetch!(opts, :schema)
-    formatted_messages = Enum.map(messages, &format_message(schema, &1))
+    dictionary = Keyword.fetch!(opts, :dictionary)
+    formatted_messages = Enum.map(messages, &format_message(dictionary, &1))
     writer().write(server, formatted_messages, opts)
   end
 
-  defp format_message(schema, message) do
-    schema
+  defp format_message(dictionary, message) do
+    dictionary
     |> Enum.map(fn %{name: name} = field -> {field, Map.get(message, name)} end)
     |> Enum.map(fn {field, value} -> Translator.translate_value(field, value) end)
   end

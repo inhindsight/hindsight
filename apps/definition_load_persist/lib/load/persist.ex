@@ -9,8 +9,7 @@ defmodule Load.Persist do
           dataset_id: uuid,
           name: String.t(),
           source: String.t(),
-          destination: String.t(),
-          schema: list()
+          destination: String.t()
         }
 
   @derive Jason.Encoder
@@ -19,19 +18,7 @@ defmodule Load.Persist do
             dataset_id: nil,
             name: nil,
             source: nil,
-            destination: nil,
-            schema: []
-
-  def on_new(%__MODULE__{schema: []} = persist), do: Ok.ok(persist)
-
-  def on_new(%__MODULE__{schema: schema} = persist) when is_list(schema) do
-    case Dictionary.decode(schema) do
-      {:ok, new_schema} -> Map.put(persist, :schema, new_schema) |> Ok.ok()
-      error -> error
-    end
-  end
-
-  def on_new(persist), do: Ok.ok(persist)
+            destination: nil
 end
 
 defmodule Load.Persist.V1 do
@@ -45,8 +32,7 @@ defmodule Load.Persist.V1 do
       dataset_id: id(),
       name: required_string(),
       source: required_string(),
-      destination: required_string(),
-      schema: spec(is_list())
+      destination: required_string()
     })
   end
 end

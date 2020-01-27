@@ -5,6 +5,8 @@ defmodule Persist.Loader do
 
   @max_retries get_config_value(:max_retries, default: 10)
 
+  alias Persist.Transformations
+
   getter(:writer, default: Persist.Writer)
   getter(:broadway, default: Persist.Load.Broadway)
 
@@ -24,11 +26,18 @@ defmodule Persist.Loader do
     Process.flag(:trap_exit, true)
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
 
-    with {:ok, writer_pid} <- start_writer(load),
-         writer_function <- fn msgs -> writer().write(writer_pid, msgs, schema: load.schema) end,
-         {:ok, broadway_pid} <- start_broadway(load, writer_function) do
+    with {:ok, transform} when not is_nil(transform) <- Transformations.get(load.dataset_id),
+         {:ok, dictionary} <- transform_dictionary(transform),
+         {:ok, writer_pid} <- start_writer(load, dictionary),
+         writer_function <- fn msgs ->
+           writer().write(writer_pid, msgs, dictionary: dictionary)
+         end,
+         {:ok, broadway_pid} <- start_broadway(load, transform, writer_function) do
       {:ok, %{writer_pid: writer_pid, broadway_pid: broadway_pid}}
     else
+      {:ok, nil} ->
+        {:stop, "unable to find transformation for dataset #{load.dataset_id}"}
+
       {:error, reason} ->
         {:stop, reason}
     end
@@ -39,13 +48,17 @@ defmodule Persist.Loader do
     {:stop, reason, state}
   end
 
-  @retry with: exponential_backoff(100) |> take(@max_retries)
-  defp start_writer(load) do
-    writer().start_link(load: load)
+  defp transform_dictionary(transform) do
+    Transform.Steps.transform_dictionary(transform.steps, transform.dictionary)
   end
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
-  defp start_broadway(load, writer) do
-    broadway().start_link(load: load, writer: writer)
+  defp start_writer(load, dictionary) do
+    writer().start_link(load: load, dictionary: dictionary)
+  end
+
+  @retry with: exponential_backoff(100) |> take(@max_retries)
+  defp start_broadway(load, transform, writer) do
+    broadway().start_link(load: load, transform: transform, writer: writer)
   end
 end

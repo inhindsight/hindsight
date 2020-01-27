@@ -19,14 +19,19 @@ defmodule Persist.Load.BroadwayTest do
 
   setup do
     Process.flag(:trap_exit, true)
-    :ok
-  end
 
-  setup :set_mox_global
-  setup :verify_on_exit!
-
-  test "will decode message and pass to writer" do
-    test = self()
+    transform =
+      Transform.new!(
+        id: "transform-1",
+        dataset_id: "ds1",
+        dictionary: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ],
+        steps: [
+          Transform.RenameField.new!(from: "name", to: "fullname")
+        ]
+      )
 
     load =
       Load.Persist.new!(
@@ -41,12 +46,22 @@ defmodule Persist.Load.BroadwayTest do
         ]
       )
 
+    [load: load, transform: transform]
+  end
+
+  setup :set_mox_global
+  setup :verify_on_exit!
+
+  test "will decode message and pass to writer", %{load: load, transform: transform} do
+    test = self()
+
     writer = fn msgs ->
       send(test, {:write, msgs})
       :ok
     end
 
-    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load, writer: writer)
+    {:ok, broadway} =
+      Persist.Load.Broadway.start_link(load: load, transform: transform, writer: writer)
 
     messages = [
       %{value: %{"name" => "bob", "age" => 21} |> Jason.encode!()},
@@ -56,8 +71,8 @@ defmodule Persist.Load.BroadwayTest do
     ref = Broadway.test_messages(broadway, messages)
 
     expected = [
-      %{"name" => "bob", "age" => 21},
-      %{"name" => "joe", "age" => 43}
+      %{"fullname" => "bob", "age" => 21},
+      %{"fullname" => "joe", "age" => 43}
     ]
 
     assert_receive {:write, ^expected}
@@ -67,60 +82,21 @@ defmodule Persist.Load.BroadwayTest do
     assert_down(broadway)
   end
 
-  test "will normalize message before sending to writer" do
+  test "sends message to dlq if it fails to decode", %{load: load, transform: transform} do
     test = self()
 
-    load =
-      Load.Persist.new!(
-        id: "load-1",
-        dataset_id: "ds1",
-        name: "fake-name",
-        source: "topic-a",
-        destination: "table-a",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
-      )
-
-    writer = fn msgs ->
-      send(test, {:write, msgs})
-      :ok
-    end
-
-    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load, writer: writer)
-
-    messages = [
-      %{value: %{"name" => "bob", "age" => "21"} |> Jason.encode!()},
-      %{value: %{"name" => "joe", "age" => "43"} |> Jason.encode!()}
-    ]
-
-    Broadway.test_messages(broadway, messages)
-
-    expected = [
-      %{"name" => "bob", "age" => 21},
-      %{"name" => "joe", "age" => 43}
-    ]
-
-    assert_receive {:write, ^expected}
-    assert_down(broadway)
-  end
-
-  test "sends message to dlq if it fails to decode" do
-    test = self()
-
-    load =
-      Load.Persist.new!(
-        id: "load-1",
-        dataset_id: "ds1",
-        name: "fake-name",
-        source: "topic-c",
-        destination: "table-a",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
-      )
+    # load =
+    #   Load.Persist.new!(
+    #     id: "load-1",
+    #     dataset_id: "ds1",
+    #     name: "fake-name",
+    #     source: "topic-c",
+    #     destination: "table-a",
+    #     schema: [
+    #       %Dictionary.Type.String{name: "name"},
+    #       %Dictionary.Type.Integer{name: "age"}
+    #     ]
+    #   )
 
     writer = fn msgs ->
       send(test, {:write, msgs})
@@ -133,7 +109,8 @@ defmodule Persist.Load.BroadwayTest do
       :ok
     end)
 
-    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load, writer: writer)
+    {:ok, broadway} =
+      Persist.Load.Broadway.start_link(load: load, transform: transform, writer: writer)
 
     messages = [
       %{value: %{"name" => "bob", "age" => 21} |> Jason.encode!()},
@@ -152,62 +129,11 @@ defmodule Persist.Load.BroadwayTest do
         reason: reason
       )
 
-    assert_receive {:write, [%{"name" => "bob", "age" => 21}]}
+    assert_receive {:write, [%{"fullname" => "bob", "age" => 21}]}
     assert_receive {:dlq, [^expected_dead_letter]}
 
-    assert_receive {:ack, ^ref, [%{data: %{"name" => "bob", "age" => 21}}], []}
+    assert_receive {:ack, ^ref, [%{data: %{"fullname" => "bob", "age" => 21}}], []}
     assert_receive {:ack, ^ref, [], [%{data: ^expected_dead_letter}]}
-    assert_down(broadway)
-  end
-
-  test "sends to dlq if message fails normalization" do
-    test = self()
-
-    load =
-      Load.Persist.new!(
-        id: "load-1",
-        dataset_id: "ds1",
-        name: "fake-name",
-        source: "topic-c",
-        destination: "table-a",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
-      )
-
-    writer = fn msgs ->
-      send(test, {:write, msgs})
-      :ok
-    end
-
-    Persist.DLQMock
-    |> expect(:write, fn messages ->
-      send(test, {:dlq, messages})
-      :ok
-    end)
-
-    {:ok, broadway} = Persist.Load.Broadway.start_link(load: load, writer: writer)
-
-    messages = [
-      %{value: %{"name" => "bob", "age" => 21} |> Jason.encode!()},
-      %{value: %{"name" => "sally", "age" => "twenty-two"} |> Jason.encode!()}
-    ]
-
-    Broadway.test_messages(broadway, messages)
-
-    reason = %{"age" => :invalid_integer}
-
-    expected_dead_letter =
-      DeadLetter.new(
-        dataset_id: "ds1",
-        original_message: Enum.at(messages, 1),
-        app_name: "service_persist",
-        reason: reason
-      )
-
-    assert_receive {:write, [%{"name" => "bob", "age" => 21}]}
-    assert_receive {:dlq, [^expected_dead_letter]}
     assert_down(broadway)
   end
 

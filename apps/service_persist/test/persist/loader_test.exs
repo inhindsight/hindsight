@@ -4,6 +4,8 @@ defmodule Persist.LoaderTest do
 
   import Mox
 
+  @instance Persist.Application.instance()
+
   Temp.Env.modify([
     %{
       app: :service_persist,
@@ -20,6 +22,22 @@ defmodule Persist.LoaderTest do
 
   setup do
     Process.flag(:trap_exit, true)
+    Brook.Test.clear_view_state(@instance, "transformations")
+
+    transform =
+      Transform.new!(
+        id: "transform-1",
+        dataset_id: "ds1",
+        dictionary: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ],
+        steps: []
+      )
+
+    Brook.Test.with_event(@instance, fn ->
+      Persist.Transformations.persist(transform)
+    end)
 
     load =
       Load.Persist.new!(
@@ -38,7 +56,7 @@ defmodule Persist.LoaderTest do
       Persist.Load.Supervisor.kill_all_children()
     end)
 
-    [load: load]
+    [load: load, transform: transform]
   end
 
   describe "start writer" do
@@ -49,7 +67,7 @@ defmodule Persist.LoaderTest do
       :ok
     end
 
-    test "will start persist writer", %{load: load} do
+    test "will start persist writer", %{load: load, transform: transform} do
       test = self()
 
       Persist.WriterMock
@@ -62,6 +80,7 @@ defmodule Persist.LoaderTest do
 
       assert_receive {:start_link, init_arg}
       assert load == Keyword.get(init_arg, :load)
+      assert transform.dictionary == Keyword.get(init_arg, :dictionary)
 
       assert_down(pid)
     end
@@ -110,7 +129,7 @@ defmodule Persist.LoaderTest do
       :ok
     end
 
-    test "will start broadway", %{load: %{schema: schema} = load} do
+    test "will start broadway", %{load: load, transform: %{dictionary: dictionary} = transform} do
       test = self()
 
       BroadwayMock
@@ -122,10 +141,11 @@ defmodule Persist.LoaderTest do
       {:ok, pid} = Persist.Loader.start_link(load: load)
       assert_receive {:start_link, init_arg}
       assert load == Keyword.get(init_arg, :load)
+      assert transform == Keyword.get(init_arg, :transform)
       write_function = Keyword.get(init_arg, :writer)
       write_function.([:ok])
 
-      assert_receive {:write, [:ok], [schema: ^schema]}
+      assert_receive {:write, [:ok], [dictionary: ^dictionary]}
       assert_down(pid)
     end
 
