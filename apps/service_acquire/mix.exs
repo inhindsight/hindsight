@@ -45,7 +45,8 @@ defmodule Acquire.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:testing, in_umbrella: true, only: [:test]},
-      {:mox, "~> 0.5.1", only: [:test]}
+      {:mox, "~> 0.5.1", only: [:test]},
+      {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
 end

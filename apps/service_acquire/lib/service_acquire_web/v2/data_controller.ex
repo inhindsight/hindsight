@@ -5,9 +5,8 @@ defmodule AcquireWeb.V2.DataController do
   getter(:presto_client, default: Acquire.Presto.Client)
 
   def select(conn, params) do
-    {:ok, result} =
-      Acquire.Query.from_params(params)
-      |> Ok.map(fn s -> presto_client().execute(s) end)
+    {statement, values} = Acquire.Query.from_params(params)
+    {:ok, result} = presto_client().execute(statement, values)
 
     json(conn, result)
   end

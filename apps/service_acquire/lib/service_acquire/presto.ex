@@ -5,7 +5,7 @@ defmodule Acquire.Presto do
   @type statement :: String.t()
   @type result :: map
 
-  @callback execute(statement) :: {:ok, [result]} | {:error, term}
+  @callback execute(statement, list) :: {:ok, [result]} | {:error, term}
 end
 
 defmodule Acquire.Presto.Client do
@@ -18,10 +18,10 @@ defmodule Acquire.Presto.Client do
   @behaviour Acquire.Presto
 
   @impl true
-  def execute(statement) do
+  def execute(template, values) do
     presto()
     |> Prestige.new_session()
-    |> Prestige.query(statement)
+    |> Prestige.query(template, values)
     |> Ok.map(&Prestige.Result.as_maps/1)
   end
 end
