@@ -16,9 +16,8 @@ defmodule Transform.RenameField do
       fn stream ->
         stream
         |> Enum.map(fn entry ->
-          value = get_in(entry, from_path)
-          {_, entry} = pop_in(entry, from_path)
-          put_in(entry, to_path, value)
+          {value, updated_entry} = get_and_update_in(entry, from_path, fn _ -> :pop end)
+          put_in(updated_entry, to_path, value)
         end)
       end
       |> Ok.ok()
