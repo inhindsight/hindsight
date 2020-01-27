@@ -22,6 +22,7 @@ defmodule Broadcast.Stream.BroadwayTest do
 
   setup do
     Process.flag(:trap_exit, true)
+    Brook.Test.clear_view_state(@instance, "transformations")
     test = self()
 
     Broadcast.DLQMock
