@@ -2,8 +2,8 @@ defmodule Transform.DeleteFields do
   use Definition, schema: Transform.DeleteFields.V1
 
   @type t :: %__MODULE__{
-    names: list(String.t())
-  }
+          names: list(String.t())
+        }
 
   defstruct [:names]
 
@@ -46,8 +46,6 @@ defmodule Transform.DeleteFields.V1 do
   use Definition.Schema
 
   def s do
-    schema(
-      names: coll_of(spec(is_binary()))
-    )
+    schema(names: coll_of(spec(is_binary())))
   end
 end

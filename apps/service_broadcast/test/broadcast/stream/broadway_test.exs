@@ -61,17 +61,18 @@ defmodule Broadcast.Stream.BroadwayTest do
   end
 
   test "transforms message before sending it to channel" do
-    transform = Transform.new!(
-      id: "transform-1",
-      dataset_id: "ds1",
-      dictionary: [
-        Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age")
-      ],
-      steps: [
-        Transform.RenameField.new!(from: "name", to: "fullname")
-      ]
-    )
+    transform =
+      Transform.new!(
+        id: "transform-1",
+        dataset_id: "ds1",
+        dictionary: [
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age")
+        ],
+        steps: [
+          Transform.RenameField.new!(from: "name", to: "fullname")
+        ]
+      )
 
     Brook.Test.with_event(@instance, fn ->
       Broadcast.Transformations.persist(transform)
@@ -152,17 +153,18 @@ defmodule Broadcast.Stream.BroadwayTest do
   end
 
   test "start-link returns error tuple if unable to create transformer" do
-    transform = Transform.new!(
-      id: "transform-1",
-      dataset_id: "ds1",
-      dictionary: [
-        Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age")
-      ],
-      steps: [
-        %Transform.Test.Steps.Error{error: "failed"}
-      ]
-    )
+    transform =
+      Transform.new!(
+        id: "transform-1",
+        dataset_id: "ds1",
+        dictionary: [
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age")
+        ],
+        steps: [
+          %Transform.Test.Steps.Error{error: "failed"}
+        ]
+      )
 
     Brook.Test.with_event(@instance, fn ->
       Broadcast.Transformations.persist(transform)

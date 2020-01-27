@@ -12,9 +12,9 @@ defmodule Transform.Test.Steps do
 
       def transform_function(%{from: from, to: to}, _dictionary) do
         fn value ->
-            value
-            |> Map.put(to, Map.get(value, from))
-            |> Map.delete(from)
+          value
+          |> Map.put(to, Map.get(value, from))
+          |> Map.delete(from)
         end
         |> Ok.ok()
       end

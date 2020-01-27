@@ -7,14 +7,16 @@ defmodule Transform.Steps do
   defstruct function: nil,
             dictionary: nil
 
-  @spec transform_dictionary([Transform.Step.t()], Dictionary.t()) :: {:ok, Dictionary,t()} | {:error, term}
+  @spec transform_dictionary([Transform.Step.t()], Dictionary.t()) ::
+          {:ok, Dictionary, t()} | {:error, term}
   def transform_dictionary(steps, dictionary) do
-      Ok.reduce(steps, dictionary, fn step, acc ->
-        Transform.Step.transform_dictionary(step, acc)
-      end)
+    Ok.reduce(steps, dictionary, fn step, acc ->
+      Transform.Step.transform_dictionary(step, acc)
+    end)
   end
 
-  @spec create_transformer([Transform.Step.t()], Dictionary.t()) :: {:ok, (map -> map)} | {:error, term}
+  @spec create_transformer([Transform.Step.t()], Dictionary.t()) ::
+          {:ok, (map -> map)} | {:error, term}
   def create_transformer(steps, dictionary) do
     initial = %__MODULE__{dictionary: dictionary, function: fn x -> x end}
 
