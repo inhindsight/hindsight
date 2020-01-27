@@ -1,4 +1,10 @@
 defmodule Transform.DeleteFields do
+  use Definition, schema: Transform.DeleteFields.V1
+
+  @type t :: %__MODULE__{
+    names: list(String.t())
+  }
+
   defstruct [:names]
 
   import Dictionary.Access, only: [key: 1]
@@ -34,5 +40,15 @@ defmodule Transform.DeleteFields do
         new_data
       end)
     end
+  end
+end
+
+defmodule Transform.DeleteFields.V1 do
+  use Definition.Schema
+
+  def s do
+    schema(
+      names: coll_of(spec(is_binary()))
+    )
   end
 end

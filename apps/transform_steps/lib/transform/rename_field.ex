@@ -1,4 +1,11 @@
 defmodule Transform.RenameField do
+  use Definition, schema: Transform.RenameField.V1
+
+  @type t :: %__MODULE__{
+    from: list(String.t()),
+    to: list(String.t())
+  }
+
   defstruct [:from, :to]
 
   defimpl Transform.Step, for: __MODULE__ do
@@ -38,5 +45,16 @@ defmodule Transform.RenameField do
     defp key(name) do
       Dictionary.Access.key(name, [], spread: true)
     end
+  end
+end
+
+defmodule Transform.RenameField.V1 do
+  use Definition.Schema
+
+  def s do
+    schema(%Transform.RenameField{
+      from: coll_of(spec(is_binary())),
+      to: coll_of(spec(is_binary()))
+    })
   end
 end
