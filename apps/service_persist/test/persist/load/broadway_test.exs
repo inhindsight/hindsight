@@ -85,19 +85,6 @@ defmodule Persist.Load.BroadwayTest do
   test "sends message to dlq if it fails to decode", %{load: load, transform: transform} do
     test = self()
 
-    # load =
-    #   Load.Persist.new!(
-    #     id: "load-1",
-    #     dataset_id: "ds1",
-    #     name: "fake-name",
-    #     source: "topic-c",
-    #     destination: "table-a",
-    #     schema: [
-    #       %Dictionary.Type.String{name: "name"},
-    #       %Dictionary.Type.Integer{name: "age"}
-    #     ]
-    #   )
-
     writer = fn msgs ->
       send(test, {:write, msgs})
       :ok
