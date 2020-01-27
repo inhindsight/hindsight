@@ -46,6 +46,8 @@ defmodule Transform.DeleteFields.V1 do
   use Definition.Schema
 
   def s do
-    schema(names: coll_of(spec(is_binary())))
+    schema(%Transform.DeleteFields{
+      names: coll_of(spec(is_binary()))
+    })
   end
 end
