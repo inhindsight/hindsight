@@ -1,4 +1,10 @@
 defmodule Transform.DeleteFields do
+  use Definition, schema: Transform.DeleteFields.V1
+
+  @type t :: %__MODULE__{
+          names: list(String.t())
+        }
+
   defstruct [:names]
 
   import Dictionary.Access, only: [key: 1]
@@ -14,9 +20,8 @@ defmodule Transform.DeleteFields do
     def transform_function(%{names: names}, _dictionary) do
       paths = convert_to_paths(names)
 
-      fn stream ->
-        stream
-        |> Stream.map(&delete_paths(paths, &1))
+      fn value ->
+        delete_paths(paths, value)
       end
       |> Ok.ok()
     end
@@ -34,5 +39,15 @@ defmodule Transform.DeleteFields do
         new_data
       end)
     end
+  end
+end
+
+defmodule Transform.DeleteFields.V1 do
+  use Definition.Schema
+
+  def s do
+    schema(%Transform.DeleteFields{
+      names: coll_of(spec(is_binary()))
+    })
   end
 end

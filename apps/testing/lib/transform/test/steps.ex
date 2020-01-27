@@ -11,13 +11,10 @@ defmodule Transform.Test.Steps do
       end
 
       def transform_function(%{from: from, to: to}, _dictionary) do
-        fn stream ->
-          stream
-          |> Stream.map(fn entry ->
-            entry
-            |> Map.put(to, Map.get(entry, from))
-            |> Map.delete(from)
-          end)
+        fn value ->
+          value
+          |> Map.put(to, Map.get(value, from))
+          |> Map.delete(from)
         end
         |> Ok.ok()
       end
@@ -47,9 +44,8 @@ defmodule Transform.Test.Steps do
       end
 
       def transform_function(%{transform: transform}, _dictionary) do
-        fn stream ->
-          stream
-          |> Stream.map(transform)
+        fn value ->
+          transform.(value)
         end
         |> Ok.ok()
       end
@@ -69,9 +65,8 @@ defmodule Transform.Test.Steps do
 
         case validate_struct(field, Dictionary.Type.Integer) do
           true ->
-            fn stream ->
-              stream
-              |> Stream.map(transform)
+            fn value ->
+              transform.(value)
             end
             |> Ok.ok()
 

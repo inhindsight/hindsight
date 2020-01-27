@@ -3,13 +3,13 @@ defmodule Broadcast.Stream.Store do
   @collection "streams"
 
   def persist(%Load.Broadcast{} = load) do
-    Brook.ViewState.merge(@collection, load.id, %{load: load})
+    Brook.ViewState.merge(@collection, load.id, %{"load" => load})
   end
 
   def get!(id) do
     case Brook.get!(@instance, @collection, id) do
       nil -> nil
-      map -> Map.get(map, :load)
+      map -> Map.get(map, "load")
     end
   end
 
@@ -19,6 +19,6 @@ defmodule Broadcast.Stream.Store do
 
   def get_all!() do
     Brook.get_all_values!(@instance, @collection)
-    |> Enum.map(&Map.get(&1, :load))
+    |> Enum.map(&Map.get(&1, "load"))
   end
 end

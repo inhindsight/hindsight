@@ -45,40 +45,36 @@ defmodule Transform.DeleteFieldsTest do
         names: ["birthdate", "spouse.nickname", "colors", "friends.age"]
       }
 
-      values = [
-        %{
-          "name" => "Gary",
-          "age" => 34,
-          "birthdate" => Date.new(2001, 01, 10) |> elem(1) |> Date.to_iso8601(),
-          "spouse" => %{
-            "name" => "Jennifer",
-            "age" => 32,
-            "nickname" => "Jenny"
-          },
-          "friends" => [
-            %{"name" => "Fred", "age" => 40},
-            %{"name" => "John", "age" => 30}
-          ]
-        }
-      ]
+      value = %{
+        "name" => "Gary",
+        "age" => 34,
+        "birthdate" => Date.new(2001, 01, 10) |> elem(1) |> Date.to_iso8601(),
+        "spouse" => %{
+          "name" => "Jennifer",
+          "age" => 32,
+          "nickname" => "Jenny"
+        },
+        "friends" => [
+          %{"name" => "Fred", "age" => 40},
+          %{"name" => "John", "age" => 30}
+        ]
+      }
 
       {:ok, function} = Transform.Step.transform_function(step, dictionary)
-      result = function.(values) |> Enum.to_list()
+      result = function.(value)
 
-      assert result == [
-               %{
-                 "name" => "Gary",
-                 "age" => 34,
-                 "spouse" => %{
-                   "name" => "Jennifer",
-                   "age" => 32
-                 },
-                 "friends" => [
-                   %{"name" => "Fred"},
-                   %{"name" => "John"}
-                 ]
-               }
-             ]
+      assert result == %{
+               "name" => "Gary",
+               "age" => 34,
+               "spouse" => %{
+                 "name" => "Jennifer",
+                 "age" => 32
+               },
+               "friends" => [
+                 %{"name" => "Fred"},
+                 %{"name" => "John"}
+               ]
+             }
     end
   end
 end

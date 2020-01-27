@@ -40,8 +40,13 @@ defmodule PlatformRunner.EndToEndTest do
           Transform.new!(
             id: "e2e-csv-tranform-1",
             dataset_id: "e2e-csv-ds",
-            dictionary: [],
-            steps: []
+            dictionary: [
+              Dictionary.Type.String.new!(name: "letter"),
+              Dictionary.Type.String.new!(name: "number")
+            ],
+            steps: [
+              Transform.RenameField.new!(from: "letter", to: "single_letter")
+            ]
           ),
         load: [
           Load.Broadcast.new!(
@@ -82,9 +87,9 @@ defmodule PlatformRunner.EndToEndTest do
                |> Enum.map(&Map.values(&1))
     end
 
-    assert_receive %{"letter" => "a", "number" => "1"}, 12_000
-    assert_receive %{"letter" => "b", "number" => "2"}, 1_000
-    assert_receive %{"letter" => "c", "number" => "3"}, 1_000
+    assert_receive %{"single_letter" => "a", "number" => "1"}, 12_000
+    assert_receive %{"single_letter" => "b", "number" => "2"}, 1_000
+    assert_receive %{"single_letter" => "c", "number" => "3"}, 1_000
 
     BroadcastClient.kill(pid)
 

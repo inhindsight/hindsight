@@ -12,13 +12,18 @@ defmodule Broadcast.Stream.Broadway do
   getter(:broadway_config, required: true)
   getter(:dlq, default: Broadcast.DLQ)
 
+  @type init_opts :: [
+          load: Load.Broadcast.t()
+        ]
+
+  @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(init_arg) do
     %Load.Broadcast{} = load = Keyword.fetch!(init_arg, :load)
     Logger.debug(fn -> "#{__MODULE__}: Starting for #{inspect(load)}" end)
 
-    config = setup_config(load)
-
-    with {:ok, pid} <- Broadway.start_link(__MODULE__, config) do
+    with {:ok, transformer} <- create_transformer(load.dataset_id),
+         config <- setup_config(load, transformer),
+         {:ok, pid} <- Broadway.start_link(__MODULE__, config) do
       :"#{load.source}"
       |> Broadcast.Stream.Registry.register_name(pid)
 
@@ -26,15 +31,19 @@ defmodule Broadcast.Stream.Broadway do
     end
   end
 
-  def handle_message(_processor, %Message{data: data} = message, %{load: load}) do
+  def handle_message(_processor, %Message{data: data} = message, %{
+        load: load,
+        transformer: transformer
+      }) do
     Logger.debug(fn -> "#{__MODULE__}: Received message: #{inspect(message)}" end)
 
-    with {:ok, decoded_value} <- Jason.decode(data.value) do
+    with {:ok, decoded_value} <- Jason.decode(data.value),
+         {:ok, transformed_value} <- transformer.(decoded_value) do
       Logger.debug(fn ->
         "#{__MODULE__}: Broadcasting to broadcast:#{load.destination}: #{inspect(decoded_value)}"
       end)
 
-      Endpoint.broadcast!("broadcast:#{load.destination}", "update", decoded_value)
+      Endpoint.broadcast!("broadcast:#{load.destination}", "update", transformed_value)
       message
     else
       {:error, reason} ->
@@ -51,11 +60,25 @@ defmodule Broadcast.Stream.Broadway do
     messages
   end
 
-  defp setup_config(load) do
+  defp create_transformer(dataset_id) do
+    case Broadcast.Transformations.get(dataset_id) do
+      {:ok, nil} ->
+        fn x -> Ok.ok(x) end |> Ok.ok()
+
+      {:ok, transform} ->
+        Transform.Steps.create_transformer(transform.steps, transform.dictionary)
+
+      result ->
+        result
+    end
+  end
+
+  defp setup_config(load, transformer) do
     Keyword.put(broadway_config(), :name, :"broadcast_broadway_#{load.source}")
     |> Keyword.update!(:producer, &update_producer(load, &1))
     |> Keyword.put(:context, %{
-      load: load
+      load: load,
+      transformer: transformer
     })
   end
 

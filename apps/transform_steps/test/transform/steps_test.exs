@@ -1,7 +1,7 @@
 defmodule Transform.StepsTest do
   use ExUnit.Case
 
-  describe "prepare" do
+  describe "transform_dictionary" do
     test "returns transformed dictionary" do
       steps = [
         %Transform.Test.Steps.SimpleRename{from: "name", to: "full_name"}
@@ -14,8 +14,7 @@ defmodule Transform.StepsTest do
         ]
         |> Dictionary.from_list()
 
-      assert {:ok, transformer} = Transform.Steps.create_transformer(steps, dictionary)
-      result = Transform.Steps.outgoing_dictionary(transformer)
+      assert {:ok, result} = Transform.Steps.transform_dictionary(steps, dictionary)
 
       assert result ==
                [
@@ -38,7 +37,7 @@ defmodule Transform.StepsTest do
         ]
         |> Dictionary.from_list()
 
-      assert {:error, "failed"} = Transform.Steps.create_transformer(steps, dictionary)
+      assert {:error, "failed"} = Transform.Steps.transform_dictionary(steps, dictionary)
     end
   end
 
@@ -58,15 +57,12 @@ defmodule Transform.StepsTest do
         ]
         |> Dictionary.from_list()
 
-      stream = [%{"name" => "joe", "age" => 10}, %{"name" => "bob", "age" => 27}]
+      value = %{"name" => "joe", "age" => 10}
 
       assert {:ok, transformer} = Transform.Steps.create_transformer(steps, dictionary)
-      assert {:ok, stream} = Transform.Steps.transform(transformer, stream)
+      assert {:ok, transformed_value} = transformer.(value)
 
-      assert Enum.to_list(stream) == [
-               %{"name" => "joe", "years_alive" => 20},
-               %{"name" => "bob", "years_alive" => 54}
-             ]
+      assert transformed_value == %{"name" => "joe", "years_alive" => 20}
     end
 
     test "ensure correct dictionary is given to each step" do
@@ -86,15 +82,12 @@ defmodule Transform.StepsTest do
         ]
         |> Dictionary.from_list()
 
-      stream = [%{"name" => "joe", "age" => 10}, %{"name" => "bob", "age" => 27}]
+      value = %{"name" => "joe", "age" => 10}
 
       assert {:ok, transformer} = Transform.Steps.create_transformer(steps, dictionary)
-      assert {:ok, stream} = Transform.Steps.transform(transformer, stream)
+      assert {:ok, transformed_value} = transformer.(value)
 
-      assert Enum.to_list(stream) == [
-               %{"name" => "joe", "some_number" => 20},
-               %{"name" => "bob", "some_number" => 54}
-             ]
+      assert transformed_value == %{"name" => "joe", "some_number" => 20}
     end
   end
 end

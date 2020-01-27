@@ -79,7 +79,7 @@ defmodule Transform.RenameFieldTest do
 
       {:ok, function} = Transform.Step.transform_function(step, dictionary)
 
-      [transformed_data] = function.([data]) |> Enum.to_list()
+      transformed_data = function.(data)
       keyed_expected_path = Enum.map(expected_path, &key/1)
       assert expected == get_in(transformed_data, keyed_expected_path)
 
