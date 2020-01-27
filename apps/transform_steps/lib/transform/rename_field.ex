@@ -2,9 +2,9 @@ defmodule Transform.RenameField do
   use Definition, schema: Transform.RenameField.V1
 
   @type t :: %__MODULE__{
-    from: list(String.t()),
-    to: list(String.t())
-  }
+          from: String.t(),
+          to: String.t()
+        }
 
   defstruct [:from, :to]
 
@@ -20,12 +20,9 @@ defmodule Transform.RenameField do
       from_path = to_path(from)
       to_path = List.replace_at(from_path, -1, key(to))
 
-      fn stream ->
-        stream
-        |> Enum.map(fn entry ->
-          {value, updated_entry} = get_and_update_in(entry, from_path, fn _ -> :pop end)
-          put_in(updated_entry, to_path, value)
-        end)
+      fn entry ->
+        {value, updated_entry} = get_and_update_in(entry, from_path, fn _ -> :pop end)
+        put_in(updated_entry, to_path, value)
       end
       |> Ok.ok()
     end
@@ -53,8 +50,8 @@ defmodule Transform.RenameField.V1 do
 
   def s do
     schema(%Transform.RenameField{
-      from: coll_of(spec(is_binary())),
-      to: coll_of(spec(is_binary()))
+      from: required_string(),
+      to: required_string()
     })
   end
 end

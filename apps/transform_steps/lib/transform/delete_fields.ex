@@ -20,9 +20,8 @@ defmodule Transform.DeleteFields do
     def transform_function(%{names: names}, _dictionary) do
       paths = convert_to_paths(names)
 
-      fn stream ->
-        stream
-        |> Stream.map(&delete_paths(paths, &1))
+      fn value ->
+        delete_paths(paths, value)
       end
       |> Ok.ok()
     end
