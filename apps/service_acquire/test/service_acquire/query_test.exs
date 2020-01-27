@@ -11,7 +11,8 @@ defmodule Acquire.QueryTest do
         [%{}, {"SELECT * FROM a__b", []}],
         [%{"fields" => "c,d"}, {"SELECT c,d FROM a__b", []}],
         [%{"filter" => "c=1"}, {"SELECT * FROM a__b WHERE c=?", ["1"]}],
-        [%{"filter" => "c=1,d=2"}, {"SELECT * FROM a__b WHERE c=? AND d=?", ["1", "2"]}]
+        [%{"filter" => "c=1,d=2"}, {"SELECT * FROM a__b WHERE c=? AND d=?", ["1", "2"]}],
+        [%{"limit" => "10"}, {"SELECT * FROM a__b LIMIT 10", []}]
       ]
     end
   end
