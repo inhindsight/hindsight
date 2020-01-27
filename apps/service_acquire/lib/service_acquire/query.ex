@@ -3,7 +3,7 @@ defmodule Acquire.Query do
 
   @type statement :: String.t()
 
-  @spec from_params(params :: map) :: {:ok, statement} | {:error, term}
+  @spec from_params(params :: map) :: {statement, list}
   def from_params(%{"dataset" => dataset} = params) do
     subset = Map.get(params, "subset", "default")
     fields = Map.get(params, "fields", "*")
