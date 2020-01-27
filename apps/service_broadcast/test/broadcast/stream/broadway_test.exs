@@ -5,6 +5,8 @@ defmodule Broadcast.Stream.BroadwayTest do
 
   alias Writer.DLQ.DeadLetter
 
+  @instance Broadcast.Application.instance()
+
   Temp.Env.modify([
     %{
       app: :service_broadcast,
@@ -57,6 +59,49 @@ defmodule Broadcast.Stream.BroadwayTest do
     leave(socket)
   end
 
+  test "transforms message before sending it to channel" do
+    transform = Transform.new!(
+      id: "transform-1",
+      dataset_id: "ds1",
+      dictionary: [
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
+      ],
+      steps: [
+        Transform.RenameField.new!(from: "name", to: "fullname")
+      ]
+    )
+
+    Brook.Test.with_event(@instance, fn ->
+      Broadcast.Transformations.persist(transform)
+    end)
+
+    load =
+      Load.Broadcast.new!(
+        id: "load-1",
+        dataset_id: "ds1",
+        name: "fake-ds",
+        source: "topic-1",
+        destination: "channel-2"
+      )
+
+    {:ok, _, socket} =
+      socket(BroadcastWeb.UserSocket, %{}, %{})
+      |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:channel-2", %{})
+
+    {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
+
+    value = %{"name" => "Johnny Appleseed", "age" => 110} |> Jason.encode!()
+    message = %{topic: "topic-1", value: value}
+    msg_ref = Broadway.test_messages(pid, [message])
+
+    assert_push "update", %{"fullname" => "Johnny Appleseed", "age" => 110}, 2_000
+    assert_receive {:ack, ^msg_ref, [message] = _successful, _failed}, 1_000
+
+    assert_down(pid)
+    leave(socket)
+  end
+
   test "fails message if unable to decode" do
     load =
       Load.Broadcast.new!(
@@ -103,6 +148,35 @@ defmodule Broadcast.Stream.BroadwayTest do
     assert pid == Broadcast.Stream.Registry.whereis(:"topic-3")
 
     assert_down(pid)
+  end
+
+  test "start-link returns error tuple if unable to create transformer" do
+    transform = Transform.new!(
+      id: "transform-1",
+      dataset_id: "ds1",
+      dictionary: [
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
+      ],
+      steps: [
+        %Transform.Test.Steps.Error{error: "failed"}
+      ]
+    )
+
+    Brook.Test.with_event(@instance, fn ->
+      Broadcast.Transformations.persist(transform)
+    end)
+
+    load =
+      Load.Broadcast.new!(
+        id: "load-1",
+        dataset_id: "ds1",
+        name: "fake-ds",
+        source: "topic-1",
+        destination: "channel-2"
+      )
+
+    assert {:error, "failed"} == Broadcast.Stream.Broadway.start_link(load: load)
   end
 
   defp assert_down(pid) do
