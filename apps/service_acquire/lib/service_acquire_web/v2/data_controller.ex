@@ -6,7 +6,7 @@ defmodule AcquireWeb.V2.DataController do
 
   def select(conn, params) do
     {:ok, result} =
-      Acquire.Query.translate(params)
+      Acquire.Query.from_params(params)
       |> Ok.map(fn s -> presto_client().execute(s) end)
 
     json(conn, result)
