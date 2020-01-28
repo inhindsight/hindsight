@@ -31,11 +31,14 @@ defmodule Persist.WriterTest do
           name: "bobby",
           source: "topic-1",
           destination: "table_bobby",
-          schema: [
-            %Dictionary.Type.String{name: "name"},
-            %Dictionary.Type.Integer{name: "age"}
-          ]
+          schema: []
         )
+
+      dictionary =
+        Dictionary.from_list([
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ])
 
       Writer.PrestoMock
       |> expect(:start_link, fn arg ->
@@ -43,7 +46,7 @@ defmodule Persist.WriterTest do
         {:ok, :pid}
       end)
 
-      assert {:ok, :pid} = Persist.Writer.start_link(load: load)
+      assert {:ok, :pid} = Persist.Writer.start_link(load: load, dictionary: dictionary)
 
       assert_receive {:start_link, init_arg}
       assert "http://localhost:8080" == Keyword.get(init_arg, :url)
@@ -69,17 +72,18 @@ defmodule Persist.WriterTest do
     end
 
     test "will send message to presto writer" do
-      schema = [
-        %Dictionary.Type.String{name: "name"},
-        %Dictionary.Type.Integer{name: "age"}
-      ]
+      dictionary =
+        Dictionary.from_list([
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ])
 
       messages = [
         %{"name" => "john", "age" => 21},
         %{"name" => "kelly", "age" => 43}
       ]
 
-      assert :ok = Persist.Writer.write(:pid, messages, schema: schema)
+      assert :ok = Persist.Writer.write(:pid, messages, dictionary: dictionary)
 
       expected = [
         ["'john'", 21],
@@ -90,27 +94,28 @@ defmodule Persist.WriterTest do
     end
 
     test "will support hierarchichal data" do
-      schema = [
-        Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age"),
-        Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String),
-        Dictionary.Type.Map.new!(
-          name: "spouse",
-          dictionary: [
-            Dictionary.Type.String.new!(name: "name"),
-            Dictionary.Type.Integer.new!(name: "age"),
-            Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String)
-          ]
-        ),
-        Dictionary.Type.List.new!(
-          name: "friends",
-          item_type: Dictionary.Type.Map,
-          dictionary: [
-            Dictionary.Type.String.new!(name: "name"),
-            Dictionary.Type.Integer.new!(name: "age")
-          ]
-        )
-      ]
+      dictionary =
+        Dictionary.from_list([
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age"),
+          Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String),
+          Dictionary.Type.Map.new!(
+            name: "spouse",
+            dictionary: [
+              Dictionary.Type.String.new!(name: "name"),
+              Dictionary.Type.Integer.new!(name: "age"),
+              Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String)
+            ]
+          ),
+          Dictionary.Type.List.new!(
+            name: "friends",
+            item_type: Dictionary.Type.Map,
+            dictionary: [
+              Dictionary.Type.String.new!(name: "name"),
+              Dictionary.Type.Integer.new!(name: "age")
+            ]
+          )
+        ])
 
       messages = [
         %{
@@ -122,7 +127,7 @@ defmodule Persist.WriterTest do
         }
       ]
 
-      assert :ok = Persist.Writer.write(:pid, messages, schema: schema)
+      assert :ok = Persist.Writer.write(:pid, messages, dictionary: dictionary)
 
       expected = [
         [

@@ -6,6 +6,12 @@ defmodule BroadcastTest do
 
   @instance Broadcast.Application.instance()
 
+  setup do
+    Brook.Test.clear_view_state(@instance, "transformations")
+
+    :ok
+  end
+
   test "sending #{load_broadcast_start()} will stream data to channel" do
     load =
       Load.Broadcast.new!(

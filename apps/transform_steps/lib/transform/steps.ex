@@ -8,7 +8,7 @@ defmodule Transform.Steps do
             dictionary: nil
 
   @spec transform_dictionary([Transform.Step.t()], Dictionary.t()) ::
-          {:ok, Dictionary, t()} | {:error, term}
+          {:ok, Dictionary.t()} | {:error, term}
   def transform_dictionary(steps, dictionary) do
     Ok.reduce(steps, dictionary, fn step, acc ->
       Transform.Step.transform_dictionary(step, acc)
@@ -41,10 +41,5 @@ defmodule Transform.Steps do
   def transform(%__MODULE__{function: function}, value) do
     function.(value)
     |> Ok.ok()
-  end
-
-  @spec outgoing_dictionary(t) :: Dictionary.t()
-  def outgoing_dictionary(steps) do
-    Map.get(steps, :dictionary)
   end
 end

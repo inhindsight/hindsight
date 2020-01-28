@@ -12,7 +12,8 @@ defmodule Persist.Load.Broadway do
   getter(:dlq, default: Persist.DLQ)
 
   @type init_opts :: [
-          load: %Load.Persist{},
+          load: Load.Persist.t(),
+          transform: Transform.t(),
           writer: (list -> :ok | {:error, term})
         ]
 
@@ -20,12 +21,15 @@ defmodule Persist.Load.Broadway do
   def start_link(init_arg) do
     Logger.debug(fn -> "#{__MODULE__}: start_link is invoked" end)
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
+    transform = Keyword.fetch!(init_arg, :transform)
     writer = Keyword.fetch!(init_arg, :writer)
 
-    config = setup_config(load, writer)
+    with {:ok, transformer} = create_transformer(transform) do
+      config = setup_config(load, transformer, writer)
 
-    Logger.debug(fn -> "#{__MODULE__}: calling Broadway.start_link" end)
-    Broadway.start_link(__MODULE__, config)
+      Logger.debug(fn -> "#{__MODULE__}: calling Broadway.start_link" end)
+      Broadway.start_link(__MODULE__, config)
+    end
   end
 
   @impl Broadway
@@ -33,8 +37,8 @@ defmodule Persist.Load.Broadway do
     Logger.debug(fn -> "#{__MODULE__}: handling message #{inspect(message)}" end)
 
     with {:ok, decoded_data} <- Jason.decode(data.value),
-         {:ok, normalized_data} <- Dictionary.normalize(context.load.schema, decoded_data) do
-      Message.update_data(message, fn _ -> normalized_data end)
+         {:ok, transformed_data} <- context.transformer.(decoded_data) do
+      Message.update_data(message, fn _ -> transformed_data end)
     else
       {:error, reason} ->
         Message.update_data(message, &to_dead_letter(context.load, &1, reason))
@@ -67,12 +71,17 @@ defmodule Persist.Load.Broadway do
     )
   end
 
-  defp setup_config(load, writer) do
+  defp create_transformer(transform) do
+    Transform.Steps.create_transformer(transform.steps, transform.dictionary)
+  end
+
+  defp setup_config(load, transformer, writer) do
     Keyword.put(broadway_config(), :name, :"persist_broadway_#{load.source}")
     |> Keyword.update!(:producer, &update_producer(load, &1))
     |> Keyword.put(:context, %{
       load: load,
-      writer: writer
+      writer: writer,
+      transformer: transformer
     })
   end
 

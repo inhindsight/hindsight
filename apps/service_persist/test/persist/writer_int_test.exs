@@ -25,28 +25,29 @@ defmodule Persist.WriterIntTest do
   end
 
   test "can write data to presto" do
-    schema = [
-      Dictionary.Type.String.new!(name: "name"),
-      Dictionary.Type.Integer.new!(name: "age"),
-      Dictionary.Type.Date.new!(name: "birthdate", format: "%0m/%0d/%Y"),
-      Dictionary.Type.Timestamp.new!(name: "arrival_time", format: "%0m/%0d/%Y %0H:%0M:%0S"),
-      Dictionary.Type.Map.new!(
-        name: "spouse",
-        dictionary: [
-          Dictionary.Type.String.new!(name: "name"),
-          Dictionary.Type.Integer.new!(name: "age")
-        ]
-      ),
-      Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String),
-      Dictionary.Type.List.new!(
-        name: "friends",
-        item_type: Dictionary.Type.Map,
-        dictionary: [
-          Dictionary.Type.String.new!(name: "name"),
-          Dictionary.Type.Integer.new!(name: "age")
-        ]
-      )
-    ]
+    dictionary =
+      Dictionary.from_list([
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age"),
+        Dictionary.Type.Date.new!(name: "birthdate", format: "%0m/%0d/%Y"),
+        Dictionary.Type.Timestamp.new!(name: "arrival_time", format: "%0m/%0d/%Y %0H:%0M:%0S"),
+        Dictionary.Type.Map.new!(
+          name: "spouse",
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "age")
+          ]
+        ),
+        Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String),
+        Dictionary.Type.List.new!(
+          name: "friends",
+          item_type: Dictionary.Type.Map,
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Integer.new!(name: "age")
+          ]
+        )
+      ])
 
     message = %{
       "name" => "johnny",
@@ -73,11 +74,11 @@ defmodule Persist.WriterIntTest do
         name: "testing",
         source: "topic-a",
         destination: "table2",
-        schema: schema
+        schema: []
       )
 
-    assert {:ok, pid} = Persist.Writer.start_link(load: persist)
-    assert :ok = Persist.Writer.write(pid, [message], schema: schema)
+    assert {:ok, pid} = Persist.Writer.start_link(load: persist, dictionary: dictionary)
+    assert :ok = Persist.Writer.write(pid, [message], dictionary: dictionary)
 
     session =
       Prestige.new_session(
