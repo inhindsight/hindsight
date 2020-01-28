@@ -14,7 +14,7 @@ defmodule Writer.Presto do
 
   @impl Writer
   def write(server, messages, opts \\ []) do
-    GenServer.call(server, {:write, messages, opts})
+    GenServer.call(server, {:write, messages, opts}, 30_000)
   end
 
   @impl GenServer

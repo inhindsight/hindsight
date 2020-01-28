@@ -24,6 +24,7 @@ defmodule Persist.WriterIntTest do
     :ok
   end
 
+  @tag timeout: :infinity
   test "can write data to presto" do
     dictionary =
       Dictionary.from_list([
@@ -31,6 +32,8 @@ defmodule Persist.WriterIntTest do
         Dictionary.Type.Integer.new!(name: "age"),
         Dictionary.Type.Date.new!(name: "birthdate", format: "%0m/%0d/%Y"),
         Dictionary.Type.Timestamp.new!(name: "arrival_time", format: "%0m/%0d/%Y %0H:%0M:%0S"),
+        Dictionary.Type.Longitude.new!(name: "longitude"),
+        Dictionary.Type.Latitude.new!(name: "latitude"),
         Dictionary.Type.Map.new!(
           name: "spouse",
           dictionary: [
@@ -54,6 +57,8 @@ defmodule Persist.WriterIntTest do
       "birthdate" => "1999-02-23",
       "arrival_time" => "2020-01-02T05:12:24",
       "age" => 21,
+      "longitude" => 150.0102687,
+      "latitude" => 76.1234567,
       "spouse" => %{
         "name" => "shirley",
         "age" => 22
