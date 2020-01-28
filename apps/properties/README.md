@@ -13,6 +13,11 @@ which creates a getter function, named for the supplied key,
 you can call within the body of the module to return the
 current value assigned to that key.
 
+==> it is important to note that `get_config_value/2` is <==
+==> only available at compile time and should be avoided <==
+==> in favor of `getter/2` whenever possible             <==
+
+
 Both macros allow you to specify default values and whether
 or not the requested key should be required and handles either
 scenario accordingly.
