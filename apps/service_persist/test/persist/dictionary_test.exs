@@ -19,6 +19,14 @@ defmodule Persist.DictionaryTest do
         %Result{name: "date", type: "date"}
       ],
       [
+        Dictionary.Type.Longitude.new!(name: "longitude"),
+        %Result{name: "longitude", type: "double"}
+      ],
+      [
+        Dictionary.Type.Latitude.new!(name: "latitude"),
+        %Result{name: "latitude", type: "double"}
+      ],
+      [
         Dictionary.Type.Map.new!(
           name: "spouse",
           dictionary: [

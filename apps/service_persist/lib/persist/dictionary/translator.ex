@@ -58,6 +58,26 @@ defmodule Persist.Dictionary do
     end
   end
 
+  defimpl Translator, for: Dictionary.Type.Longitude do
+    def translate_type(%{name: name}) do
+      %Result{name: name, type: "double"}
+    end
+
+    def translate_value(_field, value) do
+      value
+    end
+  end
+
+  defimpl Translator, for: Dictionary.Type.Latitude do
+    def translate_type(%{name: name}) do
+      %Result{name: name, type: "double"}
+    end
+
+    def translate_value(_field, value) do
+      value
+    end
+  end
+
   defimpl Translator, for: Dictionary.Type.Map do
     def translate_type(%{name: name, dictionary: dictionary}) do
       row_def =

@@ -125,13 +125,13 @@ defmodule PersistTest do
 
     Brook.Test.send(@instance, load_persist_start(), "testing", load)
 
-    assert_async do
+    assert_async max_tries: 20 do
       assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
     end
 
     Brook.Test.send(@instance, load_persist_end(), "testing", load)
 
-    assert_async do
+    assert_async max_tries: 20 do
       assert :undefined == Persist.Load.Registry.whereis(:"#{load.source}")
     end
 
