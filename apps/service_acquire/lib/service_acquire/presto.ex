@@ -5,7 +5,7 @@ defmodule Acquire.Presto do
   @type statement :: String.t()
   @type result :: map
 
-  @callback execute(statement, list) :: {:ok, [result]} | {:error, term}
+  @callback execute(statement, list) :: Ok.result()
 end
 
 defmodule Acquire.Presto.Client do
