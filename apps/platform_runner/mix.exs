@@ -29,6 +29,7 @@ defmodule PlatformRunner.MixProject do
       {:service_gather, in_umbrella: true},
       {:service_broadcast, in_umbrella: true},
       {:service_persist, in_umbrella: true},
+      {:service_acquire, in_umbrella: true},
       {:service_orchestrate, in_umbrella: true},
       {:divo, "~> 1.1"},
       {:websockex, "~> 0.4.0"},
