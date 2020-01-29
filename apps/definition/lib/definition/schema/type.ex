@@ -7,7 +7,7 @@ defmodule Definition.Schema.Type do
   import Norm
   import Definition.Schema.Validation
 
-  @type spec :: %Norm.Spec{} | %Norm.Spec.And{} | %Norm.Spec.Or{}
+  @type spec :: %Norm.Spec{} | %Norm.Spec.And{} | %Norm.Spec.Or{} | %Norm.Spec.Union{}
 
   @spec required_string() :: spec
   def required_string do
@@ -31,5 +31,10 @@ defmodule Definition.Schema.Type do
       %m{} -> m == module
       _ -> false
     end)
+  end
+
+  @spec access_path() :: spec
+  def access_path() do
+    one_of([spec(is_binary()), coll_of(spec(is_binary()))])
   end
 end

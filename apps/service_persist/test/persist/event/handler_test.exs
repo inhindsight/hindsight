@@ -15,7 +15,7 @@ defmodule Persist.Event.HandlerTest do
           Dictionary.Type.Integer.new!(name: "age")
         ],
         steps: [
-          Transform.RenameField.new!(from: "name", to: "fullname")
+          Transformer.MoveField.new!(from: "name", to: "fullname")
         ]
       )
 

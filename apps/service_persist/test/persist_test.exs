@@ -48,12 +48,11 @@ defmodule PersistTest do
           %Dictionary.Type.Integer{name: "age"}
         ],
         steps: [
-          Transform.RenameField.new!(from: "name", to: "fullname")
+          Transformer.MoveField.new!(from: "name", to: "fullname")
         ]
       )
 
-    {:ok, dictionary} =
-      Transform.Steps.transform_dictionary(transform.steps, transform.dictionary)
+    {:ok, dictionary} = Transformer.transform_dictionary(transform.steps, transform.dictionary)
 
     Brook.Test.with_event(@instance, fn ->
       Persist.Transformations.persist(transform)
@@ -81,7 +80,7 @@ defmodule PersistTest do
 
     Brook.Test.send(@instance, load_persist_start(), "testing", load)
 
-    assert_async do
+    assert_async max_tries: 20 do
       assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
     end
 
@@ -93,7 +92,7 @@ defmodule PersistTest do
 
     ref = Broadway.test_messages(broadway, messages)
 
-    assert_receive {:write, [["'bob'", 12]], [dictionary: ^dictionary]}
+    assert_receive {:write, [[12, "'bob'"]], [dictionary: ^dictionary]}
     assert_receive {:ack, ^ref, success, failed}
     assert 1 == length(success)
 
@@ -125,7 +124,7 @@ defmodule PersistTest do
 
     Brook.Test.send(@instance, load_persist_start(), "testing", load)
 
-    assert_async max_tries: 20 do
+    assert_async max_tries: 40 do
       assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
     end
 

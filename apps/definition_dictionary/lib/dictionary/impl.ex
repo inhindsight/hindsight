@@ -58,6 +58,7 @@ defmodule Dictionary.Impl do
       |> Map.put(new_name, {index, new_field})
     end)
     |> Map.put(:ordered, new_ordered)
+    |> Map.put(:size, length(new_ordered))
   end
 
   @spec delete_field(t, String.t()) :: t
@@ -99,6 +100,27 @@ defmodule Dictionary.Impl do
     field = get_field(data, key)
     {field, delete_field(data, key)}
   end
+
+  @spec validate_field(
+          t,
+          String.t() | [String.t()] | [Dictionary.Access.access_fun()],
+          module
+        ) :: :ok | {:error, term}
+  def validate_field(dictionary, path, type) do
+    value = get_in(dictionary, path)
+
+    case struct?(type, value) do
+      true ->
+        :ok
+
+      false ->
+        reason = :"invalid_#{Dictionary.Type.to_string(type)}"
+        {:error, reason}
+    end
+  end
+
+  defp struct?(struct_module, %struct_module{}), do: true
+  defp struct?(_, _), do: false
 
   defimpl Collectable, for: __MODULE__ do
     def into(original) do

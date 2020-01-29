@@ -22,6 +22,7 @@ defmodule Dictionary do
   defdelegate get_field(dictionary, name), to: Dictionary.Impl
   defdelegate update_field(dictionary, name, field_or_function), to: Dictionary.Impl
   defdelegate delete_field(dictionary, name), to: Dictionary.Impl
+  defdelegate validate_field(dictionary, path, type), to: Dictionary.Impl
 
   @doc """
   Encode a list of dictionary fields to json format.

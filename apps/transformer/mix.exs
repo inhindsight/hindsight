@@ -1,9 +1,9 @@
-defmodule TransformSteps.MixProject do
+defmodule Transformer.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :transform_steps,
+      app: :transformer,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -27,7 +27,8 @@ defmodule TransformSteps.MixProject do
     [
       {:ok, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 

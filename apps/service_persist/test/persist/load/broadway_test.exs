@@ -29,7 +29,7 @@ defmodule Persist.Load.BroadwayTest do
           %Dictionary.Type.Integer{name: "age"}
         ],
         steps: [
-          Transform.RenameField.new!(from: "name", to: "fullname")
+          Transformer.MoveField.new!(from: "name", to: "fullname")
         ]
       )
 

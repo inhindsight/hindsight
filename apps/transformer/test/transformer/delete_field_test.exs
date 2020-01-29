@@ -1,5 +1,6 @@
-defmodule Transform.DeleteFieldsTest do
+defmodule Transformer.DeleteFieldTest do
   use ExUnit.Case
+  import Checkov
 
   setup do
     dictionary =
@@ -29,20 +30,27 @@ defmodule Transform.DeleteFieldsTest do
   end
 
   describe "transform_dictionary" do
-    test "removes fields from the dictionary", %{dictionary: dictionary} do
-      step = %Transform.DeleteFields{names: ["birthdate", "spouse.nickname", "friends.age"]}
-      assert {:ok, new_dict} = Transform.Step.transform_dictionary(step, dictionary)
+    data_test "removes fields from the dictionary", %{dictionary: dictionary} do
+      step = Transformer.DeleteField.new!(name: name)
+      assert {:ok, new_dict} = Transformer.Step.transform_dictionary(step, dictionary)
 
-      assert nil == Dictionary.get_field(new_dict, "birthdate")
-      assert nil == get_in(new_dict, ["spouse", "nickname"])
-      assert nil == get_in(new_dict, ["friends", "age"])
+      path = Dictionary.Access.to_access_path(name)
+
+      assert nil == get_in(new_dict, path)
+
+      where([
+        [:name],
+        ["birthdate"],
+        [["spouse", "nickname"]],
+        [["friends", "age"]]
+      ])
     end
   end
 
-  describe "transform_function" do
-    test "will delete the configured fields from the payload", %{dictionary: dictionary} do
-      step = %Transform.DeleteFields{
-        names: ["birthdate", "spouse.nickname", "colors", "friends.age"]
+  describe "create_function" do
+    data_test "will delete the configured fields from the payload", %{dictionary: dictionary} do
+      step = %Transformer.DeleteField{
+        name: name
       }
 
       value = %{
@@ -60,21 +68,19 @@ defmodule Transform.DeleteFieldsTest do
         ]
       }
 
-      {:ok, function} = Transform.Step.transform_function(step, dictionary)
-      result = function.(value)
+      path = Dictionary.Access.to_access_path(name)
 
-      assert result == %{
-               "name" => "Gary",
-               "age" => 34,
-               "spouse" => %{
-                 "name" => "Jennifer",
-                 "age" => 32
-               },
-               "friends" => [
-                 %{"name" => "Fred"},
-                 %{"name" => "John"}
-               ]
-             }
+      {:ok, function} = Transformer.Step.create_function(step, dictionary)
+      {:ok, result} = function.(value)
+
+      {_, expected} = pop_in(value, path)
+
+      assert result == expected
+
+      where([
+        [:name],
+        ["birthdate"]
+      ])
     end
   end
 end

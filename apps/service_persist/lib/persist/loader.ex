@@ -2,6 +2,7 @@ defmodule Persist.Loader do
   use GenServer
   use Annotated.Retry
   use Properties, otp_app: :service_persist
+  require Logger
 
   @max_retries get_config_value(:max_retries, default: 10)
 
@@ -25,6 +26,7 @@ defmodule Persist.Loader do
   def init(init_arg) do
     Process.flag(:trap_exit, true)
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
+    Logger.debug(fn -> "#{__MODULE__}: initializied for #{inspect(load)}" end)
 
     with {:ok, transform} when not is_nil(transform) <- Transformations.get(load.dataset_id),
          {:ok, dictionary} <- transform_dictionary(transform),
@@ -49,7 +51,7 @@ defmodule Persist.Loader do
   end
 
   defp transform_dictionary(transform) do
-    Transform.Steps.transform_dictionary(transform.steps, transform.dictionary)
+    Transformer.transform_dictionary(transform.steps, transform.dictionary)
   end
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
