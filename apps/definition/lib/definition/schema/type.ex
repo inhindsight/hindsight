@@ -32,4 +32,9 @@ defmodule Definition.Schema.Type do
       _ -> false
     end)
   end
+
+  @spec access_path() :: spec
+  def access_path() do
+    one_of([spec(is_binary()), coll_of(spec(is_binary()))])
+  end
 end
