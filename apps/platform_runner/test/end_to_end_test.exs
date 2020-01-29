@@ -111,7 +111,10 @@ defmodule PlatformRunner.EndToEndTest do
     end
 
     expected = %{"single_letter" => "b"}
-    assert {:ok, [^expected]} = AcquireClient.data("/e2e/csv?fields=single_letter&filter=number=2")
+
+    assert {:ok, [^expected]} =
+             AcquireClient.data("/e2e/csv?fields=single_letter&filter=number=2")
+
     assert {:ok, [_, _]} = AcquireClient.data("/e2e/csv?limit=2")
   end
 

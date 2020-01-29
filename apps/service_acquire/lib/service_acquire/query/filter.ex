@@ -35,6 +35,7 @@ defmodule Acquire.Query.Filter do
   defp parse_boundary(%{"boundary" => boundary}) do
     bbox =
       String.split(boundary, ",", trim: true)
+      |> Enum.map(&String.trim/1)
       |> Enum.map(&String.to_float/1)
 
     input = "ST_LineString(array[ST_Point(?, ?), ST_Point(?, ?)])"
