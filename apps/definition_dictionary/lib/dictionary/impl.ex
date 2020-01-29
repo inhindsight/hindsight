@@ -101,6 +101,19 @@ defmodule Dictionary.Impl do
     {field, delete_field(data, key)}
   end
 
+  def validate_field(dictionary, path, type) do
+    value = get_in(dictionary, path)
+    case struct?(type, value) do
+      true -> :ok
+      false ->
+        reason = :"invalid_#{Dictionary.Type.to_string(type)}"
+        {:error, reason}
+    end
+  end
+
+  defp struct?(struct_module, %struct_module{}), do: true
+  defp struct?(_, _), do: false
+
   defimpl Collectable, for: __MODULE__ do
     def into(original) do
       collector_fun = fn
