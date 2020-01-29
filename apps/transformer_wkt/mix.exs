@@ -1,9 +1,9 @@
-defmodule Transform.WKT.MixProject do
+defmodule Transformer.WKT.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :transform_wkt,
+      app: :transformer_wkt,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
