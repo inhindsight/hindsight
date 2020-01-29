@@ -103,8 +103,11 @@ defmodule Dictionary.Impl do
 
   def validate_field(dictionary, path, type) do
     value = get_in(dictionary, path)
+
     case struct?(type, value) do
-      true -> :ok
+      true ->
+        :ok
+
       false ->
         reason = :"invalid_#{Dictionary.Type.to_string(type)}"
         {:error, reason}
