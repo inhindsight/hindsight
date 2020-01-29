@@ -31,7 +31,6 @@ defmodule Transformer.DeleteFieldTest do
 
   describe "transform_dictionary" do
     data_test "removes fields from the dictionary", %{dictionary: dictionary} do
-      # step = %Transformer.DeleteField{name: ["birthdate", "spouse.nickname", "friends.age"]}
       step = Transformer.DeleteField.new!(name: name)
       assert {:ok, new_dict} = Transformer.Step.transform_dictionary(step, dictionary)
 
@@ -51,7 +50,6 @@ defmodule Transformer.DeleteFieldTest do
   describe "create_function" do
     data_test "will delete the configured fields from the payload", %{dictionary: dictionary} do
       step = %Transformer.DeleteField{
-        # name: ["birthdate", "spouse.nickname", "colors", "friends.age"]
         name: name
       }
 
