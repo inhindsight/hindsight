@@ -6,13 +6,20 @@ defmodule Dictionary.Type do
     type
     |> Kernel.to_string()
     |> String.split(".")
-    |> List.last()
+    |> Enum.drop(3)
+    |> Enum.join("_")
     |> String.downcase()
   end
 
   @spec from_string(String.t()) :: {:ok, module} | {:error, term}
   def from_string(string) when is_binary(string) do
-    with module <- :"Elixir.Dictionary.Type.#{String.capitalize(string)}",
+    suffix =
+      string
+      |> String.split("_")
+      |> Enum.map(&String.capitalize/1)
+      |> Enum.join(".")
+
+    with module <- :"Elixir.Dictionary.Type.#{suffix}",
          {:module, _} <- Code.ensure_loaded(module),
          {:struct?, true} <- {:struct?, function_exported?(module, :__struct__, 0)} do
       Ok.ok(module)
