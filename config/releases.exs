@@ -22,7 +22,6 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-# SERVICE_GATHER
 kafka_endpoints =
   System.get_env("KAFKA_ENDPOINTS", "localhost:9092")
   |> String.split(",")
@@ -30,6 +29,34 @@ kafka_endpoints =
   |> Enum.map(fn entry -> String.split(entry, ":") end)
   |> Enum.map(fn [host, port] -> {String.to_atom(host), String.to_integer(port)} end)
 
+# SERVICE_RECEIVE
+config :service_receive, Receive.Application,
+  brook: [
+    driver: [
+      module: Brook.Driver.Kafka,
+      init_arg: [
+        endpoints: kafka_endpoints,
+        topic: "event-stream",
+        group: "receive-event-stream",
+        consumer_config: [
+          begin_offset: :earliest,
+          offset_reset_policy: :reset_to_earliest
+        ]
+      ]
+    ],
+    handlers: [Receive.Event.Handler],
+    storage: [
+      module: Brook.Storage.Ets,
+      init_arg: []
+    ],
+    dispatcher: Brook.Dispatcher.Noop
+  ]
+
+config :service_receive, Receive.Writer,
+  app_name: "service_receive",
+  kafka_endpoints: kafka_endpoints
+
+# SERVICE_GATHER
 config :service_gather, Gather.Application,
   kafka_endpoints: kafka_endpoints,
   brook: [
