@@ -101,6 +101,11 @@ defmodule Dictionary.Impl do
     {field, delete_field(data, key)}
   end
 
+  @spec validate_field(
+          t,
+          String.t() | [String.t()] | [Dictionary.Access.access_fun()],
+          module
+        ) :: :ok | {:error, term}
   def validate_field(dictionary, path, type) do
     value = get_in(dictionary, path)
 

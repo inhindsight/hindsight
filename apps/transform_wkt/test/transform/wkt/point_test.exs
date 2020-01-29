@@ -59,31 +59,35 @@ defmodule Transformer.WKT.PointTest do
   end
 
   test "transform_dictionary will return an error tuple if longitude is not the correct type" do
-    dictionary = Dictionary.from_list([
-      Dictionary.Type.String.new!(name: "longitude"),
-      Dictionary.Type.Latitude.new!(name: "latitude")
-    ])
+    dictionary =
+      Dictionary.from_list([
+        Dictionary.Type.String.new!(name: "longitude"),
+        Dictionary.Type.Latitude.new!(name: "latitude")
+      ])
 
-    step = Transformer.Wkt.Point.new!(
-      longitude: "longitude",
-      latitude: "latitude",
-      to: "point"
-    )
+    step =
+      Transformer.Wkt.Point.new!(
+        longitude: "longitude",
+        latitude: "latitude",
+        to: "point"
+      )
 
     assert {:error, :invalid_longitude} = Transformer.Step.transform_dictionary(step, dictionary)
   end
 
   test "transform_dictionary will return an error tuple if latitude is not the correct type" do
-    dictionary = Dictionary.from_list([
-      Dictionary.Type.Longitude.new!(name: "longitude"),
-      Dictionary.Type.String.new!(name: "latitude")
-    ])
+    dictionary =
+      Dictionary.from_list([
+        Dictionary.Type.Longitude.new!(name: "longitude"),
+        Dictionary.Type.String.new!(name: "latitude")
+      ])
 
-    step = Transformer.Wkt.Point.new!(
-      longitude: "longitude",
-      latitude: "latitude",
-      to: "point"
-    )
+    step =
+      Transformer.Wkt.Point.new!(
+        longitude: "longitude",
+        latitude: "latitude",
+        to: "point"
+      )
 
     assert {:error, :invalid_latitude} = Transformer.Step.transform_dictionary(step, dictionary)
   end

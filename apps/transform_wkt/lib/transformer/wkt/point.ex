@@ -5,13 +5,15 @@ defmodule Transformer.Wkt.Point do
 
   defimpl Transformer.Step, for: __MODULE__ do
     import Dictionary.Access, only: [to_access_path: 1]
+
     def transform_dictionary(%{longitude: longitude, latitude: latitude, to: to}, dictionary) do
       longitude_path = to_access_path(longitude)
       latitude_path = to_access_path(latitude)
       to_path = to_access_path(to)
       new_name = List.wrap(to) |> List.last()
 
-      with :ok <- Dictionary.validate_field(dictionary, longitude_path, Dictionary.Type.Longitude),
+      with :ok <-
+             Dictionary.validate_field(dictionary, longitude_path, Dictionary.Type.Longitude),
            :ok <- Dictionary.validate_field(dictionary, latitude_path, Dictionary.Type.Latitude) do
         {:ok, new_field} = Dictionary.Type.Wkt.Point.new(name: new_name)
 
@@ -37,7 +39,6 @@ defmodule Transformer.Wkt.Point do
       end
       |> Ok.ok()
     end
-
   end
 end
 
