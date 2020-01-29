@@ -1,10 +1,10 @@
-defmodule Transform.StepsTest do
+defmodule TransformerTest do
   use ExUnit.Case
 
   describe "transform_dictionary" do
     test "returns transformed dictionary" do
       steps = [
-        %Transform.Test.Steps.SimpleRename{from: "name", to: "full_name"}
+        %Transformer.Test.SimpleRename{from: "name", to: "full_name"}
       ]
 
       dictionary =
@@ -14,20 +14,18 @@ defmodule Transform.StepsTest do
         ]
         |> Dictionary.from_list()
 
-      assert {:ok, result} = Transform.Steps.transform_dictionary(steps, dictionary)
+      assert {:ok, result} = Transformer.transform_dictionary(steps, dictionary)
 
-      assert result ==
-               [
+      assert Enum.to_list(result) == [
                  Dictionary.Type.String.new!(name: "full_name"),
                  Dictionary.Type.Integer.new!(name: "age")
                ]
-               |> Dictionary.from_list()
     end
 
     test "return error tuple when any step fails" do
       steps = [
-        %Transform.Test.Steps.SimpleRename{from: "name", to: "full_name"},
-        %Transform.Test.Steps.Error{error: "failed"}
+        %Transformer.Test.SimpleRename{from: "name", to: "full_name"},
+        %Transformer.Test.Error{error: "failed", dictionary: true}
       ]
 
       dictionary =
@@ -37,17 +35,18 @@ defmodule Transform.StepsTest do
         ]
         |> Dictionary.from_list()
 
-      assert {:error, "failed"} = Transform.Steps.transform_dictionary(steps, dictionary)
+      assert {:error, "failed"} = Transformer.transform_dictionary(steps, dictionary)
     end
   end
 
   describe "transform_function" do
-    test "transforms stream" do
+    test "transforms value" do
       steps = [
-        %Transform.Test.Steps.TransformStream{
-          transform: fn x -> Map.put(x, "age", x["age"] * 2) end
+        %Transformer.Test.TransformStream{
+          name: "age",
+          transform: fn x -> x * 2 end
         },
-        %Transform.Test.Steps.SimpleRename{from: "age", to: "years_alive"}
+        %Transformer.Test.SimpleRename{from: "age", to: "years_alive"}
       ]
 
       dictionary =
@@ -59,7 +58,7 @@ defmodule Transform.StepsTest do
 
       value = %{"name" => "joe", "age" => 10}
 
-      assert {:ok, transformer} = Transform.Steps.create_transformer(steps, dictionary)
+      assert {:ok, transformer} = Transformer.create(steps, dictionary)
       assert {:ok, transformed_value} = transformer.(value)
 
       assert transformed_value == %{"name" => "joe", "years_alive" => 20}
@@ -67,12 +66,12 @@ defmodule Transform.StepsTest do
 
     test "ensure correct dictionary is given to each step" do
       steps = [
-        %Transform.Test.Steps.SimpleRename{from: "age", to: "years_alive"},
-        %Transform.Test.Steps.TransformInteger{
+        %Transformer.Test.SimpleRename{from: "age", to: "years_alive"},
+        %Transformer.Test.TransformInteger{
           name: "years_alive",
-          transform: fn x -> Map.put(x, "years_alive", x["years_alive"] * 2) end
+          transform: fn x -> x * 2 end
         },
-        %Transform.Test.Steps.SimpleRename{from: "years_alive", to: "some_number"}
+        %Transformer.Test.SimpleRename{from: "years_alive", to: "some_number"}
       ]
 
       dictionary =
@@ -84,10 +83,27 @@ defmodule Transform.StepsTest do
 
       value = %{"name" => "joe", "age" => 10}
 
-      assert {:ok, transformer} = Transform.Steps.create_transformer(steps, dictionary)
+      assert {:ok, transformer} = Transformer.create(steps, dictionary)
       assert {:ok, transformed_value} = transformer.(value)
 
       assert transformed_value == %{"name" => "joe", "some_number" => 20}
+    end
+
+    test "stop processing with step returns an error" do
+      steps = [
+        %Transformer.Test.Error{error: "something failed", transform: true},
+        %Transformer.Test.TransformInteger{name: "age", transform: fn x -> x * 2 end}
+      ]
+
+      dictionary = Dictionary.from_list([
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
+      ])
+
+      value = %{"name" => "joe", "age" => 10}
+
+      assert {:ok, transformer} = Transformer.create(steps, dictionary)
+      assert {:error, "something failed"} == transformer.(value)
     end
   end
 end

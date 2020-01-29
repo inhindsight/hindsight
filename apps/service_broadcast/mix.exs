@@ -45,7 +45,7 @@ defmodule Broadcast.MixProject do
       {:off_broadway_kafka, "~> 0.5"},
       {:definition_events, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
-      {:transform_steps, in_umbrella: true},
+      {:transformer, in_umbrella: true},
       {:simple_registry, in_umbrella: true},
       {:initializer, in_umbrella: true},
       {:properties, in_umbrella: true},

@@ -1,8 +1,6 @@
-defmodule Transform.RenameFieldTest do
+defmodule Transformer.MoveFieldTest do
   use ExUnit.Case
   import Checkov
-
-  import Dictionary.Access, only: [key: 1]
 
   setup do
     dictionary =
@@ -48,26 +46,29 @@ defmodule Transform.RenameFieldTest do
 
   describe "transform_dictionary" do
     data_test "renames field in dictionary", %{dictionary: dictionary} do
-      step = %Transform.RenameField{from: from, to: to}
+      step = %Transformer.MoveField{from: from, to: to}
 
-      assert {:ok, new_dictionary} = Transform.Step.transform_dictionary(step, dictionary)
+      from_path = Dictionary.Access.to_access_path(from)
+      to_path = Dictionary.Access.to_access_path(to)
 
-      assert Dictionary.Type.String.new!(name: to) == get_in(new_dictionary, expected_path)
-      from_keyed_path = from |> String.split(".") |> Enum.map(&key/1)
-      assert nil == get_in(new_dictionary, from_keyed_path)
+      assert {:ok, new_dictionary} = Transformer.Step.transform_dictionary(step, dictionary)
+      new_name = List.wrap(to) |> List.last()
+
+      assert Dictionary.Type.String.new!(name: new_name) == get_in(new_dictionary, to_path)
+      assert nil == get_in(new_dictionary, from_path)
 
       where([
-        [:from, :to, :expected_path],
-        ["name", "fullname", ["fullname"]],
-        ["spouse.name", "fullname", ["spouse", "fullname"]],
-        ["friends.name", "fullname", ["friends", "fullname"]]
+        [:from, :to],
+        ["name", "fullname"],
+        [["spouse", "name"], ["spouse", "fullname"]],
+        [["friends", "name"], ["friends", "fullname"]]
       ])
     end
 
     test "handles a non existent field", %{dictionary: dictionary} do
-      step = %Transform.RenameField{from: "spouse.fake", to: "something"}
+      step = %Transformer.MoveField{from: ["spouse", "fake"], to: "something"}
 
-      assert {:ok, new_dictionary} = Transform.Step.transform_dictionary(step, dictionary)
+      assert {:ok, new_dictionary} = Transformer.Step.transform_dictionary(step, dictionary)
 
       assert dictionary == new_dictionary
     end
@@ -75,19 +76,23 @@ defmodule Transform.RenameFieldTest do
 
   describe "transform_function" do
     data_test "will rename field in data", %{data: data, dictionary: dictionary} do
-      step = %Transform.RenameField{from: from, to: to}
+      step = %Transformer.MoveField{from: from, to: to}
 
-      {:ok, function} = Transform.Step.transform_function(step, dictionary)
+      {:ok, function} = Transformer.Step.create_function(step, dictionary)
 
-      transformed_data = function.(data)
-      keyed_expected_path = Enum.map(expected_path, &key/1)
-      assert expected == get_in(transformed_data, keyed_expected_path)
+      {:ok, transformed_data} = function.(data)
+
+      from_path = Dictionary.Access.to_access_path(from)
+      to_path = Dictionary.Access.to_access_path(to)
+
+      assert expected_value == get_in(transformed_data, to_path)
+      assert [] == get_in(transformed_data, from_path) |> List.wrap() |> Enum.reject(&is_nil/1)
 
       where([
-        [:from, :to, :expected_path, :expected],
-        ["name", "fullname", ["fullname"], "Gary"],
-        ["spouse.name", "fullname", ["spouse", "fullname"], "Jennifer"],
-        ["friends.name", "fullname", ["friends", "fullname"], ["Fred", "John"]]
+        [:from, :to, :expected_value],
+        ["name", "fullname", "Gary"],
+        [["spouse", "name"], ["spouse", "fullname"], "Jennifer"],
+        [["friends", "name"], ["friends", "fullname"], ["Fred", "John"]]
       ])
     end
   end
