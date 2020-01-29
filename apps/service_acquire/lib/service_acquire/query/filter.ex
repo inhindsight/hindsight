@@ -35,14 +35,14 @@ defmodule Acquire.Query.Filter do
   defp parse_boundary(%{"boundary" => boundary}) do
     bbox =
       String.split(boundary, ",", trim: true)
-      |> Enum.map(&String.trim/1)
+      |> Enum.map(&String.to_float/1)
 
     input = "ST_LineString(array[ST_Point(?, ?), ST_Point(?, ?)])"
     area = "ST_Envelope(#{input})"
     # TODO dynamic WKT field
     wkt = "ST_GeometryFromText(__wkt__)"
 
-    {"ST_Contains(#{area}, #{wkt})", bbox}
+    {"ST_Intersects(#{area}, #{wkt})", bbox}
   end
 
   defp parse_boundary(_), do: {nil, []}
