@@ -7,7 +7,6 @@ defmodule Transformer.Test do
     defimpl Transformer.Step, for: __MODULE__ do
       def transform_dictionary(%{from: from, to: to}, dictionary) do
         from_path = to_access_path(from)
-        to_path = to_access_path(to)
         new_name = List.wrap(to) |> List.last()
 
         update_in(dictionary, from_path, fn field ->
