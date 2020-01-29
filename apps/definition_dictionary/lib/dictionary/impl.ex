@@ -58,6 +58,7 @@ defmodule Dictionary.Impl do
       |> Map.put(new_name, {index, new_field})
     end)
     |> Map.put(:ordered, new_ordered)
+    |> Map.put(:size, length(new_ordered))
   end
 
   @spec delete_field(t, String.t()) :: t

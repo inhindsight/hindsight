@@ -232,6 +232,15 @@ defmodule DictionaryTest do
       assert dictionary["nickname"] == nil
     end
 
+    test "can add field to the dictionary", %{dictionary: dictionary} do
+      nickname = Dictionary.Type.String.new!(name: "nickname")
+      result = Dictionary.update_field(dictionary, "nickname", nickname)
+
+      expected = Dictionary.from_list(Enum.to_list(dictionary) ++ [nickname])
+
+      assert expected == result
+    end
+
     test "can update the field in dictionary", %{dictionary: dictionary} do
       result =
         update_in(dictionary, ["birthdate"], fn field ->
