@@ -52,8 +52,7 @@ defmodule PersistTest do
         ]
       )
 
-    {:ok, dictionary} =
-      Transformer.transform_dictionary(transform.steps, transform.dictionary)
+    {:ok, dictionary} = Transformer.transform_dictionary(transform.steps, transform.dictionary)
 
     Brook.Test.with_event(@instance, fn ->
       Persist.Transformations.persist(transform)

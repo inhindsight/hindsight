@@ -17,9 +17,9 @@ defmodule TransformerTest do
       assert {:ok, result} = Transformer.transform_dictionary(steps, dictionary)
 
       assert Enum.to_list(result) == [
-                 Dictionary.Type.String.new!(name: "full_name"),
-                 Dictionary.Type.Integer.new!(name: "age")
-               ]
+               Dictionary.Type.String.new!(name: "full_name"),
+               Dictionary.Type.Integer.new!(name: "age")
+             ]
     end
 
     test "return error tuple when any step fails" do
@@ -95,10 +95,11 @@ defmodule TransformerTest do
         %Transformer.Test.TransformInteger{name: "age", transform: fn x -> x * 2 end}
       ]
 
-      dictionary = Dictionary.from_list([
-        Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age")
-      ])
+      dictionary =
+        Dictionary.from_list([
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age")
+        ])
 
       value = %{"name" => "joe", "age" => 10}
 

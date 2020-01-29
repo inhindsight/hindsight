@@ -29,6 +29,7 @@ defmodule Transformer.MoveField do
 
       fn entry ->
         {value, updated_entry} = get_and_update_in(entry, from_path, fn _ -> :pop end)
+
         put_in(updated_entry, to_path, value)
         |> Ok.ok()
       end

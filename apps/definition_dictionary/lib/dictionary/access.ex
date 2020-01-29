@@ -1,10 +1,9 @@
 defmodule Dictionary.Access do
-
   @type access_fun :: Access.access_fun(data :: struct | map, get_value :: term())
 
   @type opts :: [
-    spread: boolean
-  ]
+          spread: boolean
+        ]
 
   @spec to_access_path(String.t() | [String.t()], opts) :: [access_fun]
   def to_access_path(input, opts \\ []) do
