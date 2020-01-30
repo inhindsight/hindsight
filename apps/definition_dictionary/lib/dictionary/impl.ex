@@ -2,6 +2,7 @@ defmodule Dictionary.Impl do
   @behaviour Access
 
   @type t :: %__MODULE__{
+          by_type: %{module => [String.t()]},
           by_name: map,
           ordered: list,
           size: integer
@@ -9,7 +10,8 @@ defmodule Dictionary.Impl do
 
   @type field :: term
 
-  defstruct by_name: %{},
+  defstruct by_type: %{},
+            by_name: %{},
             ordered: [],
             size: 0
 
@@ -24,6 +26,28 @@ defmodule Dictionary.Impl do
       {_, field} -> field
       result -> result
     end
+  end
+
+  @spec get_by_type(t, module) :: list(list(String.t()))
+  def get_by_type(%__MODULE__{by_type: by_type, ordered: ordered}, type) do
+    local =
+      Map.get(by_type, type, [])
+      |> Enum.map(&List.wrap/1)
+
+    children =
+      ordered
+      |> Enum.filter(&Map.has_key?(&1, :dictionary))
+      |> Enum.reduce([], fn field, acc ->
+        sub_fields =
+          get_by_type(field.dictionary, type)
+          |> Enum.map(fn result ->
+            [field.name | result]
+          end)
+
+        acc ++ sub_fields
+      end)
+
+    local ++ children
   end
 
   @spec update_field(t, String.t(), field | (field -> field)) :: t
@@ -41,24 +65,14 @@ defmodule Dictionary.Impl do
   end
 
   def update_field(%__MODULE__{} = dictionary, name, new_field) do
-    {index, new_ordered} =
-      case Map.get(dictionary.by_name, name) do
-        {index, _} ->
-          {index, List.replace_at(dictionary.ordered, index, new_field)}
+    case Map.get(dictionary.by_name, name) do
+      {index, _} ->
+        List.replace_at(dictionary.ordered, index, new_field)
 
-        nil ->
-          index = length(dictionary.ordered)
-          {index, List.insert_at(dictionary.ordered, index, new_field)}
-      end
-
-    new_name = new_field.name
-
-    Map.update!(dictionary, :by_name, fn bn ->
-      Map.delete(bn, name)
-      |> Map.put(new_name, {index, new_field})
-    end)
-    |> Map.put(:ordered, new_ordered)
-    |> Map.put(:size, length(new_ordered))
+      nil ->
+        dictionary.ordered ++ [new_field]
+    end
+    |> from_list()
   end
 
   @spec delete_field(t, String.t()) :: t
@@ -125,9 +139,12 @@ defmodule Dictionary.Impl do
   defimpl Collectable, for: __MODULE__ do
     def into(original) do
       collector_fun = fn
-        dictionary, {:cont, elem} ->
+        dictionary, {:cont, %type{} = elem} ->
           Map.update!(dictionary, :by_name, fn map ->
             Map.put(map, elem.name, {dictionary.size, elem})
+          end)
+          |> Map.update!(:by_type, fn map ->
+            Map.update(map, type, [elem.name], fn l -> [elem.name | l] end)
           end)
           |> Map.update!(:ordered, fn list -> [elem | list] end)
           |> Map.update!(:size, fn size -> size + 1 end)
