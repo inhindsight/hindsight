@@ -20,6 +20,7 @@ defmodule Dictionary do
 
   defdelegate from_list(list), to: Dictionary.Impl
   defdelegate get_field(dictionary, name), to: Dictionary.Impl
+  defdelegate get_by_type(dictionary, type), to: Dictionary.Impl
   defdelegate update_field(dictionary, name, field_or_function), to: Dictionary.Impl
   defdelegate delete_field(dictionary, name), to: Dictionary.Impl
   defdelegate validate_field(dictionary, path, type), to: Dictionary.Impl

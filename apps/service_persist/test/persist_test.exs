@@ -29,6 +29,8 @@ defmodule PersistTest do
   setup :verify_on_exit!
 
   setup do
+    Brook.Test.clear_view_state(@instance, "transformations")
+
     on_exit(fn ->
       Persist.Load.Supervisor.kill_all_children()
     end)
@@ -64,11 +66,7 @@ defmodule PersistTest do
         dataset_id: "ds1",
         name: "example",
         source: "topic-example",
-        destination: "ds1_example",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
+        destination: "ds1_example"
       )
 
     Writer.PrestoMock
@@ -102,6 +100,21 @@ defmodule PersistTest do
   test "load:persist:end stops broadway and clears viewstate" do
     test = self()
 
+    transform =
+      Transform.new!(
+        id: "transform-1",
+        dataset_id: "ds1",
+        dictionary: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ],
+        steps: []
+      )
+
+    Brook.Test.with_event(@instance, fn ->
+      Persist.Transformations.persist(transform)
+    end)
+
     load =
       Load.Persist.new!(
         id: "persist-1",
@@ -109,10 +122,7 @@ defmodule PersistTest do
         name: "example",
         source: "topic-example",
         destination: "ds1_example",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
+        schema: []
       )
 
     Writer.PrestoMock
@@ -124,7 +134,7 @@ defmodule PersistTest do
 
     Brook.Test.send(@instance, load_persist_start(), "testing", load)
 
-    assert_async max_tries: 40 do
+    assert_async max_tries: 40, debug: true do
       assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
     end
 

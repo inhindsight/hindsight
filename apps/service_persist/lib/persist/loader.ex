@@ -38,9 +38,14 @@ defmodule Persist.Loader do
       {:ok, %{writer_pid: writer_pid, broadway_pid: broadway_pid}}
     else
       {:ok, nil} ->
+        Logger.warn(fn ->
+          "#{__MODULE__}: Stopping : Unable to find transformation for dataset #{load.dataset_id}"
+        end)
+
         {:stop, "unable to find transformation for dataset #{load.dataset_id}"}
 
       {:error, reason} ->
+        Logger.warn(fn -> "#{__MODULE__}: Stopping : #{inspect(reason)}" end)
         {:stop, reason}
     end
   end

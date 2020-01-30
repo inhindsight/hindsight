@@ -1,5 +1,6 @@
 defmodule DictionaryTest do
   use ExUnit.Case
+  import Checkov
 
   describe "dictionary data structure" do
     setup do
@@ -15,6 +16,53 @@ defmodule DictionaryTest do
 
     test "get_field returns field by name", %{dictionary: dictionary} do
       assert Dictionary.Type.String.new!(name: "name") == Dictionary.get_field(dictionary, "name")
+    end
+
+    data_test "get_type returns all fields with that type" do
+      dictionary =
+        Dictionary.from_list([
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age"),
+          Dictionary.Type.Date.new!(name: "birthdate", format: "%Y-%m-%d"),
+          Dictionary.Type.String.new!(name: "nickname"),
+          Dictionary.Type.Map.new!(
+            name: "spouse",
+            dictionary: [
+              Dictionary.Type.String.new!(name: "name"),
+              Dictionary.Type.Wkt.Point.new!(name: "location")
+            ]
+          ),
+          Dictionary.Type.List.new!(
+            name: "friends",
+            item_type: Dictionary.Type.Map,
+            dictionary: [
+              Dictionary.Type.String.new!(name: "name"),
+              Dictionary.Type.Map.new!(
+                name: "work",
+                dictionary: [
+                  Dictionary.Type.Wkt.Point.new!(name: "location")
+                ]
+              )
+            ]
+          ),
+          Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String)
+        ])
+
+      result = Dictionary.get_by_type(dictionary, type)
+
+      assert MapSet.new(result) == MapSet.new(expected)
+
+      where [
+        [:type, :expected],
+        [
+          Dictionary.Type.String,
+          [["name"], ["nickname"], ["spouse", "name"], ["friends", "name"]]
+        ],
+        [Dictionary.Type.Integer, [["age"]]],
+        [Dictionary.Type.Wkt.Point, [["spouse", "location"], ["friends", "work", "location"]]],
+        [Dictionary.Type.Map, [["friends", "work"], ["spouse"]]],
+        [Dictionary.Type.List, [["colors"], ["friends"]]]
+      ]
     end
 
     test "update_field update field in dictionary", %{dictionary: dictionary} do
