@@ -6,15 +6,19 @@ defmodule Platform.Runner.PerformanceTest do
   @moduletag performance: true, divo: true
 
   setup do
+    Logger.configure(level: :info)
     bp = Bypass.open()
 
+    data = File.read!("perf.data")
+
     Bypass.stub(bp, "GET", "/file.csv", fn conn ->
-      Plug.Conn.resp(conn, 200, "a,1\nb,2\nc,3")
+      Plug.Conn.resp(conn, 200, data)
     end)
 
     [bypass: bp]
   end
 
+  @tag timeout: :infinity
   test "performance", %{bypass: bypass} do
     Benchee.run(
       %{
@@ -80,14 +84,9 @@ defmodule Platform.Runner.PerformanceTest do
         schema: "default"
       )
 
-    assert_async sleep: 500, max_tries: 100, debug: true do
-      with {:ok, result} <-
-             Prestige.query(session, "select * from perf_csv order by single_letter") do
-        assert Prestige.Result.as_maps(result) == [
-                 %{"single_letter" => "a", "number" => "1"},
-                 %{"single_letter" => "b", "number" => "2"},
-                 %{"single_letter" => "c", "number" => "3"}
-               ]
+    assert_async sleep: 1_000, max_tries: 1_000, debug: true do
+      with {:ok, result} <- Prestige.query(session, "select count(*) from perf_csv") do
+        assert result.rows == [[100_000]]
       else
         {:error, reason} -> flunk(inspect(reason))
       end
