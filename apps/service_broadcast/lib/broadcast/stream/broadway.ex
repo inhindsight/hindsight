@@ -60,6 +60,12 @@ defmodule Broadcast.Stream.Broadway do
     messages
   end
 
+  def handle_batch(_batcher, messages, _batch_info, context) do
+    data = Enum.map(messages, &Map.get(&1, :data)) |> Enum.map(&Map.get(&1, :value))
+    Broadcast.Cache.add(context.cache, data)
+    messages
+  end
+
   defp create_transformer(dataset_id) do
     case Broadcast.Transformations.get(dataset_id) do
       {:ok, nil} ->
@@ -78,7 +84,8 @@ defmodule Broadcast.Stream.Broadway do
     |> Keyword.update!(:producer, &update_producer(load, &1))
     |> Keyword.put(:context, %{
       load: load,
-      transformer: transformer
+      transformer: transformer,
+      cache: Broadcast.Cache.Registry.via(load.destination)
     })
   end
 

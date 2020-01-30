@@ -35,5 +35,10 @@ config :service_broadcast, Broadcast.Stream.Broadway,
       default: [
         stages: 1
       ]
+    ],
+    batchers: [
+      default: [
+        stages: 1
+      ]
     ]
   ]
