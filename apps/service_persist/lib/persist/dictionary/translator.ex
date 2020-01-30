@@ -38,6 +38,22 @@ defmodule Persist.Dictionary do
     def translate_value(_field, value), do: value
   end
 
+  defimpl Translator, for: Dictionary.Type.Float do
+    def translate_type(%{name: name}) do
+      %Result{name: name, type: "double"}
+    end
+
+    def translate_value(_field, value), do: value
+  end
+
+  defimpl Translator, for: Dictionary.Type.Boolean do
+    def translate_type(%{name: name}) do
+      %Result{name: name, type: "boolean"}
+    end
+
+    def translate_value(_field, value), do: value
+  end
+
   defimpl Translator, for: Dictionary.Type.Date do
     def translate_type(%{name: name}) do
       %Result{name: name, type: "date"}
