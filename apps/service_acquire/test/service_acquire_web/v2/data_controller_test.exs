@@ -9,7 +9,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
     %{
       app: :service_acquire,
       key: AcquireWeb.V2.DataController,
-      set: [presto_client: Acquire.Presto.Mock]
+      set: [presto_client: Acquire.Db.Mock]
     }
   ])
 
@@ -18,7 +18,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
   describe "select/2" do
     data_test "retrieves data", %{conn: conn} do
       data = [%{"a" => 42}]
-      expect(Acquire.Presto.Mock, :execute, fn ^query, ^values -> {:ok, data} end)
+      expect(Acquire.Db.Mock, :execute, fn ^query, ^values -> {:ok, data} end)
 
       actual = get(conn, path) |> json_response(200)
       assert actual == data

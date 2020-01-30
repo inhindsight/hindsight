@@ -1,4 +1,4 @@
-defmodule Acquire.Presto do
+defmodule Acquire.Db do
   # TODO
   @moduledoc false
 
@@ -8,14 +8,14 @@ defmodule Acquire.Presto do
   @callback execute(statement, list) :: Ok.result()
 end
 
-defmodule Acquire.Presto.Client do
+defmodule Acquire.Db.Presto do
   # TODO
   @moduledoc false
 
   use Properties, otp_app: :service_acquire
   getter(:presto, required: true)
 
-  @behaviour Acquire.Presto
+  @behaviour Acquire.Db
 
   @impl true
   def execute(template, values) do

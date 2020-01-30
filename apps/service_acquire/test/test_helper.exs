@@ -1,2 +1,2 @@
-Mox.defmock(Acquire.Presto.Mock, for: Acquire.Presto)
+Mox.defmock(Acquire.Db.Mock, for: Acquire.Db)
 ExUnit.start()

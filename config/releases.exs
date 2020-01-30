@@ -201,4 +201,4 @@ config :service_orchestrate, Orchestrate.Application,
   ]
 
 # SERVICE ACQUIRE
-config :service_acquire, Acquire.Presto.Client, presto: Keyword.put(presto_db, :user, "acquire")
+config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")
