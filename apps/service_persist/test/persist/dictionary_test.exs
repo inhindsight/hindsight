@@ -15,6 +15,11 @@ defmodule Persist.DictionaryTest do
       [Dictionary.Type.String.new!(name: "name"), %Result{name: "name", type: "varchar"}],
       [Dictionary.Type.Integer.new!(name: "age"), %Result{name: "age", type: "bigint"}],
       [
+        Dictionary.Type.Float.new!(name: "percentage"),
+        %Result{name: "percentage", type: "double"}
+      ],
+      [Dictionary.Type.Boolean.new!(name: "patched"), %Result{name: "patched", type: "boolean"}],
+      [
         Dictionary.Type.Date.new!(name: "date", format: "%Y"),
         %Result{name: "date", type: "date"}
       ],
