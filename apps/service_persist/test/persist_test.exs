@@ -30,6 +30,7 @@ defmodule PersistTest do
 
   setup do
     Brook.Test.clear_view_state(@instance, "transformations")
+
     on_exit(fn ->
       Persist.Load.Supervisor.kill_all_children()
     end)
@@ -99,15 +100,16 @@ defmodule PersistTest do
   test "load:persist:end stops broadway and clears viewstate" do
     test = self()
 
-    transform = Transform.new!(
-      id: "transform-1",
-      dataset_id: "ds1",
-      dictionary: [
-        %Dictionary.Type.String{name: "name"},
-        %Dictionary.Type.Integer{name: "age"}
-      ],
-      steps: []
-    )
+    transform =
+      Transform.new!(
+        id: "transform-1",
+        dataset_id: "ds1",
+        dictionary: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ],
+        steps: []
+      )
 
     Brook.Test.with_event(@instance, fn ->
       Persist.Transformations.persist(transform)
@@ -120,8 +122,7 @@ defmodule PersistTest do
         name: "example",
         source: "topic-example",
         destination: "ds1_example",
-        schema: [
-        ]
+        schema: []
       )
 
     Writer.PrestoMock
