@@ -32,7 +32,7 @@ defmodule Persist.Dictionary do
 
   defimpl Translator, for: Dictionary.Type.Integer do
     def translate_type(%{name: name}) do
-      %Result{name: name, type: "integer"}
+      %Result{name: name, type: "bigint"}
     end
 
     def translate_value(_field, value), do: value

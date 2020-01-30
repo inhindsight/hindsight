@@ -54,7 +54,7 @@ defmodule Persist.WriterTest do
       assert "test_catalog" == Keyword.get(init_arg, :catalog)
       assert "test_schema" == Keyword.get(init_arg, :schema)
       assert "table_bobby" == Keyword.get(init_arg, :table)
-      assert [{"name", "varchar"}, {"age", "integer"}] == Keyword.get(init_arg, :table_schema)
+      assert [{"name", "varchar"}, {"age", "bigint"}] == Keyword.get(init_arg, :table_schema)
     end
   end
 
