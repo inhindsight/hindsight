@@ -1,5 +1,18 @@
 defmodule Dictionary.Access do
-  @spec key(term, term) :: Access.access_fun(data :: struct | map, get_value :: term())
+  @type access_fun :: Access.access_fun(data :: struct | map, get_value :: term())
+
+  @type opts :: [
+          spread: boolean
+        ]
+
+  @spec to_access_path(String.t() | [String.t()], opts) :: [access_fun]
+  def to_access_path(input, opts \\ []) do
+    input
+    |> List.wrap()
+    |> Enum.map(&key(&1, nil, opts))
+  end
+
+  @spec key(term, term, opts) :: access_fun
   def key(key, default \\ nil, opts \\ []) do
     &access_fun(key, default, &1, &2, &3, opts)
   end

@@ -29,6 +29,8 @@ defmodule PersistTest do
   setup :verify_on_exit!
 
   setup do
+    Brook.Test.clear_view_state(@instance, "transformations")
+
     on_exit(fn ->
       Persist.Load.Supervisor.kill_all_children()
     end)
@@ -48,12 +50,66 @@ defmodule PersistTest do
           %Dictionary.Type.Integer{name: "age"}
         ],
         steps: [
-          Transform.RenameField.new!(from: "name", to: "fullname")
+          Transformer.MoveField.new!(from: "name", to: "fullname")
         ]
       )
 
-    {:ok, dictionary} =
-      Transform.Steps.transform_dictionary(transform.steps, transform.dictionary)
+    {:ok, dictionary} = Transformer.transform_dictionary(transform.steps, transform.dictionary)
+
+    Brook.Test.with_event(@instance, fn ->
+      Persist.Transformations.persist(transform)
+    end)
+
+    load =
+      Load.Persist.new!(
+        id: "persist-1",
+        dataset_id: "ds1",
+        name: "example",
+        source: "topic-example",
+        destination: "ds1_example"
+      )
+
+    Writer.PrestoMock
+    |> stub(:start_link, fn _args -> {:ok, :writer_presto_pid} end)
+    |> stub(:write, fn :writer_presto_pid, msgs, opts ->
+      send(test, {:write, msgs, opts})
+      :ok
+    end)
+
+    Brook.Test.send(@instance, load_persist_start(), "testing", load)
+
+    assert_async max_tries: 20 do
+      assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
+    end
+
+    broadway = Process.whereis(:"persist_broadway_#{load.source}")
+
+    messages = [
+      %{value: %{"name" => "bob", "age" => 12} |> Jason.encode!()}
+    ]
+
+    ref = Broadway.test_messages(broadway, messages)
+
+    assert_receive {:write, [[12, "'bob'"]], [dictionary: ^dictionary]}
+    assert_receive {:ack, ^ref, success, failed}
+    assert 1 == length(success)
+
+    assert load == Persist.Load.Store.get!(load.id)
+  end
+
+  test "load:persist:end stops broadway and clears viewstate" do
+    test = self()
+
+    transform =
+      Transform.new!(
+        id: "transform-1",
+        dataset_id: "ds1",
+        dictionary: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ],
+        steps: []
+      )
 
     Brook.Test.with_event(@instance, fn ->
       Persist.Transformations.persist(transform)
@@ -66,54 +122,7 @@ defmodule PersistTest do
         name: "example",
         source: "topic-example",
         destination: "ds1_example",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
-      )
-
-    Writer.PrestoMock
-    |> stub(:start_link, fn _args -> {:ok, :writer_presto_pid} end)
-    |> stub(:write, fn :writer_presto_pid, msgs, opts ->
-      send(test, {:write, msgs, opts})
-      :ok
-    end)
-
-    Brook.Test.send(@instance, load_persist_start(), "testing", load)
-
-    assert_async do
-      assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
-    end
-
-    broadway = Process.whereis(:"persist_broadway_#{load.source}")
-
-    messages = [
-      %{value: %{"name" => "bob", "age" => 12} |> Jason.encode!()}
-    ]
-
-    ref = Broadway.test_messages(broadway, messages)
-
-    assert_receive {:write, [["'bob'", 12]], [dictionary: ^dictionary]}
-    assert_receive {:ack, ^ref, success, failed}
-    assert 1 == length(success)
-
-    assert load == Persist.Load.Store.get!(load.id)
-  end
-
-  test "load:persist:end stops broadway and clears viewstate" do
-    test = self()
-
-    load =
-      Load.Persist.new!(
-        id: "persist-1",
-        dataset_id: "ds1",
-        name: "example",
-        source: "topic-example",
-        destination: "ds1_example",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
+        schema: []
       )
 
     Writer.PrestoMock
@@ -125,7 +134,7 @@ defmodule PersistTest do
 
     Brook.Test.send(@instance, load_persist_start(), "testing", load)
 
-    assert_async max_tries: 20 do
+    assert_async max_tries: 40, debug: true do
       assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
     end
 

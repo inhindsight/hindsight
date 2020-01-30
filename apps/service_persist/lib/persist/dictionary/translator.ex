@@ -22,6 +22,14 @@ defmodule Persist.Dictionary do
     def translate_value(_field, value), do: "'#{value}'"
   end
 
+  defimpl Translator, for: Dictionary.Type.Wkt.Point do
+    def translate_type(%{name: name}) do
+      %Result{name: name, type: "varchar"}
+    end
+
+    def translate_value(_field, value), do: "'#{value}'"
+  end
+
   defimpl Translator, for: Dictionary.Type.Integer do
     def translate_type(%{name: name}) do
       %Result{name: name, type: "integer"}

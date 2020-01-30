@@ -72,7 +72,7 @@ defmodule Persist.Load.Broadway do
   end
 
   defp create_transformer(transform) do
-    Transform.Steps.create_transformer(transform.steps, transform.dictionary)
+    Transformer.create(transform.steps, transform.dictionary)
   end
 
   defp setup_config(load, transformer, writer) do

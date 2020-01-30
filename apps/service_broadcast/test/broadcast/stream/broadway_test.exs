@@ -70,7 +70,7 @@ defmodule Broadcast.Stream.BroadwayTest do
           Dictionary.Type.Integer.new!(name: "age")
         ],
         steps: [
-          Transform.RenameField.new!(from: "name", to: "fullname")
+          Transformer.MoveField.new!(from: "name", to: "fullname")
         ]
       )
 
@@ -162,7 +162,7 @@ defmodule Broadcast.Stream.BroadwayTest do
           Dictionary.Type.Integer.new!(name: "age")
         ],
         steps: [
-          %Transform.Test.Steps.Error{error: "failed"}
+          %Broadcast.Transformer.Test.Error{error: "failed", dictionary: true}
         ]
       )
 

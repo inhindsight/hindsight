@@ -66,7 +66,7 @@ defmodule Broadcast.Stream.Broadway do
         fn x -> Ok.ok(x) end |> Ok.ok()
 
       {:ok, transform} ->
-        Transform.Steps.create_transformer(transform.steps, transform.dictionary)
+        Transformer.create(transform.steps, transform.dictionary)
 
       result ->
         result
