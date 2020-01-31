@@ -174,14 +174,14 @@ config :service_persist, Persist.Load.Broadway,
     ],
     processors: [
       default: [
-        stages: 1
+        stages: 100
       ]
     ],
     batchers: [
       default: [
         stages: 1,
-        batch_size: 100,
-        batch_timeout: 1_000
+        batch_size: 1000,
+        batch_timeout: 2_000
       ]
     ]
   ]

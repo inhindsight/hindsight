@@ -33,7 +33,8 @@ defmodule PlatformRunner.MixProject do
       {:divo, "~> 1.1"},
       {:websockex, "~> 0.4.0"},
       {:testing, in_umbrella: true, only: [:integration]},
-      {:bypass, "~> 1.0", only: [:integration]}
+      {:bypass, "~> 1.0", only: [:integration]},
+      {:benchee, "~> 1.0", only: [:integration]}
     ]
   end
 

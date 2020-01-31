@@ -11,7 +11,7 @@ defmodule Gather.Extraction do
   @initial_delay get_config_value(:initial_delay, default: 500)
   getter(:writer, default: Gather.Writer)
   getter(:dlq, default: Gather.DLQ)
-  getter(:chunk_size, default: 100)
+  getter(:chunk_size, default: 1_000)
   getter(:app_name, required: true)
 
   def start_link(args) do
