@@ -2,23 +2,30 @@ defmodule Acquire.Query do
   # TODO
   @moduledoc false
 
-  @type statement :: String.t()
+  use Definition, schema: Acquire.Query.V1
 
-  @spec from_params(params :: map) :: {statement, list}
-  def from_params(%{"dataset" => dataset} = params) do
-    subset = Map.get(params, "subset", "default")
-    fields = Map.get(params, "fields", "*")
-    {where, values} = Acquire.Query.Filter.from_params(params)
+  @type t :: %__MODULE__{
+          table: String.t(),
+          fields: [String.t()],
+          limit: nil,
+          where: nil
+        }
 
-    statement =
-      ["SELECT", fields, "FROM #{dataset}__#{subset}", where, limit(params)]
-      |> Enum.filter(& &1)
-      |> Enum.join(" ")
-      |> String.trim()
+  defstruct table: nil,
+            fields: ["*"],
+            limit: nil,
+            where: nil
+end
 
-    {statement, values}
+defmodule Acquire.Query.V1 do
+  use Definition.Schema
+
+  @impl true
+  def s do
+    schema(%Acquire.Query{
+      table: spec(table_name?()),
+      fields: coll_of(required_string()),
+      limit: spec(is_nil() or pos_integer?())
+    })
   end
-
-  defp limit(%{"limit" => limit}), do: "LIMIT #{limit}"
-  defp limit(_), do: nil
 end

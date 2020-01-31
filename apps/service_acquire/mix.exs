@@ -36,6 +36,7 @@ defmodule Acquire.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:definition, in_umbrella: true},
       {:ok, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:prestige, "~> 1.0"},
