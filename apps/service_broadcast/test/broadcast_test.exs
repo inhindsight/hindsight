@@ -51,4 +51,20 @@ defmodule BroadcastTest do
 
     leave(socket)
   end
+
+  test "joining a channel will send all the cached data" do
+    cache = Broadcast.Cache.Registry.via("cache_join")
+    {:ok, pid} = Broadcast.Cache.start_link(name: cache)
+
+    Broadcast.Cache.add(pid, [%{"one" => 1}, %{"two" => 2}])
+
+    {:ok, _, socket} =
+      socket(BroadcastWeb.UserSocket, %{}, %{})
+      |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:cache_join", %{})
+
+    assert_push "update", %{"one" => 1}
+    assert_push "update", %{"two" => 2}
+
+    leave(socket)
+  end
 end

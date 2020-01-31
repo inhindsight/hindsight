@@ -112,6 +112,13 @@ config :service_broadcast, Broadcast.Stream.Broadway,
       default: [
         stages: 1
       ]
+    ],
+    batchers: [
+      default: [
+        stages: 1,
+        batch_size: 100,
+        batch_timeout: 1_000
+      ]
     ]
   ]
 

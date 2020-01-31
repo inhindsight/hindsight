@@ -61,6 +61,8 @@ defmodule Broadcast.Stream.BroadwayTest do
   end
 
   test "transforms message before sending it to channel" do
+    cache = start_cache("channel-2")
+
     transform =
       Transform.new!(
         id: "transform-1",
@@ -99,6 +101,8 @@ defmodule Broadcast.Stream.BroadwayTest do
 
     assert_push "update", %{"fullname" => "Johnny Appleseed", "age" => 110}, 2_000
     assert_receive {:ack, ^msg_ref, [message] = _successful, _failed}, 1_000
+
+    assert [%{"fullname" => "Johnny Appleseed", "age" => 110}] == Broadcast.Cache.get(cache)
 
     assert_down(pid)
     leave(socket)
@@ -186,5 +190,12 @@ defmodule Broadcast.Stream.BroadwayTest do
     ref = Process.monitor(pid)
     Process.exit(pid, :normal)
     assert_receive {:DOWN, ^ref, _, _, _}
+  end
+
+  defp start_cache(destination) do
+    name = Broadcast.Cache.Registry.via(destination)
+    {:ok, pid} = Broadcast.Cache.start_link(name: name)
+    on_exit(fn -> assert_down(pid) end)
+    name
   end
 end

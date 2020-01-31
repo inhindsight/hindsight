@@ -44,7 +44,7 @@ defmodule Broadcast.Stream.Broadway do
       end)
 
       Endpoint.broadcast!("broadcast:#{load.destination}", "update", transformed_value)
-      message
+      Broadway.Message.update_data(message, &Map.put(&1, :value, transformed_value))
     else
       {:error, reason} ->
         Message.update_data(message, &to_dead_letter(load, &1, reason))
@@ -57,6 +57,12 @@ defmodule Broadcast.Stream.Broadway do
     |> Enum.map(fn message -> message.data end)
     |> dlq().write()
 
+    messages
+  end
+
+  def handle_batch(_batcher, messages, _batch_info, context) do
+    data = Enum.map(messages, &Map.get(&1, :data)) |> Enum.map(&Map.get(&1, :value))
+    Broadcast.Cache.add(context.cache, data)
     messages
   end
 
@@ -78,7 +84,8 @@ defmodule Broadcast.Stream.Broadway do
     |> Keyword.update!(:producer, &update_producer(load, &1))
     |> Keyword.put(:context, %{
       load: load,
-      transformer: transformer
+      transformer: transformer,
+      cache: Broadcast.Cache.Registry.via(load.destination)
     })
   end
 
