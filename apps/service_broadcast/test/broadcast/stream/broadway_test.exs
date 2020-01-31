@@ -34,7 +34,6 @@ defmodule Broadcast.Stream.BroadwayTest do
   end
 
   test "sends message to channel" do
-
     load =
       Load.Broadcast.new!(
         id: "load-1",
@@ -63,6 +62,7 @@ defmodule Broadcast.Stream.BroadwayTest do
 
   test "transforms message before sending it to channel" do
     cache = start_cache("channel-2")
+
     transform =
       Transform.new!(
         id: "transform-1",

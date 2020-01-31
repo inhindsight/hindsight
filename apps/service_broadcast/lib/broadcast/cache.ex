@@ -34,7 +34,7 @@ defmodule Broadcast.Cache do
   end
 
   def handle_cast({:add, values}, state) do
-    new_list = Enum.reverse(values) ++ state.list |> trim(state.min, state.max)
+    new_list = (Enum.reverse(values) ++ state.list) |> trim(state.min, state.max)
     {:noreply, %{state | list: new_list}}
   end
 

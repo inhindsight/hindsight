@@ -16,6 +16,7 @@ defmodule Broadcast.Event.Handler do
 
   def handle_event(%Brook.Event{type: load_broadcast_end(), data: %Load.Broadcast{} = load}) do
     name = Broadcast.Stream.name(load)
+
     case Process.whereis(name) do
       nil ->
         :ok

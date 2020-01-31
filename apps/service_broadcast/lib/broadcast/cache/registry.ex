@@ -1,5 +1,4 @@
 defmodule Broadcast.Cache.Registry do
-
   def child_spec(_init_arg) do
     Supervisor.child_spec({Registry, keys: :unique, name: __MODULE__}, [])
   end
@@ -21,5 +20,4 @@ defmodule Broadcast.Cache.Registry do
       _ -> :undefined
     end
   end
-
 end
