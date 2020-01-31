@@ -3,6 +3,8 @@ defmodule Acquire.QueryTest do
   import Checkov
 
   alias Acquire.Query
+  alias Acquire.Queryable
+  alias Acquire.Query.{Function, And, Or, Parameter}
 
   describe "new/1" do
     data_test "validates #{key} against bad input" do
@@ -19,4 +21,58 @@ defmodule Acquire.QueryTest do
       ]
     end
   end
+
+  describe "parsing" do
+    test "parses statement from basic query" do
+      query = Query.new!(table: "a__b")
+      assert Queryable.parse_statement(query) == "SELECT * FROM a__b"
+    end
+
+    test "parses statement from query with fields" do
+      query = Query.new!(table: "a__b", fields: ["one", "two"])
+      assert Queryable.parse_statement(query) == "SELECT one, two FROM a__b"
+    end
+
+    test "parses statement from query with limit" do
+      query = Query.new!(table: "a__b", limit: 42)
+      assert Queryable.parse_statement(query) == "SELECT * FROM a__b LIMIT 42"
+    end
+
+    test "parses statement from query with single where clause" do
+      fun = Function.new!(function: ">=", args: ["one", to_parameter(42)])
+      query = Query.new!(table: "a__b", where: fun)
+
+      assert Queryable.parse_statement(query) == "SELECT * FROM a__b WHERE one >= ?"
+      assert Queryable.parse_input(query) == [42]
+    end
+
+    test "parses statement from query with two conditionals" do
+      fun1 = Function.new!(function: "a", args: to_parameter([1, 2]))
+      fun2 = Function.new!(function: "b", args: to_parameter([3, 4]))
+      and1 = And.new!(conditions: [fun1, fun2])
+      query = Query.new!(table: "a__b", where: and1)
+
+      assert Queryable.parse_statement(query) == "SELECT * FROM a__b WHERE (a(?, ?) AND b(?, ?))"
+      assert Queryable.parse_input(query) == [1, 2, 3, 4]
+    end
+
+    test "parses statement from complicated query" do
+      fun1 = Function.new!(function: "a", args: to_parameter([1, 2]))
+      fun2 = Function.new!(function: "b", args: to_parameter([3, 4]))
+      and1 = And.new!(conditions: [fun1, fun2])
+      fun3 = Function.new!(function: "=", args: ["one", to_parameter(5)])
+      or1 = Or.new!(conditions: [and1, fun3])
+
+      query = Query.new!(table: "a__b", fields: ["one", "two"], limit: 10, where: or1)
+
+      assert Queryable.parse_statement(query) == "SELECT one, two FROM a__b WHERE ((a(?, ?) AND b(?, ?)) OR one = ?) LIMIT 10"
+      assert Queryable.parse_input(query) == [1, 2, 3, 4, 5]
+    end
+  end
+
+  defp to_parameter(list) when is_list(list) do
+    Enum.map(list, &to_parameter/1)
+  end
+
+  defp to_parameter(value), do: Parameter.new!(value: value)
 end
