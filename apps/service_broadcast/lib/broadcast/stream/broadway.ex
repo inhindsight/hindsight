@@ -44,7 +44,7 @@ defmodule Broadcast.Stream.Broadway do
       end)
 
       Endpoint.broadcast!("broadcast:#{load.destination}", "update", transformed_value)
-      message
+      Broadway.Message.update_data(message, &Map.put(&1, :value, transformed_value))
     else
       {:error, reason} ->
         Message.update_data(message, &to_dead_letter(load, &1, reason))
