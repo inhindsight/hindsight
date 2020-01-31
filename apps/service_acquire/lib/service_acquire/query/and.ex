@@ -6,8 +6,11 @@ defmodule Acquire.Query.And do
     alias Acquire.Queryable
 
     def parse_statement(query) do
-      Enum.map(query.conditions, &Queryable.parse_statement/1)
-      |> Enum.join(" AND ")
+      statement =
+        Enum.map(query.conditions, &Queryable.parse_statement/1)
+        |> Enum.join(" AND ")
+
+      "(#{statement})"
     end
 
     def parse_input(query) do

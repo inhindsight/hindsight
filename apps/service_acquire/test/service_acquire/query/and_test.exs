@@ -2,7 +2,7 @@ defmodule Acquire.Query.AndTest do
   use ExUnit.Case
   import Checkov
 
-  alias Acquire.Query.{And, Function, Parameter}
+  alias Acquire.Query.{And, Function, Parameter, Or}
   alias Acquire.Queryable
 
   describe "new/1" do
@@ -28,9 +28,25 @@ defmodule Acquire.Query.AndTest do
       input = And.new!(conditions: [fun4, fun5, fun3])
 
       assert Queryable.parse_statement(input) ==
-               "d(a(?, ?), c(?, b(a(?, ?), ?))) AND col = a(?, ?) AND c(?, b(a(?, ?), ?))"
+               "(d(a(?, ?), c(?, b(a(?, ?), ?))) AND col = a(?, ?) AND c(?, b(a(?, ?), ?)))"
 
       assert Queryable.parse_input(input) == [1, 2, 4, 1, 2, 3, 1, 2, 4, 1, 2, 3]
+    end
+
+    test "joins OR conditions into AND statement" do
+      fun1 = Function.new!(function: "a", args: to_parameter([1, 2]))
+      fun2 = Function.new!(function: ">", args: ["col1", "col2"])
+      or1 = Or.new!(conditions: [fun1, fun2])
+
+      fun3 = Function.new!(function: "b", args: to_parameter([3, 4]))
+      fun4 = Function.new!(function: "c", args: ["col3", fun1])
+      fun5 = Function.new!(function: "=", args: ["col4", to_parameter(5)])
+      or2 = Or.new!(conditions: [fun3, fun4, fun5])
+
+      input = And.new!(conditions: [fun1, or1, or2])
+
+      assert Queryable.parse_statement(input) == "(a(?, ?) AND (a(?, ?) OR col1 > col2) AND (b(?, ?) OR c(col3, a(?, ?)) OR col4 = ?))"
+      assert Queryable.parse_input(input) == [1, 2, 1, 2, 3, 4, 1, 2, 5]
     end
   end
 
