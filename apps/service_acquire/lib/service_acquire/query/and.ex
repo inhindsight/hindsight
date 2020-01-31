@@ -1,6 +1,19 @@
 defmodule Acquire.Query.And do
   use Definition, schema: Acquire.Query.And.V1
   defstruct [:conditions]
+
+  defimpl Acquire.Queryable, for: __MODULE__ do
+    alias Acquire.Queryable
+
+    def parse_statement(query) do
+      Enum.map(query.conditions, &Queryable.parse_statement/1)
+      |> Enum.join(" AND ")
+    end
+
+    def parse_input(query) do
+      Enum.flat_map(query.conditions, &Queryable.parse_input/1)
+    end
+  end
 end
 
 defmodule Acquire.Query.And.V1 do
