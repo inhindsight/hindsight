@@ -13,7 +13,12 @@ defmodule Persist.DictionaryTest do
     where([
       [:field, :expected],
       [Dictionary.Type.String.new!(name: "name"), %Result{name: "name", type: "varchar"}],
-      [Dictionary.Type.Integer.new!(name: "age"), %Result{name: "age", type: "integer"}],
+      [Dictionary.Type.Integer.new!(name: "age"), %Result{name: "age", type: "bigint"}],
+      [
+        Dictionary.Type.Float.new!(name: "percentage"),
+        %Result{name: "percentage", type: "double"}
+      ],
+      [Dictionary.Type.Boolean.new!(name: "patched"), %Result{name: "patched", type: "boolean"}],
       [
         Dictionary.Type.Date.new!(name: "date", format: "%Y"),
         %Result{name: "date", type: "date"}
@@ -34,7 +39,7 @@ defmodule Persist.DictionaryTest do
             Dictionary.Type.Integer.new!(name: "age")
           ]
         ),
-        %Result{name: "spouse", type: "row(name varchar,age integer)"}
+        %Result{name: "spouse", type: "row(name varchar,age bigint)"}
       ],
       [
         Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String),
@@ -49,7 +54,7 @@ defmodule Persist.DictionaryTest do
             Dictionary.Type.Integer.new!(name: "age")
           ]
         ),
-        %Result{name: "friends", type: "array(row(name varchar,age integer))"}
+        %Result{name: "friends", type: "array(row(name varchar,age bigint))"}
       ]
     ])
   end

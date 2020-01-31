@@ -37,7 +37,9 @@ defmodule Persist.WriterTest do
       dictionary =
         Dictionary.from_list([
           %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
+          %Dictionary.Type.Integer{name: "age"},
+          %Dictionary.Type.Float{name: "score"},
+          %Dictionary.Type.Boolean{name: "applied"}
         ])
 
       Writer.PrestoMock
@@ -54,7 +56,13 @@ defmodule Persist.WriterTest do
       assert "test_catalog" == Keyword.get(init_arg, :catalog)
       assert "test_schema" == Keyword.get(init_arg, :schema)
       assert "table_bobby" == Keyword.get(init_arg, :table)
-      assert [{"name", "varchar"}, {"age", "integer"}] == Keyword.get(init_arg, :table_schema)
+
+      assert [
+               {"name", "varchar"},
+               {"age", "bigint"},
+               {"score", "double"},
+               {"applied", "boolean"}
+             ] == Keyword.get(init_arg, :table_schema)
     end
   end
 
