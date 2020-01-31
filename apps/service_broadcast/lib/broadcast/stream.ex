@@ -1,7 +1,7 @@
 defmodule Broadcast.Stream do
   use Supervisor
 
-  @spec name(Load.Persist.t()) :: atom
+  @spec name(Load.Broadcast.t()) :: atom
   def name(load) do
     :"broadcast_stream_#{load.id}"
   end
