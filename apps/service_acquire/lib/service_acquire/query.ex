@@ -44,6 +44,24 @@ defmodule Acquire.Query do
     defp limit_statement(nil), do: nil
     defp limit_statement(n), do: "LIMIT #{n}"
   end
+
+  def from_params(%{"dataset" => dataset} = params) do
+    subset = Map.get(params, "subset", "default")
+
+    fields =
+      Map.get(params, "fields", "*")
+      |> String.split(",", trim: true)
+      |> Enum.map(&String.trim/1)
+
+    new(
+      table: "#{dataset}__#{subset}",
+      fields: fields,
+      limit: limit(params),
+    )
+  end
+
+  defp limit(%{"limit" => limit}), do: String.to_integer(limit)
+  defp limit(_), do: nil
 end
 
 defmodule Acquire.Query.V1 do

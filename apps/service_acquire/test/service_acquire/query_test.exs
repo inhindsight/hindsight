@@ -22,6 +22,28 @@ defmodule Acquire.QueryTest do
     end
   end
 
+  describe "from_params/1" do
+    test "returns default struct" do
+      params = %{"dataset" => "a"}
+      assert {:ok, %Query{} = query} = Query.from_params(params)
+
+      assert query.table == "a__default"
+      assert query.fields == ["*"]
+      refute query.limit
+      refute query.where
+    end
+
+    test "splits fields string into list of fields" do
+      params = %{"dataset" => "a", "fields" => "x,y,z"}
+      assert {:ok, %Query{fields: ["x", "y", "z"]}} = Query.from_params(params)
+    end
+
+    test "converts limit string into integer" do
+      params = %{"dataset" => "a", "limit" => "42"}
+      assert {:ok, %Query{limit: 42}} = Query.from_params(params)
+    end
+  end
+
   describe "parsing" do
     test "parses statement from basic query" do
       query = Query.new!(table: "a__b")
