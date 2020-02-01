@@ -1,6 +1,11 @@
 defmodule Acquire.Query.Function do
   use Definition, schema: Acquire.Query.Function.V1
 
+  @type t :: %__MODULE__{
+    function: String.t(),
+    args: [term]
+  }
+
   defstruct [:function, :args]
 
   defimpl Acquire.Queryable, for: __MODULE__ do
