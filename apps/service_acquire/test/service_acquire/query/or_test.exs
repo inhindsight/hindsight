@@ -47,6 +47,7 @@ defmodule Acquire.Query.OrTest do
 
       assert Queryable.parse_statement(input) ==
                "(a(?, ?) OR (a(?, ?) AND col1 > col2) OR (b(?, ?) AND c(col3, a(?, ?)) AND col4 = ?))"
+
       assert Queryable.parse_input(input) == [1, 2, 1, 2, 3, 4, 1, 2, 5]
     end
   end

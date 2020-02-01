@@ -87,7 +87,9 @@ defmodule Acquire.QueryTest do
 
       query = Query.new!(table: "a__b", fields: ["one", "two"], limit: 10, where: or1)
 
-      assert Queryable.parse_statement(query) == "SELECT one, two FROM a__b WHERE ((a(?, ?) AND b(?, ?)) OR one = ?) LIMIT 10"
+      assert Queryable.parse_statement(query) ==
+               "SELECT one, two FROM a__b WHERE ((a(?, ?) AND b(?, ?)) OR one = ?) LIMIT 10"
+
       assert Queryable.parse_input(query) == [1, 2, 3, 4, 5]
     end
   end

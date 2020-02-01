@@ -45,7 +45,9 @@ defmodule Acquire.Query.AndTest do
 
       input = And.new!(conditions: [fun1, or1, or2])
 
-      assert Queryable.parse_statement(input) == "(a(?, ?) AND (a(?, ?) OR col1 > col2) AND (b(?, ?) OR c(col3, a(?, ?)) OR col4 = ?))"
+      assert Queryable.parse_statement(input) ==
+               "(a(?, ?) AND (a(?, ?) OR col1 > col2) AND (b(?, ?) OR c(col3, a(?, ?)) OR col4 = ?))"
+
       assert Queryable.parse_input(input) == [1, 2, 1, 2, 3, 4, 1, 2, 5]
     end
   end

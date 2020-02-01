@@ -15,7 +15,7 @@ defmodule Acquire.Query.FilterParserTest do
         ["abc<42", "<", ["abc", "42"]],
         ["ABC>=42", ">=", ["ABC", "42"]],
         ["a12<=42", "<=", ["a12", "42"]],
-        ["Z90!=A sentence.", "!=", ["Z90", "A sentence."]],
+        ["Z90!=A sentence.", "!=", ["Z90", "A sentence."]]
       ]
     end
   end
