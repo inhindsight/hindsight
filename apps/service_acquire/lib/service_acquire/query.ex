@@ -27,8 +27,10 @@ defmodule Acquire.Query do
       |> Enum.join(" ")
     end
 
-    def parse_input(query) do
-      where_input(query.where)
+    def parse_input(%Acquire.Query{where: nil}), do: []
+
+    def parse_input(%Acquire.Query{} = query) do
+      Acquire.Queryable.parse_input(query.where)
     end
 
     defp where_statement(nil), do: nil
@@ -37,9 +39,6 @@ defmodule Acquire.Query do
       statement = Acquire.Queryable.parse_statement(query)
       "WHERE #{statement}"
     end
-
-    defp where_input(nil), do: []
-    defp where_input(query), do: Acquire.Queryable.parse_input(query)
 
     defp limit_statement(nil), do: nil
     defp limit_statement(n), do: "LIMIT #{n}"
@@ -56,7 +55,7 @@ defmodule Acquire.Query do
     new(
       table: "#{dataset}__#{subset}",
       fields: fields,
-      limit: limit(params),
+      limit: limit(params)
     )
   end
 
