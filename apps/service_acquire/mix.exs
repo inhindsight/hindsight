@@ -39,6 +39,7 @@ defmodule Acquire.MixProject do
       {:definition, in_umbrella: true},
       {:ok, in_umbrella: true},
       {:properties, in_umbrella: true},
+      {:nimble_parsec, "~> 0.5.3"},
       {:prestige, "~> 1.0"},
       {:phoenix, "~> 1.4.11"},
       {:phoenix_pubsub, "~> 1.1"},
