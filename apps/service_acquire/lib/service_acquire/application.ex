@@ -5,6 +5,8 @@ defmodule Acquire.Application do
 
   use Application
 
+  def instance(), do: :acquire_instance
+
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
