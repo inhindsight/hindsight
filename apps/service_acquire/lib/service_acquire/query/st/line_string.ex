@@ -1,7 +1,7 @@
 defmodule Acquire.Query.ST.LineString do
   use Definition, schema: Acquire.Query.ST.LineString.V1
 
-  @type t :: %__MODULE__{points: [Acquire.Query.ST.Point.t()]}
+  @type t :: %__MODULE__{points: [Acquire.Query.Where.Function.t()]}
 
   defstruct points: []
 

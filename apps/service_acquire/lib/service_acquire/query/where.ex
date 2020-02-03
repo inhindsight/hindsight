@@ -1,17 +1,8 @@
 defmodule Acquire.Query.Where do
-  use Definition, schema: Acquire.Query.Where.V1
-
-  alias Acquire.Query.Where.{Function, And, FilterParser}
+  alias Acquire.Query.Where.{And, FilterParser}
   alias Acquire.Query.Where.Bbox
 
-  @type t :: %__MODULE__{
-          operator: Queryable.t() | nil,
-          boundary: Queryable.t() | nil
-        }
-
-  defstruct [:operator, :boundary]
-
-  @spec from_params(params :: map) :: t
+  @spec from_params(params :: map) :: Acquire.Queryable.t()
   def from_params(params) do
     with {:ok, operator} <- parse_operator(params),
          {:ok, boundary} <- parse_boundary(params) do
@@ -45,19 +36,5 @@ defmodule Acquire.Query.Where do
     |> String.split(",", trim: true)
     |> Enum.map(&String.to_float/1)
     |> Bbox.to_queryable("#{dataset}__#{subset}")
-  end
-end
-
-defmodule Acquire.Query.Where.V1 do
-  use Definition.Schema
-
-  alias Acquire.Query.Where.{Function, And, Or}
-
-  @impl true
-  def s do
-    schema(%Acquire.Query.Where{
-      operator: one_of([Function.schema(), And.schema(), spec(is_nil())]),
-      boundary: one_of([Function.schema(), Or.schema(), spec(is_nil())])
-    })
   end
 end
