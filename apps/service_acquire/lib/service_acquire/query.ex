@@ -52,11 +52,14 @@ defmodule Acquire.Query do
       |> String.split(",", trim: true)
       |> Enum.map(&String.trim/1)
 
-    new(
-      table: "#{dataset}__#{subset}",
-      fields: fields,
-      limit: limit(params),
-      where: Acquire.Query.Where.from_params(params)
+    Acquire.Query.Where.from_params(params)
+    |> Ok.map(
+      &new(
+        table: "#{dataset}__#{subset}",
+        fields: fields,
+        limit: limit(params),
+        where: &1
+      )
     )
   end
 

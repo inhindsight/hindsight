@@ -6,7 +6,7 @@ defmodule Acquire.Query.FilterParserTest do
 
   describe "parse_operation/1" do
     data_test "parses filter into parameterized Function struct" do
-      assert ^fun = FilterParser.parse_operation(input)
+      assert {:ok, ^fun} = FilterParser.parse_operation(input)
 
       where [
         [:input, :fun],
