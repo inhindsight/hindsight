@@ -1,5 +1,5 @@
 defmodule Acquire.Event.Handler do
-	use Brook.Event.Handler
+  use Brook.Event.Handler
 
   import Events, only: [transform_define: 0]
 

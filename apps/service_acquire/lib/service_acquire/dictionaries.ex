@@ -4,7 +4,8 @@ defmodule Acquire.Dictionaries do
 
   @spec persist(Transform.t()) :: :ok
   def persist(%Transform{dataset_id: id} = transform) do
-    with {:ok, dictionary} <- Transformer.transform_dictionary(transform.steps, transform.dictionary) do
+    with {:ok, dictionary} <-
+           Transformer.transform_dictionary(transform.steps, transform.dictionary) do
       fields = %{"wkt" => wkt(dictionary), "dictionary" => dictionary}
       Brook.ViewState.merge(@collection, id, fields)
     end

@@ -14,5 +14,4 @@ defmodule Acquire.Query.ST.EnvelopeTest do
       assert Queryable.parse_input(envelope) == [42]
     end
   end
-
 end

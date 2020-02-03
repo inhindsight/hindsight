@@ -1,5 +1,5 @@
 defmodule Acquire.Query.ST do
-	@moduledoc "TODO"
+  @moduledoc "TODO"
 
   alias Acquire.Query.Where.{Function, Parameter}
 

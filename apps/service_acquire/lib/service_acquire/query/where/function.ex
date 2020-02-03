@@ -2,9 +2,9 @@ defmodule Acquire.Query.Where.Function do
   use Definition, schema: Acquire.Query.Where.Function.V1
 
   @type t :: %__MODULE__{
-    function: String.t(),
-    args: [term]
-  }
+          function: String.t(),
+          args: [term]
+        }
 
   defstruct [:function, :args]
 
