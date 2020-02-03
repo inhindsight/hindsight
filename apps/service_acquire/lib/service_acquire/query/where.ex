@@ -1,7 +1,7 @@
 defmodule Acquire.Query.Where do
   use Definition, schema: Acquire.Query.Where.V1
 
-  alias Acquire.Query.Where.{Function, And}
+  alias Acquire.Query.Where.{Function, And, FilterParser}
   alias Acquire.Query.Where.Bbox
 
   @type t :: %__MODULE__{
@@ -30,7 +30,7 @@ defmodule Acquire.Query.Where do
   defp parse_operator(params) do
     Map.get(params, "filter", "")
     |> String.split(",", trim: true)
-    |> Ok.transform(&Acquire.Query.Where.FilterParser.parse_operation/1)
+    |> Ok.transform(&FilterParser.parse_operation/1)
     |> Ok.map(fn
       [] -> nil
       [fun] -> fun
