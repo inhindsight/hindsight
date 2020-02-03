@@ -35,8 +35,8 @@ defmodule Acquire.Query do
 
     defp where_statement(nil), do: nil
 
-    defp where_statement(query) do
-      statement = Acquire.Queryable.parse_statement(query)
+    defp where_statement(where) do
+      statement = Acquire.Queryable.parse_statement(where)
       "WHERE #{statement}"
     end
 
@@ -55,7 +55,8 @@ defmodule Acquire.Query do
     new(
       table: "#{dataset}__#{subset}",
       fields: fields,
-      limit: limit(params)
+      limit: limit(params),
+      where: Acquire.Query.Where.from_params(params)
     )
   end
 

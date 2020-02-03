@@ -7,7 +7,7 @@ defmodule Acquire.Query.FilterParser do
   def parse_operation(input) do
     with {:ok, [left, op, right], _, _, _, _} <- operator(input),
          {:ok, parameter} <- Parameter.new(value: right) do
-      Function.new(function: op, args: [left, parameter])
+      Function.new!(function: op, args: [left, parameter])
     end
   end
 
