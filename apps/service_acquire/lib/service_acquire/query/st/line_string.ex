@@ -1,6 +1,8 @@
 defmodule Acquire.Query.ST.LineString do
   use Definition, schema: Acquire.Query.ST.LineString.V1
 
+  @type t :: %__MODULE__{points: [Acquire.Query.ST.Point.t()]}
+
   defstruct points: []
 
   defimpl Acquire.Queryable, for: __MODULE__ do

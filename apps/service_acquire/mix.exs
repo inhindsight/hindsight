@@ -39,6 +39,8 @@ defmodule Acquire.MixProject do
       {:definition, in_umbrella: true},
       {:ok, in_umbrella: true},
       {:properties, in_umbrella: true},
+      {:definition_events, in_umbrella: true},
+      {:transformer, in_umbrella: true},
       {:nimble_parsec, "~> 0.5.3"},
       {:prestige, "~> 1.0"},
       {:phoenix, "~> 1.4.11"},
@@ -48,7 +50,8 @@ defmodule Acquire.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:testing, in_umbrella: true, only: [:test]},
       {:mox, "~> 0.5.1", only: [:test]},
-      {:checkov, "~> 1.0", only: [:dev, :test]}
+      {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}
     ]
   end
 end
