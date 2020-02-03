@@ -29,7 +29,8 @@ defmodule Avro.MixProject do
       {:ok, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:temp, "~> 0.4.7"},
-      {:checkov, "~> 1.0", only: [:dev, :test]}
+      {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}
     ]
   end
 end
