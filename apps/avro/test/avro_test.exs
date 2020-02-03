@@ -9,8 +9,9 @@ defmodule AvroTest do
       ])
 
     assert {:ok, avro} = Avro.open("people", dictionary)
+    on_exit(fn -> File.rm(avro.file_path) end)
 
-    assert {:ok, 209,} =
+    assert {:ok, 209} =
              Avro.write(avro, [
                %{"name" => "joe", "age" => 21},
                %{"name" => "bob", "age" => 23}

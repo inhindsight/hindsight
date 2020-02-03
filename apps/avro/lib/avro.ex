@@ -12,10 +12,10 @@ defmodule Avro do
 
   @spec open(String.t(), Dictionary.t()) :: t
   def open(name, dictionary) do
-    file_path = "a.out"
+    {:ok, file_path} = Temp.path(suffix: "avro")
+    file = File.open!(file_path, [:write])
     schema = create_schema(name, dictionary)
     header = :avro_ocf.make_header(schema)
-    file = File.open!(file_path, [:write])
     :ok = :avro_ocf.write_header(file, header)
 
     %__MODULE__{
