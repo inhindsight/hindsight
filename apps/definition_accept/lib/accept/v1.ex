@@ -8,7 +8,8 @@ defmodule Accept.V1 do
       id: id(),
       dataset_id: id(),
       name: required_string(),
-      destination: required_string()
+      destination: required_string(),
+      connection: one_of([of_struct(Accept.Udp), of_struct(Accept.Tcp)])
     })
   end
 end

@@ -14,7 +14,8 @@ defmodule Accept do
     ...>             id: "123-456",
     ...>             dataset_id: "456-789",
     ...>             name: "456-789:2020-01-28",
-    ...>             destination: "gather-456-789-123-456"
+    ...>             destination: "gather-456-789-123-456",
+    ...>             connection: %Accept.Udp{port: 5555, delivery: :binary}
     ...>           )
     {:ok,
       %Accept{
@@ -22,7 +23,8 @@ defmodule Accept do
                id: "123-456",
                dataset_id: "456-789",
                name: "456-789:2020-01-28",
-               destination: "gather-456-789-123-456"
+               destination: "gather-456-789-123-456",
+               connection: %{Accept.Udp{port: 5555, delivery: :binary}}
              }
     }
   """
@@ -35,12 +37,14 @@ defmodule Accept do
           id: uuid,
           dataset_id: uuid,
           name: String.t(),
-          destination: String.t()
+          destination: String.t(),
+          connection: Accept.Connection.t()
         }
 
   defstruct version: 1,
             id: nil,
             dataset_id: nil,
             name: nil,
-            destination: nil
+            destination: nil,
+            connection: nil
 end

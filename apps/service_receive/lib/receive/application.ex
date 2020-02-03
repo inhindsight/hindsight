@@ -19,7 +19,7 @@ defmodule Receive.Application do
   end
 
   defp init() do
-    if get_config_value(:init?, default: true), do: Gather.Init, else: []
+    if get_config_value(:init?, default: true), do: Receive.Init, else: []
   end
 
   defp brook() do

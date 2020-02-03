@@ -1,6 +1,5 @@
 defmodule AcceptTest do
   use Checkov
-  doctest Accept
 
   describe "new/1" do
     data_test "validates #{field} against bad input" do

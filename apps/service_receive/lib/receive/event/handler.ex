@@ -2,7 +2,7 @@ defmodule Receive.Event.Handler do
   use Brook.Event.Handler
   require Logger
 
-  alias Receive.Receipt.Store
+  alias Receive.Socket.Store
   import Events, only: [accept_start: 0, accept_end: 0]
 
   def handle_event(%Brook.Event{type: accept_start(), data: %Accept{} = accept}) do

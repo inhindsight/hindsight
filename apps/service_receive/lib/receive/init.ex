@@ -1,14 +1,14 @@
 defmodule Receive.Init do
   use Initializer,
     name: __MODULE__,
-    supervisor: Receive.Receipt.Supervisor
+    supervisor: Receive.Socket.Supervisor
 
-  alias Receive.Receipt
+  alias Receive.Socket
 
   def on_start(state) do
-    Receipt.Store.get_all!()
+    Socket.Store.get_all!()
     |> Enum.each(fn accept ->
-      Receipt.Supervisor.start_child({Receipt, accept: accept})
+      Socket.Supervisor.start_child({Socket, accept: accept})
     end)
 
     {:ok, state}

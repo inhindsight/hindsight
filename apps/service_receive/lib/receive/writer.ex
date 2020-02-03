@@ -14,7 +14,7 @@ defmodule Receive.Writer do
 
     writer_args = [
       endpoints: kafka_endpoints(),
-      name: Keyword.get(args, :name, nil)
+      name: Keyword.get(args, :name, nil),
       topic: destination
     ]
 
