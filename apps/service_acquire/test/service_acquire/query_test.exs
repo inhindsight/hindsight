@@ -4,7 +4,7 @@ defmodule Acquire.QueryTest do
 
   alias Acquire.Query
   alias Acquire.Queryable
-  alias Acquire.Query.{Function, And, Or, Parameter}
+  alias Acquire.Query.Where.{Function, And, Or, Parameter}
 
   describe "new/1" do
     data_test "validates #{key} against bad input" do

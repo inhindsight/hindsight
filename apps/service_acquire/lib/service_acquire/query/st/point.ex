@@ -1,5 +1,5 @@
 defmodule Acquire.Query.ST.Point do
-  alias Acquire.Query.{Function, Parameter}
+  alias Acquire.Query.Where.{Function, Parameter}
 
   @typedoc """
   Must be string value of `ST_Point` to match PrestoDB function.

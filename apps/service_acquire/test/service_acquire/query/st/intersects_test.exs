@@ -1,7 +1,8 @@
 defmodule Acquire.Query.ST.IntersectsTest do
   use ExUnit.Case
 
-  alias Acquire.Query.{ST, Function}
+  alias Acquire.Query.ST
+  alias Acquire.Query.Where.Function
 
   describe "new/2" do
     test "returns ST_Intersects function" do

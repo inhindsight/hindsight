@@ -2,7 +2,7 @@ defmodule Acquire.Query.ST.EnvelopeTest do
   use ExUnit.Case
 
   alias Acquire.Query.ST.Envelope
-  alias Acquire.Query.{Function, Parameter}
+  alias Acquire.Query.Where.{Function, Parameter}
   alias Acquire.Queryable
 
   describe "parsing" do

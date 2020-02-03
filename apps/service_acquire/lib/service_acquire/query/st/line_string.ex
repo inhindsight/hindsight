@@ -26,7 +26,7 @@ defmodule Acquire.Query.ST.LineString.V1 do
   @impl true
   def s do
     schema(%Acquire.Query.ST.LineString{
-      points: coll_of(Acquire.Query.Function.schema())
+      points: coll_of(Acquire.Query.Where.Function.schema())
     })
   end
 end

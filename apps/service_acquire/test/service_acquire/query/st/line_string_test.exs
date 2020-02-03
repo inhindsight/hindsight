@@ -2,7 +2,7 @@ defmodule Acquire.Query.ST.LineStringTest do
   use ExUnit.Case
 
   alias Acquire.Query.ST.{LineString, Point}
-  alias Acquire.Query.{Function, Parameter}
+  alias Acquire.Query.Where.{Function, Parameter}
   alias Acquire.Queryable
 
   describe "new/1" do

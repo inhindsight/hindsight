@@ -1,9 +1,9 @@
-defmodule Acquire.Query.FunctionTest do
+defmodule Acquire.Query.Where.FunctionTest do
   use ExUnit.Case
   import Checkov
 
   alias Acquire.Queryable
-  alias Acquire.Query.{Function, Parameter}
+  alias Acquire.Query.Where.{Function, Parameter}
 
   describe "new/1" do
     data_test "validates for bad input" do

@@ -13,7 +13,7 @@ defmodule Acquire.Query.Where.Bbox do
 
         [_ | _] = geos ->
           Ok.transform(geos, &ST.Intersects.new(envelope, &1))
-          |> Ok.map(&Acquire.Query.Or.new(conditions: &1))
+          |> Ok.map(&Acquire.Query.Where.Or.new(conditions: &1))
       end
     end
   end

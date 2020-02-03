@@ -1,5 +1,5 @@
-defmodule Acquire.Query.Parameter do
-  use Definition, schema: Acquire.Query.Parameter.V1
+defmodule Acquire.Query.Where.Parameter do
+  use Definition, schema: Acquire.Query.Where.Parameter.V1
 
   @type t :: %__MODULE__{value: term}
 
@@ -10,12 +10,12 @@ defmodule Acquire.Query.Parameter do
   def get_value(_), do: nil
 end
 
-defmodule Acquire.Query.Parameter.V1 do
+defmodule Acquire.Query.Where.Parameter.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Acquire.Query.Parameter{
+    schema(%Acquire.Query.Where.Parameter{
       value: spec(not_nil?())
     })
   end

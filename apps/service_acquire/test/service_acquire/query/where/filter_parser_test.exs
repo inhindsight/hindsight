@@ -2,7 +2,7 @@ defmodule Acquire.Query.FilterParserTest do
   use ExUnit.Case
   import Checkov
 
-  alias Acquire.Query.{FilterParser, Function, Parameter}
+  alias Acquire.Query.Where.{FilterParser, Function, Parameter}
 
   describe "parse_operation/1" do
     data_test "parses filter into parameterized Function struct" do

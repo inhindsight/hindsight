@@ -3,7 +3,8 @@ defmodule Acquire.Query.Where.BboxTest do
   use Placebo
 
   alias Acquire.Query.Where.Bbox
-  alias Acquire.Query.{Function, Or, ST}
+  alias Acquire.Query.ST
+  alias Acquire.Query.Where.{Function, Or}
 
   describe "to_queryable/2" do
     test "returns queryable object for one geospatial field" do

@@ -1,5 +1,5 @@
-defmodule Acquire.Query.And do
-  use Definition, schema: Acquire.Query.And.V1
+defmodule Acquire.Query.Where.And do
+  use Definition, schema: Acquire.Query.Where.And.V1
   defstruct [:conditions]
 
   defimpl Acquire.Queryable, for: __MODULE__ do
@@ -19,12 +19,12 @@ defmodule Acquire.Query.And do
   end
 end
 
-defmodule Acquire.Query.And.V1 do
+defmodule Acquire.Query.Where.And.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Acquire.Query.And{
+    schema(%Acquire.Query.Where.And{
       conditions: conditions()
     })
   end

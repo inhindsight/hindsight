@@ -2,7 +2,7 @@ defmodule Acquire.Query.ST.PointTest do
   use ExUnit.Case
 
   alias Acquire.Query.ST.Point
-  alias Acquire.Query.{Function, Parameter}
+  alias Acquire.Query.Where.{Function, Parameter}
 
   describe "new/2" do
     test "returns parameterized ST_Point function" do

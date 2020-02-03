@@ -1,5 +1,5 @@
-defmodule Acquire.Query.Function do
-  use Definition, schema: Acquire.Query.Function.V1
+defmodule Acquire.Query.Where.Function do
+  use Definition, schema: Acquire.Query.Where.Function.V1
 
   @type t :: %__MODULE__{
     function: String.t(),
@@ -12,7 +12,7 @@ defmodule Acquire.Query.Function do
     @operators ["=", ">", "<", ">=", "<=", "!="]
 
     alias Acquire.Queryable
-    alias Acquire.Query.Parameter
+    alias Acquire.Query.Where.Parameter
 
     def parse_statement(fun) do
       [arg1, arg2] =
@@ -50,12 +50,12 @@ defmodule Acquire.Query.Function do
   end
 end
 
-defmodule Acquire.Query.Function.V1 do
+defmodule Acquire.Query.Where.Function.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Acquire.Query.Function{
+    schema(%Acquire.Query.Where.Function{
       function: required_string(),
       args: spec(&two_args?/1)
     })

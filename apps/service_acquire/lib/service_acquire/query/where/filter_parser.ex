@@ -1,7 +1,7 @@
-defmodule Acquire.Query.FilterParser do
+defmodule Acquire.Query.Where.FilterParser do
   import NimbleParsec
 
-  alias Acquire.Query.{Function, Parameter}
+  alias Acquire.Query.Where.{Function, Parameter}
 
   @spec parse_operation(input :: String.t()) :: {:ok, Function.t()} | {:error, term}
   def parse_operator(""), do: Ok.ok([])

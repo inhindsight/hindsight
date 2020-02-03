@@ -20,7 +20,7 @@ end
 defmodule Acquire.Query.ST.Envelope.V1 do
   use Definition.Schema
 
-  alias Acquire.Query.Function
+  alias Acquire.Query.Where.Function
   alias Acquire.Query.ST.LineString
 
   @impl true
