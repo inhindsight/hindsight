@@ -10,7 +10,7 @@ defmodule Acquire.Query.Where.BboxTest do
     test "returns queryable object for one geospatial field" do
       expect Acquire.Dictionaries.get("a__default", "wkt"), return: {:ok, ["foobar"]}
 
-      points = [ST.Point.new!(1.0, 2.0), ST.Point.new!(3.0, 4.0)]
+      points = [ST.point!(1.0, 2.0), ST.point!(3.0, 4.0)]
       ls = ST.LineString.new!(points: points)
       envelope = ST.Envelope.new!(geometry: ls)
       geometry = ST.GeometryFromText.new!(text: "foobar")
@@ -22,7 +22,7 @@ defmodule Acquire.Query.Where.BboxTest do
     test "returns queryable object for multiple geospatial fields" do
       expect Acquire.Dictionaries.get("a__default", "wkt"), return: {:ok, ["foo", "bar"]}
 
-      points = [ST.Point.new!(1.0, 2.0), ST.Point.new!(3.0, 4.0)]
+      points = [ST.point!(1.0, 2.0), ST.point!(3.0, 4.0)]
       ls = ST.LineString.new!(points: points)
       envelope = ST.Envelope.new!(geometry: ls)
 
