@@ -7,7 +7,7 @@ defmodule Acquire.Query.Where.BboxTest do
 
   describe "to_queryable/2" do
     test "returns queryable object for one geospatial field" do
-      expect Acquire.Fields.get("a__default", "wkt"), return: {:ok, ["foobar"]}
+      expect Acquire.Dictionaries.get("a__default", "wkt"), return: {:ok, ["foobar"]}
 
       points = [ST.Point.new!(1.0, 2.0), ST.Point.new!(3.0, 4.0)]
       ls = ST.LineString.new!(points: points)
@@ -19,7 +19,7 @@ defmodule Acquire.Query.Where.BboxTest do
     end
 
     test "returns queryable object for multiple geospatial fields" do
-      expect Acquire.Fields.get("a__default", "wkt"), return: {:ok, ["foo", "bar"]}
+      expect Acquire.Dictionaries.get("a__default", "wkt"), return: {:ok, ["foo", "bar"]}
 
       points = [ST.Point.new!(1.0, 2.0), ST.Point.new!(3.0, 4.0)]
       ls = ST.LineString.new!(points: points)

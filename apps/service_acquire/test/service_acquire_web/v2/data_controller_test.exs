@@ -15,7 +15,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
 
   describe "select/2" do
     data_test "retrieves data", %{conn: conn} do
-      allow Acquire.Fields.get("a__b", "wkt"), return: {:ok, ["__wkt__"]}
+      allow Acquire.Dictionaries.get("a__b", "wkt"), return: {:ok, ["__wkt__"]}
 
       data = [%{"a" => 42}]
       Mox.expect(Acquire.Db.Mock, :execute, fn ^query, ^values -> {:ok, data} end)
