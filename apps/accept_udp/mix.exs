@@ -23,6 +23,7 @@ defmodule Accept.Udp.MixProject do
 
   defp deps do
     [
+      {:brook_serializer, "~> 2.2", only: [:test]},
       {:definition, in_umbrella: true},
       {:definition_accept, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}

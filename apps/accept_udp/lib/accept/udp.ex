@@ -19,7 +19,7 @@ defmodule Accept.Udp do
   end
 end
 
-defmodule Receive.Udp.V1 do
+defmodule Accept.Udp.V1 do
   use Definition.Schema
 
   @impl true
