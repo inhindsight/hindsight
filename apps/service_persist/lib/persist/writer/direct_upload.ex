@@ -33,7 +33,7 @@ defmodule Persist.Writer.DirectUpload do
 
     state = %{
       load: load,
-      dictionary: dictionary,
+      dictionary: dictionary
     }
 
     case table_creator().create(load.destination, dictionary) do

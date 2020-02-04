@@ -23,6 +23,7 @@ defmodule Persist.TableCreator.Presto do
       |> Enum.join(",")
 
     create_table = "CREATE TABLE IF NOT EXISTS #{table} (#{columns}) with ( format = 'AVRO' )"
+
     case Prestige.execute(new_session(), create_table) do
       {:ok, _} -> :ok
       error_result -> error_result

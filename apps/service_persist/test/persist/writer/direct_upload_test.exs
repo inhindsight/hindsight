@@ -21,13 +21,14 @@ defmodule Persist.Writer.DirectUploadTest do
   setup do
     Process.flag(:trap_exit, true)
 
-    load = Load.Persist.new!(
-      id: "1",
-      dataset_id: "ds1",
-      name: "name",
-      source: "topic1",
-      destination: "table1"
-    )
+    load =
+      Load.Persist.new!(
+        id: "1",
+        dataset_id: "ds1",
+        name: "name",
+        source: "topic1",
+        destination: "table1"
+      )
 
     [load: load]
   end
@@ -38,7 +39,8 @@ defmodule Persist.Writer.DirectUploadTest do
       {:error, "failed to create"}
     end)
 
-    {:error, "failed to create"} = Persist.Writer.DirectUpload.start_link(load: load, dictionary: :dictionary)
+    {:error, "failed to create"} =
+      Persist.Writer.DirectUpload.start_link(load: load, dictionary: :dictionary)
   end
 
   test "will stop process when unable to open datafile", %{load: load} do
@@ -48,21 +50,20 @@ defmodule Persist.Writer.DirectUploadTest do
     Persist.DataFileMock
     |> stub(:open, fn _, _ -> {:error, "failed to open"} end)
 
-
     {:ok, pid} = Persist.Writer.DirectUpload.start_link(load: load, dictionary: :dictionary)
     assert {:error, "failed to open"} = Persist.Writer.DirectUpload.write(pid, [:data])
   end
 
   test "will stop process when unable to write to data file", %{load: load} do
-      Persist.TableCreatorMock
-      |> stub(:create, fn _, _ -> :ok end)
+    Persist.TableCreatorMock
+    |> stub(:create, fn _, _ -> :ok end)
 
-      Persist.DataFileMock
-      |> stub(:open, fn _, _ -> {:ok, :data_file} end)
-      |> stub(:write, fn _, _ -> {:error, "failed to write"} end)
+    Persist.DataFileMock
+    |> stub(:open, fn _, _ -> {:ok, :data_file} end)
+    |> stub(:write, fn _, _ -> {:error, "failed to write"} end)
 
-      {:ok, pid} = Persist.Writer.DirectUpload.start_link(load: load, dictionary: :dictionary)
-      assert {:error, "failed to write"} = Persist.Writer.DirectUpload.write(pid, [:data])
+    {:ok, pid} = Persist.Writer.DirectUpload.start_link(load: load, dictionary: :dictionary)
+    assert {:error, "failed to write"} = Persist.Writer.DirectUpload.write(pid, [:data])
   end
 
   test "will stop process when unable to upload data file", %{load: load} do
