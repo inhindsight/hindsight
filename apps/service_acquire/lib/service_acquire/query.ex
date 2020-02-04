@@ -70,12 +70,15 @@ end
 defmodule Acquire.Query.V1 do
   use Definition.Schema
 
+  alias Acquire.Query.Where.{Function, And, Or}
+
   @impl true
   def s do
     schema(%Acquire.Query{
       table: spec(table_name?()),
       fields: coll_of(required_string()),
-      limit: spec(is_nil() or pos_integer?())
+      limit: spec(is_nil() or pos_integer?()),
+      where: one_of([Function.schema(), And.schema(), Or.schema(), spec(is_nil())])
     })
   end
 end
