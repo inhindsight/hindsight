@@ -18,7 +18,7 @@ defmodule PersistTest do
     },
     %{
       app: :service_persist,
-      key: Persist.Writer,
+      key: Persist.Loader,
       update: fn config ->
         Keyword.put(config, :writer, Writer.PrestoMock)
       end
@@ -90,7 +90,7 @@ defmodule PersistTest do
 
     ref = Broadway.test_messages(broadway, messages)
 
-    assert_receive {:write, [[12, "'bob'"]], [dictionary: ^dictionary]}
+    assert_receive {:write, [%{"fullname" => "bob", "age" => 12}], [dictionary: ^dictionary]}
     assert_receive {:ack, ^ref, success, failed}
     assert 1 == length(success)
 

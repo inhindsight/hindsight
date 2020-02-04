@@ -1,7 +1,9 @@
 defmodule BroadcastWeb.Channel do
   use BroadcastWeb, :channel
+  require Logger
 
   @update_event "update"
+  intercept [@update_event]
 
   def join("broadcast:" <> topic, _message, socket) do
     send(self(), {:after_join, topic})
@@ -21,5 +23,11 @@ defmodule BroadcastWeb.Channel do
   catch
     :exit, _ ->
       {:noreply, socket}
+  end
+
+  def handle_out(@update_event, payload, socket) do
+    Logger.debug(fn -> "#{__MODULE__}: outbound message : #{inspect(payload)}" end)
+    push(socket, @update_event, payload)
+    {:noreply, socket}
   end
 end

@@ -149,7 +149,15 @@ config :service_persist, Persist.Application,
     event_processing_timeout: 20_000
   ]
 
-config :service_persist, Persist.Writer, Keyword.put(presto_db, :user, "hindsight")
+config :service_persist, Persist.TableCreator.Presto,
+  url: "http://localhost:8080",
+  user: "hindsight",
+  catalog: "hive",
+  schema: "default"
+
+config :service_persist, Persist.Uploader.S3,
+  s3_bucket: "kdp-cloud-storage",
+  s3_path: "hive-s3"
 
 config :service_persist, Persist.Load.Broadway,
   app_name: "service_persist",

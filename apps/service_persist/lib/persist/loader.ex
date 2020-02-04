@@ -8,7 +8,7 @@ defmodule Persist.Loader do
 
   alias Persist.Transformations
 
-  getter(:writer, default: Persist.Writer)
+  getter(:writer, default: Persist.Writer.DirectUpload)
   getter(:broadway, default: Persist.Load.Broadway)
 
   @type init_opts :: [
