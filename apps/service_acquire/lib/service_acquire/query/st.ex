@@ -10,7 +10,10 @@ defmodule Acquire.Query.ST do
 
   @spec intersects!(term, term) :: Function.t()
   def intersects!(a, b) do
-    Function.new!(function: "ST_Intersects", args: [a, b])
+    case intersects(a, b) do
+      {:ok, value} -> value
+      {:error, reason} -> raise reason
+    end
   end
 
   @spec point(x :: float, y :: float) :: {:ok, Function.t()} | {:error, term}
@@ -21,7 +24,9 @@ defmodule Acquire.Query.ST do
 
   @spec point!(x :: float, y :: float) :: Function.t()
   def point!(x, y) do
-    args = Enum.map([x, y], &Parameter.new!(value: &1))
-    Function.new!(function: "ST_Point", args: args)
+    case point(x, y) do
+      {:ok, value} -> value
+      {:error, reason} -> raise reason
+    end
   end
 end
