@@ -30,11 +30,13 @@ defmodule Avro do
     e -> {:error, e}
   end
 
-  @spec write(t, :avro.in()) :: :ok
+  @spec write(t, :avro.in()) :: {:ok, non_neg_integer} | {:error, term}
   def write(avro, data) do
     :avro_ocf.append_file(avro.file, avro.header, avro.lkup, avro.schema, data)
     %{size: size} = File.stat!(avro.file_path)
     Ok.ok(size)
+  rescue
+    e -> {:error, e}
   end
 
   @spec close(t) :: String.t()

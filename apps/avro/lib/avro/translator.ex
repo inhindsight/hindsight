@@ -3,6 +3,15 @@ defprotocol Avro.Translator do
   def translate_type(t)
 end
 
+defimpl Avro.Translator, for: Dictionary.Type.Map do
+  def translate_type(%{name: name, dictionary: dictionary}) do
+    sub_fields = Enum.map(dictionary, &Avro.Translator.translate_type/1)
+    child_record = :avro_record.type("record_0", sub_fields)
+    union = :avro_union.type([:null, child_record])
+    :avro_record.define_field(name, union)
+  end
+end
+
 defimpl Avro.Translator, for: Dictionary.Type.String do
   @nullable_string :avro_union.type([:null, :string])
   def translate_type(%{name: name}) do
