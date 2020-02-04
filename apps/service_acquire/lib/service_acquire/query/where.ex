@@ -1,6 +1,5 @@
 defmodule Acquire.Query.Where do
-  alias Acquire.Query.Where.{And, FilterParser}
-  alias Acquire.Query.Where.Bbox
+  alias Acquire.Query.Where.{And, FilterParser, Bbox}
 
   @spec from_params(params :: map) :: Acquire.Queryable.t()
   def from_params(params) do
