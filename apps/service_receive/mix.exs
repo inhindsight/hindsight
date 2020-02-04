@@ -25,12 +25,14 @@ defmodule Receive.MixProject do
   defp deps do
     [
       {:brook, "~> 0.5"},
+      {:definition_accept, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:initializer, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:writer_kafka, in_umbrella: true},
       {:testing, in_umbrella: true, only: [:test]},
-      {:mox, "~> 0.5.1", only: [:test]}
+      {:mox, "~> 0.5.1", only: [:test]},
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end
 end
