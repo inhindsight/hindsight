@@ -2,7 +2,7 @@ defmodule Acquire.Query do
   # TODO
   @moduledoc false
 
-  use Definition, schema: Acquire.Query.V1
+  use Definition, schema: Acquire.Query.Schema
 
   @type t :: %__MODULE__{
           table: String.t(),
@@ -67,7 +67,7 @@ defmodule Acquire.Query do
   defp limit(_), do: nil
 end
 
-defmodule Acquire.Query.V1 do
+defmodule Acquire.Query.Schema do
   use Definition.Schema
 
   alias Acquire.Query.Where.{Function, And, Or}

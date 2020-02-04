@@ -1,5 +1,5 @@
 defmodule Acquire.Query.ST.GeometryFromText do
-  use Definition, schema: Acquire.Query.ST.GeometryFromText.V1
+  use Definition, schema: Acquire.Query.ST.GeometryFromText.Schema
 
   @type t :: %__MODULE__{text: String.t()}
 
@@ -14,7 +14,7 @@ defmodule Acquire.Query.ST.GeometryFromText do
   end
 end
 
-defmodule Acquire.Query.ST.GeometryFromText.V1 do
+defmodule Acquire.Query.ST.GeometryFromText.Schema do
   use Definition.Schema
 
   @impl true

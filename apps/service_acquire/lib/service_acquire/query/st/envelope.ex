@@ -1,5 +1,5 @@
 defmodule Acquire.Query.ST.Envelope do
-  use Definition, schema: Acquire.Query.ST.Envelope.V1
+  use Definition, schema: Acquire.Query.ST.Envelope.Schema
 
   @type t :: %__MODULE__{geometry: Acquire.Queryable.t()}
 
@@ -17,7 +17,7 @@ defmodule Acquire.Query.ST.Envelope do
   end
 end
 
-defmodule Acquire.Query.ST.Envelope.V1 do
+defmodule Acquire.Query.ST.Envelope.Schema do
   use Definition.Schema
 
   alias Acquire.Query.Where.Function

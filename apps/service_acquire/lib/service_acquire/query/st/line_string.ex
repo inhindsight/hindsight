@@ -1,5 +1,5 @@
 defmodule Acquire.Query.ST.LineString do
-  use Definition, schema: Acquire.Query.ST.LineString.V1
+  use Definition, schema: Acquire.Query.ST.LineString.Schema
 
   @type t :: %__MODULE__{points: [Acquire.Query.Where.Function.t()]}
 
@@ -20,7 +20,7 @@ defmodule Acquire.Query.ST.LineString do
   end
 end
 
-defmodule Acquire.Query.ST.LineString.V1 do
+defmodule Acquire.Query.ST.LineString.Schema do
   use Definition.Schema
 
   @impl true

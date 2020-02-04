@@ -1,5 +1,5 @@
 defmodule Acquire.Query.Where.Function do
-  use Definition, schema: Acquire.Query.Where.Function.V1
+  use Definition, schema: Acquire.Query.Where.Function.Schema
 
   @type t :: %__MODULE__{
           function: String.t(),
@@ -50,7 +50,7 @@ defmodule Acquire.Query.Where.Function do
   end
 end
 
-defmodule Acquire.Query.Where.Function.V1 do
+defmodule Acquire.Query.Where.Function.Schema do
   use Definition.Schema
 
   @impl true
