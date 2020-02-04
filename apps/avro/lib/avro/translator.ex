@@ -31,47 +31,41 @@ defimpl Avro.Translator, for: Dictionary.Type.Map do
 end
 
 defimpl Avro.Translator, for: Dictionary.Type.String do
-  @nullable_string :avro_union.type([:null, :string])
   def type(_) do
-    @nullable_string
+    :avro_union.type([:null, :string])
   end
 
-  def field(%{name: name}) do
-    :avro_record.define_field(name, @nullable_string)
+  def field(%{name: name} = t) do
+    :avro_record.define_field(name, type(t))
   end
 end
 
 defimpl Avro.Translator, for: Dictionary.Type.Integer do
-  @nullable_long :avro_union.type([:null, :long])
-
   def type(_) do
-    @nullable_long
+    :avro_union.type([:null, :long])
   end
 
-  def field(%{name: name}) do
-    :avro_record.define_field(name, @nullable_long)
+  def field(%{name: name} = t) do
+    :avro_record.define_field(name, type(t))
   end
 end
 
 defimpl Avro.Translator, for: Dictionary.Type.Float do
-  @nullable_double :avro_union.type([:null, :double])
-
   def type(_) do
-    @nullable_double
+    :avro_union.type([:null, :double])
   end
 
-  def field(%{name: name}) do
-    :avro_record.define_field(name, @nullable_double)
+  def field(%{name: name} = t) do
+    :avro_record.define_field(name, type(t))
   end
 end
 
 defimpl Avro.Translator, for: Dictionary.Type.Boolean do
-  @nullable_boolean :avro_union.type([:null, :boolean])
   def type(_) do
-    @nullable_boolean
+    :avro_union.type([:null, :boolean])
   end
 
-  def field(%{name: name}) do
-    :avro_record.define_field(name, @nullable_boolean)
+  def field(%{name: name} = t) do
+    :avro_record.define_field(name, type(t))
   end
 end

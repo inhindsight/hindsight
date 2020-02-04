@@ -1,17 +1,17 @@
 defmodule Avro do
   @type t :: %__MODULE__{
           file_path: String.t(),
-          file: File.t(),
+          file: File.io_device(),
           lkup: :avro.lkup_fun(),
           schema: :avro.record_type(),
-          header: :avro.header()
+          header: :avro_ocf.header()
         }
 
   defstruct [:file_path, :file, :lkup, :schema, :header]
 
   @spec open(String.t(), Dictionary.t()) :: {:ok, t} | {:error, term}
   def open(name, dictionary) do
-    with {:ok, file_path} <- Temp.path(suffix: "avro"),
+    with {:ok, file_path} <- Temp.path(),
          {:ok, file} <- File.open(file_path, [:write]) do
       schema = create_schema(name, dictionary)
       header = :avro_ocf.make_header(schema)
