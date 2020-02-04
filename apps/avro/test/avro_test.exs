@@ -38,12 +38,6 @@ defmodule AvroTest do
     assert {:error, "failure"} == Avro.open("people", dictionary)
   end
 
-  test "will return an error when unable to open file", %{dictionary: dictionary} do
-    allow File.open(any(), any()), return: {:error, "failure"}
-
-    assert {:error, "failure"} == Avro.open("people", dictionary)
-  end
-
   test "returns error tuple when error is raised", %{dictionary: dictionary} do
     allow :avro_ocf.make_header(any()), exec: fn _ -> raise "failure" end
 

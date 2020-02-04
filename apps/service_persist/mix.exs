@@ -25,6 +25,7 @@ defmodule Persist.MixProject do
 
   defp deps do
     [
+      {:avro, in_umbrella: true},
       {:writer_presto, in_umbrella: true},
       {:writer_dlq, in_umbrella: true},
       {:definition_events, in_umbrella: true},
@@ -34,6 +35,10 @@ defmodule Persist.MixProject do
       {:properties, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:off_broadway_kafka, "~> 0.5"},
+      {:ex_aws_s3, "~> 2.0"},
+      {:hackney, "~> 1.15"},
+      {:poison, "~> 4.0"},
+      {:sweet_xml, "~> 0.6.6"},
       {:mox, "~> 0.5", only: [:test]},
       {:testing, in_umbrella: true, only: [:test]}
     ]

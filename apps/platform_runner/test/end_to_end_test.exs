@@ -6,7 +6,7 @@ defmodule PlatformRunner.EndToEndTest do
   alias PlatformRunner.{BroadcastClient, AcquireClient}
 
   @kafka [localhost: 9092]
-  @moduletag e2e: true, divo: true
+  @moduletag e2e: true, divo: true, timeout: :infinity
 
   test "orchestrated CSV" do
     bp = Bypass.open()
@@ -83,7 +83,7 @@ defmodule PlatformRunner.EndToEndTest do
                |> Enum.map(&Map.values(&1))
     end
 
-    assert_receive %{"single_letter" => "a", "number" => "1"}, 12_000
+    assert_receive %{"single_letter" => "a", "number" => "1"}, 30_000
     assert_receive %{"single_letter" => "b", "number" => "2"}, 1_000
     assert_receive %{"single_letter" => "c", "number" => "3"}, 1_000
 

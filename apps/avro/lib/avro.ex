@@ -46,7 +46,7 @@ defmodule Avro do
   end
 
   defp create_schema(name, dictionary) do
-    fields = Enum.map(dictionary, &Avro.Translator.translate_type/1)
+    fields = Enum.map(dictionary, &Avro.Translator.field/1)
     :avro_record.type(name, fields)
   end
 end
