@@ -33,7 +33,7 @@ defmodule AvroTest do
   end
 
   test "will return error tuple when unable to create file", %{dictionary: dictionary} do
-    allow Temp.path(any()), return: {:error, "failure"}
+    allow Temp.path(), return: {:error, "failure"}
 
     assert {:error, "failure"} == Avro.open("people", dictionary)
   end
