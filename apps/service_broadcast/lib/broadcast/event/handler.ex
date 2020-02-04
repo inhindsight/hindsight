@@ -9,14 +9,16 @@ defmodule Broadcast.Event.Handler do
       "#{__MODULE__}: Received event #{load_broadcast_start()}: #{inspect(load)}"
     end)
 
-    Broadcast.Stream.Supervisor.start_child({Broadcast.Stream.Broadway, load: load})
+    Broadcast.Stream.Supervisor.start_child({Broadcast.Stream, load: load})
     Broadcast.Stream.Store.persist(load)
     :ok
   end
 
   def handle_event(%Brook.Event{type: load_broadcast_end(), data: %Load.Broadcast{} = load}) do
-    case Broadcast.Stream.Registry.whereis(:"#{load.source}") do
-      :undefined ->
+    name = Broadcast.Stream.name(load)
+
+    case Process.whereis(name) do
+      nil ->
         :ok
 
       pid ->

@@ -1,6 +1,6 @@
-defmodule Broadcast do
+defmodule Acquire do
   @moduledoc """
-  Broadcast keeps the contexts that define your domain
+  Acquire keeps the contexts that define your domain
   and business logic.
 
   Contexts are also responsible for managing your data, regardless

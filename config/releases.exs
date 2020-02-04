@@ -22,6 +22,8 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+presto_db = [url: "http://localhost:8080", catalog: "hive", schema: "default"]
+
 kafka_endpoints =
   System.get_env("KAFKA_ENDPOINTS", "localhost:9092")
   |> String.split(",")
@@ -139,6 +141,13 @@ config :service_broadcast, Broadcast.Stream.Broadway,
       default: [
         stages: 1
       ]
+    ],
+    batchers: [
+      default: [
+        stages: 1,
+        batch_size: 100,
+        batch_timeout: 1_000
+      ]
     ]
   ]
 
@@ -167,11 +176,15 @@ config :service_persist, Persist.Application,
     event_processing_timeout: 20_000
   ]
 
-config :service_persist, Persist.Writer,
+config :service_persist, Persist.TableCreator.Presto,
   url: "http://localhost:8080",
   user: "hindsight",
   catalog: "hive",
   schema: "default"
+
+config :service_persist, Persist.Uploader.S3,
+  s3_bucket: "kdp-cloud-storage",
+  s3_path: "hive-s3"
 
 config :service_persist, Persist.Load.Broadway,
   app_name: "service_persist",
@@ -194,14 +207,14 @@ config :service_persist, Persist.Load.Broadway,
     ],
     processors: [
       default: [
-        stages: 1
+        stages: 100
       ]
     ],
     batchers: [
       default: [
         stages: 1,
-        batch_size: 100,
-        batch_timeout: 1_000
+        batch_size: 1000,
+        batch_timeout: 2_000
       ]
     ]
   ]
@@ -228,3 +241,6 @@ config :service_orchestrate, Orchestrate.Application,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
+
+# SERVICE ACQUIRE
+config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")

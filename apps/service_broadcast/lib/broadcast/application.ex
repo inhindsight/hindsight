@@ -9,6 +9,7 @@ defmodule Broadcast.Application do
   def start(_type, _args) do
     children =
       [
+        Broadcast.Cache.Registry,
         Broadcast.Stream.Registry,
         Broadcast.Stream.Supervisor,
         BroadcastWeb.Endpoint,

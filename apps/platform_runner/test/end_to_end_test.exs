@@ -3,10 +3,10 @@ defmodule PlatformRunner.EndToEndTest do
   use Divo
 
   import AssertAsync
-  alias PlatformRunner.BroadcastClient
+  alias PlatformRunner.{BroadcastClient, AcquireClient}
 
   @kafka [localhost: 9092]
-  @moduletag e2e: true, divo: true
+  @moduletag e2e: true, divo: true, timeout: :infinity
 
   test "orchestrated CSV" do
     bp = Bypass.open()
@@ -61,7 +61,7 @@ defmodule PlatformRunner.EndToEndTest do
             dataset_id: "e2e-csv-ds",
             name: "persist",
             source: "e2e-csv-gather",
-            destination: "e2e_csv"
+            destination: "e2e__csv"
           )
         ]
       )
@@ -83,7 +83,7 @@ defmodule PlatformRunner.EndToEndTest do
                |> Enum.map(&Map.values(&1))
     end
 
-    assert_receive %{"single_letter" => "a", "number" => "1"}, 12_000
+    assert_receive %{"single_letter" => "a", "number" => "1"}, 30_000
     assert_receive %{"single_letter" => "b", "number" => "2"}, 1_000
     assert_receive %{"single_letter" => "c", "number" => "3"}, 1_000
 
@@ -99,7 +99,7 @@ defmodule PlatformRunner.EndToEndTest do
 
     assert_async sleep: 1_000, max_tries: 30, debug: true do
       with {:ok, result} <-
-             Prestige.query(session, "select * from e2e_csv order by single_letter") do
+             Prestige.query(session, "select * from e2e__csv order by single_letter") do
         assert Prestige.Result.as_maps(result) == [
                  %{"single_letter" => "a", "number" => "1"},
                  %{"single_letter" => "b", "number" => "2"},
@@ -109,6 +109,13 @@ defmodule PlatformRunner.EndToEndTest do
         {:error, reason} -> flunk(inspect(reason))
       end
     end
+
+    expected = %{"single_letter" => "b"}
+
+    assert {:ok, [^expected]} =
+             AcquireClient.data("/e2e/csv?fields=single_letter&filter=number=2")
+
+    assert {:ok, [_, _]} = AcquireClient.data("/e2e/csv?limit=2")
   end
 
   describe "JSON" do
@@ -203,7 +210,7 @@ defmodule PlatformRunner.EndToEndTest do
           dataset_id: "e2e-json-ds",
           name: "persist",
           source: "e2e-json-gather",
-          destination: "e2e_json",
+          destination: "e2e__json",
           schema: [
             Dictionary.Type.String.new!(name: "name"),
             Dictionary.Type.Integer.new!(name: "number"),
@@ -227,7 +234,7 @@ defmodule PlatformRunner.EndToEndTest do
         )
 
       assert_async sleep: 1_000, max_tries: 30, debug: true do
-        with {:ok, result} <- Prestige.query(session, "select * from e2e_json") do
+        with {:ok, result} <- Prestige.query(session, "select * from e2e__json") do
           assert Prestige.Result.as_maps(result) == [
                    %{
                      "name" => "LeBron",
@@ -242,6 +249,20 @@ defmodule PlatformRunner.EndToEndTest do
           {:error, reason} -> flunk(inspect(reason))
         end
       end
+    end
+
+    @skip true
+    test "acquired" do
+      expected = %{
+        "name" => "LeBron",
+        "number" => 23,
+        "teammates" => [
+          %{"name" => "Kyrie"},
+          %{"name" => "Kevin"}
+        ]
+      }
+
+      assert {:ok, [^expected]} = AcquireClient.data("/e2e/json")
     end
   end
 end
