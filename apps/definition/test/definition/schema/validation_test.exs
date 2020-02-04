@@ -119,4 +119,39 @@ defmodule Definition.Schema.ValidationTest do
       end
     end
   end
+
+  describe "table_name?/1" do
+    test "returns true for dataset and subset names separated by two underscores" do
+      assert table_name?("a__b")
+    end
+
+    test "returns false for other strings" do
+      refute table_name?("ab")
+      refute table_name?("a__")
+    end
+
+    property "returns false for any other input" do
+      check all input <- term() do
+        refute table_name?(input)
+      end
+    end
+  end
+
+  describe "pos_integer?/1" do
+    test "returns true for positive integers" do
+      assert pos_integer?(1)
+    end
+
+    test "returns false for non-positive numbers" do
+      refute pos_integer?(0)
+      refute pos_integer?(-1)
+    end
+
+    property "returns false for any other input" do
+      check all input <- term(),
+                not is_integer(input) do
+        refute pos_integer?(input)
+      end
+    end
+  end
 end

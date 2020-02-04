@@ -136,4 +136,24 @@ defmodule Definition.Schema.Validation do
   @spec not_nil?(term) :: boolean
   def not_nil?(nil), do: false
   def not_nil?(_), do: true
+
+  @doc """
+  Evaluates whether input matches an acceptable table name pattern.
+  """
+  @spec table_name?(term) :: boolean
+  def table_name?(input) when is_binary(input) do
+    case String.split(input, "__", trim: true) do
+      [_, _] -> true
+      _ -> false
+    end
+  end
+
+  def table_name?(_), do: false
+
+  @doc """
+  Evaluates whether input is a positive integer.
+  """
+  @spec pos_integer?(term) :: boolean
+  def pos_integer?(input) when is_integer(input) and input > 0, do: true
+  def pos_integer?(_), do: false
 end

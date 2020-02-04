@@ -35,6 +35,7 @@
   "mint": {:hex, :mint, "1.0.0", "ca5ab33497ba2bdcc42f6cdd3927420a6159116be87c8173658e93c8746703da", [:mix], [{:castore, "~> 0.1.0", [hex: :castore, repo: "hexpm", optional: true]}], "hexpm"},
   "mox": {:hex, :mox, "0.5.1", "f86bb36026aac1e6f924a4b6d024b05e9adbed5c63e8daa069bd66fb3292165b", [:mix], [], "hexpm"},
   "nimble_csv": {:hex, :nimble_csv, "0.6.0", "a3673f26d41f986774fe6060e309615343d3cb83a6d435754d8b1fdbd5764879", [:mix], [], "hexpm"},
+  "nimble_parsec": {:hex, :nimble_parsec, "0.5.3", "def21c10a9ed70ce22754fdeea0810dafd53c2db3219a0cd54cf5526377af1c6", [:mix], [], "hexpm"},
   "norm": {:hex, :norm, "0.10.2", "393944ffa4309f198827266e423974bc69aa42fd8d8784a2c98453d3c852d1c7", [:mix], [], "hexpm"},
   "off_broadway_kafka": {:hex, :off_broadway_kafka, "0.5.1", "ef17cfeeb707b0774678197330e2e342fd657abb9c99b2c7710f7961b09a8af8", [:mix], [{:broadway, "~> 0.5.0", [hex: :broadway, repo: "hexpm", optional: false]}, {:elsa, "~> 0.11.1", [hex: :elsa, repo: "hexpm", optional: false]}, {:retry, "~> 0.13.0", [hex: :retry, repo: "hexpm", optional: false]}], "hexpm"},
   "parse_trans": {:hex, :parse_trans, "3.3.0", "09765507a3c7590a784615cfd421d101aec25098d50b89d7aa1d66646bc571c1", [:rebar3], [], "hexpm"},
