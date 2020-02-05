@@ -35,7 +35,8 @@ defmodule Accept.Udp.Socket do
   end
 
   @impl GenServer
-  def handle_info({:udp, _, _, _, payload}, %{queue: queue, batch_size: size} = state) when batch_reached?(queue, size) do
+  def handle_info({:udp, _, _, _, payload}, %{queue: queue, batch_size: size} = state)
+      when batch_reached?(queue, size) do
     new_state = process_messages([payload | queue], state)
 
     :ok = :inet.setopts(state.socket, active: size)
@@ -68,7 +69,7 @@ defmodule Accept.Udp.Socket do
 
   defp process_messages(messages, state) do
     messages
-    |> Enum.reverse
+    |> Enum.reverse()
     |> handle_messages(state.writer)
 
     state
