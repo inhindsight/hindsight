@@ -25,7 +25,7 @@ defmodule PlatformRunner.EndToEndTest do
             version: 1,
             id: "e2e-csv-extract-1",
             dataset_id: "e2e-csv-ds",
-            name: "gather",
+            subset_id: "gather",
             destination: "e2e-csv-gather",
             steps: [
               Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/file.csv"),
@@ -133,7 +133,7 @@ defmodule PlatformRunner.EndToEndTest do
           version: 1,
           id: "e2e-json-extract-1",
           dataset_id: "e2e-json-ds",
-          name: "gather",
+          subset_id: "gather",
           destination: "e2e-json-gather",
           steps: [
             Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/json"),

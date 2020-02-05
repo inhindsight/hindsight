@@ -59,7 +59,7 @@ defmodule GatherTest do
         version: 1,
         id: "extract-id-1",
         dataset_id: "test-ds1",
-        name: "Johnny",
+        subset_id: "Johnny",
         destination: "topic-1",
         steps: [
           Extract.Http.Get.new!(url: "http://localhost:#{bypass.port}/file.csv"),
@@ -89,7 +89,7 @@ defmodule GatherTest do
       Extract.new!(
         id: "extract-45",
         dataset_id: "ds45",
-        name: "get_some_data",
+        subset_id: "get_some_data",
         destination: "topic1",
         steps: []
       )

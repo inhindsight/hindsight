@@ -21,7 +21,7 @@ defmodule Orchestrate.Event.HandlerTest do
           Extract.new!(
             id: "extract-1",
             dataset_id: "ds1",
-            name: "kpi",
+            subset_id: "kpi",
             destination: "topic-1",
             steps: [],
             dictionary: []
