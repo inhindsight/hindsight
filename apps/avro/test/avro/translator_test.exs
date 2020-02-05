@@ -4,12 +4,13 @@ defmodule Avro.TranslatorTest do
 
   data_test "primitive types" do
     avro_field = Avro.Translator.field(type)
+    {:ok, avro_value} = Avro.Translator.value(type, value)
     schema = :avro_record.type("person", [avro_field])
 
     encoder = :avro.make_simple_encoder(schema, [])
     decoder = :avro.make_simple_decoder(schema, [])
 
-    input = %{type.name => value}
+    input = %{type.name => avro_value}
 
     result =
       input
@@ -17,14 +18,27 @@ defmodule Avro.TranslatorTest do
       |> decoder.()
       |> Map.new()
 
-    assert result == input
+    assert Map.get(result, type.name) == expected
 
     where [
-      [:type, :value],
-      [Dictionary.Type.String.new!(name: "name"), "joe"],
-      [Dictionary.Type.Integer.new!(name: "age"), 21],
-      [Dictionary.Type.Float.new!(name: "height"), 6.05],
-      [Dictionary.Type.Boolean.new!(name: "active?"), true]
+      [:type, :value, :expected],
+      [Dictionary.Type.String.new!(name: "name"), "joe", "joe"],
+      [Dictionary.Type.Integer.new!(name: "age"), 21, 21],
+      [Dictionary.Type.Float.new!(name: "height"), 6.05, 6.05],
+      [Dictionary.Type.Boolean.new!(name: "active?"), true, true],
+      [Dictionary.Type.Date.new!(name: "birthdate", format: "%Y"), "1978-05-27", 3068],
+      [
+        Dictionary.Type.Timestamp.new!(name: "timestamp", format: "%Y"),
+        "1977-05-27T00:00:00Z",
+        233_539_200_000
+      ],
+      [Dictionary.Type.Latitude.new!(name: "lat"), 85.65, 85.65],
+      [Dictionary.Type.Longitude.new!(name: "long"), 100.65, 100.65],
+      [
+        Dictionary.Type.Wkt.Point.new!(name: "point"),
+        "POINT(100.65 85.65)",
+        "POINT(100.65 85.65)"
+      ]
     ]
   end
 
@@ -34,7 +48,8 @@ defmodule Avro.TranslatorTest do
         name: "spouse",
         dictionary: [
           Dictionary.Type.String.new!(name: "name"),
-          Dictionary.Type.Integer.new!(name: "age")
+          Dictionary.Type.Integer.new!(name: "age"),
+          Dictionary.Type.Date.new!(name: "birthdate", format: "%Y")
         ]
       )
 
@@ -44,23 +59,24 @@ defmodule Avro.TranslatorTest do
     encoder = :avro.make_simple_encoder(schema, [])
     decoder = :avro.make_simple_decoder(schema, [])
 
-    input = %{"spouse" => %{"name" => "becky", "age" => 21}}
+    {:ok, input} =
+      Avro.Translator.value(type, %{"name" => "becky", "age" => 21, "birthdate" => "1978-05-27"})
 
     result =
-      input
+      %{"spouse" => input}
       |> encoder.()
       |> decoder.()
       |> Map.new()
       |> Map.update!("spouse", &Map.new/1)
 
-    assert result == input
+    assert result == %{"spouse" => input}
   end
 
   test "converts simple list" do
     type =
       Dictionary.Type.List.new!(
         name: "colors",
-        item_type: Dictionary.Type.String
+        item_type: Dictionary.Type.Date.new!(name: "in_list", format: "%Y")
       )
 
     avro_field = Avro.Translator.field(type)
@@ -69,13 +85,14 @@ defmodule Avro.TranslatorTest do
     encoder = :avro.make_simple_encoder(schema, [])
     decoder = :avro.make_simple_decoder(schema, [])
 
-    input = %{"colors" => ["red", "blue"]}
+    {:ok, input} = Avro.Translator.value(type, ["1982-01-05", "1999-11-14"])
 
     result =
-      input
+      %{"colors" => input}
       |> encoder.()
       |> decoder.()
       |> Map.new()
+      |> Map.get("colors")
 
     assert result == input
   end
@@ -84,11 +101,15 @@ defmodule Avro.TranslatorTest do
     type =
       Dictionary.Type.List.new!(
         name: "friends",
-        item_type: Dictionary.Type.Map,
-        dictionary: [
-          Dictionary.Type.String.new!(name: "name"),
-          Dictionary.Type.Integer.new!(name: "age")
-        ]
+        item_type:
+          Dictionary.Type.Map.new!(
+            name: "in_list",
+            dictionary: [
+              Dictionary.Type.String.new!(name: "name"),
+              Dictionary.Type.Integer.new!(name: "age"),
+              Dictionary.Type.Date.new!(name: "birthdate", format: "%Y")
+            ]
+          )
       )
 
     avro_field = Avro.Translator.field(type)
@@ -97,19 +118,19 @@ defmodule Avro.TranslatorTest do
     encoder = :avro.make_simple_encoder(schema, [])
     decoder = :avro.make_simple_decoder(schema, [])
 
-    input = %{
-      "friends" => [
-        %{"name" => "bob", "age" => 21},
-        %{"name" => "fred", "age" => 22}
-      ]
-    }
+    {:ok, input} =
+      Avro.Translator.value(type, [
+        %{"name" => "bob", "age" => 21, "birthdate" => "1956-12-01"},
+        %{"name" => "fred", "age" => 22, "birthdate" => "1975-01-01"}
+      ])
 
     result =
-      input
+      %{"friends" => input}
       |> encoder.()
       |> decoder.()
       |> Map.new()
-      |> Map.update!("friends", fn l -> Enum.map(l, &Map.new/1) end)
+      |> Map.get("friends")
+      |> Enum.map(&Map.new/1)
 
     assert result == input
   end

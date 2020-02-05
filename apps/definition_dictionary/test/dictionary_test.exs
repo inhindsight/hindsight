@@ -34,18 +34,24 @@ defmodule DictionaryTest do
           ),
           Dictionary.Type.List.new!(
             name: "friends",
-            item_type: Dictionary.Type.Map,
-            dictionary: [
-              Dictionary.Type.String.new!(name: "name"),
+            item_type:
               Dictionary.Type.Map.new!(
-                name: "work",
+                name: "in_list",
                 dictionary: [
-                  Dictionary.Type.Wkt.Point.new!(name: "location")
+                  Dictionary.Type.String.new!(name: "name"),
+                  Dictionary.Type.Map.new!(
+                    name: "work",
+                    dictionary: [
+                      Dictionary.Type.Wkt.Point.new!(name: "location")
+                    ]
+                  )
                 ]
               )
-            ]
           ),
-          Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String)
+          Dictionary.Type.List.new!(
+            name: "colors",
+            item_type: Dictionary.Type.String.new!(name: "in_list")
+          )
         ])
 
       result = Dictionary.get_by_type(dictionary, type)
