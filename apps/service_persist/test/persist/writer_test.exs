@@ -106,22 +106,28 @@ defmodule Persist.WriterTest do
         Dictionary.from_list([
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Integer.new!(name: "age"),
-          Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String),
+          Dictionary.Type.List.new!(
+            name: "colors",
+            item_type: Dictionary.Type.String.new!(name: "in_list")
+          ),
           Dictionary.Type.Map.new!(
             name: "spouse",
             dictionary: [
               Dictionary.Type.String.new!(name: "name"),
               Dictionary.Type.Integer.new!(name: "age"),
-              Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String)
+              Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String.new!(name: "in_list"))
             ]
           ),
           Dictionary.Type.List.new!(
             name: "friends",
-            item_type: Dictionary.Type.Map,
-            dictionary: [
-              Dictionary.Type.String.new!(name: "name"),
-              Dictionary.Type.Integer.new!(name: "age")
-            ]
+            item_type:
+              Dictionary.Type.Map.new!(
+                name: "in_list",
+                dictionary: [
+                  Dictionary.Type.String.new!(name: "name"),
+                  Dictionary.Type.Integer.new!(name: "age")
+                ]
+              )
           )
         ])
 

@@ -42,17 +42,23 @@ defmodule Persist.DictionaryTest do
         %Result{name: "spouse", type: "row(name varchar,age bigint)"}
       ],
       [
-        Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String),
+        Dictionary.Type.List.new!(
+          name: "colors",
+          item_type: Dictionary.Type.String.new!(name: "in_list")
+        ),
         %Result{name: "colors", type: "array(varchar)"}
       ],
       [
         Dictionary.Type.List.new!(
           name: "friends",
-          item_type: Dictionary.Type.Map,
-          dictionary: [
-            Dictionary.Type.String.new!(name: "name"),
-            Dictionary.Type.Integer.new!(name: "age")
-          ]
+          item_type:
+            Dictionary.Type.Map.new!(
+              name: "in_list",
+              dictionary: [
+                Dictionary.Type.String.new!(name: "name"),
+                Dictionary.Type.Integer.new!(name: "age")
+              ]
+            )
         ),
         %Result{name: "friends", type: "array(row(name varchar,age bigint))"}
       ]

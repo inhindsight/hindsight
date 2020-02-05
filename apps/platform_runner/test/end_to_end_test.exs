@@ -144,8 +144,13 @@ defmodule PlatformRunner.EndToEndTest do
             Dictionary.Type.Integer.new!(name: "number"),
             Dictionary.Type.List.new!(
               name: "teammates",
-              item_type: Dictionary.Type.Map,
-              dictionary: [Dictionary.Type.String.new!(name: "name")]
+              item_type:
+                Dictionary.Type.Map.new!(
+                  name: "in_list",
+                  dictionary: [
+                    Dictionary.Type.String.new!(name: "name")
+                  ]
+                )
             )
           ]
         )
@@ -162,8 +167,13 @@ defmodule PlatformRunner.EndToEndTest do
             Dictionary.Type.Integer.new!(name: "number"),
             Dictionary.Type.List.new!(
               name: "teammates",
-              item_type: Dictionary.Type.Map,
-              dictionary: [Dictionary.Type.String.new!(name: "name")]
+              item_type:
+                Dictionary.Type.Map.new!(
+                  name: "in_list",
+                  dictionary: [
+                    Dictionary.Type.String.new!(name: "name")
+                  ]
+                )
             )
           ],
           steps: []
@@ -216,8 +226,13 @@ defmodule PlatformRunner.EndToEndTest do
             Dictionary.Type.Integer.new!(name: "number"),
             Dictionary.Type.List.new!(
               name: "teammates",
-              item_type: Dictionary.Type.Map,
-              dictionary: [Dictionary.Type.String.new!(name: "name")]
+              item_type:
+                Dictionary.Type.Map.new!(
+                  name: "in_list",
+                  dictionary: [
+                    Dictionary.Type.String.new!(name: "name")
+                  ]
+                )
             )
           ]
         )

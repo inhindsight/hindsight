@@ -36,6 +36,7 @@ defmodule Dictionary.Impl do
 
     children =
       ordered
+      |> Enum.map(&collapse_list/1)
       |> Enum.filter(&Map.has_key?(&1, :dictionary))
       |> Enum.reduce([], fn field, acc ->
         sub_fields =
@@ -135,6 +136,12 @@ defmodule Dictionary.Impl do
 
   defp struct?(struct_module, %struct_module{}), do: true
   defp struct?(_, _), do: false
+
+  defp collapse_list(%{name: name, item_type: %{dictionary: dictionary}}) do
+    apply(Dictionary.Type.Map, :new!, [[name: name, dictionary: dictionary]])
+  end
+
+  defp collapse_list(o), do: o
 
   defimpl Collectable, for: __MODULE__ do
     def into(original) do
