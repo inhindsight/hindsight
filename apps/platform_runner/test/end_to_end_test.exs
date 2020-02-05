@@ -266,7 +266,7 @@ defmodule PlatformRunner.EndToEndTest do
       end
     end
 
-    @skip true
+    @tag skip: true
     test "acquired" do
       expected = %{
         "name" => "LeBron",

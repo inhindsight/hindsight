@@ -33,12 +33,12 @@ defmodule PlatformRunner.MixProject do
       {:service_orchestrate, in_umbrella: true},
       {:divo, "~> 1.1"},
       {:websockex, "~> 0.4.0"},
-      {:testing, in_umbrella: true, only: [:integration]},
-      {:bypass, "~> 1.0", only: [:integration]},
-      {:benchee, "~> 1.0", only: [:integration]}
+      {:testing, in_umbrella: true, only: [:test, :integration]},
+      {:bypass, "~> 1.0", only: [:test, :integration]},
+      {:benchee, "~> 1.0", only: [:test, :integration]}
     ]
   end
 
-  defp test_paths(:integration), do: ["test"]
+  defp test_paths(env) when env in [:test, :integration], do: ["test"]
   defp test_paths(_), do: []
 end
