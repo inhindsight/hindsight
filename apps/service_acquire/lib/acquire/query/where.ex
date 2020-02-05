@@ -1,7 +1,7 @@
 defmodule Acquire.Query.Where do
   alias Acquire.Query.Where.{And, FilterParser, Bbox}
 
-  @spec from_params(params :: map) :: Acquire.Queryable.t()
+  @spec from_params(params :: map) :: {:ok, Acquire.Queryable.t()} | {:error, term}
   def from_params(params) do
     with {:ok, operator} <- parse_operator(params),
          {:ok, boundary} <- parse_boundary(params) do
