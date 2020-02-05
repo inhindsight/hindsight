@@ -63,11 +63,11 @@ defmodule DictionaryTest do
         [
           Dictionary.Type.String,
           [["name"], ["nickname"], ["spouse", "name"], ["friends", "name"]]
-        ]
-        # [Dictionary.Type.Integer, [["age"]]],
-        # [Dictionary.Type.Wkt.Point, [["spouse", "location"], ["friends", "work", "location"]]],
-        # [Dictionary.Type.Map, [["friends", "work"], ["spouse"]]],
-        # [Dictionary.Type.List, [["colors"], ["friends"]]]
+        ],
+        [Dictionary.Type.Integer, [["age"]]],
+        [Dictionary.Type.Wkt.Point, [["spouse", "location"], ["friends", "work", "location"]]],
+        [Dictionary.Type.Map, [["friends", "work"], ["spouse"]]],
+        [Dictionary.Type.List, [["colors"], ["friends"]]]
       ]
     end
 
