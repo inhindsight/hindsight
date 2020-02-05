@@ -124,22 +124,13 @@ defmodule Persist.Dictionary do
   end
 
   defimpl Translator, for: Dictionary.Type.List do
-    def translate_type(%{name: name, item_type: item_type, dictionary: dictionary}) do
-      sub_field = struct(item_type, name: "fake", dictionary: dictionary)
-      sub_result = Translator.translate_type(sub_field)
+    def translate_type(%{name: name, item_type: item_type}) do
+      sub_result = Translator.translate_type(item_type)
       %Result{name: name, type: "array(#{sub_result.type})"}
     end
 
-    def translate_value(%{item_type: Dictionary.Type.Map, dictionary: dictionary}, list) do
-      map_type = %Dictionary.Type.Map{dictionary: dictionary}
-      values = Enum.map(list, &Translator.translate_value(map_type, &1))
-
-      "array[#{Enum.join(values, ",")}]"
-    end
-
     def translate_value(%{item_type: item_type}, list) do
-      struct = struct(item_type)
-      values = Enum.map(list, &Translator.translate_value(struct, &1))
+      values = Enum.map(list, &Translator.translate_value(item_type, &1))
 
       "array[#{Enum.join(values, ",")}]"
     end

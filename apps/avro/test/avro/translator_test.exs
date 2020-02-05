@@ -19,13 +19,13 @@ defmodule Avro.TranslatorTest do
 
     assert result == input
 
-    where [
+    where([
       [:type, :value],
       [Dictionary.Type.String.new!(name: "name"), "joe"],
       [Dictionary.Type.Integer.new!(name: "age"), 21],
       [Dictionary.Type.Float.new!(name: "height"), 6.05],
       [Dictionary.Type.Boolean.new!(name: "active?"), true]
-    ]
+    ])
   end
 
   test "converts map" do
@@ -60,7 +60,7 @@ defmodule Avro.TranslatorTest do
     type =
       Dictionary.Type.List.new!(
         name: "colors",
-        item_type: Dictionary.Type.String
+        item_type: Dictionary.Type.String.new!(name: "in_list")
       )
 
     avro_field = Avro.Translator.field(type)
@@ -84,11 +84,14 @@ defmodule Avro.TranslatorTest do
     type =
       Dictionary.Type.List.new!(
         name: "friends",
-        item_type: Dictionary.Type.Map,
-        dictionary: [
-          Dictionary.Type.String.new!(name: "name"),
-          Dictionary.Type.Integer.new!(name: "age")
-        ]
+        item_type:
+          Dictionary.Type.Map.new!(
+            name: "in_list",
+            dictionary: [
+              Dictionary.Type.String.new!(name: "name"),
+              Dictionary.Type.Integer.new!(name: "age")
+            ]
+          )
       )
 
     avro_field = Avro.Translator.field(type)

@@ -18,11 +18,14 @@ defmodule Transformer.MoveFieldTest do
         ),
         Dictionary.Type.List.new!(
           name: "friends",
-          item_type: Dictionary.Type.Map,
-          dictionary: [
-            Dictionary.Type.String.new!(name: "name"),
-            Dictionary.Type.Integer.new!(name: "age")
-          ]
+          item_type:
+            Dictionary.Type.Map.new!(
+              name: "in_list",
+              dictionary: [
+                Dictionary.Type.String.new!(name: "name"),
+                Dictionary.Type.Integer.new!(name: "age")
+              ]
+            )
         )
       ])
 

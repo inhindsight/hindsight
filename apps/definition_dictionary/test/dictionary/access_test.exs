@@ -20,12 +20,15 @@ defmodule Dictionary.AccessTest do
         ),
         Dictionary.Type.List.new!(
           name: "friends",
-          item_type: Dictionary.Type.Map,
-          dictionary: [
-            Dictionary.Type.String.new!(name: "name"),
-            Dictionary.Type.Integer.new!(name: "age"),
-            Dictionary.Type.Integer.new!(name: "since")
-          ]
+          item_type:
+            Dictionary.Type.Map.new!(
+              name: "in_list",
+              dictionary: [
+                Dictionary.Type.String.new!(name: "name"),
+                Dictionary.Type.Integer.new!(name: "age"),
+                Dictionary.Type.Integer.new!(name: "since")
+              ]
+            )
         )
       ])
 
