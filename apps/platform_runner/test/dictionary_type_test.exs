@@ -19,8 +19,10 @@ defmodule Dictionary.Type.Test do
     {:ok, modules} = :application.get_key(:definition_dictionary, :modules)
 
     modules
-    |> Enum.filter(fn x -> to_string(x) =~ ~r/^Elixir\.Dictionary\.Type\.[\w_]+$/ end)
+    |> Enum.filter(&String.starts_with?(to_string(&1), "Elixir.Dictionary.Type."))
     |> Enum.reject(&String.contains?(to_string(&1), "Normalizer"))
+    |> Enum.reject(&String.contains?(to_string(&1), "Error"))
+    |> Enum.reject(fn x -> to_string(x) =~ ~r/\.V\d+$/ end)
   end
 
   defp assert_impl(protocol, impl) do

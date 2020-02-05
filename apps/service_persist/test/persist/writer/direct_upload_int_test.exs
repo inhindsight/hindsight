@@ -33,7 +33,8 @@ defmodule Persist.Writer.DirectUploadIntTest do
     dictionary =
       Dictionary.from_list([
         Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age")
+        Dictionary.Type.Integer.new!(name: "age"),
+        Dictionary.Type.Date.new!(name: "birthdate", format: "%Y")
       ])
 
     load =
@@ -66,14 +67,15 @@ defmodule Persist.Writer.DirectUploadIntTest do
 
     assert result == [
              %{"Column" => "name", "Type" => "varchar", "Comment" => "", "Extra" => ""},
-             %{"Column" => "age", "Type" => "bigint", "Comment" => "", "Extra" => ""}
+             %{"Column" => "age", "Type" => "bigint", "Comment" => "", "Extra" => ""},
+             %{"Column" => "birthdate", "Type" => "date", "Comment" => "", "Extra" => ""}
            ]
   end
 
   test "writes to table", %{writer: writer, session: session, load: load} do
     data = [
-      %{"name" => "fred", "age" => 87},
-      %{"name" => "joey", "age" => 12}
+      %{"name" => "fred", "age" => 87, "birthdate" => "1956-01-01"},
+      %{"name" => "joey", "age" => 12, "birthdate" => "1987-12-12"}
     ]
 
     Persist.Writer.DirectUpload.write(writer, data)

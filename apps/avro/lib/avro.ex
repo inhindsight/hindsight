@@ -4,10 +4,11 @@ defmodule Avro do
           file: File.io_device(),
           lkup: :avro.lkup_fun(),
           schema: :avro.record_type(),
-          header: :avro_ocf.header()
+          header: :avro_ocf.header(),
+          dictionary: Dictionary.t()
         }
 
-  defstruct [:file_path, :file, :lkup, :schema, :header]
+  defstruct [:file_path, :file, :lkup, :schema, :header, :dictionary]
 
   @spec open(String.t(), Dictionary.t()) :: {:ok, t} | {:error, term}
   def open(name, dictionary) do
@@ -22,7 +23,8 @@ defmodule Avro do
         file: file,
         schema: schema,
         lkup: :avro.make_lkup_fun(schema),
-        header: header
+        header: header,
+        dictionary: dictionary
       }
       |> Ok.ok()
     end
@@ -32,9 +34,11 @@ defmodule Avro do
 
   @spec write(t, :avro.in()) :: {:ok, non_neg_integer} | {:error, term}
   def write(avro, data) do
-    :avro_ocf.append_file(avro.file, avro.header, avro.lkup, avro.schema, data)
-    %{size: size} = File.stat!(avro.file_path)
-    Ok.ok(size)
+    with {:ok, transformed_data} <- Ok.transform(data, &transform_data(avro.dictionary, &1)) do
+      :avro_ocf.append_file(avro.file, avro.header, avro.lkup, avro.schema, transformed_data)
+      %{size: size} = File.stat!(avro.file_path)
+      Ok.ok(size)
+    end
   rescue
     e -> {:error, e}
   end
@@ -43,6 +47,13 @@ defmodule Avro do
   def close(avro) do
     File.close(avro.file)
     avro.file_path
+  end
+
+  defp transform_data(dictionary, datum) do
+    Ok.reduce(dictionary, datum, fn field, row ->
+      Avro.Translator.value(field, Map.get(row, field.name))
+      |> Ok.map(&Map.put(row, field.name, &1))
+    end)
   end
 
   defp create_schema(name, dictionary) do
