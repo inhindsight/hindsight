@@ -115,7 +115,10 @@ defmodule Persist.WriterTest do
             dictionary: [
               Dictionary.Type.String.new!(name: "name"),
               Dictionary.Type.Integer.new!(name: "age"),
-              Dictionary.Type.List.new!(name: "colors", item_type: Dictionary.Type.String.new!(name: "in_list"))
+              Dictionary.Type.List.new!(
+                name: "colors",
+                item_type: Dictionary.Type.String.new!(name: "in_list")
+              )
             ]
           ),
           Dictionary.Type.List.new!(
