@@ -120,8 +120,8 @@ defmodule Avro.TranslatorTest do
 
     {:ok, input} =
       Avro.Translator.value(type, [
-          %{"name" => "bob", "age" => 21, "birthdate" => "1956-12-01"},
-          %{"name" => "fred", "age" => 22, "birthdate" => "1975-01-01"}
+        %{"name" => "bob", "age" => 21, "birthdate" => "1956-12-01"},
+        %{"name" => "fred", "age" => 22, "birthdate" => "1975-01-01"}
       ])
 
     result =
