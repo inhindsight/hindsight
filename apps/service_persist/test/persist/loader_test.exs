@@ -43,13 +43,9 @@ defmodule Persist.LoaderTest do
       Load.Persist.new!(
         id: "load-1",
         dataset_id: "ds1",
-        name: "fake-name",
+        subset_id: "fake-name",
         source: "topic-a",
-        destination: "table-a",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
+        destination: "table-a"
       )
 
     on_exit(fn ->

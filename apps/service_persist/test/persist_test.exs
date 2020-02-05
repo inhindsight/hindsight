@@ -64,7 +64,7 @@ defmodule PersistTest do
       Load.Persist.new!(
         id: "persist-1",
         dataset_id: "ds1",
-        name: "example",
+        subset_id: "example",
         source: "topic-example",
         destination: "ds1_example"
       )
@@ -119,7 +119,7 @@ defmodule PersistTest do
       Load.Persist.new!(
         id: "persist-1",
         dataset_id: "ds1",
-        name: "example",
+        subset_id: "example",
         source: "topic-example",
         destination: "ds1_example",
         schema: []
@@ -152,7 +152,7 @@ defmodule PersistTest do
       Load.Persist.new!(
         id: "persist-1",
         dataset_id: "ds1",
-        name: "example",
+        subset_id: "example",
         source: "topic-example",
         destination: "ds1_example",
         schema: [

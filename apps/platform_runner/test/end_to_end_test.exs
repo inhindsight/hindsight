@@ -59,7 +59,7 @@ defmodule PlatformRunner.EndToEndTest do
           Load.Persist.new!(
             id: "e2e-csv-persist-1",
             dataset_id: "e2e-csv-ds",
-            name: "persist",
+            subset_id: "persist",
             source: "e2e-csv-gather",
             destination: "e2e__csv"
           )
@@ -218,23 +218,9 @@ defmodule PlatformRunner.EndToEndTest do
         Load.Persist.new!(
           id: "e2e-json-persist-1",
           dataset_id: "e2e-json-ds",
-          name: "persist",
+          subset_id: "persist",
           source: "e2e-json-gather",
-          destination: "e2e__json",
-          schema: [
-            Dictionary.Type.String.new!(name: "name"),
-            Dictionary.Type.Integer.new!(name: "number"),
-            Dictionary.Type.List.new!(
-              name: "teammates",
-              item_type:
-                Dictionary.Type.Map.new!(
-                  name: "in_list",
-                  dictionary: [
-                    Dictionary.Type.String.new!(name: "name")
-                  ]
-                )
-            )
-          ]
+          destination: "e2e__json"
         )
 
       Persist.Application.instance()

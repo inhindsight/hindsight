@@ -37,7 +37,7 @@ defmodule Orchestrate.Event.HandlerTest do
           Load.Persist.new!(
             id: "persist-1",
             dataset_id: "ds1",
-            name: "kpi",
+            subset_id: "kpi",
             source: "topic-1",
             destination: "table-1",
             schema: []
