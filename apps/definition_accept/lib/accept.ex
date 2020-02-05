@@ -15,6 +15,8 @@ defmodule Accept do
     ...>             dataset_id: "456-789",
     ...>             name: "456-789:2020-01-28",
     ...>             destination: "gather-456-789-123-456",
+    ...>             batch_size: 100,
+    ...>             timeout: 10_000,
     ...>             connection: %Accept.SampleProtocol{port: 5555, key: "foobar", batch: 1_000}
     ...>           )
     {:ok,
@@ -24,6 +26,8 @@ defmodule Accept do
                dataset_id: "456-789",
                name: "456-789:2020-01-28",
                destination: "gather-456-789-123-456",
+               batch_size: 100,
+               timeout: 10_000,
                connection: %Accept.SampleProtocol{port: 5555, key: "foobar", batch: 1_000}
              }
     }
@@ -38,6 +42,8 @@ defmodule Accept do
           dataset_id: uuid,
           name: String.t(),
           destination: String.t(),
+          batch_size: non_neg_integer(),
+          timeout: timeout(),
           connection: Accept.Udp.t()
         }
 
@@ -46,5 +52,7 @@ defmodule Accept do
             dataset_id: nil,
             name: nil,
             destination: nil,
+            batch_size: nil,
+            timeout: nil,
             connection: nil
 end

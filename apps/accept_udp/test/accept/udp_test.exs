@@ -14,33 +14,24 @@ defmodule Accept.UdpTest do
         [:version, "1"],
         [:port, 100_000],
         [:port, nil],
-        [:port, "8080"],
-        [:batch_size, "5"],
-        [:batch_size, nil]
+        [:port, "8080"]
       ])
     end
   end
 
   describe "serialization" do
     test "can be decoded back into a struct" do
-      udp_conn = Accept.Udp.new!(port: 5060, batch_size: 1_000)
+      udp_conn = Accept.Udp.new!(port: 5060)
       json = Jason.encode!(udp_conn)
 
       assert {:ok, ^udp_conn} = Jason.decode!(json) |> Accept.Udp.new()
     end
 
     test "brook serializer can (de)serialize" do
-      udp_conn = Accept.Udp.new!(port: 5060, batch_size: 5_000)
+      udp_conn = Accept.Udp.new!(port: 5060)
 
       assert {:ok, ^udp_conn} =
                Brook.Serializer.serialize(udp_conn) |> elem(1) |> Brook.Deserializer.deserialize()
-    end
-  end
-
-  describe "Accept.Udp" do
-    test "Accept.Connection.connect" do
-      config = Accept.Udp.new!(port: 6789, batch_size: 1_000) |> Accept.Connection.connect()
-      assert config == [port: 6789, batch_size: 1_000]
     end
   end
 end

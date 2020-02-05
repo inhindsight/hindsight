@@ -1,4 +1,37 @@
 defmodule Accept.Socket do
-  @callback start_link(writer :: function, config :: term) :: GenServer.on_start()
-  @callback handle_message(message :: term, state) :: {:noreply, state} when state: term
+  @type writer :: (list -> :ok | {:error, term})
+  @type init_opts :: %{
+          connect: Accept.Udp.t(),
+          writer: writer,
+          batch_size: pos_integer,
+          timeout: timeout,
+          name: atom
+        }
+
+  @callback start_link(init_opts) :: GenServer.on_start()
+  @callback handle_messages(message :: term, writer) :: :ok | {:error, term}
+
+  defmacro __using__(_opts) do
+    quote do
+      import Accept.Socket, only: [batch_reached?: 2, timeout_reached?: 2]
+      @behaviour Accept.Socket
+
+      @impl Accept.Socket
+      def handle_messages(messages, writer) do
+        writer.(messages)
+      end
+
+      defoverridable handle_messages: 2
+    end
+  end
+
+  defmacro batch_reached?(current_batch, limit) do
+    quote do
+      length(unquote(current_batch)) + 1 >= unquote(limit)
+    end
+  end
+
+  def timeout_reached?(last_time, threshold) do
+    :erlang.system_time() - last_time >= threshold
+  end
 end

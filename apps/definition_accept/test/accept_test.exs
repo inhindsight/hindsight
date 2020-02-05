@@ -15,7 +15,11 @@ defmodule AcceptTest do
         [:name, nil],
         [:name, ""],
         [:destination, nil],
-        [:destination, ""]
+        [:destination, ""],
+        [:batch_size, "100"],
+        [:batch_size, nil],
+        [:timeout, "10_000"],
+        [:timeout, nil]
       ])
     end
   end

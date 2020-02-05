@@ -3,14 +3,12 @@ defmodule Accept.Udp do
 
   @type t :: %__MODULE__{
           version: integer,
-          port: integer,
-          batch_size: integer
+          port: integer
         }
 
   @derive Jason.Encoder
   defstruct version: 1,
-            port: nil,
-            batch_size: nil
+            port: nil
 end
 
 defmodule Accept.Udp.V1 do
@@ -20,8 +18,7 @@ defmodule Accept.Udp.V1 do
   def s do
     schema(%Accept.Udp{
       version: version(1),
-      port: spec(is_port?()),
-      batch_size: spec(pos_integer?())
+      port: spec(is_port?())
     })
   end
 end
