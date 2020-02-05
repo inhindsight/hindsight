@@ -17,7 +17,7 @@ defmodule BroadcastTest do
       Load.Broadcast.new!(
         id: "load-1",
         dataset_id: "ds1",
-        name: "intersections",
+        subset_id: "intersections",
         source: "topic-intersections",
         destination: "ds1_intersections"
       )

@@ -38,7 +38,7 @@ defmodule Broadcast.Stream.BroadwayTest do
       Load.Broadcast.new!(
         id: "load-1",
         dataset_id: "ds1",
-        name: "fake-ds",
+        subset_id: "fake-ds",
         source: "topic-1",
         destination: "channel-1"
       )
@@ -84,7 +84,7 @@ defmodule Broadcast.Stream.BroadwayTest do
       Load.Broadcast.new!(
         id: "load-1",
         dataset_id: "ds1",
-        name: "fake-ds",
+        subset_id: "fake-ds",
         source: "topic-1",
         destination: "channel-2"
       )
@@ -113,7 +113,7 @@ defmodule Broadcast.Stream.BroadwayTest do
       Load.Broadcast.new!(
         id: "load-1",
         dataset_id: "ds1",
-        name: "fake-ds",
+        subset_id: "fake-ds",
         source: "topic-2",
         destination: "channel-2"
       )
@@ -145,7 +145,7 @@ defmodule Broadcast.Stream.BroadwayTest do
       Load.Broadcast.new!(
         id: "load-id",
         dataset_id: "ds1",
-        name: "joey",
+        subset_id: "joey",
         source: "topic-3",
         destination: "channel-3"
       )
@@ -178,7 +178,7 @@ defmodule Broadcast.Stream.BroadwayTest do
       Load.Broadcast.new!(
         id: "load-1",
         dataset_id: "ds1",
-        name: "fake-ds",
+        subset_id: "fake-ds",
         source: "topic-1",
         destination: "channel-2"
       )

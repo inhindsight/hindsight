@@ -52,7 +52,7 @@ defmodule PlatformRunner.EndToEndTest do
           Load.Broadcast.new!(
             id: "e2e-csv-broadcast-1",
             dataset_id: "e2e-csv-ds",
-            name: "broadcast",
+            subset_id: "broadcast",
             source: "e2e-csv-gather",
             destination: "e2e_csv_broadcast"
           ),
@@ -193,7 +193,7 @@ defmodule PlatformRunner.EndToEndTest do
         Load.Broadcast.new!(
           id: "e2e-json-broadcast-1",
           dataset_id: "e2e-json-ds",
-          name: "broadcast",
+          subset_id: "broadcast",
           source: "e2e-json-gather",
           destination: "e2e_json_broadcast"
         )
