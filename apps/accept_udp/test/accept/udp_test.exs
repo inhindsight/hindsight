@@ -6,8 +6,8 @@ defmodule Accept.UdpTest do
   describe "new/1" do
     data_test "validates #{inspect(field)} against bad input" do
       assert {:error, [%{input: value, path: [field]} | _]} =
-        put_in(%{}, [field], value)
-        |> Accept.Udp.new()
+               put_in(%{}, [field], value)
+               |> Accept.Udp.new()
 
       where([
         [:field, :value],
@@ -32,7 +32,8 @@ defmodule Accept.UdpTest do
     test "brook serializer can (de)serialize" do
       udp_conn = Accept.Udp.new!(port: 5060, batch_size: 5_000)
 
-      assert {:ok, ^udp_conn} = Brook.Serializer.serialize(udp_conn) |> elem(1) |> Brook.Deserializer.deserialize()
+      assert {:ok, ^udp_conn} =
+               Brook.Serializer.serialize(udp_conn) |> elem(1) |> Brook.Deserializer.deserialize()
     end
   end
 

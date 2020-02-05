@@ -9,7 +9,14 @@ defmodule Accept.V1 do
       dataset_id: id(),
       name: required_string(),
       destination: required_string(),
-      connection: one_of([of_struct(Accept.Udp), of_struct(Accept.Tcp)])
+      connection: is_accept()
     })
+  end
+
+  defp is_accept() do
+    spec(fn
+      %m{} -> m |> to_string |> String.contains?("Accept")
+      _ -> false
+    end)
   end
 end

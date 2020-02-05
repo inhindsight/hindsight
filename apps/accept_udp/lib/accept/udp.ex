@@ -9,14 +9,8 @@ defmodule Accept.Udp do
 
   @derive Jason.Encoder
   defstruct version: 1,
-    port: nil,
-  batch_size: nil
-
-  defimpl Accept.Connection, for: __MODULE__ do
-    def connect(settings) do
-      [port: settings.port, batch_size: settings.batch_size]
-    end
-  end
+            port: nil,
+            batch_size: nil
 end
 
 defmodule Accept.Udp.V1 do
@@ -26,7 +20,7 @@ defmodule Accept.Udp.V1 do
   def s do
     schema(%Accept.Udp{
       version: version(1),
-      port: spec(is_integer() and &(&1 <= 65_535)),
+      port: spec(is_port?()),
       batch_size: spec(pos_integer?())
     })
   end

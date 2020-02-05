@@ -3,4 +3,8 @@ defmodule Accept.Udp.Socket do
 
   @behaviour Accept.Socket
 
+  @type init_opts :: [
+          connection: %Accept.Udp{},
+          writer: function
+        ]
 end

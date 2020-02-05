@@ -15,7 +15,7 @@ defmodule Accept do
     ...>             dataset_id: "456-789",
     ...>             name: "456-789:2020-01-28",
     ...>             destination: "gather-456-789-123-456",
-    ...>             connection: %Accept.Udp{port: 5555, delivery: :binary}
+    ...>             connection: %Accept.SampleProtocol{port: 5555, key: "foobar", batch: 1_000}
     ...>           )
     {:ok,
       %Accept{
@@ -24,7 +24,7 @@ defmodule Accept do
                dataset_id: "456-789",
                name: "456-789:2020-01-28",
                destination: "gather-456-789-123-456",
-               connection: %{Accept.Udp{port: 5555, delivery: :binary}}
+               connection: %Accept.SampleProtocol{port: 5555, key: "foobar", batch: 1_000}
              }
     }
   """
@@ -38,7 +38,7 @@ defmodule Accept do
           dataset_id: uuid,
           name: String.t(),
           destination: String.t(),
-          connection: Accept.Connection.t()
+          connection: Accept.Udp.t()
         }
 
   defstruct version: 1,
