@@ -28,7 +28,11 @@ secret_key_base =
     "d2cgmPzW+bqVjs99FUeKJ0kOm0w8EZBvLS7UBM8EHi6uBKgW2oBAa9pR2KSu8Z2W"
   )
 
-presto_db = [url: "http://localhost:8080", catalog: "hive", schema: "default"]
+presto_db = [
+  url: System.get_env("PRESTO_URL", "http://localhost:8080"),
+  catalog: "hive",
+  schema: "default"
+]
 
 # SERVICE_GATHER
 kafka_endpoints =
@@ -70,7 +74,6 @@ config :service_gather, Gather.Writer,
 # SERVICE BROADCAST
 config :service_broadcast, BroadcastWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
-  url: [host: "localhost"],
   secret_key_base: secret_key_base,
   render_errors: [view: BroadcastWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Broadcast.PubSub, adapter: Phoenix.PubSub.PG2],
@@ -157,11 +160,7 @@ config :service_persist, Persist.Application,
     event_processing_timeout: 20_000
   ]
 
-config :service_persist, Persist.TableCreator.Presto,
-  url: "http://localhost:8080",
-  user: "hindsight",
-  catalog: "hive",
-  schema: "default"
+config :service_persist, Persist.TableCreator.Presto, Keyword.put(presto_db, :user, "hindsight")
 
 config :service_persist, Persist.Uploader.S3,
   s3_bucket: "kdp-cloud-storage",
@@ -226,7 +225,6 @@ config :service_orchestrate, Orchestrate.Application,
 # SERVICE ACQUIRE
 config :service_acquire, AcquireWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
-  url: [host: "localhost"],
   secret_key_base: secret_key_base,
   render_errors: [view: AcquireWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Acquire.PubSub, adapter: Phoenix.PubSub.PG2],

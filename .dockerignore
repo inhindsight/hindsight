@@ -1,2 +1,6 @@
 _build/
 deps/
+.git/
+docs/
+*.yml
+*.md
