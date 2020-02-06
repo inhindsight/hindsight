@@ -23,7 +23,7 @@ defmodule Broadcast.Event.Handler do
 
       pid ->
         Broadcast.Stream.Supervisor.terminate_child(pid)
-        Broadcast.Stream.Store.delete(load.id)
+        Broadcast.Stream.Store.delete(load.dataset_id, load.subset_id)
         :ok
     end
   end
