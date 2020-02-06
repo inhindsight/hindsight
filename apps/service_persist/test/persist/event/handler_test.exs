@@ -10,6 +10,7 @@ defmodule Persist.Event.HandlerTest do
       Transform.new!(
         id: "transform-1",
         dataset_id: "ds1",
+        subset_id: "sb1",
         dictionary: [
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Integer.new!(name: "age")

@@ -28,6 +28,7 @@ defmodule OrchestrateTest do
             Transform.new!(
               id: "transform-1",
               dataset_id: "ds1",
+              subset_id: "kp1",
               dictionary: [],
               steps: []
             ),

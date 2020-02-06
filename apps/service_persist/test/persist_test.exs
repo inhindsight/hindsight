@@ -45,6 +45,7 @@ defmodule PersistTest do
       Transform.new!(
         id: "transform-1",
         dataset_id: "ds1",
+        subset_id: "sb1",
         dictionary: [
           %Dictionary.Type.String{name: "name"},
           %Dictionary.Type.Integer{name: "age"}
@@ -104,6 +105,7 @@ defmodule PersistTest do
       Transform.new!(
         id: "transform-1",
         dataset_id: "ds1",
+        subset_id: "sb1",
         dictionary: [
           %Dictionary.Type.String{name: "name"},
           %Dictionary.Type.Integer{name: "age"}

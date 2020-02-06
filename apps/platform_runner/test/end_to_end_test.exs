@@ -25,7 +25,7 @@ defmodule PlatformRunner.EndToEndTest do
             version: 1,
             id: "e2e-csv-extract-1",
             dataset_id: "e2e-csv-ds",
-            subset_id: "gather",
+            subset_id: "csv-subset",
             destination: "e2e-csv-gather",
             steps: [
               Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/file.csv"),
@@ -40,6 +40,7 @@ defmodule PlatformRunner.EndToEndTest do
           Transform.new!(
             id: "e2e-csv-tranform-1",
             dataset_id: "e2e-csv-ds",
+            subset_id: "csv-subset",
             dictionary: [
               Dictionary.Type.String.new!(name: "letter"),
               Dictionary.Type.String.new!(name: "number")
@@ -52,14 +53,14 @@ defmodule PlatformRunner.EndToEndTest do
           Load.Broadcast.new!(
             id: "e2e-csv-broadcast-1",
             dataset_id: "e2e-csv-ds",
-            subset_id: "broadcast",
+            subset_id: "csv-subset",
             source: "e2e-csv-gather",
             destination: "e2e_csv_broadcast"
           ),
           Load.Persist.new!(
             id: "e2e-csv-persist-1",
             dataset_id: "e2e-csv-ds",
-            subset_id: "persist",
+            subset_id: "csv-subset",
             source: "e2e-csv-gather",
             destination: "e2e__csv"
           )
@@ -133,7 +134,7 @@ defmodule PlatformRunner.EndToEndTest do
           version: 1,
           id: "e2e-json-extract-1",
           dataset_id: "e2e-json-ds",
-          subset_id: "gather",
+          subset_id: "json-subset",
           destination: "e2e-json-gather",
           steps: [
             Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/json"),
@@ -162,6 +163,7 @@ defmodule PlatformRunner.EndToEndTest do
         Transform.new!(
           id: "e2e-json-transform-1",
           dataset_id: "e2e-json-ds",
+          subset_id: "json-subset",
           dictionary: [
             Dictionary.Type.String.new!(name: "name"),
             Dictionary.Type.Integer.new!(name: "number"),
@@ -193,7 +195,7 @@ defmodule PlatformRunner.EndToEndTest do
         Load.Broadcast.new!(
           id: "e2e-json-broadcast-1",
           dataset_id: "e2e-json-ds",
-          subset_id: "broadcast",
+          subset_id: "json-subset",
           source: "e2e-json-gather",
           destination: "e2e_json_broadcast"
         )
@@ -218,7 +220,7 @@ defmodule PlatformRunner.EndToEndTest do
         Load.Persist.new!(
           id: "e2e-json-persist-1",
           dataset_id: "e2e-json-ds",
-          subset_id: "persist",
+          subset_id: "json-subset",
           source: "e2e-json-gather",
           destination: "e2e__json"
         )
