@@ -224,5 +224,13 @@ config :service_orchestrate, Orchestrate.Application,
   ]
 
 # SERVICE ACQUIRE
+config :service_acquire, AcquireWeb.Endpoint,
+  http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
+  url: [host: "localhost"],
+  secret_key_base: secret_key_base,
+  render_errors: [view: AcquireWeb.ErrorView, accepts: ~w(json)],
+  pubsub: [name: Acquire.PubSub, adapter: Phoenix.PubSub.PG2],
+  server: true
+
 config :service_acquire, Acquire.Db.Presto,
   presto: Keyword.put(presto_db, :user, "acquire")
