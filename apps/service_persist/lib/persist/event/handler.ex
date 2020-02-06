@@ -22,7 +22,7 @@ defmodule Persist.Event.Handler do
 
       pid ->
         Persist.Load.Supervisor.terminate_child(pid)
-        Persist.Load.Store.delete(load.id)
+        Persist.Load.Store.delete(load.dataset_id, load.subset_id)
     end
   end
 

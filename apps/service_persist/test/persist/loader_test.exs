@@ -28,7 +28,7 @@ defmodule Persist.LoaderTest do
       Transform.new!(
         id: "transform-1",
         dataset_id: "ds1",
-        subset_id: "sb1",
+        subset_id: "fake-name",
         dictionary: [
           %Dictionary.Type.String{name: "name"},
           %Dictionary.Type.Integer{name: "age"}

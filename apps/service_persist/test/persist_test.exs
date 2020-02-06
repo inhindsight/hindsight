@@ -45,7 +45,7 @@ defmodule PersistTest do
       Transform.new!(
         id: "transform-1",
         dataset_id: "ds1",
-        subset_id: "sb1",
+        subset_id: "example",
         dictionary: [
           %Dictionary.Type.String{name: "name"},
           %Dictionary.Type.Integer{name: "age"}
@@ -95,7 +95,7 @@ defmodule PersistTest do
     assert_receive {:ack, ^ref, success, failed}
     assert 1 == length(success)
 
-    assert load == Persist.Load.Store.get!(load.id)
+    assert load == Persist.Load.Store.get!(load.dataset_id, load.subset_id)
   end
 
   test "load:persist:end stops broadway and clears viewstate" do
@@ -105,7 +105,7 @@ defmodule PersistTest do
       Transform.new!(
         id: "transform-1",
         dataset_id: "ds1",
-        subset_id: "sb1",
+        subset_id: "example",
         dictionary: [
           %Dictionary.Type.String{name: "name"},
           %Dictionary.Type.Integer{name: "age"}
@@ -146,7 +146,7 @@ defmodule PersistTest do
       assert :undefined == Persist.Load.Registry.whereis(:"#{load.source}")
     end
 
-    assert nil == Persist.Load.Store.get!(load.id)
+    assert nil == Persist.Load.Store.get!(load.dataset_id, load.subset_id)
   end
 
   test "gracefully handles load:persist:end with no start" do

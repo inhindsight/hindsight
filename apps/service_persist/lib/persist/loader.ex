@@ -28,7 +28,8 @@ defmodule Persist.Loader do
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
     Logger.debug(fn -> "#{__MODULE__}: initializied for #{inspect(load)}" end)
 
-    with {:ok, transform} when not is_nil(transform) <- Transformations.get(load.dataset_id),
+    with {:ok, transform} when not is_nil(transform) <-
+           Transformations.get(load.dataset_id, load.subset_id),
          {:ok, dictionary} <- transform_dictionary(transform),
          {:ok, writer_pid} <- start_writer(load, dictionary),
          writer_function <- fn msgs ->
