@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :service_broadcast, BroadcastWeb.Endpoint,
   http: [port: 4000],
