@@ -15,6 +15,11 @@ defmodule Definition do
 
   @spec identifier(%{dataset_id: String.t(), subset_id: String.t()}) :: String.t()
   def identifier(%{dataset_id: dataset_id, subset_id: subset_id}) do
+    identifier(dataset_id, subset_id)
+  end
+
+  @spec identifier(dataset_id :: String.t(), subset_id :: String.t()) :: String.t()
+  def identifier(dataset_id, subset_id) do
     "#{dataset_id}__#{subset_id}"
   end
 
