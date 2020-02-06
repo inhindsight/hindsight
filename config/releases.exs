@@ -232,5 +232,4 @@ config :service_acquire, AcquireWeb.Endpoint,
   pubsub: [name: Acquire.PubSub, adapter: Phoenix.PubSub.PG2],
   server: true
 
-config :service_acquire, Acquire.Db.Presto,
-  presto: Keyword.put(presto_db, :user, "acquire")
+config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")
