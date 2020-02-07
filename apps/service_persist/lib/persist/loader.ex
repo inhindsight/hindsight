@@ -53,6 +53,7 @@ defmodule Persist.Loader do
 
   @impl GenServer
   def handle_info({:EXIT, _pid, reason}, state) do
+    Logger.warn(fn -> "#{__MODULE__}: Stopping : #{inspect(reason)}" end)
     {:stop, reason, state}
   end
 

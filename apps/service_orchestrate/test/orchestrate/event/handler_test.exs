@@ -16,6 +16,7 @@ defmodule Orchestrate.Event.HandlerTest do
       Schedule.new!(
         id: "schedule-1",
         dataset_id: "ds1",
+        subset_id: "kpi",
         cron: "* * * * *",
         extract:
           Extract.new!(

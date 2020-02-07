@@ -192,7 +192,7 @@ config :service_persist, Persist.Load.Broadway,
     ],
     batchers: [
       default: [
-        stages: 1,
+        stages: 2,
         batch_size: 1000,
         batch_timeout: 2_000
       ]

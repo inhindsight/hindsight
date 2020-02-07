@@ -19,6 +19,7 @@ defmodule PlatformRunner.EndToEndTest do
       Schedule.new!(
         id: "e2e-csv-schedule-1",
         dataset_id: "e2e-csv-ds",
+        subset_id: "csv-subset",
         cron: "*/10 * * * * * *",
         extract:
           Extract.new!(
