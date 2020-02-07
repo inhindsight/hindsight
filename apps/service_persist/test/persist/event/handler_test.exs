@@ -22,6 +22,7 @@ defmodule Persist.Event.HandlerTest do
 
     Brook.Test.send(@instance, transform_define(), "testing", transform)
 
-    assert {:ok, transform} == Persist.Transformations.get(transform.dataset_id, transform.subset_id)
+    assert {:ok, transform} ==
+             Persist.Transformations.get(transform.dataset_id, transform.subset_id)
   end
 end

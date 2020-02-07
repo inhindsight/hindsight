@@ -9,7 +9,8 @@ defmodule Orchestrate.Schedule.Store do
     Brook.ViewState.merge(@collection, identifier(schedule), %{schedule: schedule})
   end
 
-  @spec get(dataset_id :: String.t(), subset_id :: String.t()) :: {:ok, Schedule.t() | nil} | {:error, term}
+  @spec get(dataset_id :: String.t(), subset_id :: String.t()) ::
+          {:ok, Schedule.t() | nil} | {:error, term}
   def get(dataset_id, subset_id) do
     case Brook.get(@instance, @collection, identifier(dataset_id, subset_id)) do
       {:ok, %{} = map} -> {:ok, Map.get(map, :schedule)}

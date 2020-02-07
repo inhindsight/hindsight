@@ -9,7 +9,11 @@ defmodule Orchestrate do
   def run_schedule(dataset_id, subset_id) do
     case Orchestrate.Schedule.Store.get(dataset_id, subset_id) do
       {:ok, nil} ->
-        Logger.error("#{__MODULE__}: Unable to find schedule with : dataset_id #{dataset_id} subset_id #{subset_id}")
+        Logger.error(
+          "#{__MODULE__}: Unable to find schedule with : dataset_id #{dataset_id} subset_id #{
+            subset_id
+          }"
+        )
 
       {:ok, schedule} ->
         send_extract(schedule.extract)

@@ -68,7 +68,10 @@ defmodule OrchestrateTest do
           Orchestrate.run_schedule(schedule.dataset_id, schedule.subset_id)
         end)
 
-      assert log =~ "Unable to find schedule with : dataset_id #{schedule.dataset_id} subset_id #{schedule.subset_id}"
+      assert log =~
+               "Unable to find schedule with : dataset_id #{schedule.dataset_id} subset_id #{
+                 schedule.subset_id
+               }"
     end
   end
 end

@@ -29,7 +29,6 @@ defmodule Platform.Runner.PerformanceTest do
   end
 
   defp csv(opts) do
-
     dictionary = Enum.map(1..100, fn i -> Dictionary.Type.String.new!(name: "string_#{i}") end)
     headers = Enum.map(dictionary, &Map.get(&1, :name))
 
