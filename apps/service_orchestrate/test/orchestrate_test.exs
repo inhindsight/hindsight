@@ -14,12 +14,13 @@ defmodule OrchestrateTest do
         Schedule.new!(
           id: "schedule-1",
           dataset_id: "ds1",
+          subset_id: "kpi",
           cron: "* * * * *",
           extract:
             Extract.new!(
               id: "extract-1",
               dataset_id: "ds1",
-              name: "kpi",
+              subset_id: "kpi",
               destination: "topic-1",
               steps: [],
               dictionary: []
@@ -28,6 +29,7 @@ defmodule OrchestrateTest do
             Transform.new!(
               id: "transform-1",
               dataset_id: "ds1",
+              subset_id: "kp1",
               dictionary: [],
               steps: []
             ),
@@ -35,7 +37,7 @@ defmodule OrchestrateTest do
             Load.Persist.new!(
               id: "persist-1",
               dataset_id: "ds1",
-              name: "kpi",
+              subset_id: "kpi",
               source: "topic-1",
               destination: "table-1",
               schema: []
@@ -53,7 +55,7 @@ defmodule OrchestrateTest do
         Orchestrate.Schedule.Store.persist(schedule)
       end)
 
-      Orchestrate.run_schedule(schedule.id)
+      Orchestrate.run_schedule(schedule.dataset_id, schedule.subset_id)
 
       extract = schedule.extract |> Map.put(:id, "uuid-1")
 
@@ -63,10 +65,13 @@ defmodule OrchestrateTest do
     test "should log an error if schedule does not exist", %{schedule: schedule} do
       log =
         capture_log([level: :error], fn ->
-          Orchestrate.run_schedule(schedule.id)
+          Orchestrate.run_schedule(schedule.dataset_id, schedule.subset_id)
         end)
 
-      assert log =~ "Unable to find schedule with id: #{schedule.id}"
+      assert log =~
+               "Unable to find schedule with : dataset_id #{schedule.dataset_id} subset_id #{
+                 schedule.subset_id
+               }"
     end
   end
 end

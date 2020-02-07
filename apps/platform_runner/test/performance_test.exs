@@ -9,7 +9,7 @@ defmodule Platform.Runner.PerformanceTest do
     Logger.configure(level: :info)
     bp = Bypass.open()
 
-    data = File.read!("perf.data")
+    data = File.read!("perf2.data")
 
     Bypass.stub(bp, "GET", "/file.csv", fn conn ->
       Plug.Conn.resp(conn, 200, data)
@@ -29,20 +29,20 @@ defmodule Platform.Runner.PerformanceTest do
   end
 
   defp csv(opts) do
+    dictionary = Enum.map(1..100, fn i -> Dictionary.Type.String.new!(name: "string_#{i}") end)
+    headers = Enum.map(dictionary, &Map.get(&1, :name))
+
     extract =
       Extract.new!(
         id: "perf-csv-extract-1",
         dataset_id: "perf-csv-ds",
-        name: "default",
+        subset_id: "default",
         destination: "perf-csv",
         steps: [
           Extract.Http.Get.new!(url: "http://localhost:#{Keyword.fetch!(opts, :port)}/file.csv"),
-          Extract.Decode.Csv.new!(headers: ["letter", "number"])
+          Extract.Decode.Csv.new!(headers: headers)
         ],
-        dictionary: [
-          Dictionary.Type.String.new!(name: "letter"),
-          Dictionary.Type.String.new!(name: "number")
-        ]
+        dictionary: dictionary
       )
 
     Gather.Application.instance()
@@ -52,12 +52,10 @@ defmodule Platform.Runner.PerformanceTest do
       Transform.new!(
         id: "perf-csv-tranform-1",
         dataset_id: "perf-csv-ds",
-        dictionary: [
-          Dictionary.Type.String.new!(name: "letter"),
-          Dictionary.Type.String.new!(name: "number")
-        ],
+        subset_id: "default",
+        dictionary: dictionary,
         steps: [
-          Transformer.MoveField.new!(from: "letter", to: "single_letter")
+          # Transformer.MoveField.new!(from: "letter", to: "single_letter")
         ]
       )
 
@@ -68,7 +66,7 @@ defmodule Platform.Runner.PerformanceTest do
       Load.Persist.new!(
         id: "perf-csv-persist-1",
         dataset_id: "perf-csv-ds",
-        name: "persist",
+        subset_id: "default",
         source: "perf-csv",
         destination: "perf_csv"
       )

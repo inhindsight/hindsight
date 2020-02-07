@@ -12,7 +12,10 @@ defmodule TransformTest do
         [:field, :value],
         [:version, "1"],
         [:id, ""],
+        [:dataset_id, ""],
         [:dataset_id, nil],
+        [:subset_id, ""],
+        [:subset_id, nil],
         [:dictionary, nil],
         [:steps, nil]
       ]

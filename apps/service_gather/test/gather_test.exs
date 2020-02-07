@@ -59,7 +59,7 @@ defmodule GatherTest do
         version: 1,
         id: "extract-id-1",
         dataset_id: "test-ds1",
-        name: "Johnny",
+        subset_id: "Johnny",
         destination: "topic-1",
         steps: [
           Extract.Http.Get.new!(url: "http://localhost:#{bypass.port}/file.csv"),
@@ -81,7 +81,7 @@ defmodule GatherTest do
              %{"A" => "four", "B" => "five", "C" => "six"}
            ]
 
-    assert extract == Extraction.Store.get!(extract.id)
+    assert extract == Extraction.Store.get!(extract.dataset_id, extract.subset_id)
   end
 
   test "removes stored extraction on #{extract_end()}" do
@@ -89,7 +89,7 @@ defmodule GatherTest do
       Extract.new!(
         id: "extract-45",
         dataset_id: "ds45",
-        name: "get_some_data",
+        subset_id: "get_some_data",
         destination: "topic1",
         steps: []
       )
@@ -101,7 +101,7 @@ defmodule GatherTest do
     Brook.Test.send(@instance, extract_end(), "testing", extract)
 
     assert_async do
-      assert nil == Extraction.Store.get!(extract.id)
+      assert nil == Extraction.Store.get!(extract.dataset_id, extract.subset_id)
     end
   end
 end

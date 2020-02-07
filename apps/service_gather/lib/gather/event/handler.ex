@@ -13,6 +13,6 @@ defmodule Gather.Event.Handler do
   end
 
   def handle_event(%Brook.Event{type: extract_end(), data: %Extract{} = extract}) do
-    Extraction.Store.delete(extract.id)
+    Extraction.Store.delete(extract.dataset_id, extract.subset_id)
   end
 end

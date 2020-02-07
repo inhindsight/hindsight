@@ -6,7 +6,8 @@ defmodule Transform do
   @type t :: %__MODULE__{
           version: integer,
           id: uuid,
-          dataset_id: uuid,
+          dataset_id: String.t(),
+          subset_id: String.t(),
           dictionary: Dictionary.t(),
           steps: list
         }
@@ -14,6 +15,7 @@ defmodule Transform do
   defstruct version: 1,
             id: nil,
             dataset_id: nil,
+            subset_id: nil,
             dictionary: Dictionary.from_list([]),
             steps: []
 

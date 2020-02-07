@@ -14,7 +14,8 @@ defmodule Load.PersistTest do
         [:id, nil],
         [:dataset_id, ""],
         [:dataset_id, nil],
-        [:name, nil],
+        [:subset_id, ""],
+        [:subset_id, nil],
         [:source, nil],
         [:source, ""],
         [:destination, nil],
@@ -27,7 +28,7 @@ defmodule Load.PersistTest do
         Load.Persist.new!(
           id: "load1",
           dataset_id: "ds1",
-          name: "joe",
+          subset_id: "joe",
           source: "topic",
           destination: "table",
           schema: [

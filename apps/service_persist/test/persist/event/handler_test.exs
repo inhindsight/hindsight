@@ -10,6 +10,7 @@ defmodule Persist.Event.HandlerTest do
       Transform.new!(
         id: "transform-1",
         dataset_id: "ds1",
+        subset_id: "sb1",
         dictionary: [
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Integer.new!(name: "age")
@@ -21,6 +22,7 @@ defmodule Persist.Event.HandlerTest do
 
     Brook.Test.send(@instance, transform_define(), "testing", transform)
 
-    assert {:ok, transform} == Persist.Transformations.get("ds1")
+    assert {:ok, transform} ==
+             Persist.Transformations.get(transform.dataset_id, transform.subset_id)
   end
 end

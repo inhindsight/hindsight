@@ -15,8 +15,8 @@ defmodule ExtractTest do
         [:steps, nil],
         [:dictionary, 1],
         [:dictionary, nil],
-        [:name, nil],
-        [:name, ""],
+        [:subset_id, nil],
+        [:subset_id, ""],
         [:destination, nil],
         [:destination, ""]
       ]

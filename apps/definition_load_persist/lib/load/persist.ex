@@ -6,8 +6,8 @@ defmodule Load.Persist do
   @type t :: %__MODULE__{
           version: integer,
           id: uuid,
-          dataset_id: uuid,
-          name: String.t(),
+          dataset_id: String.t(),
+          subset_id: String.t(),
           source: String.t(),
           destination: String.t()
         }
@@ -16,7 +16,7 @@ defmodule Load.Persist do
   defstruct version: 1,
             id: nil,
             dataset_id: nil,
-            name: nil,
+            subset_id: nil,
             source: nil,
             destination: nil
 end
@@ -29,8 +29,8 @@ defmodule Load.Persist.V1 do
     schema(%Load.Persist{
       version: version(1),
       id: id(),
-      dataset_id: id(),
-      name: required_string(),
+      dataset_id: required_string(),
+      subset_id: required_string(),
       source: required_string(),
       destination: required_string()
     })

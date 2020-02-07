@@ -6,7 +6,8 @@ defmodule Schedule do
   @type t :: %__MODULE__{
           version: integer,
           id: uuid,
-          dataset_id: uuid,
+          dataset_id: String.t(),
+          subset_id: String.t(),
           cron: String.t(),
           extract: Extract.t(),
           transform: Transform.t(),
@@ -16,6 +17,7 @@ defmodule Schedule do
   defstruct version: 1,
             id: nil,
             dataset_id: nil,
+            subset_id: nil,
             cron: nil,
             extract: nil,
             transform: nil,

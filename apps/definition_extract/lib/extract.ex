@@ -6,8 +6,8 @@ defmodule Extract do
   @type t :: %Extract{
           version: integer,
           id: uuid,
-          dataset_id: uuid,
-          name: String.t(),
+          dataset_id: String.t(),
+          subset_id: String.t(),
           destination: String.t(),
           steps: [Extract.Step.t()],
           dictionary: Dictionary.t()
@@ -16,7 +16,7 @@ defmodule Extract do
   defstruct version: 1,
             id: nil,
             dataset_id: nil,
-            name: nil,
+            subset_id: nil,
             destination: nil,
             steps: [],
             dictionary: Dictionary.from_list([])
