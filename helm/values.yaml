@@ -9,6 +9,11 @@ broadcast:
     port: 80
 persist:
   replicaCount: 1
+acquire:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
 
 image:
   repository: inhindsight/hindsight
