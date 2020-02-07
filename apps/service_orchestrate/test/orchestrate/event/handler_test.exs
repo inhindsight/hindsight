@@ -54,16 +54,16 @@ defmodule Orchestrate.Event.HandlerTest do
     Brook.Test.send(@instance, schedule_start(), "testing", schedule)
 
     expected_cron = Crontab.CronExpression.Parser.parse!(schedule.cron)
-    expected_name = :"#{schedule.id}"
-    expected_task = {Orchestrate, :run_schedule, [schedule.id]}
+    expected_name = :"#{schedule.dataset_id}__#{schedule.subset_id}"
+    expected_task = {Orchestrate, :run_schedule, [schedule.dataset_id, schedule.subset_id]}
 
     assert_async debug: true do
       assert %{name: ^expected_name, schedule: ^expected_cron, task: ^expected_task} =
-               Orchestrate.Scheduler.find_job(:"#{schedule.id}")
+               Orchestrate.Scheduler.find_job(expected_name)
     end
 
     assert_async do
-      assert schedule == Orchestrate.Schedule.Store.get!(schedule.id)
+      assert schedule == Orchestrate.Schedule.Store.get!(schedule.dataset_id, schedule.subset_id)
     end
   end
 
@@ -119,7 +119,7 @@ defmodule Orchestrate.Event.HandlerTest do
     end
 
     assert_async do
-      assert nil == Orchestrate.Schedule.Store.get!(schedule.id)
+      assert nil == Orchestrate.Schedule.Store.get!(schedule.dataset_id, schedule.subset_id)
     end
   end
 end

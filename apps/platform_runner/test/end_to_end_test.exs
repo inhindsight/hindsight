@@ -74,7 +74,7 @@ defmodule PlatformRunner.EndToEndTest do
     |> Events.send_schedule_start("e2e", schedule)
 
     assert_async debug: true, sleep: 500 do
-      assert Orchestrate.Scheduler.find_job(:"e2e-csv-schedule-1") != nil
+      assert Orchestrate.Scheduler.find_job(:"e2e-csv-ds__csv-subset") != nil
     end
 
     assert_async debug: true, sleep: 1_000, max_tries: 30 do

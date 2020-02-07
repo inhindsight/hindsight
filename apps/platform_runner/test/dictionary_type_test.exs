@@ -8,27 +8,6 @@ defmodule Dictionary.Type.Test do
     Avro.Translator
   ]
 
-  def random_string(length) do
-    :crypto.strong_rand_bytes(length) |> Base.url_encode64 |> binary_part(0, length)
-  end
-
-  def row() do
-    text =
-    5..104
-    |> Enum.map(fn i ->
-      random_string(div(i, 5))
-    end)
-    |> Enum.join(",")
-
-    text <> "\n"
-  end
-
-  test "stuff" do
-    row()
-    |> byte_size()
-    |> IO.inspect
-  end
-
   test "all dictionary types implment correct protocols" do
     for module <- get_dictionary_types(),
         protocol <- @protocols do

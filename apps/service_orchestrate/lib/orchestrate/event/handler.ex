@@ -9,6 +9,8 @@ defmodule Orchestrate.Event.Handler do
       send_transform_define: 3
     ]
 
+  import Definition, only: [identifier: 1]
+
   alias Quantum.Job
 
   @instance Orchestrate.Application.instance()
@@ -20,7 +22,7 @@ defmodule Orchestrate.Event.Handler do
 
     case parse_cron(schedule.cron) do
       {:ok, cron} ->
-        create_schedule_job(schedule.id, cron)
+        create_schedule_job(schedule, cron)
         send_transform_define(@instance, "orchestrate", schedule.transform)
         Enum.each(schedule.load, &send_load_event/1)
         Orchestrate.Schedule.Store.persist(schedule)
@@ -33,7 +35,7 @@ defmodule Orchestrate.Event.Handler do
 
   def handle_event(%Brook.Event{type: schedule_end(), data: %Schedule{} = schedule}) do
     Orchestrate.Scheduler.delete_job(:"#{schedule.id}")
-    Orchestrate.Schedule.Store.delete(schedule.id)
+    Orchestrate.Schedule.Store.delete(schedule.dataset_id, schedule.subset_id)
   end
 
   defp parse_cron(cron) do
@@ -41,11 +43,11 @@ defmodule Orchestrate.Event.Handler do
     Crontab.CronExpression.Parser.parse(cron, number_of_fields == 7)
   end
 
-  defp create_schedule_job(id, cron) do
+  defp create_schedule_job(schedule, cron) do
     Orchestrate.Scheduler.new_job()
-    |> Job.set_name(:"#{id}")
+    |> Job.set_name(:"#{identifier(schedule)}")
     |> Job.set_schedule(cron)
-    |> Job.set_task({Orchestrate, :run_schedule, [id]})
+    |> Job.set_task({Orchestrate, :run_schedule, [schedule.dataset_id, schedule.subset_id]})
     |> Orchestrate.Scheduler.add_job()
   end
 
