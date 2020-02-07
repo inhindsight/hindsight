@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "hindsight.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "hindsight.fullname" . }}:{{ .Values.broadcast.service.port }}']
   restartPolicy: Never

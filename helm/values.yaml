@@ -2,6 +2,11 @@ orchestrate:
   replicaCount: 1
 gather:
   replicaCount: 1
+broadcast:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
 
 image:
   repository: inhindsight/hindsight
@@ -18,10 +23,6 @@ serviceAccount:
 
 podSecurityContext: {}
 securityContext: {}
-
-service:
-  type: ClusterIP
-  port: 80
 
 ingress:
   enabled: false
