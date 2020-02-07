@@ -1,5 +1,7 @@
 orchestrate:
   replicaCount: 1
+gather:
+  replicaCount: 1
 
 image:
   repository: inhindsight/hindsight
