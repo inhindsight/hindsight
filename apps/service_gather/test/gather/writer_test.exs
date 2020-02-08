@@ -34,7 +34,7 @@ defmodule Gather.WriterTest do
           version: 1,
           id: "extract-id-1",
           dataset_id: "test-ds1",
-          name: "extract_name",
+          subset_id: "extract_name",
           destination: "topic-1",
           steps: [
             %{

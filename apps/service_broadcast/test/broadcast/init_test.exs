@@ -14,14 +14,14 @@ defmodule Broadcast.InitTest do
       Load.Broadcast.new!(
         id: "load1",
         dataset_id: "ds1",
-        name: "one",
+        subset_id: "one",
         source: "s1",
         destination: "d1"
       ),
       Load.Broadcast.new!(
         id: "load2",
         dataset_id: "ds2",
-        name: "two",
+        subset_id: "two",
         source: "s2",
         destination: "d2"
       )

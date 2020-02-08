@@ -82,7 +82,7 @@ defmodule Persist.WriterIntTest do
       Load.Persist.new!(
         id: "load-persist-1",
         dataset_id: "ds1",
-        name: "testing",
+        subset_id: "testing",
         source: "topic-a",
         destination: "table2",
         schema: []

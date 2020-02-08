@@ -25,7 +25,7 @@ defmodule Persist.Writer.DirectUploadTest do
       Load.Persist.new!(
         id: "1",
         dataset_id: "ds1",
-        name: "name",
+        subset_id: "name",
         source: "topic1",
         destination: "table1"
       )

@@ -6,7 +6,8 @@ defmodule Schedule.V1 do
     schema(%Schedule{
       version: version(1),
       id: id(),
-      dataset_id: id(),
+      dataset_id: required_string(),
+      subset_id: required_string(),
       cron: required_string(),
       extract: Extract.schema(),
       transform: Transform.schema(),

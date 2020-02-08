@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :service_acquire, AcquireWeb.Endpoint,
   http: [port: 4001],

@@ -48,7 +48,7 @@ defmodule Gather.ExtractionTest do
       Extract.new!(
         id: "extract-1",
         dataset_id: "ds1",
-        name: "happy-path",
+        subset_id: "happy-path",
         destination: "topic1",
         steps: [
           %Fake.Step{pid: self(), values: Stream.cycle([%{"one" => "1"}]) |> Stream.take(100)}
@@ -89,7 +89,7 @@ defmodule Gather.ExtractionTest do
       Extract.new!(
         id: "extract-1",
         dataset_id: "ds1",
-        name: "happy-path",
+        subset_id: "happy-path",
         destination: "topic1",
         steps: [
           %Fake.Step{pid: self(), values: [%{"one" => "2"}, %{"one" => "abc"}]}
@@ -123,7 +123,7 @@ defmodule Gather.ExtractionTest do
       Extract.new!(
         id: "extract-1",
         dataset_id: "ds1",
-        name: "test-extract",
+        subset_id: "test-extract",
         destination: "topic1",
         steps: [
           %Fake.Step{
@@ -150,7 +150,7 @@ defmodule Gather.ExtractionTest do
       Extract.new!(
         id: "extract-1",
         dataset_id: "ds1",
-        name: "test-extract",
+        subset_id: "test-extract",
         destination: "topic1",
         steps: [
           %{

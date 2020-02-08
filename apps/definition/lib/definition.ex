@@ -13,6 +13,16 @@ defmodule Definition do
   @callback on_new(struct) :: {:ok, struct} | {:error, term}
   @callback migrate(struct) :: {:ok, struct} | {:error, term}
 
+  @spec identifier(term) :: String.t()
+  def identifier(%{dataset_id: dataset_id, subset_id: subset_id}) do
+    identifier(dataset_id, subset_id)
+  end
+
+  @spec identifier(dataset_id :: String.t(), subset_id :: String.t()) :: String.t()
+  def identifier(dataset_id, subset_id) do
+    "#{dataset_id}__#{subset_id}"
+  end
+
   defmacro __using__(opts) do
     quote do
       @behaviour Definition

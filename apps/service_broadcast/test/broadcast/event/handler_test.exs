@@ -11,6 +11,7 @@ defmodule Broadcast.Event.HandlerTest do
         Transform.new!(
           id: "transform-1",
           dataset_id: "dataset-1",
+          subset_id: "sb1",
           dictionary: [
             Dictionary.Type.String.new!(name: "name"),
             Dictionary.Type.Integer.new!(name: "age")

@@ -17,7 +17,7 @@ defmodule BroadcastTest do
       Load.Broadcast.new!(
         id: "load-1",
         dataset_id: "ds1",
-        name: "intersections",
+        subset_id: "intersections",
         source: "topic-intersections",
         destination: "ds1_intersections"
       )
@@ -39,7 +39,7 @@ defmodule BroadcastTest do
     Broadway.test_messages(broadway_pid, [message])
 
     assert_push "update", %{"one" => 1, "two" => 2}
-    assert load == Broadcast.Stream.Store.get!("load-1")
+    assert load == Broadcast.Stream.Store.get!(load.dataset_id, load.subset_id)
 
     Brook.Test.send(@instance, load_broadcast_end(), "testing", load)
 
@@ -47,7 +47,7 @@ defmodule BroadcastTest do
       assert Process.alive?(broadway_pid) == false
     end
 
-    assert nil == Broadcast.Stream.Store.get!("load-1")
+    assert nil == Broadcast.Stream.Store.get!(load.dataset_id, load.subset_id)
 
     leave(socket)
   end
