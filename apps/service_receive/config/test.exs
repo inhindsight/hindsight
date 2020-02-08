@@ -14,4 +14,4 @@ config :service_receive, Receive.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_receive, Gather.Application, init?: false
+config :service_receive, Receive.Application, init?: false

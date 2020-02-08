@@ -13,7 +13,7 @@ defmodule Accept.Socket do
 
   defmacro __using__(_opts) do
     quote do
-      import Accept.Socket, only: [batch_reached?: 2, timeout_reached?: 2]
+      import Accept.Socket, only: [batch_reached?: 2]
       @behaviour Accept.Socket
 
       @impl Accept.Socket
@@ -29,9 +29,5 @@ defmodule Accept.Socket do
     quote do
       length(unquote(current_batch)) + 1 >= unquote(limit)
     end
-  end
-
-  def timeout_reached?(last_time, threshold) do
-    :erlang.system_time() - last_time >= threshold
   end
 end

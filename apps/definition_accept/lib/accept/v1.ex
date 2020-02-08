@@ -7,10 +7,8 @@ defmodule Accept.V1 do
       version: version(1),
       id: id(),
       dataset_id: id(),
-      name: required_string(),
+      subset_id: required_string(),
       destination: required_string(),
-      batch_size: spec(pos_integer?()),
-      timeout: spec(pos_integer?()),
       connection: is_accept()
     })
   end

@@ -3,16 +3,23 @@ defmodule SourceSocket do
 
   def hit_me(), do: GenServer.cast(__MODULE__, :hit_me)
 
-  def start_link(port) do
-    GenServer.start_link(__MODULE__, port, name: __MODULE__)
+  def start_link(init_opts) do
+    GenServer.start_link(__MODULE__, init_opts, name: __MODULE__)
   end
 
-  def init(port) do
-    {:ok, socket} = :gen_udp.open(port - 1)
+  def init(init_opts) do
+    state =
+      %{
+        port: Keyword.fetch!(init_opts, :port),
+        schedule: Keyword.get(init_opts, :schedule, false),
+        interval: Keyword.get(init_opts, :interval, 100)
+      }
 
-    :timer.send_interval(100, :push_message)
+    {:ok, socket} = :gen_udp.open(state.port - 1)
 
-    {:ok, %{socket: socket, port: port}}
+    if state.schedule, do: :timer.send_interval(state.interval, :push_message)
+
+    {:ok, Map.put(state, :socket, socket)}
   end
 
   def handle_cast(:hit_me, %{socket: socket, port: port} = state) do

@@ -27,11 +27,9 @@ defmodule Accept.Udp.Socket do
       timeout: init_opts.timeout
     }
 
-    :timer.send_interval(state.timeout, :check_for_send)
-
     {:ok, socket} = :gen_udp.open(state.port, [:binary, active: state.batch_size])
 
-    {:ok, %{state | socket: socket}}
+    {:ok, %{state | socket: socket}, state.timeout}
   end
 
   @impl GenServer
@@ -41,23 +39,25 @@ defmodule Accept.Udp.Socket do
 
     :ok = :inet.setopts(state.socket, active: size)
 
-    {:noreply, new_state}
+    {:noreply, new_state, new_state.timeout}
   end
 
   @impl GenServer
   def handle_info({:udp, _, _, _, payload}, state) do
-    {:noreply, %{state | queue: [payload | state.queue]}}
+    {:noreply, %{state | queue: [payload | state.queue]}, state.timeout}
   end
 
   @impl GenServer
-  def handle_info(:check_for_send, %{queue: queue} = state) do
-    if timeout_reached?(state.last_send, state.timeout) and length(queue) > 0 do
-      new_state = process_messages(queue, state)
+  def handle_info(:timeout, %{queue: queue} = state) do
+    case length(queue) do
+      0 ->
+        {:noreply, state}
+      num ->
+        new_state = process_messages(queue, state)
+        :ok = :inet.setopts(state.socket, active: state.batch_size - num)
 
-      {:noreply, new_state}
+        {:noreply, new_state}
     end
-
-    {:noreply, state}
   end
 
   @impl GenServer
