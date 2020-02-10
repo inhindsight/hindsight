@@ -1,5 +1,4 @@
 defmodule Acquire.Query.Where.Functions do
-
   alias Acquire.Query.Where.{Function, Parameter}
 
   def parameter(value) do
@@ -50,7 +49,7 @@ defmodule Acquire.Query.Where.Functions do
       args: [
         "'millisecond'",
         timestamp1,
-        timestamp2,
+        timestamp2
       ]
     )
   end
