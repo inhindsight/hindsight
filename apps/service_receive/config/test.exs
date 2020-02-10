@@ -1,6 +1,8 @@
 use Mix.Config
 
 config :service_receive, Receive.Application,
+  init?: false,
+  kafka_endpoints: nil,
   brook: [
     driver: [
       module: Brook.Driver.Test,
@@ -13,5 +15,3 @@ config :service_receive, Receive.Application,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
-
-config :service_receive, Receive.Application, init?: false

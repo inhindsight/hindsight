@@ -1,7 +1,7 @@
 defmodule Events do
   @events [
-    {"accept:start", Accept},
-    {"accept:end", Accept},
+    {"accept:start", Accept.Udp},
+    {"accept:end", Accept.Udp},
     {"extract:start", Extract},
     {"extract:end", Extract},
     {"load:broadcast:start", Load.Broadcast},

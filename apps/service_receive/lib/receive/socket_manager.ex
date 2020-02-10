@@ -26,6 +26,7 @@ defmodule Receive.SocketManager do
            writer().write(writer_pid, msgs, accept: accept)
          end,
          {:ok, socket_pid} <- start_socket(accept, writer_function) do
+      {:ok, %{writer_pid: writer_pid, socket_pid: socket_pid}}
     else
       {:error, reason} ->
         Logger.warn(fn -> "#{__MODULE__}: Stopping : #{inspect(reason)}" end)
@@ -36,6 +37,7 @@ defmodule Receive.SocketManager do
   @impl GenServer
   def handle_info({:EXIT, _pid, reason}, state) do
     Logger.warn(fn -> "#{__MODULE__}: Stopping : #{inspect(reason)}" end)
+    {:stop, reason, state}
   end
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
@@ -47,6 +49,10 @@ defmodule Receive.SocketManager do
   defp start_socket(accept, writer) do
     {socket, start, args} = Accept.Connection.connect(accept)
 
-    apply(socket, start, Keyword.merge(args, [batch_size: batch_size(), timeout: timeout()]))
+    apply(
+      socket,
+      start,
+      Keyword.merge(args, writer: writer, batch_size: batch_size(), timeout: timeout())
+    )
   end
 end
