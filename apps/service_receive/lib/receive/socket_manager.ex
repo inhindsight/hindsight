@@ -47,12 +47,14 @@ defmodule Receive.SocketManager do
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
   defp start_socket(accept, writer) do
-    {socket, start, args} = Accept.Connection.connect(accept)
+    {socket, start, args} =
+      Accept.Connection.connect(
+        accept,
+        writer: writer,
+        batch_size: batch_size(),
+        timeout: timeout()
+      )
 
-    apply(
-      socket,
-      start,
-      Keyword.merge(args, writer: writer, batch_size: batch_size(), timeout: timeout())
-    )
+    apply(socket, start, args)
   end
 end

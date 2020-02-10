@@ -50,8 +50,8 @@ defmodule Accept.Udp do
             port: nil
 
   defimpl Accept.Connection, for: __MODULE__ do
-    def connect(accept) do
-      {Accept.Udp.Socket, :start_link, [port: accept.port]}
+    def connect(accept, opts) do
+      {Accept.Udp.Socket, :start_link, [port: accept.port] ++ opts}
     end
   end
 end

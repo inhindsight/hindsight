@@ -33,11 +33,11 @@ defmodule Accept.Udp.Socket do
   @impl GenServer
   def handle_info({:udp, _, _, _, payload}, %{queue: queue, batch_size: size} = state)
       when batch_reached?(queue, size) do
-    new_state = process_messages([payload | queue], state)
+    process_messages([payload | queue], state)
 
     :ok = :inet.setopts(state.socket, active: size)
 
-    {:noreply, new_state, new_state.timeout}
+    {:noreply, %{state | queue: []}, new_state.timeout}
   end
 
   @impl GenServer
@@ -52,10 +52,10 @@ defmodule Accept.Udp.Socket do
         {:noreply, state}
 
       num ->
-        new_state = process_messages(queue, state)
+        process_messages(queue, state)
         :ok = :inet.setopts(state.socket, active: state.batch_size - num)
 
-        {:noreply, new_state}
+        {:noreply, %{state | queue: []}
     end
   end
 
@@ -70,9 +70,5 @@ defmodule Accept.Udp.Socket do
     messages
     |> Enum.reverse()
     |> handle_messages(state.writer)
-
-    state
-    |> Map.put(:queue, [])
-    |> Map.put(:last_send, :erlang.system_time())
   end
 end
