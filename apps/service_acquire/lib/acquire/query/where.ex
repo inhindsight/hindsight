@@ -34,6 +34,6 @@ defmodule Acquire.Query.Where do
     Map.get(params, "boundary", "")
     |> String.split(",", trim: true)
     |> Enum.map(&String.to_float/1)
-    |> Bbox.to_queryable("#{dataset}__#{subset}")
+    |> Bbox.to_queryable(dataset, subset)
   end
 end

@@ -6,6 +6,13 @@ defmodule Acquire.QueryTest do
   alias Acquire.Queryable
   alias Acquire.Query.Where.{Function, And, Or, Parameter}
 
+  @instance Acquire.Application.instance()
+
+  setup do
+    Brook.Test.clear_view_state(@instance, "fields")
+    :ok
+  end
+
   describe "new/1" do
     data_test "validates #{key} against bad input" do
       input = put_in(%{table: "a__b"}, [key], value)
@@ -14,7 +21,7 @@ defmodule Acquire.QueryTest do
       where [
         [:key, :value],
         [:table, ""],
-        [:table, "foo"],
+        [:table, nil],
         [:fields, nil],
         [:fields, [""]],
         [:limit, -1]
@@ -23,11 +30,27 @@ defmodule Acquire.QueryTest do
   end
 
   describe "from_params/1" do
+    setup do
+      Brook.Test.with_event(@instance, fn ->
+        Acquire.Dictionaries.persist(
+          Load.Persist.new!(
+            id: "persist-1",
+            dataset_id: "a",
+            subset_id: "default",
+            source: "s",
+            destination: "table_name"
+          )
+        )
+      end)
+
+      :ok
+    end
+
     test "returns default struct" do
       params = %{"dataset" => "a"}
       assert {:ok, %Query{} = query} = Query.from_params(params)
 
-      assert query.table == "a__default"
+      assert query.table == "table_name"
       assert query.fields == ["*"]
       refute query.limit
       refute query.where
@@ -41,6 +64,11 @@ defmodule Acquire.QueryTest do
     test "converts limit string into integer" do
       params = %{"dataset" => "a", "limit" => "42"}
       assert {:ok, %Query{limit: 42}} = Query.from_params(params)
+    end
+
+    test "return error tuple when unable to find destination" do
+      params = %{"dataset" => "a", "subset" => "b"}
+      assert {:error, "destination not found for a b"} == Query.from_params(params)
     end
   end
 

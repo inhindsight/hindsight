@@ -13,9 +13,38 @@ defmodule AcquireWeb.V2.DataControllerTest do
     }
   ])
 
+  @instance Acquire.Application.instance()
+
   describe "select/2" do
     data_test "retrieves data", %{conn: conn} do
-      allow Acquire.Dictionaries.get("a__b", "wkt"), return: {:ok, ["__wkt__"]}
+      regex = ~r/\/api\/v2\/data\/(?<dataset_id>\w+)(\/(?<subset_id>\w+))?/
+
+      path_variables =
+        Regex.named_captures(regex, path) |> Enum.reject(fn {_, v} -> v == "" end) |> Map.new()
+
+      Brook.Test.with_event(@instance, fn ->
+        Acquire.Dictionaries.persist(
+          Transform.new!(
+            id: "transform-1",
+            dataset_id: path_variables["dataset_id"],
+            subset_id: path_variables["subset_id"] || "default",
+            dictionary: [
+              Dictionary.Type.Wkt.Point.new!(name: "__wkt__")
+            ],
+            steps: []
+          )
+        )
+
+        Acquire.Dictionaries.persist(
+          Load.Persist.new!(
+            id: "persist-1",
+            dataset_id: path_variables["dataset_id"],
+            subset_id: path_variables["subset_id"] || "default",
+            source: "topic-a",
+            destination: "table_destination"
+          )
+        )
+      end)
 
       data = [%{"a" => 42}]
       Mox.expect(Acquire.Db.Mock, :execute, fn ^query, ^values -> {:ok, data} end)
@@ -25,23 +54,23 @@ defmodule AcquireWeb.V2.DataControllerTest do
 
       where [
         [:path, :query, :values],
-        ["/api/v2/data/a/b", "SELECT * FROM a__b", []],
-        ["/api/v2/data/a", "SELECT * FROM a__default", []],
-        ["/api/v2/data/a?limit=1", "SELECT * FROM a__default LIMIT 1", []],
-        ["/api/v2/data/a/b?filter=a!=1", "SELECT * FROM a__b WHERE a != ?", ["1"]],
+        ["/api/v2/data/a/b", "SELECT * FROM table_destination", []],
+        ["/api/v2/data/a", "SELECT * FROM table_destination", []],
+        ["/api/v2/data/a?limit=1", "SELECT * FROM table_destination LIMIT 1", []],
+        ["/api/v2/data/a/b?filter=a!=1", "SELECT * FROM table_destination WHERE a != ?", ["1"]],
         [
           "/api/v2/data/a/b?fields=c&filter=c=42,d=9000",
-          "SELECT c FROM a__b WHERE (c = ? AND d = ?)",
+          "SELECT c FROM table_destination WHERE (c = ? AND d = ?)",
           ["42", "9000"]
         ],
         [
           "/api/v2/data/a/b?boundary=1.0,2.0,3.0,4.0",
-          "SELECT * FROM a__b WHERE ST_Intersects(ST_Envelope(ST_LineString(array[ST_Point(?, ?), ST_Point(?, ?)])), ST_GeometryFromText(__wkt__))",
+          "SELECT * FROM table_destination WHERE ST_Intersects(ST_Envelope(ST_LineString(array[ST_Point(?, ?), ST_Point(?, ?)])), ST_GeometryFromText(__wkt__))",
           [1.0, 2.0, 3.0, 4.0]
         ],
         [
           "/api/v2/data/a/b?filter=c>=42&boundary=1.0,2.0,3.0,4.0",
-          "SELECT * FROM a__b WHERE (c >= ? AND ST_Intersects(ST_Envelope(ST_LineString(array[ST_Point(?, ?), ST_Point(?, ?)])), ST_GeometryFromText(__wkt__)))",
+          "SELECT * FROM table_destination WHERE (c >= ? AND ST_Intersects(ST_Envelope(ST_LineString(array[ST_Point(?, ?), ST_Point(?, ?)])), ST_GeometryFromText(__wkt__)))",
           ["42", 1.0, 2.0, 3.0, 4.0]
         ]
       ]
