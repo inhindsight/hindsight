@@ -55,7 +55,7 @@ defmodule Accept.Udp.Socket do
         process_messages(queue, state)
         :ok = :inet.setopts(state.socket, active: state.batch_size - num)
 
-        {:noreply, %{state | queue: []}
+        {:noreply, %{state | queue: []}}
     end
   end
 

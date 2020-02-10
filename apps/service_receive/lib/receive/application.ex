@@ -10,7 +10,6 @@ defmodule Receive.Application do
     children =
       [
         Receive.Acception.Supervisor,
-        dlq(),
         brook(),
         init()
       ]
@@ -22,13 +21,6 @@ defmodule Receive.Application do
 
   defp init() do
     if get_config_value(:init?, default: true), do: Receive.Init, else: []
-  end
-
-  defp dlq() do
-    case get_config_value(:kafka_endpoints) do
-      nil -> []
-      endpoints -> {Receive.DLQ, endpoints: endpoints}
-    end
   end
 
   defp brook() do
