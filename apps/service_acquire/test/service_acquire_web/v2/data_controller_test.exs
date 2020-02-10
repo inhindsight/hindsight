@@ -29,7 +29,8 @@ defmodule AcquireWeb.V2.DataControllerTest do
             dataset_id: path_variables["dataset_id"],
             subset_id: path_variables["subset_id"] || "default",
             dictionary: [
-              Dictionary.Type.Wkt.Point.new!(name: "__wkt__")
+              Dictionary.Type.Wkt.Point.new!(name: "__wkt__"),
+              Dictionary.Type.Timestamp.new!(name: "__timestamp__", format: "__format__")
             ],
             steps: []
           )
@@ -62,6 +63,21 @@ defmodule AcquireWeb.V2.DataControllerTest do
           "/api/v2/data/a/b?fields=c&filter=c=42,d=9000",
           "SELECT c FROM table_destination WHERE (c = ? AND d = ?)",
           ["42", "9000"]
+        ],
+        [
+          "/api/v2/data/a/b?after=2020-01-01T00:00:00",
+          "SELECT * FROM table_destination WHERE date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0",
+          ["2020-01-01T00:00:00"]
+        ],
+        [
+          "/api/v2/data/a/b?before=2020-01-01T00:00:00",
+          "SELECT * FROM table_destination WHERE date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0",
+          ["2020-01-01T00:00:00"]
+        ],
+        [
+          "/api/v2/data/a/b?after=2020-01-01T00:00:00&before=2022-01-01T00:00:00",
+          "SELECT * FROM table_destination WHERE (date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0 AND date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0)",
+          ["2020-01-01T00:00:00", "2022-01-01T00:00:00"]
         ],
         [
           "/api/v2/data/a/b?boundary=1.0,2.0,3.0,4.0",
