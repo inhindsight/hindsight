@@ -37,7 +37,7 @@ defmodule Accept.Udp.Socket do
 
     :ok = :inet.setopts(state.socket, active: size)
 
-    {:noreply, %{state | queue: []}, new_state.timeout}
+    {:noreply, %{state | queue: []}, state.timeout}
   end
 
   @impl GenServer

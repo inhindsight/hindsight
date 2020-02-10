@@ -1,4 +1,10 @@
 defprotocol Accept.Connection do
-  @spec connect(accept :: t) :: {module, atom, keyword}
-  def connect(accept)
+  @type connection_opts :: [
+          writer: function,
+          batch_size: non_neg_integer,
+          timeout: non_neg_integer
+        ]
+
+  @spec connect(accept :: t, connection_opts) :: {module, atom, keyword}
+  def connect(accept, options)
 end
