@@ -11,12 +11,12 @@ defmodule Accept.Udp.SocketTest do
     port = 6789
     source_opts = [port: port]
 
-    udp_opts = %{
-      connection: Accept.Udp.new!(port: port),
+    udp_opts = [
+      port: port,
       writer: writer_function,
       batch_size: 25,
       timeout: 500
-    }
+    ]
 
     {:ok, receiver} = Accept.Udp.Socket.start_link(udp_opts)
     {:ok, source} = SourceSocket.start_link(source_opts)

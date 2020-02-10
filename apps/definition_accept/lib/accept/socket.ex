@@ -1,12 +1,11 @@
 defmodule Accept.Socket do
   @type writer :: (list -> :ok | {:error, term})
-  @type init_opts :: %{
-          connect: Accept.Udp.t(),
+  @type init_opts :: [
           writer: writer,
           batch_size: pos_integer,
           timeout: timeout,
           name: atom
-        }
+        ]
 
   @callback start_link(init_opts) :: GenServer.on_start()
   @callback handle_messages(message :: term, writer) :: :ok | {:error, term}

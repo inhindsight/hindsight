@@ -9,8 +9,8 @@ defmodule Accept.Udp.Socket do
 
   @impl Accept.Socket
   def start_link(init_opts) do
-    port = init_opts.connection.port
-    name = Map.get(init_opts, :name, :"udp_#{port}_receiver")
+    port = Keyword.fetch!(init_opts, :port)
+    name = Keyword.get(init_opts, :name, :"udp_#{port}_receiver")
 
     GenServer.start_link(__MODULE__, init_opts, name: name)
   end
@@ -18,18 +18,16 @@ defmodule Accept.Udp.Socket do
   @impl GenServer
   def init(init_opts) do
     state = %{
-      port: init_opts.connection.port,
-      batch_size: init_opts.batch_size,
-      writer: init_opts.writer,
-      socket: nil,
-      queue: [],
-      last_send: :erlang.system_time(),
-      timeout: init_opts.timeout
+      port: Keyword.fetch!(init_opts, :port),
+      batch_size: Keyword.fetch!(init_opts, :batch_size),
+      timeout: Keyword.fetch!(init_opts, :timeout),
+      writer: Keyword.fetch!(init_opts, :writer),
+      queue: []
     }
 
     {:ok, socket} = :gen_udp.open(state.port, [:binary, active: state.batch_size])
 
-    {:ok, %{state | socket: socket}, state.timeout}
+    {:ok, Map.put(state, :socket, socket), state.timeout}
   end
 
   @impl GenServer
@@ -52,6 +50,7 @@ defmodule Accept.Udp.Socket do
     case length(queue) do
       0 ->
         {:noreply, state}
+
       num ->
         new_state = process_messages(queue, state)
         :ok = :inet.setopts(state.socket, active: state.batch_size - num)

@@ -43,6 +43,7 @@ kafka_endpoints =
 
 # SERVICE_RECEIVE
 config :service_receive, Receive.Application,
+  kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [
       module: Brook.Driver.Kafka,

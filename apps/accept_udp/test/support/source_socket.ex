@@ -8,12 +8,11 @@ defmodule SourceSocket do
   end
 
   def init(init_opts) do
-    state =
-      %{
-        port: Keyword.fetch!(init_opts, :port),
-        schedule: Keyword.get(init_opts, :schedule, false),
-        interval: Keyword.get(init_opts, :interval, 100)
-      }
+    state = %{
+      port: Keyword.fetch!(init_opts, :port),
+      schedule: Keyword.get(init_opts, :schedule, false),
+      interval: Keyword.get(init_opts, :interval, 100)
+    }
 
     {:ok, socket} = :gen_udp.open(state.port - 1)
 
