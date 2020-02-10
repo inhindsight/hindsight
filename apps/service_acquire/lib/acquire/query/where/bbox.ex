@@ -2,7 +2,7 @@ defmodule Acquire.Query.Where.Bbox do
   alias Acquire.Query.ST
 
   @spec to_queryable([float], dataset_id :: String.t(), subset_id :: String.t()) ::
-          {:ok, Queryable.t()} | {:error, term}
+          {:ok, Acquire.Queryable.t()} | {:error, term}
   def to_queryable([], _, _), do: Ok.ok(nil)
 
   def to_queryable([x1, y1, x2, y2], dataset_id, subset_id) do

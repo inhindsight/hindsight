@@ -4,7 +4,7 @@ defmodule Acquire.Dictionaries do
 
   import Definition, only: [identifier: 1, identifier: 2]
 
-  @spec persist(Transform.t()) :: :ok
+  @spec persist(Transform.t() | Load.Persist.t()) :: :ok
   def persist(%Transform{} = transform) do
     with {:ok, dictionary} <-
            Transformer.transform_dictionary(transform.steps, transform.dictionary) do
@@ -18,7 +18,7 @@ defmodule Acquire.Dictionaries do
   end
 
   @spec get(dataset_id :: String.t(), subset_id :: String.t(), field_type :: String.t()) ::
-          {:ok, [String.t()]} | {:error, term}
+          {:ok, String.t() | [String.t()] | Dictionary.t()} | {:error, term}
   def get(dataset_id, subset_id, field_type) do
     with {:ok, map} when not is_nil(map) <-
            Brook.get(@instance, @collection, identifier(dataset_id, subset_id)),

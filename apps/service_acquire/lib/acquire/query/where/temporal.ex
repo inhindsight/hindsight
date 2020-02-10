@@ -6,7 +6,7 @@ defmodule Acquire.Query.Where.Temporal do
           subset_id :: String.t(),
           after_time :: String.t(),
           before_time :: String.t()
-        ) :: Queryable.t()
+        ) :: Acquire.Queryable.t()
   def to_queryable(_, _, "", ""), do: nil
 
   def to_queryable(dataset_id, subset_id, after_time, before_time) do
