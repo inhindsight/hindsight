@@ -6,9 +6,23 @@ defmodule Acquire.Query.Where.BboxTest do
   alias Acquire.Query.ST
   alias Acquire.Query.Where.{Function, Or}
 
+  @instance Acquire.Application.instance()
+
   describe "to_queryable/2" do
     test "returns queryable object for one geospatial field" do
-      expect Acquire.Dictionaries.get("a", "default", "wkt"), return: {:ok, ["foobar"]}
+      Brook.Test.with_event(@instance, fn ->
+        Acquire.Dictionaries.persist(
+          Transform.new!(
+            id: "transform-1",
+            dataset_id: "a",
+            subset_id: "default",
+            dictionary: [
+              Dictionary.Type.Wkt.Point.new!(name: "foobar")
+            ],
+            steps: []
+          )
+        )
+      end)
 
       points = [ST.point!(1.0, 2.0), ST.point!(3.0, 4.0)]
       ls = ST.LineString.new!(points: points)
@@ -20,7 +34,20 @@ defmodule Acquire.Query.Where.BboxTest do
     end
 
     test "returns queryable object for multiple geospatial fields" do
-      expect Acquire.Dictionaries.get("a", "default", "wkt"), return: {:ok, ["foo", "bar"]}
+      Brook.Test.with_event(@instance, fn ->
+        Acquire.Dictionaries.persist(
+          Transform.new!(
+            id: "transform-1",
+            dataset_id: "a",
+            subset_id: "default",
+            dictionary: [
+              Dictionary.Type.Wkt.Point.new!(name: "bar"),
+              Dictionary.Type.Wkt.Point.new!(name: "foo")
+            ],
+            steps: []
+          )
+        )
+      end)
 
       points = [ST.point!(1.0, 2.0), ST.point!(3.0, 4.0)]
       ls = ST.LineString.new!(points: points)

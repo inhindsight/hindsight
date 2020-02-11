@@ -7,7 +7,8 @@ defmodule Acquire.Query.Where.Bbox do
 
   def to_queryable([x1, y1, x2, y2], dataset_id, subset_id) do
     with {:ok, envelope} <- bbox_envelope(x1, y1, x2, y2),
-         {:ok, wkt_fields} <- Acquire.Dictionaries.get(dataset_id, subset_id, "wkt"),
+         {:ok, dictionary} <- Acquire.Dictionaries.get_dictionary(dataset_id, subset_id),
+         wkt_fields <- wkt_fields(dictionary),
          {:ok, geometries} <- Ok.transform(wkt_fields, &ST.GeometryFromText.new(text: &1)) do
       case geometries do
         [geo] ->
@@ -26,5 +27,10 @@ defmodule Acquire.Query.Where.Bbox do
       |> Ok.map(fn point1 -> ST.LineString.new(points: [point1, point2]) end)
       |> Ok.map(&ST.Envelope.new(geometry: &1))
     end
+  end
+
+  defp wkt_fields(dictionary) do
+    Dictionary.get_by_type(dictionary, Dictionary.Type.Wkt.Point)
+    |> Enum.map(&Enum.join(&1, "."))
   end
 end

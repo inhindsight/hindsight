@@ -10,7 +10,7 @@ defmodule Acquire.Query.Where.Temporal do
   def to_queryable(_, _, "", ""), do: nil
 
   def to_queryable(dataset_id, subset_id, after_time, before_time) do
-    with {:ok, dictionary} <- Acquire.Dictionaries.get(dataset_id, subset_id, "dictionary") do
+    with {:ok, dictionary} <- Acquire.Dictionaries.get_dictionary(dataset_id, subset_id) do
       Dictionary.get_by_type(dictionary, Dictionary.Type.Timestamp)
       |> Enum.map(&Enum.join(&1, "."))
       |> Enum.map(&to_queryable(&1, after_time, before_time))
