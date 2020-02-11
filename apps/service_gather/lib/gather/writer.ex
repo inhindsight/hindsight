@@ -12,12 +12,13 @@ defmodule Gather.Writer do
 
   @impl Writer
   def start_link(args) do
-    %Extract{destination: destination} = Keyword.fetch!(args, :extract)
+    %Extract{destination: destination, meta: meta} = Keyword.fetch!(args, :extract)
 
     writer_args = [
       endpoints: kafka_endpoints(),
       name: Keyword.get(args, :name, nil),
-      topic: destination
+      topic: destination,
+      partitions: Map.get(meta, "topic_partitions", 1)
     ]
 
     writer().start_link(writer_args)

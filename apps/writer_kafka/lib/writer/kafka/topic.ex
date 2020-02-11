@@ -3,6 +3,13 @@ defmodule Writer.Kafka.Topic do
   use GenServer
   use Retry
 
+  @type init_opts :: [
+    connection: atom,
+    endpoints: [{atom, non_neg_integer}],
+    topic: String.t(),
+    partitions: non_neg_integer
+  ]
+
   defmodule State do
     defstruct [:connection, :endpoints, :topic, :elsa_sup]
   end

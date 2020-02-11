@@ -45,7 +45,10 @@ defmodule Gather.WriterTest do
               "step" => "Decode.Csv",
               "headers" => ["A", "B", "C"]
             }
-          ]
+          ],
+          meta: %{
+            "topic_partitions" => 4
+          }
         )
 
       Gather.Writer.start_link(extract: extract, name: :joe)
@@ -55,6 +58,7 @@ defmodule Gather.WriterTest do
       assert Keyword.get(actual, :endpoints) == [localhost: 9092]
       assert Keyword.get(actual, :topic) == "topic-1"
       assert Keyword.get(actual, :name) == :joe
+      assert Keyword.get(actual, :partitions) == 4
     end
   end
 
