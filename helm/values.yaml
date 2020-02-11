@@ -21,7 +21,7 @@ image:
 
 imagePullSecrets: []
 nameOverride: ""
-fullnameOverride: "hindsight"
+fullnameOverride: ""
 
 serviceAccount:
   create: true

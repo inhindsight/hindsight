@@ -130,7 +130,6 @@ hook:
     tag: '3.8'
 
 global:
-  environment: sandbox
   objectStore:
     bucketName: kdp-cloud-storage
     accessKey: accessKey
