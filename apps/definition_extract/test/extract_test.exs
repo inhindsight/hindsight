@@ -18,7 +18,9 @@ defmodule ExtractTest do
         [:subset_id, nil],
         [:subset_id, ""],
         [:destination, nil],
-        [:destination, ""]
+        [:destination, ""],
+        [:meta, nil],
+        [:meta, ""]
       ]
     end
   end

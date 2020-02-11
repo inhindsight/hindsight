@@ -10,7 +10,8 @@ defmodule Extract do
           subset_id: String.t(),
           destination: String.t(),
           steps: [Extract.Step.t()],
-          dictionary: Dictionary.t()
+          dictionary: Dictionary.t(),
+          meta: map
         }
 
   defstruct version: 1,
@@ -19,7 +20,8 @@ defmodule Extract do
             subset_id: nil,
             destination: nil,
             steps: [],
-            dictionary: Dictionary.from_list([])
+            dictionary: Dictionary.from_list([]),
+            meta: %{}
 
   @impl Definition
   def on_new(%{dictionary: list} = extract) when is_list(list) do
