@@ -33,10 +33,10 @@ defmodule Acquire.Query.Where.Temporal do
     parsed_timestamp =
       time
       |> parameter()
-      |> date_parse("'%Y-%m-%dT%H:%i:%S'")
+      |> date_parse(literal("%Y-%m-%dT%H:%i:%S"))
 
-    date_diff(field, parsed_timestamp)
-    |> gt(0)
+    date_diff(field(field), parsed_timestamp)
+    |> gt(literal(0))
   end
 
   defp before_clause(_, ""), do: nil
@@ -45,10 +45,10 @@ defmodule Acquire.Query.Where.Temporal do
     parsed_timestamp =
       time
       |> parameter()
-      |> date_parse("'%Y-%m-%dT%H:%i:%S'")
+      |> date_parse(literal("%Y-%m-%dT%H:%i:%S"))
 
-    date_diff(field, parsed_timestamp)
-    |> lt(0)
+    date_diff(field(field), parsed_timestamp)
+    |> lt(literal(0))
   end
 
   defp and_clause([item]), do: item

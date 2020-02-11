@@ -2,7 +2,7 @@ defmodule Acquire.Query.Where.AndTest do
   use ExUnit.Case
   import Checkov
 
-  alias Acquire.Query.Where.{And, Function, Parameter, Or}
+  alias Acquire.Query.Where.{And, Function, Parameter, Or, Functions}
   alias Acquire.Queryable
 
   describe "new/1" do
@@ -24,7 +24,7 @@ defmodule Acquire.Query.Where.AndTest do
       fun2 = Function.new!(function: "b", args: [fun1, to_parameter(3)])
       fun3 = Function.new!(function: "c", args: [to_parameter(4), fun2])
       fun4 = Function.new!(function: "d", args: [fun1, fun3])
-      fun5 = Function.new!(function: "=", args: ["col", fun1])
+      fun5 = Function.new!(function: "=", args: [Functions.field("col"), fun1])
       input = And.new!(conditions: [fun4, fun5, fun3])
 
       assert Queryable.parse_statement(input) ==
@@ -35,12 +35,15 @@ defmodule Acquire.Query.Where.AndTest do
 
     test "joins OR conditions into AND statement" do
       fun1 = Function.new!(function: "a", args: to_parameter([1, 2]))
-      fun2 = Function.new!(function: ">", args: ["col1", "col2"])
+
+      fun2 =
+        Function.new!(function: ">", args: [Functions.field("col1"), Functions.field("col2")])
+
       or1 = Or.new!(conditions: [fun1, fun2])
 
       fun3 = Function.new!(function: "b", args: to_parameter([3, 4]))
-      fun4 = Function.new!(function: "c", args: ["col3", fun1])
-      fun5 = Function.new!(function: "=", args: ["col4", to_parameter(5)])
+      fun4 = Function.new!(function: "c", args: [Functions.field("col3"), fun1])
+      fun5 = Function.new!(function: "=", args: [Functions.field("col4"), to_parameter(5)])
       or2 = Or.new!(conditions: [fun3, fun4, fun5])
 
       input = And.new!(conditions: [fun1, or1, or2])

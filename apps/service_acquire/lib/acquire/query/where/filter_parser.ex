@@ -1,15 +1,16 @@
 defmodule Acquire.Query.Where.FilterParser do
   import NimbleParsec
 
-  alias Acquire.Query.Where.{Function, Parameter}
+  alias Acquire.Query.Where.{Function, Parameter, Field}
 
   @spec parse_operation(input :: String.t()) :: {:ok, Function.t()} | {:error, term}
   def parse_operator(""), do: Ok.ok([])
 
   def parse_operation(input) do
     with {:ok, [left, op, right], _, _, _, _} <- operator(input),
+         {:ok, field} <- Field.new(name: left),
          {:ok, parameter} <- Parameter.new(value: right) do
-      Function.new(function: op, args: [left, parameter])
+      Function.new(function: op, args: [field, parameter])
     end
   end
 

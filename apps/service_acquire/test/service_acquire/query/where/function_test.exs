@@ -3,7 +3,7 @@ defmodule Acquire.Query.Where.FunctionTest do
   import Checkov
 
   alias Acquire.Queryable
-  alias Acquire.Query.Where.{Function, Parameter}
+  alias Acquire.Query.Where.{Function, Functions, Parameter}
 
   describe "new/1" do
     data_test "validates for bad input" do
@@ -46,7 +46,7 @@ defmodule Acquire.Query.Where.FunctionTest do
 
     test "parameterizes operators" do
       Enum.each(["=", ">", "<", ">=", "<=", "!="], fn op ->
-        fun = Function.new!(function: op, args: ["col", to_parameter(42)])
+        fun = Function.new!(function: op, args: [Functions.field("col"), to_parameter(42)])
         assert Queryable.parse_statement(fun) == "col #{op} ?"
         assert Queryable.parse_input(fun) == [42]
       end)

@@ -18,13 +18,13 @@ defmodule Acquire.Dictionaries do
   end
 
   @spec get_dictionary(dataset_id :: String.t(), subset_id :: String.t()) ::
-  {:ok, Dictionary.t()} | {:error, term}
+          {:ok, Dictionary.t()} | {:error, term}
   def get_dictionary(dataset_id, subset_id) do
     get(dataset_id, subset_id, "dictionary")
   end
 
   @spec get_destination(dataset_id :: String.t(), subset_id :: String.t()) ::
-  {:ok, String.t()} | {:error, term}
+          {:ok, String.t()} | {:error, term}
   def get_destination(dataset_id, subset_id) do
     get(dataset_id, subset_id, "destination")
   end
@@ -40,5 +40,4 @@ defmodule Acquire.Dictionaries do
       error_result -> error_result
     end
   end
-
 end
