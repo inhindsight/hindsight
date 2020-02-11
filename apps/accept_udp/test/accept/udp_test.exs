@@ -28,8 +28,7 @@ defmodule Accept.UdpTest do
     end
 
     test "brook serializer can (de)serialize" do
-      udp_conn =
-        Accept.Udp.new!(port: 5060)
+      udp_conn = Accept.Udp.new!(port: 5060)
 
       assert {:ok, ^udp_conn} =
                Brook.Serializer.serialize(udp_conn) |> elem(1) |> Brook.Deserializer.deserialize()

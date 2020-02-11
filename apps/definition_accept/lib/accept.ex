@@ -33,20 +33,20 @@ defmodule Accept do
   @type uuid :: String.t()
 
   @type t :: %__MODULE__{
-    version: integer,
-    id: uuid,
-    dataset_id: String.t(),
-    subset_id: String.t(),
-    destination: String.t(),
-    connection: Accept.Connection.t()
-  }
+          version: integer,
+          id: uuid,
+          dataset_id: String.t(),
+          subset_id: String.t(),
+          destination: String.t(),
+          connection: Accept.Connection.t()
+        }
 
   defstruct version: 1,
-    id: nil,
-    dataset_id: nil,
-    subset_id: nil,
-    destination: nil,
-    connection: nil
+            id: nil,
+            dataset_id: nil,
+            subset_id: nil,
+            destination: nil,
+            connection: nil
 end
 
 defmodule Accept.V1 do
@@ -55,12 +55,12 @@ defmodule Accept.V1 do
   @impl true
   def s do
     schema(%Accept{
-          version: version(1),
-          id: id(),
-          dataset_id: required_string(),
-          subset_id: required_string(),
-          connection: is_accept()
-           })
+      version: version(1),
+      id: id(),
+      dataset_id: required_string(),
+      subset_id: required_string(),
+      connection: is_accept()
+    })
   end
 
   defp is_accept() do

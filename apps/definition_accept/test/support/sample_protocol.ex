@@ -8,9 +8,9 @@ defmodule Accept.SampleProtocol.V1 do
   @impl true
   def s do
     schema(%Accept.SampleProtocol{
-          port: spec(is_integer()),
-          key: required_string(),
-          batch: spec(is_integer())
-})
+      port: spec(is_integer()),
+      key: required_string(),
+      batch: spec(is_integer())
+    })
   end
 end
