@@ -32,6 +32,9 @@ spec:
             - persist/bin/persist
             - start
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: PRESTO_URL
+              value: http://{{ template "kdp.presto.fullname" . }}:{{ .Values.presto.service.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

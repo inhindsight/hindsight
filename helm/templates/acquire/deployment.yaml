@@ -36,6 +36,9 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          env:
+            - name: PRESTO_URL
+              value: http://{{ template "kdp.presto.fullname" . }}:{{ .Values.presto.service.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

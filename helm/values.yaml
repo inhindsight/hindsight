@@ -14,6 +14,10 @@ acquire:
   service:
     type: ClusterIP
     port: 80
+presto:
+  service:
+    type: NodePort
+    port: 8080
 
 image:
   repository: inhindsight/hindsight
