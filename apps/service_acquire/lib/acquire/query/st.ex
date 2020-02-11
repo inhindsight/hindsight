@@ -16,6 +16,10 @@ defmodule Acquire.Query.ST do
     end
   end
 
+  # def envelope(geometry) do
+  #   Function.new(function: "ST_Envelope", args: [geometry])
+  # end
+
   @spec point(x :: float, y :: float) :: {:ok, Function.t()} | {:error, term}
   def point(x, y) do
     Ok.transform([x, y], &Parameter.new(value: &1))

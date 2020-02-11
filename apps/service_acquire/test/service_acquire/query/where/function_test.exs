@@ -14,8 +14,6 @@ defmodule Acquire.Query.Where.FunctionTest do
         [:key, :value],
         [:function, nil],
         [:function, ""],
-        [:args, []],
-        [:args, [1]],
         [:args, nil]
       ]
     end
@@ -38,12 +36,12 @@ defmodule Acquire.Query.Where.FunctionTest do
 
     test "nests a bunch of function calls" do
       fun1 = Function.new!(function: "a", args: to_parameter([1, 2]))
-      fun2 = Function.new!(function: "b", args: [fun1, to_parameter(3)])
+      fun2 = Function.new!(function: "b", args: [fun1, to_parameter(3), to_parameter(10)])
       fun3 = Function.new!(function: "c", args: [to_parameter(4), fun1])
       fun4 = Function.new!(function: "d", args: [fun2, fun3])
 
-      assert Queryable.parse_statement(fun4) == "d(b(a(?, ?), ?), c(?, a(?, ?)))"
-      assert Queryable.parse_input(fun4) == [1, 2, 3, 4, 1, 2]
+      assert Queryable.parse_statement(fun4) == "d(b(a(?, ?), ?, ?), c(?, a(?, ?)))"
+      assert Queryable.parse_input(fun4) == [1, 2, 3, 10, 4, 1, 2]
     end
 
     test "parameterizes operators" do

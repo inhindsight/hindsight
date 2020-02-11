@@ -60,12 +60,12 @@ defmodule Transformer.MoveFieldTest do
       assert Dictionary.Type.String.new!(name: new_name) == get_in(new_dictionary, to_path)
       assert nil == get_in(new_dictionary, from_path)
 
-      where([
+      where [
         [:from, :to],
         ["name", "fullname"],
         [["spouse", "name"], ["spouse", "fullname"]],
         [["friends", "name"], ["friends", "fullname"]]
-      ])
+      ]
     end
 
     test "handles a non existent field", %{dictionary: dictionary} do
@@ -91,12 +91,12 @@ defmodule Transformer.MoveFieldTest do
       assert expected_value == get_in(transformed_data, to_path)
       assert [] == get_in(transformed_data, from_path) |> List.wrap() |> Enum.reject(&is_nil/1)
 
-      where([
+      where [
         [:from, :to, :expected_value],
         ["name", "fullname", "Gary"],
         [["spouse", "name"], ["spouse", "fullname"], "Jennifer"],
         [["friends", "name"], ["friends", "fullname"], ["Fred", "John"]]
-      ])
+      ]
     end
   end
 end

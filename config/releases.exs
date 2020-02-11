@@ -230,4 +230,26 @@ config :service_acquire, AcquireWeb.Endpoint,
   pubsub: [name: Acquire.PubSub, adapter: Phoenix.PubSub.PG2],
   server: true
 
+config :service_acquire, Acquire.Application,
+  brook: [
+    driver: [
+      module: Brook.Driver.Kafka,
+      init_arg: [
+        endpoints: kafka_endpoints,
+        topic: "event-stream",
+        group: "acquire-event-stream",
+        consumer_config: [
+          begin_offset: :earliest,
+          offset_reset_policy: :reset_to_earliest
+        ]
+      ]
+    ],
+    handlers: [Acquire.Event.Handler],
+    storage: [
+      module: Brook.Storage.Ets,
+      init_arg: []
+    ],
+    dispatcher: Brook.Dispatcher.Noop
+  ]
+
 config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")

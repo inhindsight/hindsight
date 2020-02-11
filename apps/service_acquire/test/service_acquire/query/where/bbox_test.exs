@@ -8,19 +8,19 @@ defmodule Acquire.Query.Where.BboxTest do
 
   describe "to_queryable/2" do
     test "returns queryable object for one geospatial field" do
-      expect Acquire.Dictionaries.get("a__default", "wkt"), return: {:ok, ["foobar"]}
+      expect Acquire.Dictionaries.get("a", "default", "wkt"), return: {:ok, ["foobar"]}
 
       points = [ST.point!(1.0, 2.0), ST.point!(3.0, 4.0)]
       ls = ST.LineString.new!(points: points)
       envelope = ST.Envelope.new!(geometry: ls)
       geometry = ST.GeometryFromText.new!(text: "foobar")
 
-      assert {:ok, query} = Bbox.to_queryable([1.0, 2.0, 3.0, 4.0], "a__default")
+      assert {:ok, query} = Bbox.to_queryable([1.0, 2.0, 3.0, 4.0], "a", "default")
       assert %Function{function: "ST_Intersects", args: [^envelope, ^geometry]} = query
     end
 
     test "returns queryable object for multiple geospatial fields" do
-      expect Acquire.Dictionaries.get("a__default", "wkt"), return: {:ok, ["foo", "bar"]}
+      expect Acquire.Dictionaries.get("a", "default", "wkt"), return: {:ok, ["foo", "bar"]}
 
       points = [ST.point!(1.0, 2.0), ST.point!(3.0, 4.0)]
       ls = ST.LineString.new!(points: points)
@@ -32,7 +32,7 @@ defmodule Acquire.Query.Where.BboxTest do
       geo2 = ST.GeometryFromText.new!(text: "bar")
       fun2 = Function.new!(function: "ST_Intersects", args: [envelope, geo2])
 
-      assert {:ok, query} = Bbox.to_queryable([1.0, 2.0, 3.0, 4.0], "a__default")
+      assert {:ok, query} = Bbox.to_queryable([1.0, 2.0, 3.0, 4.0], "a", "default")
       assert %Or{conditions: [^fun1, ^fun2]} = query
     end
   end

@@ -126,10 +126,8 @@ defimpl Avro.Translator, for: Dictionary.Type.Date do
   end
 
   def value(_, iso_date) do
-    with {:ok, date} <- Date.from_iso8601(iso_date) do
-      Date.diff(date, @epoch)
-      |> Ok.ok()
-    end
+    Date.from_iso8601(iso_date)
+    |> Ok.map(&Date.diff(&1, @epoch))
   end
 end
 

@@ -15,7 +15,7 @@ defmodule Acquire.Query.Where.Function do
     alias Acquire.Query.Where.Parameter
 
     def parse_statement(fun) do
-      [arg1, arg2] =
+      arguments =
         Enum.map(fun.args, fn arg ->
           case Queryable.impl_for(arg) do
             nil -> parameterize(arg)
@@ -23,7 +23,7 @@ defmodule Acquire.Query.Where.Function do
           end
         end)
 
-      to_statement(fun.function, arg1, arg2)
+      to_statement(fun.function, arguments)
     end
 
     def parse_input(fun) do
@@ -37,12 +37,12 @@ defmodule Acquire.Query.Where.Function do
       |> Enum.filter(& &1)
     end
 
-    defp to_statement(fun, arg1, arg2) when fun in @operators do
+    defp to_statement(fun, [arg1, arg2 | _]) when fun in @operators do
       "#{arg1} #{fun} #{arg2}"
     end
 
-    defp to_statement(fun, arg1, arg2) do
-      "#{fun}(#{arg1}, #{arg2})"
+    defp to_statement(fun, arguments) do
+      "#{fun}(#{Enum.join(arguments, ", ")})"
     end
 
     defp parameterize(%Parameter{}), do: "?"
@@ -57,10 +57,7 @@ defmodule Acquire.Query.Where.Function.Schema do
   def s do
     schema(%Acquire.Query.Where.Function{
       function: required_string(),
-      args: spec(&two_args?/1)
+      args: spec(is_list())
     })
   end
-
-  defp two_args?([_, _]), do: true
-  defp two_args?(_), do: false
 end
