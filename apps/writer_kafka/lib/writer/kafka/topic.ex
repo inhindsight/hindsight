@@ -26,8 +26,10 @@ defmodule Writer.Kafka.Topic do
       topic: Keyword.fetch!(opts, :topic)
     }
 
+    partitions = Keyword.get(opts, :partitions, 1)
+
     unless Elsa.topic?(state.endpoints, state.topic) do
-      create_topic(state.endpoints, state.topic)
+      create_topic(state.endpoints, state.topic, partitions)
     end
 
     {:ok, elsa_sup} =
@@ -48,8 +50,8 @@ defmodule Writer.Kafka.Topic do
     |> reply(state)
   end
 
-  defp create_topic(endpoints, topic) do
-    Elsa.create_topic(endpoints, topic)
+  defp create_topic(endpoints, topic, partitions) do
+    Elsa.create_topic(endpoints, topic, partitions: partitions)
 
     wait exponential_backoff(100) |> Stream.take(10) do
       Elsa.topic?(endpoints, topic)
