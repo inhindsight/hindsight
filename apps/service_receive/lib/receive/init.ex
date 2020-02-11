@@ -8,7 +8,7 @@ defmodule Receive.Init do
   def on_start(state) do
     Acception.Store.get_all!()
     |> Enum.each(fn accept ->
-      Acception.Supervisor.start_child({SocketSupervisor, accept: accept})
+      Acception.Supervisor.start_child({SocketManager, accept: accept})
     end)
 
     {:ok, state}

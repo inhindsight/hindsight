@@ -6,7 +6,7 @@ defmodule Receive.Event.Handler do
   alias Receive.SocketManager
   import Events, only: [accept_start: 0, accept_end: 0]
 
-  def handle_event(%Brook.Event{type: accept_start(), data: %Accept.Udp{} = accept}) do
+  def handle_event(%Brook.Event{type: accept_start(), data: %Accept{} = accept}) do
     Logger.debug(fn -> "#{__MODULE__}: Received event #{accept_start()}: #{inspect(accept)}" end)
 
     Acception.Supervisor.start_child({SocketManager, accept: accept})
@@ -15,7 +15,7 @@ defmodule Receive.Event.Handler do
 
   def handle_event(%Brook.Event{
         type: accept_end(),
-        data: %Accept.Udp{dataset_id: id, subset_id: sid} = accept
+        data: %Accept{dataset_id: id, subset_id: sid} = accept
       }) do
     Logger.debug(fn -> "#{__MODULE__}: Received event #{accept_end()}: #{inspect(accept)}" end)
     Acception.Store.delete(id, sid)

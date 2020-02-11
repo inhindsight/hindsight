@@ -18,12 +18,12 @@ defmodule Receive.SocketManager do
   @impl GenServer
   def init(args) do
     Process.flag(:trap_exit, true)
-    %Accept.Udp{} = accept = Keyword.fetch!(args, :accept)
+    %Accept{} = accept = Keyword.fetch!(args, :accept)
     Logger.debug(fn -> "#{__MODULE__}: initialized for #{inspect(accept)}" end)
 
     with {:ok, writer_pid} <- start_writer(accept),
          writer_function <- fn msgs ->
-           writer().write(writer_pid, msgs, accept: accept)
+           writer().write(writer_pid, msgs)
          end,
          {:ok, socket_pid} <- start_socket(accept, writer_function) do
       {:ok, %{writer_pid: writer_pid, socket_pid: socket_pid}}
@@ -49,7 +49,7 @@ defmodule Receive.SocketManager do
   defp start_socket(accept, writer) do
     {socket, start, args} =
       Accept.Connection.connect(
-        accept,
+        accept.connection,
         writer: writer,
         batch_size: batch_size(),
         timeout: timeout()

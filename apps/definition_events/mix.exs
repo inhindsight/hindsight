@@ -25,7 +25,6 @@ defmodule DefinitionEvents.MixProject do
     [
       {:brook, "~> 0.5"},
       {:definition_accept, in_umbrella: true},
-      {:accept_udp, in_umbrella: true},
       {:definition_extract, in_umbrella: true},
       {:definition_load_broadcast, in_umbrella: true},
       {:definition_load_persist, in_umbrella: true},

@@ -12,12 +12,6 @@ defmodule Accept.UdpTest do
       where([
         [:field, :value],
         [:version, "1"],
-        [:id, ""],
-        [:dataset_id, 2001],
-        [:subset_id, nil],
-        [:subset_id, ""],
-        [:destination, nil],
-        [:destination, ""],
         [:port, 100_000],
         [:port, nil],
         [:port, "8080"]
@@ -27,15 +21,7 @@ defmodule Accept.UdpTest do
 
   describe "serialization" do
     test "can be decoded back into a struct" do
-      udp_conn =
-        Accept.Udp.new!(
-          port: 5060,
-          destination: "downstream",
-          id: "foo",
-          dataset_id: "123-456",
-          subset_id: "567-890"
-        )
-
+      udp_conn = Accept.Udp.new!(port: 5060)
       json = Jason.encode!(udp_conn)
 
       assert {:ok, ^udp_conn} = Jason.decode!(json) |> Accept.Udp.new()
@@ -43,13 +29,7 @@ defmodule Accept.UdpTest do
 
     test "brook serializer can (de)serialize" do
       udp_conn =
-        Accept.Udp.new!(
-          port: 5060,
-          destination: "downstream",
-          id: "foo",
-          dataset_id: "123-456",
-          subset_id: "567-890"
-        )
+        Accept.Udp.new!(port: 5060)
 
       assert {:ok, ^udp_conn} =
                Brook.Serializer.serialize(udp_conn) |> elem(1) |> Brook.Deserializer.deserialize()

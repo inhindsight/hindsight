@@ -10,7 +10,7 @@ defmodule Receive.Writer do
 
   @impl Writer
   def start_link(args) do
-    %Accept.Udp{destination: destination} = Keyword.fetch!(args, :accept)
+    %Accept{destination: destination} = Keyword.fetch!(args, :accept)
 
     writer_args = [
       endpoints: kafka_endpoints(),
@@ -30,7 +30,7 @@ defmodule Receive.Writer do
   end
 
   @impl Writer
-  def write(server, messages) do
-    :ok = writer().write(server, messages)
+  def write(server, messages, opts \\ []) do
+    :ok = writer().write(server, messages, opts)
   end
 end
