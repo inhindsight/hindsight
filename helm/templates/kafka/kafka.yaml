@@ -2,10 +2,10 @@
 apiVersion: kafka.strimzi.io/v1alpha1
 kind: Kafka
 metadata:
-  name: streaming-service
+  name: {{ template "hindsight.fullname" . }}
 spec:
   kafka:
-    replicas: 3
+    replicas: {{ .Values.strimzi.kafka.replicaCount }}
     listeners:
       plain: {}
       tls: {}
@@ -16,7 +16,7 @@ spec:
     storage:
       {{ if .Values.strimzi.kafka.storage.enabled }}
       type: persistent-claim
-      size: .Values.kafka.storage.size
+      size: {{ .Values.kafka.storage.size }}
       deleteClaim: false
       {{ else }}
       type: ephemeral
@@ -31,7 +31,7 @@ spec:
         memory: 1000M
     {{ end }}
   zookeeper:
-    replicas: 3
+    replicas: {{ .Values.strimzi.kafka.replicaCount }}
     storage:
       {{ if .Values.strimzi.kafka.storage.enabled }}
       type: persistent-claim

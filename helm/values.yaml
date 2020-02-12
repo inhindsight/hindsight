@@ -21,6 +21,7 @@ presto:
 strimzi:
   enabled: true
   kafka:
+    replicaCount: 3
     storage:
       enabled: false
       size: ""
