@@ -28,7 +28,13 @@ defmodule Writer.Kafka.TopicTest do
   end
 
   test "topic writer will create topic and produce messages" do
-    {:ok, writer} = start_supervised({Topic, endpoints: @server, topic: "topic-435"})
+    {:ok, writer} =
+      start_supervised(
+        {Topic,
+         endpoints: @server,
+         topic: "topic-435",
+         metric_metadata: %{app: "testing", dataset_id: "ds1", subset_id: "sb1"}}
+      )
 
     :ok = Topic.write(writer, ["message1"])
 
@@ -37,7 +43,8 @@ defmodule Writer.Kafka.TopicTest do
       assert Enum.any?(messages, &match?(%{value: "message1"}, &1))
     end
 
-    assert_receive {:telemetry_event, [:writer, :kafka, :produce], %{count: 1}, %{}, %{}}
+    expected_metadata = %{app: "testing", dataset_id: "ds1", subset_id: "sb1", topic: "topic-435"}
+    assert_receive {:telemetry_event, [:writer, :kafka, :produce], %{count: 1}, ^expected_metadata, %{}}
   end
 
   test "topic writer will report correct number of messages sent, in case of partial failure" do
