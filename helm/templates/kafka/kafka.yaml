@@ -10,8 +10,8 @@ spec:
       plain: {}
       tls: {}
     config:
-      offsets.topic.replication.factor: 3
-      transaction.state.log.replication.factor: 3
+      offsets.topic.replication.factor: {{ .Values.strimzi.kafka.replicaCount }}
+      transaction.state.log.replication.factor: {{ .Values.strimzi.kafka.replicaCount }}
       transaction.state.log.min.isr: 2
     storage:
       {{ if .Values.strimzi.kafka.storage.enabled }}
@@ -23,12 +23,7 @@ spec:
       {{ end }}
     {{ if .Values.strimzi.kafka.storage.enabled }}
     resources:
-      requests:
-        cpu: 500m
-        memory: 1000M
-      limits:
-        cpu: 500m
-        memory: 1000M
+      {{ .Values.strimzi.kafka.resources }}
     {{ end }}
   zookeeper:
     replicas: {{ .Values.strimzi.kafka.replicaCount }}
@@ -38,12 +33,7 @@ spec:
       size: 1Gi
       deleteClaim: false
       resources:
-        requests:
-          cpu: 10m
-          memory: 512Mi
-        limits:
-          cpu: 100m
-          memory: 512Mi
+        {{ .Values.strimzi.zookeeper.resources }}
       {{ else }}
       type: ephemeral
       {{ end }}
