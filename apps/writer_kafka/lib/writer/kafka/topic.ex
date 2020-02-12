@@ -3,8 +3,16 @@ defmodule Writer.Kafka.Topic do
   use GenServer
   use Retry
 
+  @type init_opts :: [
+          name: atom,
+          connection: atom,
+          endpoints: [{atom, non_neg_integer}],
+          topic: String.t(),
+          metric_metadata: %{}
+        ]
+
   defmodule State do
-    defstruct [:connection, :endpoints, :topic, :elsa_sup]
+    defstruct [:connection, :endpoints, :topic, :elsa_sup, :metric_metadata]
   end
 
   @impl Writer
@@ -20,10 +28,13 @@ defmodule Writer.Kafka.Topic do
 
   @impl GenServer
   def init(opts) do
+    topic = Keyword.fetch!(opts, :topic)
+
     state = %State{
       connection: Keyword.get(opts, :connection, default_connection_name()),
       endpoints: Keyword.fetch!(opts, :endpoints),
-      topic: Keyword.fetch!(opts, :topic)
+      topic: topic,
+      metric_metadata: Keyword.get(opts, :metric_metadata, %{}) |> Map.put(:topic, topic)
     }
 
     unless Elsa.topic?(state.endpoints, state.topic) do
@@ -44,8 +55,15 @@ defmodule Writer.Kafka.Topic do
 
   @impl GenServer
   def handle_call({:write, messages, _opts}, _from, state) do
-    Elsa.produce(state.connection, state.topic, messages)
-    |> reply(state)
+    with :ok <- Elsa.produce(state.connection, state.topic, messages) do
+      send_metric(state, length(messages))
+      {:reply, :ok, state}
+    else
+      {:error, _reason, failed_messages} = error ->
+        count = length(messages) - length(failed_messages)
+        send_metric(state, count)
+        {:reply, error, state}
+    end
   end
 
   defp create_topic(endpoints, topic) do
@@ -60,7 +78,9 @@ defmodule Writer.Kafka.Topic do
     end
   end
 
-  defp reply(message, state), do: {:reply, message, state}
+  defp send_metric(state, count) do
+    :telemetry.execute([:writer, :kafka, :produce], %{count: count}, state.metric_metadata)
+  end
 
   defp default_connection_name(), do: :"#{__MODULE__}_#{inspect(self())}"
 end
