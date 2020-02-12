@@ -39,6 +39,11 @@ spec:
           env:
             - name: PRESTO_URL
               value: http://{{ template "kdp.presto.fullname" . }}:{{ .Values.presto.service.port }}
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "hindsight.fullname" . }}-acquire-key-base
+                  key: secret_key_base
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
