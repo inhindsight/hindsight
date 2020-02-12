@@ -44,8 +44,15 @@ defmodule Writer.Kafka.Topic do
 
   @impl GenServer
   def handle_call({:write, messages, _opts}, _from, state) do
-    Elsa.produce(state.connection, state.topic, messages)
-    |> reply(state)
+    with :ok <- Elsa.produce(state.connection, state.topic, messages) do
+      send_metric(length(messages))
+      {:reply, :ok, state}
+    else
+      {:error, _reason, failed_messages} = error ->
+        count = length(messages) - length(failed_messages)
+        send_metric(count)
+        {:reply, error, state}
+    end
   end
 
   defp create_topic(endpoints, topic) do
@@ -60,7 +67,9 @@ defmodule Writer.Kafka.Topic do
     end
   end
 
-  defp reply(message, state), do: {:reply, message, state}
+  defp send_metric(count) do
+    :telemetry.execute([:writer, :kafka, :produce], %{count: count})
+  end
 
   defp default_connection_name(), do: :"#{__MODULE__}_#{inspect(self())}"
 end

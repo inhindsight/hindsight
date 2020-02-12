@@ -27,9 +27,11 @@ defmodule WriterKafka.MixProject do
       {:elsa, "~> 0.11.1"},
       {:retry, "~> 0.13.0"},
       {:ok, in_umbrella: true},
+      {:telemetry, "~> 0.4.1"},
       {:testing, in_umbrella: true, only: [:test]},
       {:divo, "~> 1.1", only: [:dev, :test]},
-      {:divo_kafka, "~> 0.1.6", only: [:test]}
+      {:divo_kafka, "~> 0.1.6", only: [:test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}
     ]
   end
 end
