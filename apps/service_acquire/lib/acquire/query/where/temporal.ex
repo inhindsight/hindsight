@@ -35,7 +35,8 @@ defmodule Acquire.Query.Where.Temporal do
       |> parameter()
       |> date_parse(literal("%Y-%m-%dT%H:%i:%S"))
 
-    date_diff(field(field), parsed_timestamp)
+    field(field)
+    |> date_diff(parsed_timestamp)
     |> gt(literal(0))
   end
 
@@ -47,7 +48,8 @@ defmodule Acquire.Query.Where.Temporal do
       |> parameter()
       |> date_parse(literal("%Y-%m-%dT%H:%i:%S"))
 
-    date_diff(field(field), parsed_timestamp)
+    field(field)
+    |> date_diff(parsed_timestamp)
     |> lt(literal(0))
   end
 

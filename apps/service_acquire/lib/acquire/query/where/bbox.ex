@@ -9,7 +9,7 @@ defmodule Acquire.Query.Where.Bbox do
     with {:ok, envelope} <- bbox_envelope(x1, y1, x2, y2),
          {:ok, dictionary} <- Acquire.Dictionaries.get_dictionary(dataset_id, subset_id),
          wkt_fields <- wkt_fields(dictionary),
-         {:ok, geometries} <- Ok.transform(wkt_fields, &ST.geometry_from_text(&1)) do
+         {:ok, geometries} <- Ok.transform(wkt_fields, &ST.geometry_from_text/1) do
       case geometries do
         [geo] ->
           ST.intersects(envelope, geo)
@@ -25,7 +25,7 @@ defmodule Acquire.Query.Where.Bbox do
     with {:ok, point2} <- ST.point(x2, y2) do
       ST.point(x1, y1)
       |> Ok.map(fn point1 -> ST.line_string([point1, point2]) end)
-      |> Ok.map(&ST.envelope(&1))
+      |> Ok.map(&ST.envelope/1)
     end
   end
 
