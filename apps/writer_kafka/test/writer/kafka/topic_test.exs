@@ -44,7 +44,9 @@ defmodule Writer.Kafka.TopicTest do
     end
 
     expected_metadata = %{app: "testing", dataset_id: "ds1", subset_id: "sb1", topic: "topic-435"}
-    assert_receive {:telemetry_event, [:writer, :kafka, :produce], %{count: 1}, ^expected_metadata, %{}}
+
+    assert_receive {:telemetry_event, [:writer, :kafka, :produce], %{count: 1},
+                    ^expected_metadata, %{}}
   end
 
   test "topic writer will report correct number of messages sent, in case of partial failure" do
