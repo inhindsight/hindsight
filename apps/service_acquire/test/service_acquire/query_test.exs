@@ -5,6 +5,7 @@ defmodule Acquire.QueryTest do
   alias Acquire.Query
   alias Acquire.Queryable
   alias Acquire.Query.Where.{Function, And, Or, Parameter}
+  import Acquire.Query.Where.Functions
 
   @instance Acquire.Application.instance()
 
@@ -89,7 +90,7 @@ defmodule Acquire.QueryTest do
     end
 
     test "parses statement from query with single where clause" do
-      fun = Function.new!(function: ">=", args: ["one", to_parameter(42)])
+      fun = Function.new!(function: ">=", args: [field("one"), to_parameter(42)])
       query = Query.new!(table: "a__b", where: fun)
 
       assert Queryable.parse_statement(query) == "SELECT * FROM a__b WHERE one >= ?"
@@ -110,7 +111,7 @@ defmodule Acquire.QueryTest do
       fun1 = Function.new!(function: "a", args: to_parameter([1, 2]))
       fun2 = Function.new!(function: "b", args: to_parameter([3, 4]))
       and1 = And.new!(conditions: [fun1, fun2])
-      fun3 = Function.new!(function: "=", args: ["one", to_parameter(5)])
+      fun3 = Function.new!(function: "=", args: [field("one"), to_parameter(5)])
       or1 = Or.new!(conditions: [and1, fun3])
 
       query = Query.new!(table: "a__b", fields: ["one", "two"], limit: 10, where: or1)

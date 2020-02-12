@@ -4,36 +4,63 @@ defmodule Acquire.Query.Where.BboxTest do
 
   alias Acquire.Query.Where.Bbox
   alias Acquire.Query.ST
-  alias Acquire.Query.Where.{Function, Or}
+  alias Acquire.Query.Where.{Function, Or, Functions}
+
+  @instance Acquire.Application.instance()
 
   describe "to_queryable/2" do
     test "returns queryable object for one geospatial field" do
-      expect Acquire.Dictionaries.get("a", "default", "wkt"), return: {:ok, ["foobar"]}
+      Brook.Test.with_event(@instance, fn ->
+        Acquire.Dictionaries.persist(
+          Transform.new!(
+            id: "transform-1",
+            dataset_id: "a",
+            subset_id: "default",
+            dictionary: [
+              Dictionary.Type.Wkt.Point.new!(name: "foobar")
+            ],
+            steps: []
+          )
+        )
+      end)
 
       points = [ST.point!(1.0, 2.0), ST.point!(3.0, 4.0)]
-      ls = ST.LineString.new!(points: points)
-      envelope = ST.Envelope.new!(geometry: ls)
-      geometry = ST.GeometryFromText.new!(text: "foobar")
+      {:ok, ls} = ST.line_string(points)
+      {:ok, envelope} = ST.envelope(ls)
+      {:ok, geometry} = ST.geometry_from_text(Functions.field("foobar"))
 
       assert {:ok, query} = Bbox.to_queryable([1.0, 2.0, 3.0, 4.0], "a", "default")
-      assert %Function{function: "ST_Intersects", args: [^envelope, ^geometry]} = query
+      assert %Function{function: "ST_Intersects", args: [envelope, geometry]} == query
     end
 
     test "returns queryable object for multiple geospatial fields" do
-      expect Acquire.Dictionaries.get("a", "default", "wkt"), return: {:ok, ["foo", "bar"]}
+      Brook.Test.with_event(@instance, fn ->
+        Acquire.Dictionaries.persist(
+          Transform.new!(
+            id: "transform-1",
+            dataset_id: "a",
+            subset_id: "default",
+            dictionary: [
+              Dictionary.Type.Wkt.Point.new!(name: "bar"),
+              Dictionary.Type.Wkt.Point.new!(name: "foo")
+            ],
+            steps: []
+          )
+        )
+      end)
 
       points = [ST.point!(1.0, 2.0), ST.point!(3.0, 4.0)]
-      ls = ST.LineString.new!(points: points)
-      envelope = ST.Envelope.new!(geometry: ls)
+      {:ok, ls} = ST.line_string(points)
+      {:ok, envelope} = ST.envelope(ls)
 
-      geo1 = ST.GeometryFromText.new!(text: "foo")
+      {:ok, geo1} = ST.geometry_from_text(Functions.field("foo"))
       fun1 = Function.new!(function: "ST_Intersects", args: [envelope, geo1])
 
-      geo2 = ST.GeometryFromText.new!(text: "bar")
+      {:ok, geo2} = ST.geometry_from_text(Functions.field("bar"))
       fun2 = Function.new!(function: "ST_Intersects", args: [envelope, geo2])
 
       assert {:ok, query} = Bbox.to_queryable([1.0, 2.0, 3.0, 4.0], "a", "default")
-      assert %Or{conditions: [^fun1, ^fun2]} = query
+      assert %Or{conditions: [fun1, fun2]} == query
     end
   end
 end

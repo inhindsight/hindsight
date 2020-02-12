@@ -3,7 +3,7 @@ defmodule Acquire.Query.Where.Function do
 
   @type t :: %__MODULE__{
           function: String.t(),
-          args: [term]
+          args: [Acquire.Queryable.t()]
         }
 
   defstruct [:function, :args]
@@ -11,28 +11,13 @@ defmodule Acquire.Query.Where.Function do
   defimpl Acquire.Queryable, for: __MODULE__ do
     @operators ["=", ">", "<", ">=", "<=", "!="]
 
-    alias Acquire.Queryable
-    alias Acquire.Query.Where.Parameter
-
     def parse_statement(fun) do
-      arguments =
-        Enum.map(fun.args, fn arg ->
-          case Queryable.impl_for(arg) do
-            nil -> parameterize(arg)
-            _ -> Queryable.parse_statement(arg)
-          end
-        end)
-
+      arguments = Enum.map(fun.args, &Acquire.Queryable.parse_statement/1)
       to_statement(fun.function, arguments)
     end
 
     def parse_input(fun) do
-      Enum.map(fun.args, fn arg ->
-        case Queryable.impl_for(arg) do
-          nil -> Parameter.get_value(arg)
-          _ -> Queryable.parse_input(arg)
-        end
-      end)
+      Enum.map(fun.args, &Acquire.Queryable.parse_input/1)
       |> List.flatten()
       |> Enum.filter(& &1)
     end
@@ -44,9 +29,6 @@ defmodule Acquire.Query.Where.Function do
     defp to_statement(fun, arguments) do
       "#{fun}(#{Enum.join(arguments, ", ")})"
     end
-
-    defp parameterize(%Parameter{}), do: "?"
-    defp parameterize(arg), do: arg
   end
 end
 

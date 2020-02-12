@@ -10,7 +10,7 @@ defmodule Acquire.Query.Where.Temporal do
   def to_queryable(_, _, "", ""), do: nil
 
   def to_queryable(dataset_id, subset_id, after_time, before_time) do
-    with {:ok, dictionary} <- Acquire.Dictionaries.get(dataset_id, subset_id, "dictionary") do
+    with {:ok, dictionary} <- Acquire.Dictionaries.get_dictionary(dataset_id, subset_id) do
       Dictionary.get_by_type(dictionary, Dictionary.Type.Timestamp)
       |> Enum.map(&Enum.join(&1, "."))
       |> Enum.map(&to_queryable(&1, after_time, before_time))
@@ -33,10 +33,11 @@ defmodule Acquire.Query.Where.Temporal do
     parsed_timestamp =
       time
       |> parameter()
-      |> date_parse("'%Y-%m-%dT%H:%i:%S'")
+      |> date_parse(literal("%Y-%m-%dT%H:%i:%S"))
 
-    date_diff(field, parsed_timestamp)
-    |> gt(0)
+    field(field)
+    |> date_diff(parsed_timestamp)
+    |> gt(literal(0))
   end
 
   defp before_clause(_, ""), do: nil
@@ -45,10 +46,11 @@ defmodule Acquire.Query.Where.Temporal do
     parsed_timestamp =
       time
       |> parameter()
-      |> date_parse("'%Y-%m-%dT%H:%i:%S'")
+      |> date_parse(literal("%Y-%m-%dT%H:%i:%S"))
 
-    date_diff(field, parsed_timestamp)
-    |> lt(0)
+    field(field)
+    |> date_diff(parsed_timestamp)
+    |> lt(literal(0))
   end
 
   defp and_clause([item]), do: item
