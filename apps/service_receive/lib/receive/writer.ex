@@ -30,7 +30,7 @@ defmodule Receive.Writer do
   end
 
   @impl Writer
-  def write(server, messages, opts \\ []) do
-    :ok = writer().write(server, messages, opts)
+  def write(server, messages, _opts \\ []) do
+    :ok = writer().write(server, messages)
   end
 end

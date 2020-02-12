@@ -10,7 +10,8 @@ defmodule Receive.SocketManager do
   getter(:timeout, default: 1_000)
 
   def start_link(args) do
-    name = :"#{args.dataset_id}_#{args.subset_id}_manager"
+    %Accept{} = accept = Keyword.fetch!(args, :accept)
+    name = :"#{accept.dataset_id}_#{accept.subset_id}_manager"
 
     GenServer.start_link(__MODULE__, args, name: name)
   end
@@ -55,6 +56,6 @@ defmodule Receive.SocketManager do
         timeout: timeout()
       )
 
-    apply(socket, start, args)
+    apply(socket, start, [args])
   end
 end
