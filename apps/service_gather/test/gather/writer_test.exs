@@ -55,6 +55,12 @@ defmodule Gather.WriterTest do
       assert Keyword.get(actual, :endpoints) == [localhost: 9092]
       assert Keyword.get(actual, :topic) == "topic-1"
       assert Keyword.get(actual, :name) == :joe
+
+      assert Keyword.get(actual, :metric_metadata) == %{
+               app: "service_gather",
+               dataset_id: "test-ds1",
+               subset_id: "extract_name"
+             }
     end
   end
 
