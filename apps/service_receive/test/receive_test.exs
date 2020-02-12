@@ -11,9 +11,7 @@ defmodule ReceiveTest do
     %{
       app: :service_receive,
       key: Receive.SocketManager,
-      update: fn config ->
-        Keyword.put(config, :writer, Receive.WriterMock)
-      end
+      set: [writer: Receive.WriterMock]
     }
   ])
 
@@ -21,7 +19,7 @@ defmodule ReceiveTest do
   setup :verify_on_exit!
 
   setup do
-    {:ok, source} = SourceSocket.start_link(port: 5678, schedule: true, interval: 500)
+    {:ok, source} = SourceSocket.start_link(port: 6789, schedule: true, interval: 500)
 
     on_exit(fn ->
       Process.exit(source, :kill)
@@ -56,12 +54,12 @@ defmodule ReceiveTest do
         dataset_id: "test-ds1",
         subset_id: "test-ss1",
         destination: "test-ds1-raw",
-        connection: Accept.Udp.new!(port: 5678)
+        connection: Accept.Udp.new!(port: 6789)
       )
 
     Brook.Test.send(@instance, accept_start(), "testing", accept)
 
-#    assert_receive {:write, ^dummy_writer, messages, [dataset_id: "test-ds1"]}, 10_000
+    assert_receive {:write, ^dummy_writer, messages, [dataset_id: "test-ds1"]}, 10_000
 
 #    assert accept == Receive.Acception.Store.get!(accept.dataset_id, accept.subset_id)
   end
