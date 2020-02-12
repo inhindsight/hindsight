@@ -18,6 +18,12 @@ presto:
   service:
     type: NodePort
     port: 8080
+strimzi:
+  enabled: true
+  kafka:
+    storage:
+      enabled: false
+      size: ""
 
 image:
   repository: inhindsight/hindsight
