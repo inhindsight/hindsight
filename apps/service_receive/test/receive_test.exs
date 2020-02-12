@@ -2,6 +2,7 @@ defmodule ReceiveTest do
   use ExUnit.Case
   import Mox
   import Events, only: [accept_start: 0, accept_end: 0]
+  import AssertAsync
   require Temp.Env
 
   @instance Receive.Application.instance()
@@ -11,7 +12,7 @@ defmodule ReceiveTest do
     %{
       app: :service_receive,
       key: Receive.SocketManager,
-      set: [writer: Receive.WriterMock]
+      set: [writer: Receive.WriterMock, batch_size: 10]
     }
   ])
 
@@ -19,32 +20,17 @@ defmodule ReceiveTest do
   setup :verify_on_exit!
 
   setup do
-    {:ok, source} = SourceSocket.start_link(port: 6789, schedule: true, interval: 500)
-
-    on_exit(fn ->
-      Process.exit(source, :kill)
-      Receive.Acception.Supervisor.kill_all_children()
-    end)
-
-    :ok
-  end
-
-  setup do
-    Brook.Test.clear_view_state(@instance, "acceptions")
-    :ok
-  end
-
-  test "receives data from source" do
+    start_supervised({SourceSocket, port: 6789, schedule: true, interval: 100})
+    {:ok, dummy_writer} = start_supervised({Agent, fn -> :dummy_writer end})
     test = self()
-    {:ok, dummy_writer} = Agent.start_link(fn -> :dummy_writer end)
 
     Receive.WriterMock
-    |> expect(:start_link, fn args ->
+    |> stub(:start_link, fn args ->
       send(test, {:start_link, args})
       {:ok, dummy_writer}
     end)
-    |> expect(:write, fn server, messages ->
-      send(test, {:write, server, messages})
+    |> stub(:write, fn server, messages, opts ->
+      send(test, {:write, server, messages, opts})
       :ok
     end)
 
@@ -53,14 +39,41 @@ defmodule ReceiveTest do
         id: "accept-id-1",
         dataset_id: "test-ds1",
         subset_id: "test-ss1",
-        destination: "test-ds1-raw",
+        destination: "test-ds1",
         connection: Accept.Udp.new!(port: 6789)
       )
 
+    on_exit(fn ->
+      Receive.Acception.Supervisor.kill_all_children()
+    end)
+
+    [accept: accept, dummy: dummy_writer]
+  end
+
+  setup do
+    Brook.Test.clear_view_state(@instance, "acceptions")
+    :ok
+  end
+
+  test "receives data from source", %{accept: accept, dummy: dummy} do
     Brook.Test.send(@instance, accept_start(), "testing", accept)
 
-    assert_receive {:write, ^dummy_writer, messages, [dataset_id: "test-ds1"]}, 10_000
+    assert_receive {:write, ^dummy, messages, [dataset_id: "test-ds1", subset_id: "test-ss1"]},
+                   5_000
 
-#    assert accept == Receive.Acception.Store.get!(accept.dataset_id, accept.subset_id)
+    assert length(messages) == 10
+
+    assert accept == Receive.Acception.Store.get!(accept.dataset_id, accept.subset_id)
+  end
+
+  test "removes stored receipt on #{accept_end()}", %{accept: accept} do
+    Brook.Test.send(@instance, accept_start(), "testing", accept)
+    Process.sleep(100)
+
+    Brook.Test.send(@instance, accept_end(), "testing", accept)
+
+    assert_async do
+      assert nil == Receive.Acception.Store.get!(accept.dataset_id, accept.subset_id)
+    end
   end
 end

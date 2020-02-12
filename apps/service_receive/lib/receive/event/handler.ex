@@ -20,7 +20,7 @@ defmodule Receive.Event.Handler do
     Logger.debug(fn -> "#{__MODULE__}: Received event #{accept_end()}: #{inspect(accept)}" end)
     Acception.Store.delete(id, sid)
 
-    Process.whereis(:"#{id}_#{sid}")
+    Process.whereis(:"#{id}_#{sid}_manager")
     |> Acception.Supervisor.terminate_child()
   end
 end

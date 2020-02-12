@@ -26,15 +26,8 @@ defmodule Accept.Udp.Socket do
     }
 
     {:ok, socket} = :gen_udp.open(state.port, [:binary, active: state.batch_size])
-    IO.puts("SOCKET UP AND LISTENING")
 
-    {:ok, Map.put(state, :socket, socket), {:continue, :fuck}} # state.timeout}
-  end
-
-  @impl GenServer
-  def handle_continue(:fuck, state) do
-    IO.puts("GOT THROUGH MY INIT")
-    {:noreply, state}
+    {:ok, Map.put(state, :socket, socket), state.timeout}
   end
 
   @impl GenServer

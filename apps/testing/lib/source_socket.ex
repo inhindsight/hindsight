@@ -30,7 +30,7 @@ defmodule SourceSocket do
 
   def handle_info(:push_message, %{socket: socket, port: port} = state) do
     message = generate_payload()
-    :gen_udp.send(socket, {127, 0, 0, 1}, port, message) |> IO.inspect(label: "MESSAGE SENT")
+    :gen_udp.send(socket, {127, 0, 0, 1}, port, message)
 
     {:noreply, state}
   end

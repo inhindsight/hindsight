@@ -24,7 +24,10 @@ defmodule Receive.SocketManager do
 
     with {:ok, writer_pid} <- start_writer(accept),
          writer_function <- fn msgs ->
-           writer().write(writer_pid, msgs)
+           writer().write(writer_pid, msgs,
+             dataset_id: accept.dataset_id,
+             subset_id: accept.subset_id
+           )
          end,
          {:ok, socket_pid} <- start_socket(accept, writer_function) do
       {:ok, %{writer_pid: writer_pid, socket_pid: socket_pid}}
