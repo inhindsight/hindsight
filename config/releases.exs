@@ -59,8 +59,8 @@ config :service_gather, Gather.Application,
     ],
     handlers: [Gather.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -96,8 +96,8 @@ config :service_broadcast, Broadcast.Application,
     ],
     handlers: [Broadcast.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -153,8 +153,8 @@ config :service_persist, Persist.Application,
     ],
     handlers: [Persist.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
     ],
     dispatcher: Brook.Dispatcher.Noop,
     event_processing_timeout: 20_000
@@ -216,8 +216,8 @@ config :service_orchestrate, Orchestrate.Application,
     ],
     handlers: [Orchestrate.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -246,8 +246,8 @@ config :service_acquire, Acquire.Application,
     ],
     handlers: [Acquire.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
