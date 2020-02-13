@@ -33,6 +33,8 @@ spec:
             - start
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: BUCKET_NAME
+              value: {{ .Values.global.objectStore.bucketName }}
             - name: PRESTO_URL
               value: http://{{ template "presto.fullname" . }}:{{ .Values.presto.service.port }}
             - name: KAFKA_ENDPOINTS

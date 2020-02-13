@@ -45,6 +45,12 @@ image:
   repository: inhindsight/hindsight
   pullPolicy: IfNotPresent
 
+global:
+  objectStore:
+    bucketName: hindsight-object-storage
+    accessKey: accessKey
+    accessSecret: accessSecret
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

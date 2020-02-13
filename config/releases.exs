@@ -163,7 +163,7 @@ config :service_persist, Persist.Application,
 config :service_persist, Persist.TableCreator.Presto, Keyword.put(presto_db, :user, "hindsight")
 
 config :service_persist, Persist.Uploader.S3,
-  s3_bucket: "hindsight-object-storage",
+  s3_bucket: System.get_env("BUCKET_NAME", "hindsight-object-storage"),
   s3_path: "hive-s3"
 
 config :service_persist, Persist.Load.Broadway,

@@ -128,10 +128,3 @@ hook:
   container:
     image: alpine
     tag: '3.8'
-
-global:
-  objectStore:
-    bucketName: hindsight-object-storage
-    accessKey: accessKey
-    accessSecret: accessSecret
-
