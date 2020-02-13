@@ -1,4 +1,4 @@
-name: kubernetes-data-platform
+name: presto
 apiVersion: v1
 description: Hadoop-less data storage
 version: 1.3.0

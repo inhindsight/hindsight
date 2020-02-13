@@ -38,7 +38,7 @@ spec:
               protocol: TCP
           env:
             - name: PRESTO_URL
-              value: http://{{ template "kdp.presto.fullname" . }}:{{ .Values.presto.service.port }}
+              value: http://{{ template "presto.fullname" . }}:{{ .Values.presto.service.port }}
             - name: SECRET_KEY_BASE
               valueFrom:
                 secretKeyRef:

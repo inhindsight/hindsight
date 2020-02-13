@@ -2,15 +2,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "kdp.postgres.fullname" . }}
+  name: {{ template "presto.postgres.fullname" . }}
   labels:
     component: postgres
-{{ include "kdp.labels" . | indent 4 }}
+{{ include "presto.labels" . | indent 4 }}
 spec:
   selector:
     matchLabels:
       component: postgres
-{{ include "kdp.labels" . | indent 6 }}
+{{ include "presto.labels" . | indent 6 }}
   replicas: {{ .Values.postgres.deploy.replicas }}
   strategy:
 {{ toYaml .Values.postgres.deploy.updateStrategy | trim | indent 4 }}
@@ -18,7 +18,7 @@ spec:
     metadata:
       labels:
         component: postgres
-{{ include "kdp.labels" . | indent 8 }}
+{{ include "presto.labels" . | indent 8 }}
     spec:
       containers:
         - name: postgres
@@ -41,10 +41,10 @@ spec:
       volumes:
       - name: postgres-init
         configMap:
-          name: {{ template "kdp.postgres.fullname" . }}-init
+          name: {{ template "presto.postgres.fullname" . }}-init
 {{- if .Values.postgres.storage.persist }}
       - name: postgres-data
         persistentVolumeClaim:
-          claimName: {{ template "kdp.postgres.fullname" . }}-storage
+          claimName: {{ template "presto.postgres.fullname" . }}-storage
 {{- end }}
 {{- end }}

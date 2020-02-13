@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "kdp.presto.fullname" . }}-coord
+  name: {{ template "presto.fullname" . }}-coord
   labels:
     component: presto
     role: coordinator
-{{ include "kdp.labels" . | indent 4 }}
+{{ include "presto.labels" . | indent 4 }}
 spec:
   selector:
     matchLabels:
       component: presto
       role: coordinator
-{{ include "kdp.labels" . | indent 6 }}
+{{ include "presto.labels" . | indent 6 }}
   replicas: {{ .Values.presto.deploy.replicas }}
   strategy:
 {{ toYaml .Values.presto.deploy.updateStrategy | trim | indent 4 }}
@@ -26,7 +26,7 @@ spec:
       labels:
         component: presto
         role: coordinator
-{{ include "kdp.labels" . | indent 8 }}
+{{ include "presto.labels" . | indent 8 }}
     spec:
       containers:
       - name: presto-coordinator
@@ -93,10 +93,10 @@ spec:
       volumes:
       - name: presto-configs
         configMap:
-          name: {{ template "kdp.presto.fullname" . }}-configs
+          name: {{ template "presto.fullname" . }}-configs
       - name: coordinator-config
         configMap:
-          name: {{ template "kdp.presto.fullname" . }}-coordinator
+          name: {{ template "presto.fullname" . }}-coordinator
       - name: core-site
         configMap:
-          name: {{ template "kdp.name" . }}-core-site
+          name: {{ template "presto.name" . }}-core-site

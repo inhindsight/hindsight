@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "kdp.metastore.fullname" . }}
+  name: {{ template "presto.metastore.fullname" . }}
   labels:
     component: metastore
-{{ include "kdp.labels" . | indent 4 }}
+{{ include "presto.labels" . | indent 4 }}
 spec:
   selector:
     matchLabels:
       component: metastore
-{{ include "kdp.labels" . | indent 6 }}
+{{ include "presto.labels" . | indent 6 }}
   replicas: {{ .Values.metastore.deploy.replicas }}
   strategy:
 {{ toYaml .Values.metastore.deploy.updateStrategy | trim | indent 4 }}
@@ -22,7 +22,7 @@ spec:
         prometheus.io/scrape: "true"
       labels:
         component: metastore
-{{ include "kdp.labels" . | indent 8 }}
+{{ include "presto.labels" . | indent 8 }}
     spec:
       initContainers:
       - name: init-schema
@@ -73,10 +73,10 @@ spec:
       volumes:
       - name: metastore-site
         configMap:
-          name: {{ template "kdp.metastore.fullname" . }}-config
+          name: {{ template "presto.metastore.fullname" . }}-config
       - name: core-site
         configMap:
-          name: {{ template "kdp.name" . }}-core-site
+          name: {{ template "presto.name" . }}-core-site
       - name: metastore-configs
         configMap:
-          name: {{ template "kdp.metastore.fullname" . }}-metastore-configs
+          name: {{ template "presto.metastore.fullname" . }}-metastore-configs

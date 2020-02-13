@@ -131,7 +131,7 @@ hook:
 
 global:
   objectStore:
-    bucketName: kdp-cloud-storage
+    bucketName: hindsight-object-storage
     accessKey: accessKey
     accessSecret: accessSecret
 

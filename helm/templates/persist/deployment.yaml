@@ -34,7 +34,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: PRESTO_URL
-              value: http://{{ template "kdp.presto.fullname" . }}:{{ .Values.presto.service.port }}
+              value: http://{{ template "presto.fullname" . }}:{{ .Values.presto.service.port }}
             - name: KAFKA_ENDPOINTS
               value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092
           resources:

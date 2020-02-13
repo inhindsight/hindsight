@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "kdp.minio.fullname" . }}-init
+  name: {{ template "presto.minio.fullname" . }}-init
   labels:
     component: minio
-{{ include "kdp.labels" . | indent 4 }}
+{{ include "presto.labels" . | indent 4 }}
 data:
   create_bucket.sh: |
     #!/bin/sh
@@ -15,7 +15,7 @@ data:
     chmod a+x /usr/bin/mc
 
     sleep 10
-    mc config host add kdp http://{{ template "kdp.minio.fullname" . }}:{{ .Values.minio.service.port }} {{ .Values.global.objectStore.accessKey }} {{ .Values.global.objectStore.accessSecret }}
-    mc mb kdp/{{ .Values.global.objectStore.bucketName }}
-    mc policy set public kdp/{{ .Values.global.objectStore.bucketName }}
+    mc config host add hindsight http://{{ template "presto.minio.fullname" . }}:{{ .Values.minio.service.port }} {{ .Values.global.objectStore.accessKey }} {{ .Values.global.objectStore.accessSecret }}
+    mc mb hindsight/{{ .Values.global.objectStore.bucketName }}
+    mc policy set public hindsight/{{ .Values.global.objectStore.bucketName }}
 {{- end }}

@@ -3,10 +3,10 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ template "kdp.postgres.fullname" . }}-storage
+  name: {{ template "presto.postgres.fullname" . }}-storage
   labels:
     component: postgres
-{{ include "kdp.labels" . | indent 4 }}
+{{ include "presto.labels" . | indent 4 }}
 spec:
   accessModes:
   - {{ .Values.postgres.storage.mode }}

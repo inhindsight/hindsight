@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "kdp.postgres.fullname" . }}-init
+  name: {{ template "presto.postgres.fullname" . }}-init
   labels:
     component: postgres
-{{ include "kdp.labels" . | indent 4 }}
+{{ include "presto.labels" . | indent 4 }}
 data:
   init.sql: |-
     CREATE DATABASE {{ .Values.postgres.db.name }};

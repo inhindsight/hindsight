@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "kdp.presto.fullname" . }}-coordinator
+  name: {{ template "presto.fullname" . }}-coordinator
   labels:
     component: presto
     role: coordinator
-{{ include "kdp.labels" . | indent 4 }}
+{{ include "presto.labels" . | indent 4 }}
 data:
   config.properties: |
     coordinator=true
@@ -20,5 +20,5 @@ data:
     query.max-total-memory-per-node={{ .Values.presto.query.maxTotalMemoryPerNode }}
     memory.heap-headroom-per-node={{ .Values.presto.query.heapHeadroomPerNode }}
     discovery-server.enabled=true
-    discovery.uri=http://{{ template "kdp.presto.fullname" . }}:{{ .Values.presto.service.port }}
+    discovery.uri=http://{{ template "presto.fullname" . }}:{{ .Values.presto.service.port }}
     task.writer-count={{ .Values.presto.task.writerCount }}

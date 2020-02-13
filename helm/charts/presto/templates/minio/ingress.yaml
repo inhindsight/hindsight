@@ -1,6 +1,6 @@
 {{- if .Values.minio.enable -}}
 {{- if .Values.minio.ingress.enable -}}
-{{- $serviceName := include "kdp.minio.fullname" . }}
+{{- $serviceName := include "presto.minio.fullname" . }}
 {{- $servicePort := .Values.minio.service.port -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -12,10 +12,10 @@ metadata:
 {{ toYaml .Values.global.ingress.annotations | trim | indent 4 }}
 {{- end }}
 {{- end }}
-  name: {{ template "kdp.minio.fullname" . }}
+  name: {{ template "presto.minio.fullname" . }}
   labels:
     component: minio
-{{ include "kdp.labels" . | indent 4 }}
+{{ include "presto.labels" . | indent 4 }}
 spec:
   backend:
     serviceName: {{ $serviceName }}

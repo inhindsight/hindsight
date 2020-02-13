@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "kdp.name" . }}-core-site
+  name: {{ template "presto.name" . }}-core-site
   labels:
     component: hadoop
-{{ include "kdp.labels" . | indent 4 }}
+{{ include "presto.labels" . | indent 4 }}
 data:
   core-site.xml: |-
     <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -20,7 +20,7 @@ data:
 {{- if .Values.minio.enable -}}
       <property>
         <name>fs.s3a.endpoint</name>
-        <value>http://{{ template "kdp.minio.fullname" . }}:{{ .Values.minio.service.port }}</value>
+        <value>http://{{ template "presto.minio.fullname" . }}:{{ .Values.minio.service.port }}</value>
       </property>
 {{- end }}
 
