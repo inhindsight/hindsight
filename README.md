@@ -4,17 +4,18 @@ Data is clearer in Hindsight
 
 ## Usage
 
-### Installation
+## Installation
 
-Hindsight uses Kafka to decouple services, and we suggest using [strimzi](https://github.com/strimzi/strimzi-kafka-operator) to deploy Kafka to Kubernetes.
-Hindsight's helm chart assumes Strimzi by default, but does not install it. You must do that yourself or toggle Kafka off via helm values (`--set strimzi.enabled=false`).
+Hindsight requires you to use [Helm](https://helm.sh) v3. Our [.tool-versions](./.tool-versions) file will enforce the correct software dependencies for you if you're using [asdf](https://asdf-vm.com).
+
+Hindsight currently uses [Kafka](https://kafka.apache.org/) to decouple services, and we suggest using [Strimzi](https://github.com/strimzi/strimzi-kafka-operator) to deploy Kafka to Kubernetes. The helm chart assumes you'll use Strimzi but does not install it. You must do that yourself or toggle Strimzi off via helm values (`--set strimzi.enabled=false`).
 
 ```bash
 helm repo add strimzi https://strimzi.io/charts/
 helm install strimzi-kafka-operator strimzi/strimzi-kafka-operator --version 0.16.2 [opts]
 ```
 
-Once strimzi's CRDs are defined, you can install Hindsight with:
+Once Strimzi's CRDs are defined, install Hindsight with:
 
 ```bash
 helm install [NAME] ./helm [opts]
