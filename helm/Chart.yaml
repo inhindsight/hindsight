@@ -1,0 +1,9 @@
+apiVersion: v2
+name: hindsight
+description: A data ingestion engine
+type: application
+version: 0.1.0
+appVersion: 0.0.1
+home: https://github.com/inhindsight
+sources:
+  - https://github.com/inhindsight/hindsight

@@ -1,6 +1,7 @@
 _build/
 deps/
+.dialyzer/
+.elixir_ls/
 .git/
-docs/
-*.yml
-*.md
+.github/
+helm/

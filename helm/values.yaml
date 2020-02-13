@@ -1,0 +1,77 @@
+orchestrate:
+  replicaCount: 1
+gather:
+  replicaCount: 1
+broadcast:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+persist:
+  replicaCount: 1
+acquire:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+presto:
+  service:
+    type: NodePort
+    port: 8080
+strimzi:
+  enabled: true
+  kafka:
+    replicaCount: 3
+    storage:
+      enabled: false
+      size: ""
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1000M
+      limits:
+        cpu: 500m
+        memory: 1000M
+  zookeeper:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 512Mi
+      limits:
+        cpu: 100m
+        memory: 512Mi
+
+image:
+  repository: inhindsight/hindsight
+  pullPolicy: IfNotPresent
+
+global:
+  objectStore:
+    bucketName: hindsight-object-storage
+    accessKey: accessKey
+    accessSecret: accessSecret
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name:
+
+podSecurityContext: {}
+securityContext: {}
+
+ingress:
+  enabled: false
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

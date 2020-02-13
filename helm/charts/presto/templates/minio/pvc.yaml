@@ -1,0 +1,17 @@
+{{- if .Values.minio.enable -}}
+{{ if not .Values.minio.azure.enable }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "presto.minio.fullname" . }}-storage
+  labels:
+    component: minio
+{{ include "presto.labels" . | indent 4 }}
+spec:
+  accessModes:
+  - {{ .Values.minio.storage.mode }}
+  resources:
+    requests:
+      storage: {{ .Values.minio.storage.size }}
+{{ end }}
+{{- end}}
