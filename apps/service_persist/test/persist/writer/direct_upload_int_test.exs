@@ -21,7 +21,7 @@ defmodule Persist.Writer.DirectUploadIntTest do
       app: :service_persist,
       key: Persist.Uploader.S3,
       set: [
-        s3_bucket: "hindsight-object-storage",
+        s3_bucket: "kdp-cloud-storage",
         s3_path: "hive-s3"
       ]
     }
