@@ -14,8 +14,8 @@ config :service_acquire, Acquire.Application,
     ],
     handlers: [Acquire.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]

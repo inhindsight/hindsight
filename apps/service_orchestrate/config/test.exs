@@ -8,8 +8,8 @@ config :service_orchestrate, Orchestrate.Application,
     ],
     handlers: [Orchestrate.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
