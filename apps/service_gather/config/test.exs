@@ -9,8 +9,8 @@ config :service_gather, Gather.Application,
     ],
     handlers: [Gather.Event.Handler],
     storage: [
-      module: Brook.Storage.Redis,
-      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
+      module: Brook.Storage.Ets,
+      init_arg: [],
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
