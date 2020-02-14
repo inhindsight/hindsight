@@ -11,12 +11,14 @@ defmodule SourceSocket do
     state = %{
       port: Keyword.fetch!(init_opts, :port),
       schedule: Keyword.get(init_opts, :schedule, false),
-      interval: Keyword.get(init_opts, :interval, 100)
+      interval: Keyword.get(init_opts, :interval, 100),
+      messages: Keyword.get(init_opts, :messages, [])
     }
 
     {:ok, socket} = :gen_udp.open(state.port - 1)
 
-    if state.schedule, do: :timer.send_interval(state.interval, :push_message)
+    if state.schedule, do: :timer.send_interval(state.interval, :push_random)
+    if length(state.messages) > 0, do: :timer.send_after(state.interval, :push_prepared)
 
     {:ok, Map.put(state, :socket, socket)}
   end
@@ -28,9 +30,18 @@ defmodule SourceSocket do
     {:noreply, state}
   end
 
-  def handle_info(:push_message, %{socket: socket, port: port} = state) do
+  def handle_info(:push_random, %{socket: socket, port: port} = state) do
     message = generate_payload()
     :gen_udp.send(socket, {127, 0, 0, 1}, port, message)
+
+    {:noreply, state}
+  end
+
+  def handle_info(:push_prepared, %{socket: socket, port: port} = state) do
+    Enum.each(state.messages, fn message ->
+      :gen_udp.send(socket, {127, 0, 0, 1}, port, message)
+      Process.sleep(state.interval)
+    end)
 
     {:noreply, state}
   end

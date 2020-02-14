@@ -3,7 +3,7 @@ defmodule Receive.Init do
     name: __MODULE__,
     supervisor: Receive.Acception.Supervisor
 
-  alias Receive.Acception
+  alias Receive.{Acception, SocketManager}
 
   def on_start(state) do
     Acception.Store.get_all!()

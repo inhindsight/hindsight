@@ -40,6 +40,7 @@ defmodule Extract.Kafka.Subscribe do
       |> Map.update!(:endpoints, fn list ->
         Enum.map(list, fn {host, port} -> [host, port] end)
       end)
+      |> Map.put(Brook.Serializer.struct_key(), Elixir.Extract.Kafka.Subscribe)
       |> Ok.ok()
     end
   end
@@ -76,7 +77,8 @@ defmodule Extract.Kafka.Subscribe do
       receive do
         {:kafka_subscribe, messages} ->
           Acknowledger.cache(acknowledger, messages)
-          {messages, acc}
+          unwrapped_messages = Enum.map(messages, fn %{value: payload} -> payload end)
+          {unwrapped_messages, acc}
       end
     end
 

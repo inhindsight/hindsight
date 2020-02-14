@@ -51,7 +51,10 @@ defmodule ReceiveTest do
   end
 
   setup do
-    Brook.Test.clear_view_state(@instance, "acceptions")
+    on_exit(fn ->
+      Brook.Test.clear_view_state(@instance, "acceptions")
+    end)
+
     :ok
   end
 

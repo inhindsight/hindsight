@@ -16,16 +16,15 @@ defmodule PlatformRunner.MixProject do
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:service_receive, in_umbrella: true},
       {:service_gather, in_umbrella: true},
       {:service_broadcast, in_umbrella: true},
       {:service_persist, in_umbrella: true},

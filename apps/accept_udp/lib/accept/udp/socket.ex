@@ -32,7 +32,7 @@ defmodule Accept.Udp.Socket do
 
   @impl GenServer
   def handle_info({:udp, _, _, _, payload}, %{queue: queue, batch_size: size} = state)
-  when batch_reached?(queue, size) do
+      when batch_reached?(queue, size) do
     process_messages([payload | queue], state)
 
     :ok = :inet.setopts(state.socket, active: size)
