@@ -59,15 +59,11 @@ defmodule Gather.Extraction do
   end
 
   defp write(writer, extract, context) do
-    IO.inspect(context, label: "CONTEXT INCOMING")
     writer_opts = [dataset_id: extract.dataset_id]
 
     Context.get_stream(context)
-    |> IO.inspect(label: "CONTEXT TO STREAM")
     |> Stream.chunk_every(chunk_size())
     |> Ok.each(fn chunk ->
-      IO.inspect(chunk, label: "CHUNK TO INSPECT")
-
       with normalized_messages <- normalize(extract, chunk),
            :ok <- writer().write(writer, normalized_messages, writer_opts) do
         Context.run_after_functions(context, chunk)

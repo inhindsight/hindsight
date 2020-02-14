@@ -34,17 +34,6 @@ defmodule Extract.Kafka.Subscribe do
     end
   end
 
-  defimpl Brook.Serializer.Protocol, for: __MODULE__ do
-    def serialize(value) do
-      Map.from_struct(value)
-      |> Map.update!(:endpoints, fn list ->
-        Enum.map(list, fn {host, port} -> [host, port] end)
-      end)
-      |> Map.put(Brook.Serializer.struct_key(), Elixir.Extract.Kafka.Subscribe)
-      |> Ok.ok()
-    end
-  end
-
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Steps.Context
     alias Extract.Kafka.Subscribe.Acknowledger
