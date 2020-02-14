@@ -6,14 +6,14 @@ defmodule Orchestrate.Schedule.Store do
 
   @spec persist(Schedule.t()) :: :ok
   def persist(%Schedule{} = schedule) do
-    Brook.ViewState.merge(@collection, identifier(schedule), %{schedule: schedule})
+    Brook.ViewState.merge(@collection, identifier(schedule), %{"schedule" => schedule})
   end
 
   @spec get(dataset_id :: String.t(), subset_id :: String.t()) ::
           {:ok, Schedule.t() | nil} | {:error, term}
   def get(dataset_id, subset_id) do
     case Brook.get(@instance, @collection, identifier(dataset_id, subset_id)) do
-      {:ok, %{} = map} -> {:ok, Map.get(map, :schedule)}
+      {:ok, %{} = map} -> {:ok, Map.get(map, "schedule")}
       result -> result
     end
   end
@@ -22,7 +22,7 @@ defmodule Orchestrate.Schedule.Store do
   def get!(dataset_id, subset_id) do
     case Brook.get!(@instance, @collection, identifier(dataset_id, subset_id)) do
       nil -> nil
-      map -> Map.get(map, :schedule)
+      map -> Map.get(map, "schedule")
     end
   end
 
