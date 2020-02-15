@@ -44,7 +44,7 @@ defmodule ReceiveTest do
       )
 
     on_exit(fn ->
-      Receive.Acception.Supervisor.kill_all_children()
+      Receive.Accept.Supervisor.kill_all_children()
     end)
 
     [accept: accept, dummy: dummy_writer]
@@ -52,7 +52,7 @@ defmodule ReceiveTest do
 
   setup do
     on_exit(fn ->
-      Brook.Test.clear_view_state(@instance, "acceptions")
+      Brook.Test.clear_view_state(@instance, "accepts")
     end)
 
     :ok
@@ -66,7 +66,7 @@ defmodule ReceiveTest do
 
     assert length(messages) == 10
 
-    assert accept == Receive.Acception.Store.get!(accept.dataset_id, accept.subset_id)
+    assert accept == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
   end
 
   test "removes stored receipt on #{accept_end()}", %{accept: accept} do
@@ -76,7 +76,7 @@ defmodule ReceiveTest do
     Brook.Test.send(@instance, accept_end(), "testing", accept)
 
     assert_async do
-      assert nil == Receive.Acception.Store.get!(accept.dataset_id, accept.subset_id)
+      assert nil == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
     end
   end
 end

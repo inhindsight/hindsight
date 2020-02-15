@@ -1,6 +1,6 @@
-defmodule Receive.Acception.Store do
+defmodule Receive.Accept.Store do
   @instance Receive.Application.instance()
-  @collection "acceptions"
+  @collection "accepts"
 
   import Definition, only: [identifier: 1, identifier: 2]
 

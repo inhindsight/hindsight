@@ -20,7 +20,7 @@ defmodule Receive.InitTest do
     Process.flag(:trap_exit, true)
 
     on_exit(fn ->
-      Receive.Acception.Supervisor.kill_all_children()
+      Receive.Accept.Supervisor.kill_all_children()
     end)
 
     :ok
@@ -47,7 +47,7 @@ defmodule Receive.InitTest do
     ]
 
     Brook.Test.with_event(@instance, fn ->
-      Enum.each(accepts, &Receive.Acception.Store.persist/1)
+      Enum.each(accepts, &Receive.Accept.Store.persist/1)
     end)
 
     Receive.WriterMock

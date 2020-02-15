@@ -1,4 +1,4 @@
-defmodule Receive.Acception.Supervisor do
+defmodule Receive.Accept.Supervisor do
   use DynamicSupervisor
 
   def start_link(args) do
