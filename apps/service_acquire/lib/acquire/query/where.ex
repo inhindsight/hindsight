@@ -1,11 +1,13 @@
 defmodule Acquire.Query.Where do
-  alias Acquire.Query.Where.{And, FilterParser, Bbox}
+  alias Acquire.Query.Where.{And, FilterParser, Bbox, Temporal}
 
-  @spec from_params(params :: map) :: Acquire.Queryable.t()
+  @spec from_params(params :: map) :: {:ok, Acquire.Queryable.t()} | {:error, term}
   def from_params(params) do
     with {:ok, operator} <- parse_operator(params),
+         {:ok, temporal_clauses} <- parse_temporal(params),
          {:ok, boundary} <- parse_boundary(params) do
-      make_queryable([operator, boundary])
+      [operator, temporal_clauses, boundary]
+      |> make_queryable()
     end
   end
 
@@ -34,6 +36,15 @@ defmodule Acquire.Query.Where do
     Map.get(params, "boundary", "")
     |> String.split(",", trim: true)
     |> Enum.map(&String.to_float/1)
-    |> Bbox.to_queryable("#{dataset}__#{subset}")
+    |> Bbox.to_queryable(dataset, subset)
+  end
+
+  defp parse_temporal(%{"dataset" => dataset} = params) do
+    subset = Map.get(params, "subset", "default")
+    after_timestamp = Map.get(params, "after", "")
+    before_timestamp = Map.get(params, "before", "")
+
+    Temporal.to_queryable(dataset, subset, after_timestamp, before_timestamp)
+    |> Ok.ok()
   end
 end

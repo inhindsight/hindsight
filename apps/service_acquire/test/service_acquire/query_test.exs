@@ -5,6 +5,14 @@ defmodule Acquire.QueryTest do
   alias Acquire.Query
   alias Acquire.Queryable
   alias Acquire.Query.Where.{Function, And, Or, Parameter}
+  import Acquire.Query.Where.Functions
+
+  @instance Acquire.Application.instance()
+
+  setup do
+    Brook.Test.clear_view_state(@instance, "fields")
+    :ok
+  end
 
   describe "new/1" do
     data_test "validates #{key} against bad input" do
@@ -14,7 +22,7 @@ defmodule Acquire.QueryTest do
       where [
         [:key, :value],
         [:table, ""],
-        [:table, "foo"],
+        [:table, nil],
         [:fields, nil],
         [:fields, [""]],
         [:limit, -1]
@@ -23,11 +31,27 @@ defmodule Acquire.QueryTest do
   end
 
   describe "from_params/1" do
+    setup do
+      Brook.Test.with_event(@instance, fn ->
+        Acquire.Dictionaries.persist(
+          Load.Persist.new!(
+            id: "persist-1",
+            dataset_id: "a",
+            subset_id: "default",
+            source: "s",
+            destination: "table_name"
+          )
+        )
+      end)
+
+      :ok
+    end
+
     test "returns default struct" do
       params = %{"dataset" => "a"}
       assert {:ok, %Query{} = query} = Query.from_params(params)
 
-      assert query.table == "a__default"
+      assert query.table == "table_name"
       assert query.fields == ["*"]
       refute query.limit
       refute query.where
@@ -41,6 +65,11 @@ defmodule Acquire.QueryTest do
     test "converts limit string into integer" do
       params = %{"dataset" => "a", "limit" => "42"}
       assert {:ok, %Query{limit: 42}} = Query.from_params(params)
+    end
+
+    test "return error tuple when unable to find destination" do
+      params = %{"dataset" => "a", "subset" => "b"}
+      assert {:error, "destination not found for a b"} == Query.from_params(params)
     end
   end
 
@@ -61,7 +90,7 @@ defmodule Acquire.QueryTest do
     end
 
     test "parses statement from query with single where clause" do
-      fun = Function.new!(function: ">=", args: ["one", to_parameter(42)])
+      fun = Function.new!(function: ">=", args: [field("one"), to_parameter(42)])
       query = Query.new!(table: "a__b", where: fun)
 
       assert Queryable.parse_statement(query) == "SELECT * FROM a__b WHERE one >= ?"
@@ -82,7 +111,7 @@ defmodule Acquire.QueryTest do
       fun1 = Function.new!(function: "a", args: to_parameter([1, 2]))
       fun2 = Function.new!(function: "b", args: to_parameter([3, 4]))
       and1 = And.new!(conditions: [fun1, fun2])
-      fun3 = Function.new!(function: "=", args: ["one", to_parameter(5)])
+      fun3 = Function.new!(function: "=", args: [field("one"), to_parameter(5)])
       or1 = Or.new!(conditions: [and1, fun3])
 
       query = Query.new!(table: "a__b", fields: ["one", "two"], limit: 10, where: or1)

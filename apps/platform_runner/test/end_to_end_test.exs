@@ -85,7 +85,7 @@ defmodule PlatformRunner.EndToEndTest do
                |> Enum.map(&Map.values(&1))
     end
 
-    assert_receive %{"single_letter" => "a", "number" => "1"}, 30_000
+    assert_receive %{"single_letter" => "a", "number" => "1"}, 45_000
     assert_receive %{"single_letter" => "b", "number" => "2"}, 1_000
     assert_receive %{"single_letter" => "c", "number" => "3"}, 1_000
 
@@ -115,9 +115,9 @@ defmodule PlatformRunner.EndToEndTest do
     expected = %{"single_letter" => "b"}
 
     assert {:ok, [^expected]} =
-             AcquireClient.data("/e2e/csv?fields=single_letter&filter=number=2")
+             AcquireClient.data("/e2e-csv-ds/csv-subset?fields=single_letter&filter=number=2")
 
-    assert {:ok, [_, _]} = AcquireClient.data("/e2e/csv?limit=2")
+    assert {:ok, [_, _]} = AcquireClient.data("/e2e-csv-ds/csv-subset?limit=2")
   end
 
   describe "JSON" do
@@ -255,7 +255,6 @@ defmodule PlatformRunner.EndToEndTest do
       end
     end
 
-    @tag skip: true
     test "acquired" do
       expected = %{
         "name" => "LeBron",
@@ -266,7 +265,7 @@ defmodule PlatformRunner.EndToEndTest do
         ]
       }
 
-      assert {:ok, [^expected]} = AcquireClient.data("/e2e/json")
+      assert {:ok, [^expected]} = AcquireClient.data("/e2e-json-ds/json-subset")
     end
   end
 

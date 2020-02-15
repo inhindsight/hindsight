@@ -15,5 +15,7 @@ RUN mix release orchestrate \
   && mix release acquire
 
 FROM bitwalker/alpine-erlang:22.2.3
+ENV PORT=80
+EXPOSE ${PORT}
 WORKDIR /opt/app
 COPY --from=build /opt/app/_build/prod/rel/ .

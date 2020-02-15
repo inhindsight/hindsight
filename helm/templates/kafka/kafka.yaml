@@ -1,0 +1,43 @@
+{{- if .Values.strimzi.enabled -}}
+apiVersion: kafka.strimzi.io/v1alpha1
+kind: Kafka
+metadata:
+  name: {{ template "hindsight.fullname" . }}
+spec:
+  kafka:
+    replicas: {{ .Values.strimzi.kafka.replicaCount }}
+    listeners:
+      plain: {}
+      tls: {}
+    config:
+      offsets.topic.replication.factor: {{ .Values.strimzi.kafka.replicaCount }}
+      transaction.state.log.replication.factor: {{ .Values.strimzi.kafka.replicaCount }}
+      transaction.state.log.min.isr: 2
+    storage:
+      {{ if .Values.strimzi.kafka.storage.enabled }}
+      type: persistent-claim
+      size: {{ .Values.kafka.storage.size }}
+      deleteClaim: false
+      {{ else }}
+      type: ephemeral
+      {{ end }}
+    {{ if .Values.strimzi.kafka.storage.enabled }}
+    resources:
+      {{ .Values.strimzi.kafka.resources }}
+    {{ end }}
+  zookeeper:
+    replicas: {{ .Values.strimzi.kafka.replicaCount }}
+    storage:
+      {{ if .Values.strimzi.kafka.storage.enabled }}
+      type: persistent-claim
+      size: 1Gi
+      deleteClaim: false
+      resources:
+        {{ .Values.strimzi.zookeeper.resources }}
+      {{ else }}
+      type: ephemeral
+      {{ end }}
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+{{- end -}}

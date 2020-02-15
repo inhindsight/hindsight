@@ -41,12 +41,12 @@ defmodule Transformer.DeleteFieldTest do
 
       assert nil == get_in(new_dict, path)
 
-      where([
+      where [
         [:name],
         ["birthdate"],
         [["spouse", "nickname"]],
         [["friends", "age"]]
-      ])
+      ]
     end
   end
 
@@ -80,10 +80,10 @@ defmodule Transformer.DeleteFieldTest do
 
       assert result == expected
 
-      where([
+      where [
         [:name],
         ["birthdate"]
-      ])
+      ]
     end
   end
 end

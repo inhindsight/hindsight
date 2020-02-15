@@ -52,15 +52,10 @@ defmodule Acquire.Query do
       |> String.split(",", trim: true)
       |> Enum.map(&String.trim/1)
 
-    Acquire.Query.Where.from_params(params)
-    |> Ok.map(
-      &new(
-        table: "#{dataset}__#{subset}",
-        fields: fields,
-        limit: limit(params),
-        where: &1
-      )
-    )
+    with {:ok, table_name} <- Acquire.Dictionaries.get_destination(dataset, subset),
+         {:ok, where_clause} <- Acquire.Query.Where.from_params(params) do
+      new(table: table_name, fields: fields, limit: limit(params), where: where_clause)
+    end
   end
 
   defp limit(%{"limit" => limit}), do: String.to_integer(limit)
@@ -75,7 +70,7 @@ defmodule Acquire.Query.Schema do
   @impl true
   def s do
     schema(%Acquire.Query{
-      table: spec(table_name?()),
+      table: required_string(),
       fields: coll_of(required_string()),
       limit: spec(is_nil() or pos_integer?()),
       where: one_of([Function.schema(), And.schema(), Or.schema(), spec(is_nil())])
