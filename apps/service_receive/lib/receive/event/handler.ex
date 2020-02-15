@@ -19,7 +19,7 @@ defmodule Receive.Event.Handler do
     Logger.debug(fn -> "#{__MODULE__}: Received event #{accept_end()}: #{inspect(accept)}" end)
     Receive.Accept.Store.delete(id, sid)
 
-    Process.whereis(:"#{id}_#{sid}_manager")
+    Receive.Accept.Registry.whereis(:"#{accept.destination}_manager")
     |> Receive.Accept.Supervisor.terminate_child()
   end
 end

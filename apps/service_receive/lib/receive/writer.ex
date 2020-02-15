@@ -10,12 +10,13 @@ defmodule Receive.Writer do
 
   @impl Writer
   def start_link(args) do
-    %Accept{destination: destination} = Keyword.fetch!(args, :accept)
+    %Accept{} = accept = Keyword.fetch!(args, :accept)
 
     writer_args = [
       endpoints: kafka_endpoints(),
-      name: Keyword.get(args, :name, nil),
-      topic: destination
+      name:
+        Keyword.get(args, :name, Receive.Accept.Registry.via(:"#{accept.destination}_writer")),
+      topic: accept.destination
     ]
 
     writer().start_link(writer_args)

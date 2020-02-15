@@ -9,6 +9,7 @@ defmodule Receive.Application do
   def start(_type, _args) do
     children =
       [
+        Receive.Accept.Registry,
         Receive.Accept.Supervisor,
         brook(),
         init()

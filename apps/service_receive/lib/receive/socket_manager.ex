@@ -11,7 +11,7 @@ defmodule Receive.SocketManager do
 
   def start_link(args) do
     %Accept{} = accept = Keyword.fetch!(args, :accept)
-    name = :"#{accept.dataset_id}_#{accept.subset_id}_manager"
+    name = Receive.Accept.Registry.via(:"#{accept.destination}_manager")
 
     GenServer.start_link(__MODULE__, args, name: name)
   end
@@ -56,7 +56,8 @@ defmodule Receive.SocketManager do
         accept.connection,
         writer: writer,
         batch_size: batch_size(),
-        timeout: timeout()
+        timeout: timeout(),
+        name: Receive.Accept.Registry.via(:"#{accept.destination}_socket")
       )
 
     apply(socket, start, [args])
