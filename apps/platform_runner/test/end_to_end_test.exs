@@ -294,8 +294,8 @@ defmodule PlatformRunner.EndToEndTest do
       |> Events.send_accept_start("e2e-push-json", accept)
 
       assert_async sleep: 500, max_tries: 10 do
-        case Process.whereis(:"#{accept.dataset_id}_#{accept.subset_id}_manager") do
-          nil -> flunk("Process is not alive yet")
+        case Receive.Accept.Registry.whereis(:"#{accept.destination}_manager") do
+          :undefined -> flunk("Process is not alive yet")
           pid when is_pid(pid) -> assert true == Process.alive?(pid)
         end
       end

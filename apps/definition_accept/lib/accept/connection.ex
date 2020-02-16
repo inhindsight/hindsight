@@ -5,6 +5,6 @@ defprotocol Accept.Connection do
           timeout: non_neg_integer
         ]
 
-  @spec connect(accept :: t, connection_opts) :: {module, atom, keyword}
+  @spec connect(accept :: t, connection_opts) :: {module, keyword}
   def connect(accept, options)
 end
