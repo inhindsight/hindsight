@@ -9,6 +9,7 @@ defmodule Schedule.V1 do
       dataset_id: required_string(),
       subset_id: required_string(),
       cron: required_string(),
+      compaction_cron: required_string(),
       extract: Extract.schema(),
       transform: Transform.schema(),
       load: spec(is_list())
