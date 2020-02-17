@@ -23,6 +23,11 @@ defmodule Hindsight.MixProject do
         include_executables_for: [:unix],
         applications: [service_orchestrate: :permanent]
       ],
+      receive: [
+        version: {:from_app, :service_receive},
+        include_executables_for: [:unix],
+        applications: [service_receive: :permanent]
+      ],
       gather: [
         version: {:from_app, :service_gather},
         include_executables_for: [:unix],

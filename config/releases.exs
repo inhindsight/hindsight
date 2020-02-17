@@ -34,7 +34,6 @@ presto_db = [
   schema: "default"
 ]
 
-# SERVICE_GATHER
 kafka_endpoints =
   System.get_env("KAFKA_ENDPOINTS", "localhost:9092")
   |> String.split(",")
@@ -42,7 +41,7 @@ kafka_endpoints =
   |> Enum.map(fn entry -> String.split(entry, ":") end)
   |> Enum.map(fn [host, port] -> {String.to_atom(host), String.to_integer(port)} end)
 
-get_redix_args = fn (host, password) ->
+get_redix_args = fn host, password ->
   [host: host, password: password]
   |> Enum.filter(fn
     {_, nil} -> false
@@ -50,8 +49,38 @@ get_redix_args = fn (host, password) ->
     _ -> true
   end)
 end
+
 redix_args = get_redix_args.(System.get_env("REDIS_HOST"), System.get_env("REDIS_PASSWORD"))
 
+# SERVICE_RECEIVE
+config :service_receive, Receive.Application,
+  kafka_endpoints: kafka_endpoints,
+  brook: [
+    driver: [
+      module: Brook.Driver.Kafka,
+      init_arg: [
+        endpoints: kafka_endpoints,
+        topic: "event-stream",
+        group: "receive-event-stream",
+        consumer_config: [
+          begin_offset: :earliest,
+          offset_reset_policy: :reset_to_earliest
+        ]
+      ]
+    ],
+    handlers: [Receive.Event.Handler],
+    storage: [
+      module: Brook.Storage.Ets,
+      init_arg: []
+    ],
+    dispatcher: Brook.Dispatcher.Noop
+  ]
+
+config :service_receive, Receive.Writer,
+  app_name: "service_receive",
+  kafka_endpoints: kafka_endpoints
+
+# SERVICE_GATHER
 config :service_gather, Gather.Application,
   kafka_endpoints: kafka_endpoints,
   brook: [
@@ -264,5 +293,4 @@ config :service_acquire, Acquire.Application,
 
 config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")
 
-config :redix, :args,
-  redix_args
+config :redix, :args, redix_args

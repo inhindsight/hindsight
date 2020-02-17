@@ -18,7 +18,7 @@ defmodule Temp.Env do
 
             %{update: function} ->
               value = Application.get_env(entry.app, entry.key)
-              new_value = function.(value)
+              new_value = function.(value || [])
               Application.put_env(entry.app, entry.key, new_value)
 
             %{delete: true} ->

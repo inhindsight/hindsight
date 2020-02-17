@@ -31,6 +31,7 @@ defmodule Gather.MixProject do
       {:definition_dictionary, in_umbrella: true},
       {:extract_steps, in_umbrella: true},
       {:extract_http, in_umbrella: true},
+      {:extract_kafka, in_umbrella: true},
       {:extract_decode_gtfs, in_umbrella: true},
       {:extract_decode_csv, in_umbrella: true},
       {:extract_decode_json, in_umbrella: true},

@@ -156,4 +156,11 @@ defmodule Definition.Schema.Validation do
   @spec pos_integer?(term) :: boolean
   def pos_integer?(input) when is_integer(input) and input > 0, do: true
   def pos_integer?(_), do: false
+
+  @doc """
+  Evaluates whether input is a valid port number.
+  """
+  @spec is_port?(term) :: boolean
+  def is_port?(input) when is_integer(input) and 0 <= input and input <= 65_535, do: true
+  def is_port?(_), do: false
 end
