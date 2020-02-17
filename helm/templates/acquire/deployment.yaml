@@ -37,6 +37,8 @@ spec:
               containerPort: 80
               protocol: TCP
           env:
+            - name: KAFKA_ENDPOINTS
+              value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092
             - name: PRESTO_URL
               value: http://{{ template "presto.fullname" . }}:{{ .Values.presto.service.port }}
             - name: SECRET_KEY_BASE
