@@ -22,7 +22,7 @@ defmodule Persist.Compactor.Presto do
   defp create_table(session, from, to) do
     create_task =
       Task.async(fn ->
-        Prestige.execute(session, "CREATE TABLE #{to} AS SELECT * FROM #{from}")
+        Prestige.execute(session, "CREATE TABLE #{to} WITH (format = 'AVRO') AS SELECT * FROM #{from}")
         |> get_count()
       end)
 
