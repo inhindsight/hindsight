@@ -2,6 +2,7 @@ defmodule Persist.Compactor.PrestoIntTest do
   use ExUnit.Case
   use Divo
   require Temp.Env
+  require Logger
 
   @prestige [
     url: "http://localhost:8080",
@@ -22,6 +23,12 @@ defmodule Persist.Compactor.PrestoIntTest do
 
   @moduletag integration: true, divo: true
 
+  setup do
+    Application.ensure_all_started(:hackney)
+
+    :ok
+  end
+
   test "should compact a table in presto" do
     persist =
       Load.Persist.new!(
@@ -33,15 +40,14 @@ defmodule Persist.Compactor.PrestoIntTest do
       )
 
     session = Prestige.new_session(@prestige)
-    {:ok, _} = Prestige.execute(session, "CREATE TABLE table_a(name varchar, age integer)")
+    Prestige.execute!(session, "CREATE TABLE #{persist.destination}(name varchar, age integer)")
 
     1..10
     |> Enum.each(fn _ ->
-      {:ok, _} =
-        Prestige.execute(session, "INSERT INTO table_a(name, age) values(#{generate_row()})")
+        Prestige.execute!(session, "INSERT INTO #{persist.destination}(name, age) values(#{generate_row()})")
     end)
 
-    Prestige.execute!(session, "select * from table_a")
+    Prestige.execute!(session, "select * from #{persist.destination}")
     |> Prestige.Result.as_maps()
 
     assert 10 <= number_of_s3_files(persist.destination)
@@ -54,6 +60,7 @@ defmodule Persist.Compactor.PrestoIntTest do
   defp number_of_s3_files(table) do
     ExAws.S3.list_objects("kdp-cloud-storage")
     |> ExAws.request!()
+    |> (fn response -> Logger.error("#{__MODULE__}: ex aws request: #{inspect(response)}"); response end).()
     |> (fn response -> response.body.contents end).()
     |> Enum.map(&Map.get(&1, :key))
     |> Enum.filter(&String.starts_with?(&1, "hive-s3/#{table}/"))
