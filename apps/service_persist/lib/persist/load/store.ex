@@ -4,7 +4,7 @@ defmodule Persist.Load.Store do
 
   import Definition, only: [identifier: 1, identifier: 2]
 
-  @spec persist(Load.Persit.t()) :: :ok
+  @spec persist(Load.Persist.t()) :: :ok
   def persist(%Load.Persist{} = load) do
     Brook.ViewState.merge(@collection, identifier(load), %{load: load})
   end

@@ -28,7 +28,7 @@ defmodule Persist.InitTest do
 
     assert {:ok, :state} = Persist.Init.on_start(:state)
 
-    assert_called Persist.Load.Supervisor.start_child({Persist.Loader, load: load})
+    assert_called Persist.Load.Supervisor.start_child(load)
   end
 
   test "start Persist.Compaction for any loads marked for compaction", %{load: load} do
@@ -41,6 +41,6 @@ defmodule Persist.InitTest do
 
     assert {:ok, :state} = Persist.Init.on_start(:state)
 
-    assert_called Persist.Compact.Supervisor.start_child({Persist.Compaction, load: load})
+    assert_called Persist.Compact.Supervisor.start_child(load)
   end
 end

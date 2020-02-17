@@ -12,10 +12,10 @@ defmodule Persist.Init do
   end
 
   defp start({load, false = _compacted?}) do
-    Persist.Load.Supervisor.start_child({Persist.Loader, load: load})
+    Persist.Load.Supervisor.start_child(load)
   end
 
   defp start({load, true = _compacted?}) do
-    Persist.Compact.Supervisor.start_child({Persist.Compaction, load: load})
+    Persist.Compact.Supervisor.start_child(load)
   end
 end
