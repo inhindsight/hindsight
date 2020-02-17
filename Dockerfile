@@ -8,6 +8,7 @@ RUN mix do \
   deps.compile
 ENV MIX_ENV=prod
 RUN mix release orchestrate \
+  && mix release receive \
   && mix release gather \
   && mix release broadcast \
   && mix release persist \

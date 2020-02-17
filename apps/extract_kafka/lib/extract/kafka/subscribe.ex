@@ -34,16 +34,6 @@ defmodule Extract.Kafka.Subscribe do
     end
   end
 
-  defimpl Brook.Serializer.Protocol, for: __MODULE__ do
-    def serialize(value) do
-      Map.from_struct(value)
-      |> Map.update!(:endpoints, fn list ->
-        Enum.map(list, fn {host, port} -> [host, port] end)
-      end)
-      |> Ok.ok()
-    end
-  end
-
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Steps.Context
     alias Extract.Kafka.Subscribe.Acknowledger
@@ -76,7 +66,8 @@ defmodule Extract.Kafka.Subscribe do
       receive do
         {:kafka_subscribe, messages} ->
           Acknowledger.cache(acknowledger, messages)
-          {messages, acc}
+          unwrapped_messages = Enum.map(messages, fn %{value: payload} -> payload end)
+          {unwrapped_messages, acc}
       end
     end
 

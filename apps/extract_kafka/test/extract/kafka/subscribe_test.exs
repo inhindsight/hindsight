@@ -63,7 +63,6 @@ defmodule Extract.Kafka.SubscribeTest do
         context
         |> Context.get_stream()
         |> Stream.take(100)
-        |> Stream.map(&Map.get(&1, :value))
         |> Stream.chunk_every(10)
         |> Stream.each(fn chunk ->
           Context.run_after_functions(context, chunk)
