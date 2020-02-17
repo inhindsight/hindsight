@@ -50,12 +50,12 @@ defmodule Orchestrate.Event.HandlerTest do
     [schedule: schedule]
   end
 
-  test "schedules job on schedule:start", %{schedule: schedule} do
+  test "schedules extract job on schedule:start", %{schedule: schedule} do
     Brook.Test.send(@instance, schedule_start(), "testing", schedule)
 
     expected_cron = Crontab.CronExpression.Parser.parse!(schedule.cron)
     expected_name = :"#{schedule.dataset_id}__#{schedule.subset_id}"
-    expected_task = {Orchestrate, :run_schedule, [schedule.dataset_id, schedule.subset_id]}
+    expected_task = {Orchestrate, :run_extract, [schedule.dataset_id, schedule.subset_id]}
 
     assert_async debug: true do
       assert %{name: ^expected_name, schedule: ^expected_cron, task: ^expected_task} =
@@ -103,7 +103,7 @@ defmodule Orchestrate.Event.HandlerTest do
 
   test "deletes job on schedule:end", %{schedule: schedule} do
     Orchestrate.Scheduler.new_job()
-    |> Job.set_name(:"#{schedule.id}")
+    |> Job.set_name(:"#{schedule.dataset_id}__#{schedule.subset_id}")
     |> Job.set_schedule(Crontab.CronExpression.Parser.parse!("* * * * *"))
     |> Job.set_task({IO, :puts, ["hello"]})
     |> Orchestrate.Scheduler.add_job()
@@ -115,7 +115,7 @@ defmodule Orchestrate.Event.HandlerTest do
     Brook.Test.send(@instance, schedule_end(), "testing", schedule)
 
     assert_async do
-      assert nil == Orchestrate.Scheduler.find_job(:"#{schedule.id}")
+      assert nil == Orchestrate.Scheduler.find_job(:"#{schedule.dataset_id}__#{schedule.subset_id}")
     end
 
     assert_async do

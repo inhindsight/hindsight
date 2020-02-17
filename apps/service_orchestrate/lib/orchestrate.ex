@@ -5,8 +5,8 @@ defmodule Orchestrate do
   @instance Orchestrate.Application.instance()
   @author "orchestrate"
 
-  @spec run_schedule(dataset_id :: String.t(), subset_id :: String.t()) :: no_return
-  def run_schedule(dataset_id, subset_id) do
+  @spec run_extract(dataset_id :: String.t(), subset_id :: String.t()) :: no_return
+  def run_extract(dataset_id, subset_id) do
     case Orchestrate.Schedule.Store.get(dataset_id, subset_id) do
       {:ok, nil} ->
         Logger.error(

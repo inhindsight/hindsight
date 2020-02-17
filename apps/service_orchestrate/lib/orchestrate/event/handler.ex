@@ -22,7 +22,7 @@ defmodule Orchestrate.Event.Handler do
 
     case parse_cron(schedule.cron) do
       {:ok, cron} ->
-        create_schedule_job(schedule, cron)
+        create_extract_job(schedule, cron)
         send_transform_define(@instance, "orchestrate", schedule.transform)
         Enum.each(schedule.load, &send_load_event/1)
         Orchestrate.Schedule.Store.persist(schedule)
@@ -34,7 +34,7 @@ defmodule Orchestrate.Event.Handler do
   end
 
   def handle_event(%Brook.Event{type: schedule_end(), data: %Schedule{} = schedule}) do
-    Orchestrate.Scheduler.delete_job(:"#{schedule.id}")
+    Orchestrate.Scheduler.delete_job(:"#{identifier(schedule)}")
     Orchestrate.Schedule.Store.delete(schedule.dataset_id, schedule.subset_id)
   end
 
@@ -43,11 +43,11 @@ defmodule Orchestrate.Event.Handler do
     Crontab.CronExpression.Parser.parse(cron, number_of_fields == 7)
   end
 
-  defp create_schedule_job(schedule, cron) do
+  defp create_extract_job(schedule, cron) do
     Orchestrate.Scheduler.new_job()
     |> Job.set_name(:"#{identifier(schedule)}")
     |> Job.set_schedule(cron)
-    |> Job.set_task({Orchestrate, :run_schedule, [schedule.dataset_id, schedule.subset_id]})
+    |> Job.set_task({Orchestrate, :run_extract, [schedule.dataset_id, schedule.subset_id]})
     |> Orchestrate.Scheduler.add_job()
   end
 
