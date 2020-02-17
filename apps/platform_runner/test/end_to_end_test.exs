@@ -102,9 +102,20 @@ defmodule PlatformRunner.EndToEndTest do
     assert_async sleep: 1_000, max_tries: 30, debug: true do
       with {:ok, result} <-
              Prestige.query(session, "select * from e2e__csv order by single_letter") do
-        assert Enum.member?(Prestige.Result.as_maps(result), %{"single_letter" => "a", "number" => "1"})
-        assert Enum.member?(Prestige.Result.as_maps(result), %{"single_letter" => "b", "number" => "2"})
-        assert Enum.member?(Prestige.Result.as_maps(result), %{"single_letter" => "c", "number" => "3"})
+        assert Enum.member?(Prestige.Result.as_maps(result), %{
+                 "single_letter" => "a",
+                 "number" => "1"
+               })
+
+        assert Enum.member?(Prestige.Result.as_maps(result), %{
+                 "single_letter" => "b",
+                 "number" => "2"
+               })
+
+        assert Enum.member?(Prestige.Result.as_maps(result), %{
+                 "single_letter" => "c",
+                 "number" => "3"
+               })
       else
         {:error, reason} -> flunk(inspect(reason))
       end
