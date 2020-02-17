@@ -10,7 +10,7 @@ config :service_gather, Gather.Application,
     handlers: [Gather.Event.Handler],
     storage: [
       module: Brook.Storage.Ets,
-      init_arg: [],
+      init_arg: []
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]

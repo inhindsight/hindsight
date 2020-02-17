@@ -9,7 +9,7 @@ config :service_orchestrate, Orchestrate.Application,
     handlers: [Orchestrate.Event.Handler],
     storage: [
       module: Brook.Storage.Ets,
-      init_arg: [],
+      init_arg: []
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
