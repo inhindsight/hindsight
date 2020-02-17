@@ -30,7 +30,7 @@ config :service_persist, Persist.Application,
     handlers: [Persist.Event.Handler],
     storage: [
       module: Brook.Storage.Ets,
-      init_arg: [],
+      init_arg: []
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]

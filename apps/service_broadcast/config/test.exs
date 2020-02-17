@@ -17,7 +17,7 @@ config :service_broadcast, Broadcast.Application,
     handlers: [Broadcast.Event.Handler],
     storage: [
       module: Brook.Storage.Ets,
-      init_arg: [],
+      init_arg: []
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]

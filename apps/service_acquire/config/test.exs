@@ -15,7 +15,7 @@ config :service_acquire, Acquire.Application,
     handlers: [Acquire.Event.Handler],
     storage: [
       module: Brook.Storage.Ets,
-      init_arg: [],
+      init_arg: []
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
