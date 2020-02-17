@@ -48,7 +48,7 @@ defmodule Orchestrate do
   defp log_no_schedule_error(dataset_id, subset_id) do
     Logger.error(
       "#{__MODULE__}: Unable to find schedule with : dataset_id #{dataset_id} subset_id #{
-      subset_id
+        subset_id
       }"
     )
   end

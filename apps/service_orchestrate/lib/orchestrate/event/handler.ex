@@ -50,7 +50,7 @@ defmodule Orchestrate.Event.Handler do
   defp parse_compaction_cron(cron), do: parse_cron(cron)
 
   defp create_extract_job(schedule) do
-    with {:ok, cron} <- parse_cron(schedule.cron)  do
+    with {:ok, cron} <- parse_cron(schedule.cron) do
       Orchestrate.Scheduler.new_job()
       |> Job.set_name(:"#{identifier(schedule)}")
       |> Job.set_schedule(cron)
