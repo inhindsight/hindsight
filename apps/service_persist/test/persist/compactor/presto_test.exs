@@ -44,7 +44,8 @@ defmodule Persist.Compactor.PrestoTest do
     allow Prestige.execute(any(), starts_with("CREATE TABLE")), return: {:ok, %{rows: [[101]]}}
     allow Prestige.execute(any(), "SELECT count(1) FROM table_a"), return: {:ok, %{rows: [[100]]}}
 
-    expected_reason = "Failed 'table_a' compaction: New count (100) did not match original count (101)"
+    expected_reason =
+      "Failed 'table_a' compaction: New count (100) did not match original count (101)"
 
     assert {:error, expected_reason} == Persist.Compactor.Presto.compact(persist)
   end

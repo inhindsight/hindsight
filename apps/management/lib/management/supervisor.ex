@@ -1,5 +1,6 @@
 defmodule Management.Supervisor do
-  @callback on_start_child(term, name :: term) :: Supervisor.child_spec() | {module, term} | module
+  @callback on_start_child(term, name :: term) ::
+              Supervisor.child_spec() | {module, term} | module
   @callback say_my_name(term) :: atom | {:global, atom} | {:via, module, {atom, term}}
 
   defmacro __using__(opts) do

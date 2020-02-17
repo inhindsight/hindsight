@@ -22,7 +22,10 @@ defmodule Persist.Compactor.Presto do
   defp create_table(session, from, to) do
     create_task =
       Task.async(fn ->
-        Prestige.execute(session, "CREATE TABLE #{to} WITH (format = 'AVRO') AS SELECT * FROM #{from}")
+        Prestige.execute(
+          session,
+          "CREATE TABLE #{to} WITH (format = 'AVRO') AS SELECT * FROM #{from}"
+        )
         |> get_count()
       end)
 
@@ -33,7 +36,7 @@ defmodule Persist.Compactor.Presto do
       end)
 
     with {:ok, original_count} <- Task.await(create_task, :infinity),
-           {:ok, new_count} <- Task.await(query_task, :infinity),
+         {:ok, new_count} <- Task.await(query_task, :infinity),
          {:valid?, false} <- {:valid?, original_count == new_count} do
       {:error,
        "Failed '#{from}' compaction: New count (#{new_count}) did not match original count (#{

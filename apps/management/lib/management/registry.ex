@@ -1,5 +1,4 @@
 defmodule Management.Registry do
-
   defmacro __using__(opts) do
     name = Keyword.fetch!(opts, :name)
 

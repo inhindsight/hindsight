@@ -14,5 +14,4 @@ defmodule Persist.Compact.Supervisor do
   def on_start_child(%Load.Persist{} = load, name) do
     {Persist.Compaction, load: load, name: name}
   end
-
 end
