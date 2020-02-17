@@ -29,7 +29,7 @@ defmodule Persist.Compactor.PrestoIntTest do
         dataset_id: "ds1",
         subset_id: "sb1",
         source: "topic-a",
-        destination: "table_a"
+        destination: "table_temp_table_167"
       )
 
     session = Prestige.new_session(@prestige)
@@ -44,19 +44,19 @@ defmodule Persist.Compactor.PrestoIntTest do
     Prestige.execute!(session, "select * from table_a")
     |> Prestige.Result.as_maps()
 
-    assert 10 == number_of_s3_files()
+    assert 10 <= number_of_s3_files(persist.destination)
 
     assert :ok == Persist.Compactor.Presto.compact(persist)
 
-    assert 1 == number_of_s3_files()
+    assert 1 == number_of_s3_files(persist.destination)
   end
 
-  defp number_of_s3_files() do
+  defp number_of_s3_files(table) do
     ExAws.S3.list_objects("kdp-cloud-storage")
     |> ExAws.request!()
     |> (fn response -> response.body.contents end).()
     |> Enum.map(&Map.get(&1, :key))
-    |> Enum.filter(&String.starts_with?(&1, "hive-s3/table_a/"))
+    |> Enum.filter(&String.starts_with?(&1, "hive-s3/#{table}/"))
     |> length()
   end
 

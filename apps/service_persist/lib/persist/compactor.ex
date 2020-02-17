@@ -8,6 +8,7 @@ defmodule Persist.Compactor.Presto do
 
   getter(:prestige, required: true)
 
+  @impl true
   def compact(%Load.Persist{} = persist) do
     compact_table = "#{persist.destination}_compact"
     session = Prestige.new_session(prestige())

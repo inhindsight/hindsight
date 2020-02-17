@@ -20,13 +20,12 @@ defmodule Orchestrate.Event.Handler do
       "#{__MODULE__}: Received event #{schedule_start()}: #{inspect(schedule)}"
     end)
 
-    case parse_cron(schedule.cron) do
-      {:ok, cron} ->
-        create_extract_job(schedule, cron)
-        send_transform_define(@instance, "orchestrate", schedule.transform)
-        Enum.each(schedule.load, &send_load_event/1)
-        Orchestrate.Schedule.Store.persist(schedule)
-
+    with :ok <- create_extract_job(schedule),
+         :ok <- create_compaction_job(schedule),
+         :ok <- send_transform_define(@instance, "orchestrate", schedule.transform),
+         :ok <- Enum.each(schedule.load, &send_load_event/1) do
+      Orchestrate.Schedule.Store.persist(schedule)
+    else
       {:error, reason} ->
         Logger.error("Unable to process #{inspect(event)}: reason #{inspect(reason)}")
         :ok
@@ -43,12 +42,39 @@ defmodule Orchestrate.Event.Handler do
     Crontab.CronExpression.Parser.parse(cron, number_of_fields == 7)
   end
 
-  defp create_extract_job(schedule, cron) do
-    Orchestrate.Scheduler.new_job()
-    |> Job.set_name(:"#{identifier(schedule)}")
-    |> Job.set_schedule(cron)
-    |> Job.set_task({Orchestrate, :run_extract, [schedule.dataset_id, schedule.subset_id]})
-    |> Orchestrate.Scheduler.add_job()
+  defp parse_compaction_cron("@default") do
+    hour = :rand.uniform(24) - 1
+    parse_cron("0 #{hour} * * *")
+  end
+
+  defp parse_compaction_cron(cron), do: parse_cron(cron)
+
+  defp create_extract_job(schedule) do
+    with {:ok, cron} <- parse_cron(schedule.cron)  do
+      Orchestrate.Scheduler.new_job()
+      |> Job.set_name(:"#{identifier(schedule)}")
+      |> Job.set_schedule(cron)
+      |> Job.set_task({Orchestrate, :run_extract, [schedule.dataset_id, schedule.subset_id]})
+      |> Orchestrate.Scheduler.add_job()
+    end
+  end
+
+  defp create_compaction_job(schedule) do
+    Ok.each(schedule.load, &create_compaction_job(schedule, &1))
+  end
+
+  defp create_compaction_job(schedule, %Load.Persist{}) do
+    with {:ok, cron} <- parse_compaction_cron(schedule.compaction_cron) do
+      Orchestrate.Scheduler.new_job()
+      |> Job.set_name(:"#{identifier(schedule)}_compaction")
+      |> Job.set_schedule(cron)
+      |> Job.set_task({Orchestrate, :run_compaction, [schedule.dataset_id, schedule.subset_id]})
+      |> Orchestrate.Scheduler.add_job()
+    end
+  end
+
+  defp create_compaction_job(_schedule, _unknown_struct) do
+    :ok
   end
 
   defp send_load_event(load) do
