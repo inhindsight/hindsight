@@ -49,4 +49,12 @@ defmodule Persist.Compactor.PrestoTest do
 
     assert {:error, expected_reason} == Persist.Compactor.Presto.compact(persist)
   end
+
+  test "will delete the compact if an error occurs", %{persist: persist} do
+    allow Prestige.execute(any(), any()), return: {:error, "something bad happened"}
+
+    assert {:error, "something bad happened"} == Persist.Compactor.Presto.compact(persist)
+
+    assert_called Prestige.execute(any(), "DROP TABLE IF EXISTS table_a_compact")
+  end
 end

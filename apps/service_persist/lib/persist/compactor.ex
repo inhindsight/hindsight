@@ -13,10 +13,15 @@ defmodule Persist.Compactor.Presto do
     compact_table = "#{persist.destination}_compact"
     session = Prestige.new_session(prestige())
 
-    with :ok <- create_table(session, persist.destination, compact_table),
+    with {:ok, _} <- drop_table(session, compact_table),
+         :ok <- create_table(session, persist.destination, compact_table),
          {:ok, _} <- drop_table(session, persist.destination),
          {:ok, _} <- rename_table(session, compact_table, persist.destination) do
       :ok
+    else
+      {:error, reason} ->
+        drop_table(session, compact_table)
+        {:error, reason}
     end
   end
 
@@ -54,7 +59,7 @@ defmodule Persist.Compactor.Presto do
   defp get_count(error), do: error
 
   defp drop_table(session, table) do
-    Prestige.execute(session, "DROP TABLE #{table}")
+    Prestige.execute(session, "DROP TABLE IF EXISTS #{table}")
   end
 
   defp rename_table(session, from, to) do
