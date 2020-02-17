@@ -52,7 +52,7 @@ defmodule Orchestrate.Event.Handler do
   end
 
   defp send_load_event(load) do
-    type = Events.get_event_type("start", load)
+    type = Events.get_event_type("load", "start", load)
     Brook.Event.send(@instance, type, "orchestrate", load)
   end
 end
