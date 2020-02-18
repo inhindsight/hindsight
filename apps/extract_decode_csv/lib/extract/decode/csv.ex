@@ -20,14 +20,25 @@ defmodule Extract.Decode.Csv do
     def execute(step, context) do
       source = fn opts ->
         get_stream(context, opts)
-        |> Extract.Decode.Csv.Parser.parse_stream(skip_headers: step.skip_first_line)
-        |> Stream.map(&Enum.zip(step.headers, &1))
-        |> Stream.map(&Map.new/1)
+        |> Stream.map(fn message ->
+          Extract.Message.update_data(message, &parse(&1, step))
+        end)
       end
 
       context
       |> set_source(source)
       |> Ok.ok()
+    end
+
+    defp parse(data, step) do
+      Extract.Decode.Csv.Parser.parse_string(data, skip_headers: step.skip_first_line)
+      |> List.flatten()
+      |> zip(step.headers)
+      |> Map.new()
+    end
+
+    defp zip(b, a) do
+      Enum.zip(a, b)
     end
   end
 end
