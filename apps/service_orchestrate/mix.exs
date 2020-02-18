@@ -29,6 +29,8 @@ defmodule Orchestrate.MixProject do
       {:brook, "~> 0.5"},
       {:uuid, "~> 1.1"},
       {:definition_events, in_umbrella: true},
+      {:extractor, in_umbrella: true},
+      {:transformer, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:testing, in_umbrella: true, only: [:test]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}

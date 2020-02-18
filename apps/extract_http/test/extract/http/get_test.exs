@@ -3,7 +3,7 @@ defmodule Extract.Http.GetTest do
   import Plug.Conn
   import Checkov
 
-  alias Extract.Steps.Context
+  alias Extract.Context
 
   @moduletag capture_log: true
 

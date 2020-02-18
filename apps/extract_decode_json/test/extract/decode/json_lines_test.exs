@@ -1,7 +1,7 @@
 defmodule Extract.Decode.JsonLinesTest do
   use ExUnit.Case
 
-  alias Extract.Steps.Context
+  alias Extract.Context
 
   test "can be decoded back into struct" do
     struct = Extract.Decode.JsonLines.new!([])

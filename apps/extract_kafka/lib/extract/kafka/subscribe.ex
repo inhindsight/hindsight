@@ -35,7 +35,7 @@ defmodule Extract.Kafka.Subscribe do
   end
 
   defimpl Extract.Step, for: __MODULE__ do
-    import Extract.Steps.Context
+    import Extract.Context
     alias Extract.Kafka.Subscribe.Acknowledger
 
     def execute(%{endpoints: endpoints, topic: topic}, context) do

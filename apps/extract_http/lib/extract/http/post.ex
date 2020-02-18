@@ -16,7 +16,7 @@ defmodule Extract.Http.Post do
 
   defimpl Extract.Step, for: __MODULE__ do
     use Tesla
-    import Extract.Steps.Context
+    import Extract.Context
     alias Extract.Http.File.Downloader
 
     def execute(step, context) do

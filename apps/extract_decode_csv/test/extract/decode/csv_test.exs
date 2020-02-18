@@ -2,7 +2,7 @@ defmodule Extract.Decode.CsvTest do
   use ExUnit.Case
   import Checkov
 
-  alias Extract.Steps.Context
+  alias Extract.Context
 
   describe "new/1" do
     data_test "validates #{inspect(field)} against bad input" do

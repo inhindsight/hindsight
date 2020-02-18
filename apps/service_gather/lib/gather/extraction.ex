@@ -4,7 +4,7 @@ defmodule Gather.Extraction do
   use Properties, otp_app: :service_gather
   use Annotated.Retry
 
-  alias Extract.Steps.Context
+  alias Extract.Context
   alias Writer.DLQ.DeadLetter
 
   @max_tries get_config_value(:max_tries, default: 10)
@@ -47,7 +47,7 @@ defmodule Gather.Extraction do
   end
 
   defp do_extract(writer, extract) do
-    with {:ok, context} <- Extract.Steps.execute(extract.steps),
+    with {:ok, context} <- Extractor.execute(extract.steps),
          {:error, reason} <- write(writer, extract, context) do
       warn_extract_failure(extract, reason)
       {:error, reason}

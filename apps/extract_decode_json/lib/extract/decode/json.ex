@@ -5,7 +5,7 @@ defmodule Extract.Decode.Json do
   defstruct []
 
   defimpl Extract.Step, for: __MODULE__ do
-    import Extract.Steps.Context
+    import Extract.Context
 
     def execute(_step, context) do
       source = fn opts ->
