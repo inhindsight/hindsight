@@ -7,7 +7,7 @@ defmodule Extract.Kafka.SubscribeTest do
 
   @moduletag integration: true, divo: true
 
-  alias Extract.Steps.Context
+  alias Extract.Context
 
   setup do
     Process.flag(:trap_exit, true)

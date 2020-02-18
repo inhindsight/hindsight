@@ -9,14 +9,6 @@ defmodule Writer.DLQ do
 
   getter(:writer, default: Writer.Kafka.Topic)
 
-  defimpl Jason.Encoder, for: Tuple do
-    def encode(value, opts) do
-      value
-      |> Tuple.to_list()
-      |> Jason.Encode.list(opts)
-    end
-  end
-
   defmacro __using__(opts) do
     name = Keyword.fetch!(opts, :name)
 

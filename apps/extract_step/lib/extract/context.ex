@@ -1,4 +1,4 @@
-defmodule Extract.Steps.Context do
+defmodule Extract.Context do
   @type source_opts :: [
           read: :lines | :bytes,
           byte_count: integer()
@@ -7,7 +7,7 @@ defmodule Extract.Steps.Context do
   @type source :: (source_opts -> Enumerable.t())
 
   @type t() :: %__MODULE__{
-          response: Tesla.Env.t(),
+          response: term,
           variables: map,
           source: source,
           after_functions: [(list -> no_return())]
@@ -24,7 +24,7 @@ defmodule Extract.Steps.Context do
     function.(opts)
   end
 
-  @spec set_response(context :: t, response :: Tesla.Env.t()) :: t
+  @spec set_response(context :: t, response :: term) :: t
   def set_response(context, response) do
     Map.put(context, :response, response)
   end

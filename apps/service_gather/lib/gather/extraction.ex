@@ -4,7 +4,7 @@ defmodule Gather.Extraction do
   use Properties, otp_app: :service_gather
   use Annotated.Retry
 
-  alias Extract.Steps.Context
+  alias Extract.Context
   alias Writer.DLQ.DeadLetter
 
   @max_tries get_config_value(:max_tries, default: 10)

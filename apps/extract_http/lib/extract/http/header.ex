@@ -18,7 +18,7 @@ defmodule Extract.Http.Header do
 
   defimpl Extract.Step, for: __MODULE__ do
     require Logger
-    import Extract.Steps.Context
+    import Extract.Context
 
     def execute(step, context) do
       with {:response, %Tesla.Env{} = response} <- {:response, context.response},

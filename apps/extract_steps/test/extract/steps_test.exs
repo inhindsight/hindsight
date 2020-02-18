@@ -2,7 +2,7 @@ defmodule Extract.StepsTest do
   use ExUnit.Case
   doctest Extract.Steps
 
-  alias Extract.Steps.Context
+  alias Extract.Context
 
   describe "execute/1" do
     test "parses and executes steps" do

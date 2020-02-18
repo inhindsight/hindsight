@@ -15,7 +15,7 @@ defmodule Extract.Decode.Csv do
             skip_first_line: false
 
   defimpl Extract.Step, for: __MODULE__ do
-    import Extract.Steps.Context
+    import Extract.Context
 
     def execute(step, context) do
       source = fn opts ->

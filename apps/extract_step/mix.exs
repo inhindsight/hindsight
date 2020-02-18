@@ -1,9 +1,9 @@
-defmodule ExtractDecodeCsv.MixProject do
+defmodule ExtractStep.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :extract_decode_csv,
+      app: :extract_step,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -22,13 +22,6 @@ defmodule ExtractDecodeCsv.MixProject do
   end
 
   defp deps do
-    [
-      {:definition, in_umbrella: true},
-      {:extract_step, in_umbrella: true},
-      {:nimble_csv, "~> 0.6.0"},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:checkov, "~> 1.0", only: [:test]},
-      {:brook_serializer, "~> 2.2", only: [:test]}
-    ]
+    []
   end
 end

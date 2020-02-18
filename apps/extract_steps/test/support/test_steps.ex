@@ -4,7 +4,7 @@ defmodule Test.Steps do
 
     defimpl Extract.Step, for: CreateResponse do
       def execute(step, context) do
-        {:ok, Extract.Steps.Context.set_response(context, step.response)}
+        {:ok, Extract.Context.set_response(context, step.response)}
       end
     end
   end
@@ -14,7 +14,7 @@ defmodule Test.Steps do
 
     defimpl Extract.Step, for: SetVariable do
       def execute(step, context) do
-        {:ok, Extract.Steps.Context.add_variable(context, step.name, step.value)}
+        {:ok, Extract.Context.add_variable(context, step.name, step.value)}
       end
     end
   end
@@ -31,7 +31,7 @@ defmodule Test.Steps do
           end
         end
 
-        {:ok, Extract.Steps.Context.set_source(context, source)}
+        {:ok, Extract.Context.set_source(context, source)}
       end
     end
   end
@@ -40,7 +40,7 @@ defmodule Test.Steps do
     defstruct [:transform]
 
     defimpl Extract.Step, for: TransformStream do
-      alias Extract.Steps.Context
+      alias Extract.Context
 
       def execute(step, context) do
         source = fn opts ->
@@ -48,7 +48,7 @@ defmodule Test.Steps do
           |> Stream.map(step.transform)
         end
 
-        {:ok, Extract.Steps.Context.set_source(context, source)}
+        {:ok, Extract.Context.set_source(context, source)}
       end
     end
   end

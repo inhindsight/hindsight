@@ -25,9 +25,14 @@ defmodule Extract.Steps.MixProject do
 
   defp deps do
     [
+      {:extract_step, in_umbrella: true},
+      {:extract_decode_csv, in_umbrella: true},
+      {:extract_decode_gtfs, in_umbrella: true},
+      {:extract_decode_json, in_umbrella: true},
+      {:extract_http, in_umbrella: true},
+      {:extract_kafka, in_umbrella: true},
       {:ok, in_umbrella: true},
       {:definition, in_umbrella: true},
-      {:tesla, "~> 1.3"},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end

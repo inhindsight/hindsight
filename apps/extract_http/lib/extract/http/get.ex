@@ -13,7 +13,7 @@ defmodule Extract.Http.Get do
             headers: %{}
 
   defimpl Extract.Step, for: __MODULE__ do
-    import Extract.Steps.Context
+    import Extract.Context
 
     alias Extract.Http.File.Downloader
 
