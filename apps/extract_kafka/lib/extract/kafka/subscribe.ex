@@ -37,6 +37,8 @@ defmodule Extract.Kafka.Subscribe do
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Context
 
+    @dialyzer [:no_return, :no_fail_call]
+
     def execute(%{endpoints: endpoints, topic: topic}, context) do
       ensure_topic(endpoints, topic)
       connection = :"kafka_subscribe_#{topic}"
