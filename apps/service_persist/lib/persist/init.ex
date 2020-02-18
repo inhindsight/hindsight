@@ -5,10 +5,17 @@ defmodule Persist.Init do
 
   def on_start(state) do
     Persist.Load.Store.get_all!()
-    |> Enum.each(fn load ->
-      Persist.Load.Supervisor.start_child({Persist.Load.Broadway, load: load})
-    end)
+    |> Enum.map(fn load -> {load, Persist.Load.Store.is_being_compacted?(load)} end)
+    |> Enum.each(&start/1)
 
     {:ok, state}
+  end
+
+  defp start({load, false = _compacted?}) do
+    Persist.Load.Supervisor.start_child(load)
+  end
+
+  defp start({load, true = _compacted?}) do
+    Persist.Compact.Supervisor.start_child(load)
   end
 end

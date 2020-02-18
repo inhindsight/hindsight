@@ -24,14 +24,19 @@ defmodule Orchestrate.MixProject do
 
   defp deps do
     [
+      {:brook, "~> 0.5"},
+      {:definition_dictionary, in_umbrella: true},
+      {:definition_events, in_umbrella: true},
+      {:extractor, in_umbrella: true},
+      {:properties, in_umbrella: true},
       {:quantum, "~> 2.3"},
       {:timex, "~> 3.0"},
-      {:brook, "~> 0.5"},
+      {:transformer, in_umbrella: true},
       {:uuid, "~> 1.1"},
-      {:definition_events, in_umbrella: true},
-      {:properties, in_umbrella: true},
-      {:testing, in_umbrella: true, only: [:test]},
-      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}
+
+      # Dev/Test Dependencies
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

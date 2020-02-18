@@ -64,7 +64,7 @@ defmodule Gather.ExtractionTest do
     expected = Enum.map(1..10, fn _ -> %{"one" => 1} end)
     Enum.each(1..10, fn _ -> assert_receive {:write, _, ^expected, _} end)
 
-    originals = Enum.map(1..10, fn _ -> %{"one" => "1"} end)
+    originals = Enum.map(1..10, fn _ -> Extract.Message.new(data: %{"one" => "1"}) end)
     Enum.each(1..10, fn _ -> assert_receive {:after, ^originals} end)
 
     assert_down(pid)

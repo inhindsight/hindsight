@@ -47,7 +47,7 @@ defmodule PlatformRunner.EndToEndTest do
               Dictionary.Type.String.new!(name: "number")
             ],
             steps: [
-              Transformer.MoveField.new!(from: "letter", to: "single_letter")
+              Transform.MoveField.new!(from: "letter", to: "single_letter")
             ]
           ),
         load: [

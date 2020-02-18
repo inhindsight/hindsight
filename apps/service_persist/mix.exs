@@ -25,21 +25,27 @@ defmodule Persist.MixProject do
 
   defp deps do
     [
-      {:avro, in_umbrella: true},
-      {:writer_presto, in_umbrella: true},
-      {:writer_dlq, in_umbrella: true},
-      {:definition_events, in_umbrella: true},
-      {:transformer, in_umbrella: true},
-      {:initializer, in_umbrella: true},
       {:annotated_retry, in_umbrella: true},
-      {:properties, in_umbrella: true},
-      {:jason, "~> 1.1"},
-      {:off_broadway_kafka, "~> 0.5"},
+      {:avro, in_umbrella: true},
+      {:definition_dictionary, in_umbrella: true},
+      {:definition_events, in_umbrella: true},
       {:ex_aws_s3, "~> 2.0"},
+      {:extractor, in_umbrella: true},
       {:hackney, "~> 1.15"},
+      {:initializer, in_umbrella: true},
+      {:jason, "~> 1.1"},
+      {:management, in_umbrella: true},
+      {:off_broadway_kafka, "~> 0.5"},
       {:poison, "~> 4.0"},
+      {:properties, in_umbrella: true},
       {:sweet_xml, "~> 0.6.6"},
+      {:transformer, in_umbrella: true},
+      {:writer_dlq, in_umbrella: true},
+      {:writer_presto, in_umbrella: true},
+
+      # Dev/Test Dependencies
       {:mox, "~> 0.5", only: [:test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}
     ]
   end

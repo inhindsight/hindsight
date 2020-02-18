@@ -7,7 +7,7 @@ defmodule Extract.Kafka.SubscribeTest do
 
   @moduletag integration: true, divo: true
 
-  alias Extract.Steps.Context
+  alias Extract.Context
 
   setup do
     Process.flag(:trap_exit, true)
@@ -70,7 +70,25 @@ defmodule Extract.Kafka.SubscribeTest do
         |> Enum.to_list()
         |> List.flatten()
 
-      assert actuals == messages
+      assert actuals ==
+               messages
+               |> Enum.reduce({0, []}, fn data, {i, buffer} ->
+                 message =
+                   Extract.Message.new(
+                     data: data,
+                     meta: %{
+                       "kafka" => %{
+                         "offset" => i,
+                         "generation_id" => 1,
+                         "partition" => 0,
+                         "topic" => "topic-a"
+                       }
+                     }
+                   )
+
+                 {i + 1, buffer ++ [message]}
+               end)
+               |> elem(1)
 
       assert_async do
         assert {:links, []} == Process.info(self(), :links)

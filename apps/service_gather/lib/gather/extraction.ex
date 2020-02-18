@@ -4,7 +4,7 @@ defmodule Gather.Extraction do
   use Properties, otp_app: :service_gather
   use Annotated.Retry
 
-  alias Extract.Steps.Context
+  alias Extract.Context
   alias Writer.DLQ.DeadLetter
 
   @max_tries get_config_value(:max_tries, default: 10)
@@ -47,7 +47,7 @@ defmodule Gather.Extraction do
   end
 
   defp do_extract(writer, extract) do
-    with {:ok, context} <- Extract.Steps.execute(extract.steps),
+    with {:ok, context} <- Extractor.execute(extract.steps),
          {:error, reason} <- write(writer, extract, context) do
       warn_extract_failure(extract, reason)
       {:error, reason}
@@ -64,7 +64,8 @@ defmodule Gather.Extraction do
     Context.get_stream(context)
     |> Stream.chunk_every(chunk_size())
     |> Ok.each(fn chunk ->
-      with normalized_messages <- normalize(extract, chunk),
+      with data <- Enum.map(chunk, &Map.get(&1, :data)),
+           normalized_messages <- normalize(extract, data),
            :ok <- writer().write(writer, normalized_messages, writer_opts) do
         Context.run_after_functions(context, chunk)
         :ok

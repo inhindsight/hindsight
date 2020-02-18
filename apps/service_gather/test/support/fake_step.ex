@@ -2,11 +2,12 @@ defmodule Fake.Step do
   defstruct [:values, :pid]
 
   defimpl Extract.Step, for: __MODULE__ do
-    import Extract.Steps.Context
+    import Extract.Context
 
     def execute(step, context) do
       source = fn _ ->
         step.values
+        |> Stream.map(&Extract.Message.new(data: &1))
       end
 
       context

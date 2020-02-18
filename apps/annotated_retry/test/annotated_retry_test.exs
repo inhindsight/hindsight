@@ -5,6 +5,11 @@ defmodule Annotated.RetryTest do
     use Annotated.Retry
 
     @retry with: constant_backoff(100) |> take(10)
+    def default_params(x, _opts \\ []) do
+      {:ok, x}
+    end
+
+    @retry with: constant_backoff(100) |> take(10)
     def process(pid) do
       Agent.get_and_update(:test_store, fn s ->
         {s, max(0, s - 1)}

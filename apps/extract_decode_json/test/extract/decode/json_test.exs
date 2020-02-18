@@ -1,7 +1,7 @@
 defmodule Extract.Decode.JsonTest do
   use ExUnit.Case
 
-  alias Extract.Steps.Context
+  alias Extract.Context
 
   test "can be decoded back into struct" do
     struct = Extract.Decode.Json.new!([])
@@ -26,16 +26,19 @@ defmodule Extract.Decode.JsonTest do
           ~s(, \"age\": 21},{\"name\": \"Bobby\",\"age\": 62}),
           ~s(])
         ]
+        |> to_extract_messages()
       end
 
       context = Context.new() |> Context.set_source(source)
       {:ok, context} = Extract.Step.execute(%Extract.Decode.Json{}, context)
 
-      expected = [
-        %{"name" => "Kyle", "age" => 2},
-        %{"name" => "Joe", "age" => 21},
-        %{"name" => "Bobby", "age" => 62}
-      ]
+      expected =
+        [
+          %{"name" => "Kyle", "age" => 2},
+          %{"name" => "Joe", "age" => 21},
+          %{"name" => "Bobby", "age" => 62}
+        ]
+        |> to_extract_messages(4)
 
       assert Context.get_stream(context) == expected
     end
@@ -46,13 +49,27 @@ defmodule Extract.Decode.JsonTest do
           ~s({"name": "Jay",),
           ~s("age": 42})
         ]
+        |> to_extract_messages()
       end
 
       context = Context.new() |> Context.set_source(source)
       {:ok, context} = Extract.Step.execute(%Extract.Decode.Json{}, context)
 
-      expected = [%{"name" => "Jay", "age" => 42}]
+      expected = [%{"name" => "Jay", "age" => 42}] |> to_extract_messages(2)
       assert Context.get_stream(context) == expected
     end
+  end
+
+  defp to_extract_messages(list, id \\ :not_set) do
+    Enum.reduce(list, {0, []}, fn data, {i, buffer} ->
+      meta_id =
+        case id == :not_set do
+          true -> i + 1
+          false -> id
+        end
+
+      {i + 1, buffer ++ [Extract.Message.new(data: data, meta: %{"id" => meta_id})]}
+    end)
+    |> elem(1)
   end
 end

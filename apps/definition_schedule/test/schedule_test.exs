@@ -16,6 +16,9 @@ defmodule ScheduleTest do
         [:subset_id, ""],
         [:subset_id, nil],
         [:cron, ""],
+        [:cron, nil],
+        [:compaction_cron, ""],
+        [:compaction_cron, nil],
         [:extract, %{}],
         [:transform, nil],
         [:load, nil]

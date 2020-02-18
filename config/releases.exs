@@ -136,7 +136,19 @@ config :service_broadcast, Broadcast.Application,
     handlers: [Broadcast.Event.Handler],
     storage: [
       module: Brook.Storage.Redis,
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
       init_arg: [redix_args: redix_args, namespace: "service:broadcast:view"]
+=======
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
+>>>>>>> 59a55fb... WIP: Replace Ets with Redis
+=======
+      init_arg: [redix_args: [host: "localhost"], namespace: "service:broadcast:view"]
+>>>>>>> 1670984... Set Brook storage to redis
+=======
+      init_arg: [redix_args: redix_args, namespace: "service:broadcast:view"]
+>>>>>>> 34bfd52... Add Redix authentication to release config
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -193,7 +205,19 @@ config :service_persist, Persist.Application,
     handlers: [Persist.Event.Handler],
     storage: [
       module: Brook.Storage.Redis,
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
       init_arg: [redix_args: redix_args, namespace: "service:persist:view"]
+=======
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
+>>>>>>> 59a55fb... WIP: Replace Ets with Redis
+=======
+      init_arg: [redix_args: [host: "localhost"], namespace: "service:persist:view"]
+>>>>>>> 1670984... Set Brook storage to redis
+=======
+      init_arg: [redix_args: redix_args, namespace: "service:persist:view"]
+>>>>>>> 34bfd52... Add Redix authentication to release config
     ],
     dispatcher: Brook.Dispatcher.Noop,
     event_processing_timeout: 20_000
@@ -256,7 +280,19 @@ config :service_orchestrate, Orchestrate.Application,
     handlers: [Orchestrate.Event.Handler],
     storage: [
       module: Brook.Storage.Redis,
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
       init_arg: [redix_args: redix_args, namespace: "service:orchestrate:view"]
+=======
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
+>>>>>>> 59a55fb... WIP: Replace Ets with Redis
+=======
+      init_arg: [redix_args: [host: "localhost"], namespace: "service:orchestrate:view"]
+>>>>>>> 1670984... Set Brook storage to redis
+=======
+      init_arg: [redix_args: redix_args, namespace: "service:orchestrate:view"]
+>>>>>>> 34bfd52... Add Redix authentication to release config
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -286,11 +322,28 @@ config :service_acquire, Acquire.Application,
     handlers: [Acquire.Event.Handler],
     storage: [
       module: Brook.Storage.Redis,
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
       init_arg: [redix_args: redix_args, namespace: "service:acquire:view"]
+=======
+      init_arg: [redix_args: [host: "localhost"], namespace: "hindsight"]
+>>>>>>> 59a55fb... WIP: Replace Ets with Redis
+=======
+      init_arg: [redix_args: [host: "localhost"], namespace: "service:acquire:view"]
+>>>>>>> 1670984... Set Brook storage to redis
+=======
+      init_arg: [redix_args: redix_args, namespace: "service:acquire:view"]
+>>>>>>> 34bfd52... Add Redix authentication to release config
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
 
 config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")
 
+<<<<<<< HEAD
 config :redix, :args, redix_args
+=======
+config :redix, :args,
+  redix_args
+>>>>>>> 34bfd52... Add Redix authentication to release config

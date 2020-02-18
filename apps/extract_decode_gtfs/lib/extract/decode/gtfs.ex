@@ -5,16 +5,21 @@ defmodule Extract.Decode.Gtfs do
   defstruct []
 
   defimpl Extract.Step, for: __MODULE__ do
-    import Extract.Steps.Context
+    import Extract.Context
 
     def execute(_step, context) do
       source = fn opts ->
         opts = Keyword.put(opts, :read, :bytes)
 
-        get_stream(context, opts)
+        data_list = get_stream(context, opts) |> Enum.to_list()
+        meta = List.last(data_list) |> Map.get(:meta)
+
+        data_list
+        |> Enum.map(&Map.get(&1, :data))
         |> Enum.join()
         |> TransitRealtime.FeedMessage.decode()
         |> Map.get(:entity)
+        |> Enum.map(&Extract.Message.new(data: &1, meta: meta))
       end
 
       context

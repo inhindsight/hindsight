@@ -37,21 +37,25 @@ defmodule Acquire.MixProject do
   defp deps do
     [
       {:definition, in_umbrella: true},
-      {:ok, in_umbrella: true},
-      {:properties, in_umbrella: true},
+      {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
-      {:transformer, in_umbrella: true},
-      {:nimble_parsec, "~> 0.5.3"},
-      {:prestige, "~> 1.0"},
-      {:phoenix, "~> 1.4.11"},
-      {:phoenix_pubsub, "~> 1.1"},
+      {:extractor, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
+      {:nimble_parsec, "~> 0.5.3"},
+      {:ok, in_umbrella: true},
+      {:phoenix, "~> 1.4.11"},
+      {:phoenix_pubsub, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
-      {:testing, in_umbrella: true, only: [:test]},
-      {:mox, "~> 0.5.1", only: [:test]},
+      {:prestige, "~> 1.0"},
+      {:properties, in_umbrella: true},
+      {:transformer, in_umbrella: true},
+
+      # Dev/Test Dependencies
       {:checkov, "~> 1.0", only: [:dev, :test]},
-      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}
+      {:mox, "~> 0.5.1", only: [:test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

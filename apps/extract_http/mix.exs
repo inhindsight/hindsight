@@ -23,9 +23,10 @@ defmodule ExtractHttp.MixProject do
 
   defp deps do
     [
-      {:extract_steps, in_umbrella: true},
+      {:extract_step, in_umbrella: true},
       {:definition, in_umbrella: true},
       {:mint, "~> 1.0", override: true},
+      {:tesla, "~> 1.3"},
       {:castore, "~> 0.1.4"},
       {:temp, "~> 0.4.7"},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},

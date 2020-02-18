@@ -17,9 +17,6 @@ defmodule Broadcast.MixProject do
     ]
   end
 
-  # Configuration for the OTP application.
-  #
-  # Type `mix help compile.app` for more information.
   def application do
     [
       mod: {Broadcast.Application, []},
@@ -27,32 +24,31 @@ defmodule Broadcast.MixProject do
     ]
   end
 
-  # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  # Specifies your project dependencies.
-  #
-  # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:brook, "~> 0.5"},
+      {:definition_dictionary, in_umbrella: true},
+      {:definition_events, in_umbrella: true},
+      {:extractor, in_umbrella: true},
+      {:gettext, "~> 0.11"},
+      {:initializer, in_umbrella: true},
+      {:jason, "~> 1.1"},
+      {:off_broadway_kafka, "~> 0.5"},
       {:phoenix, "~> 1.4.11"},
       {:phoenix_pubsub, "~> 1.1"},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
-      {:brook, "~> 0.5"},
-      {:off_broadway_kafka, "~> 0.5"},
-      {:definition_events, in_umbrella: true},
-      {:definition_dictionary, in_umbrella: true},
-      {:transformer, in_umbrella: true},
-      {:simple_registry, in_umbrella: true},
-      {:initializer, in_umbrella: true},
       {:properties, in_umbrella: true},
+      {:simple_registry, in_umbrella: true},
+      {:transformer, in_umbrella: true},
       {:writer_dlq, in_umbrella: true},
+
+      # Dev/Test Dependencies
       {:checkov, "~> 1.0", only: [:dev, :test]},
-      {:testing, in_umbrella: true, only: [:test]},
-      {:mox, "~> 0.5.1", only: [:test]}
+      {:mox, "~> 0.5.1", only: [:test]},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

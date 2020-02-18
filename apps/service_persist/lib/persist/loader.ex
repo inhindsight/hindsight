@@ -17,9 +17,8 @@ defmodule Persist.Loader do
 
   @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(init_arg) do
-    load = Keyword.fetch!(init_arg, :load)
-    name = Keyword.get(init_arg, :name, Persist.Load.Registry.via(:"#{load.source}"))
-    GenServer.start_link(__MODULE__, init_arg, name: name)
+    server_opts = Keyword.take(init_arg, [:name])
+    GenServer.start_link(__MODULE__, init_arg, server_opts)
   end
 
   @impl GenServer

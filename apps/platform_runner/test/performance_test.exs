@@ -54,9 +54,7 @@ defmodule Platform.Runner.PerformanceTest do
         dataset_id: "perf-csv-ds",
         subset_id: "default",
         dictionary: dictionary,
-        steps: [
-          # Transformer.MoveField.new!(from: "letter", to: "single_letter")
-        ]
+        steps: []
       )
 
     Gather.Application.instance()

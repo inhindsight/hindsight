@@ -13,7 +13,7 @@ defmodule Extract.Http.Get do
             headers: %{}
 
   defimpl Extract.Step, for: __MODULE__ do
-    import Extract.Steps.Context
+    import Extract.Context
 
     alias Extract.Http.File.Downloader
 
@@ -38,7 +38,7 @@ defmodule Extract.Http.Get do
       |> File.stream!([], lines_or_bytes(opts))
       |> Stream.transform(
         fn -> :ok end,
-        fn line, acc -> {[line], acc} end,
+        fn line, acc -> {[Extract.Message.new(data: line)], acc} end,
         fn _acc -> File.rm!(response.destination) end
       )
     end

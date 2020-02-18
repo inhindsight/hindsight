@@ -51,7 +51,7 @@ defmodule PersistTest do
           %Dictionary.Type.Integer{name: "age"}
         ],
         steps: [
-          Transformer.MoveField.new!(from: "name", to: "fullname")
+          Transform.MoveField.new!(from: "name", to: "fullname")
         ]
       )
 
@@ -98,7 +98,7 @@ defmodule PersistTest do
     assert load == Persist.Load.Store.get!(load.dataset_id, load.subset_id)
   end
 
-  test "load:persist:end stops broadway and clears viewstate" do
+  test "load:persist:end stops broadway and marks load as done" do
     test = self()
 
     transform =
@@ -146,7 +146,9 @@ defmodule PersistTest do
       assert :undefined == Persist.Load.Registry.whereis(:"#{load.source}")
     end
 
-    assert nil == Persist.Load.Store.get!(load.dataset_id, load.subset_id)
+    assert true == Persist.Load.Store.done?(load)
+
+    assert_receive {:brook_event, %Brook.Event{type: compact_start(), data: ^load}}
   end
 
   test "gracefully handles load:persist:end with no start" do
