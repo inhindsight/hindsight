@@ -1,4 +1,4 @@
-defmodule Transformer.WKT.PointTest do
+defmodule Transform.WKT.PointTest do
   use ExUnit.Case
 
   test "transform_dictionary will add point field to dictionary" do
@@ -9,7 +9,7 @@ defmodule Transformer.WKT.PointTest do
       ])
 
     step =
-      Transformer.Wkt.Point.new!(
+      Transform.Wkt.Point.new!(
         longitude: "long",
         latitude: "lat",
         to: "point"
@@ -46,7 +46,7 @@ defmodule Transformer.WKT.PointTest do
       ])
 
     step =
-      Transformer.Wkt.Point.new!(
+      Transform.Wkt.Point.new!(
         longitude: ["point", "longitude"],
         latitude: ["point", "latitude"],
         to: ["wkt", "point"]
@@ -66,7 +66,7 @@ defmodule Transformer.WKT.PointTest do
       ])
 
     step =
-      Transformer.Wkt.Point.new!(
+      Transform.Wkt.Point.new!(
         longitude: "longitude",
         latitude: "latitude",
         to: "point"
@@ -83,7 +83,7 @@ defmodule Transformer.WKT.PointTest do
       ])
 
     step =
-      Transformer.Wkt.Point.new!(
+      Transform.Wkt.Point.new!(
         longitude: "longitude",
         latitude: "latitude",
         to: "point"
@@ -100,7 +100,7 @@ defmodule Transformer.WKT.PointTest do
       ])
 
     step =
-      Transformer.Wkt.Point.new!(
+      Transform.Wkt.Point.new!(
         longitude: "long",
         latitude: "lat",
         to: "point"

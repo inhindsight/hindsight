@@ -1,5 +1,5 @@
-defmodule Transformer.Wkt.Point do
-  use Definition, schema: Transformer.Wkt.Point.V1
+defmodule Transform.Wkt.Point do
+  use Definition, schema: Transform.Wkt.Point.V1
 
   defstruct [:longitude, :latitude, :to]
 
@@ -42,11 +42,11 @@ defmodule Transformer.Wkt.Point do
   end
 end
 
-defmodule Transformer.Wkt.Point.V1 do
+defmodule Transform.Wkt.Point.V1 do
   use Definition.Schema
 
   def s do
-    schema(%Transformer.Wkt.Point{
+    schema(%Transform.Wkt.Point{
       longitude: access_path(),
       latitude: access_path(),
       to: access_path()

@@ -1,9 +1,9 @@
-defmodule Transformer.WKT.MixProject do
+defmodule Transform.WKT.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :transformer_wkt,
+      app: :transform_wkt,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -23,7 +23,7 @@ defmodule Transformer.WKT.MixProject do
 
   defp deps do
     [
-      {:transformer, in_umbrella: true},
+      {:transform_step, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:geo, "~> 3.3"}
     ]
