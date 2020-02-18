@@ -54,8 +54,7 @@ defmodule Platform.Runner.PerformanceTest do
         dataset_id: "perf-csv-ds",
         subset_id: "default",
         dictionary: dictionary,
-        steps: [
-        ]
+        steps: []
       )
 
     Gather.Application.instance()

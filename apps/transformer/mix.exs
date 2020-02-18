@@ -26,6 +26,7 @@ defmodule Transformer.MixProject do
   defp deps do
     [
       {:transform_step, in_umbrella: true},
+      {:transform_wkt, in_umbrella: true},
       {:ok, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
