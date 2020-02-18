@@ -24,7 +24,7 @@ defmodule Extract.Decode.JsonLinesTest do
           json(%{"name" => "john", "age" => 21}),
           json(%{"name" => "Fred", "age" => 34}),
           json(%{"name" => "george", "age" => 36})
-        ]
+        ] |> to_extract_messages()
       end
 
       context = Context.new() |> Context.set_source(source)
@@ -34,9 +34,13 @@ defmodule Extract.Decode.JsonLinesTest do
                %{"name" => "john", "age" => 21},
                %{"name" => "Fred", "age" => 34},
                %{"name" => "george", "age" => 36}
-             ]
+             ] |> to_extract_messages()
     end
   end
 
   defp json(map), do: Jason.encode!(map)
+  defp to_extract_messages(list) do
+    list
+    |> Enum.map(fn data -> Extract.Message.new(data: data) end)
+  end
 end
