@@ -4,7 +4,7 @@ defmodule Broadcast.Transformer.Test do
   defmodule SimpleRename do
     defstruct [:from, :to]
 
-    defimpl Transformer.Step, for: __MODULE__ do
+    defimpl Transform.Step, for: __MODULE__ do
       def transform_dictionary(%{from: from, to: to}, dictionary) do
         from_path = to_access_path(from)
         new_name = List.wrap(to) |> List.last()
@@ -33,7 +33,7 @@ defmodule Broadcast.Transformer.Test do
   defmodule Error do
     defstruct error: nil, dictionary: false, function: false, transform: false
 
-    defimpl Transformer.Step, for: __MODULE__ do
+    defimpl Transform.Step, for: __MODULE__ do
       def transform_dictionary(%{error: error} = step, dictionary) do
         case Map.get(step, :dictionary, false) do
           true -> {:error, error}
@@ -62,7 +62,7 @@ defmodule Broadcast.Transformer.Test do
   defmodule TransformStream do
     defstruct [:name, :transform]
 
-    defimpl Transformer.Step, for: __MODULE__ do
+    defimpl Transform.Step, for: __MODULE__ do
       def transform_dictionary(_, dictionary) do
         Ok.ok(dictionary)
       end
@@ -82,7 +82,7 @@ defmodule Broadcast.Transformer.Test do
   defmodule TransformInteger do
     defstruct [:name, :transform]
 
-    defimpl Transformer.Step, for: __MODULE__ do
+    defimpl Transform.Step, for: __MODULE__ do
       def transform_dictionary(_, dictionary) do
         Ok.ok(dictionary)
       end

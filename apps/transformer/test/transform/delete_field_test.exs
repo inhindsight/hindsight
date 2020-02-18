@@ -1,4 +1,4 @@
-defmodule Transformer.DeleteFieldTest do
+defmodule Transform.DeleteFieldTest do
   use ExUnit.Case
   import Checkov
 
@@ -34,8 +34,8 @@ defmodule Transformer.DeleteFieldTest do
 
   describe "transform_dictionary" do
     data_test "removes fields from the dictionary", %{dictionary: dictionary} do
-      step = Transformer.DeleteField.new!(name: name)
-      assert {:ok, new_dict} = Transformer.Step.transform_dictionary(step, dictionary)
+      step = Transform.DeleteField.new!(name: name)
+      assert {:ok, new_dict} = Transform.Step.transform_dictionary(step, dictionary)
 
       path = Dictionary.Access.to_access_path(name)
 
@@ -52,7 +52,7 @@ defmodule Transformer.DeleteFieldTest do
 
   describe "create_function" do
     data_test "will delete the configured fields from the payload", %{dictionary: dictionary} do
-      step = %Transformer.DeleteField{
+      step = %Transform.DeleteField{
         name: name
       }
 
@@ -73,7 +73,7 @@ defmodule Transformer.DeleteFieldTest do
 
       path = Dictionary.Access.to_access_path(name)
 
-      {:ok, function} = Transformer.Step.create_function(step, dictionary)
+      {:ok, function} = Transform.Step.create_function(step, dictionary)
       {:ok, result} = function.(value)
 
       {_, expected} = pop_in(value, path)

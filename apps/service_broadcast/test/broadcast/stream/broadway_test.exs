@@ -73,7 +73,7 @@ defmodule Broadcast.Stream.BroadwayTest do
           Dictionary.Type.Integer.new!(name: "age")
         ],
         steps: [
-          Transformer.MoveField.new!(from: "name", to: "fullname")
+          Transform.MoveField.new!(from: "name", to: "fullname")
         ]
       )
 

@@ -1,4 +1,4 @@
-defmodule Transformer.MoveFieldTest do
+defmodule Transform.MoveFieldTest do
   use ExUnit.Case
   import Checkov
 
@@ -49,12 +49,12 @@ defmodule Transformer.MoveFieldTest do
 
   describe "transform_dictionary" do
     data_test "renames field in dictionary", %{dictionary: dictionary} do
-      step = %Transformer.MoveField{from: from, to: to}
+      step = %Transform.MoveField{from: from, to: to}
 
       from_path = Dictionary.Access.to_access_path(from)
       to_path = Dictionary.Access.to_access_path(to)
 
-      assert {:ok, new_dictionary} = Transformer.Step.transform_dictionary(step, dictionary)
+      assert {:ok, new_dictionary} = Transform.Step.transform_dictionary(step, dictionary)
       new_name = List.wrap(to) |> List.last()
 
       assert Dictionary.Type.String.new!(name: new_name) == get_in(new_dictionary, to_path)
@@ -69,9 +69,9 @@ defmodule Transformer.MoveFieldTest do
     end
 
     test "handles a non existent field", %{dictionary: dictionary} do
-      step = %Transformer.MoveField{from: ["spouse", "fake"], to: "something"}
+      step = %Transform.MoveField{from: ["spouse", "fake"], to: "something"}
 
-      assert {:ok, new_dictionary} = Transformer.Step.transform_dictionary(step, dictionary)
+      assert {:ok, new_dictionary} = Transform.Step.transform_dictionary(step, dictionary)
 
       assert dictionary == new_dictionary
     end
@@ -79,9 +79,9 @@ defmodule Transformer.MoveFieldTest do
 
   describe "transform_function" do
     data_test "will rename field in data", %{data: data, dictionary: dictionary} do
-      step = %Transformer.MoveField{from: from, to: to}
+      step = %Transform.MoveField{from: from, to: to}
 
-      {:ok, function} = Transformer.Step.create_function(step, dictionary)
+      {:ok, function} = Transform.Step.create_function(step, dictionary)
 
       {:ok, transformed_data} = function.(data)
 

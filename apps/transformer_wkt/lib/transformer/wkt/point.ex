@@ -3,7 +3,7 @@ defmodule Transformer.Wkt.Point do
 
   defstruct [:longitude, :latitude, :to]
 
-  defimpl Transformer.Step, for: __MODULE__ do
+  defimpl Transform.Step, for: __MODULE__ do
     import Dictionary.Access, only: [to_access_path: 1]
 
     def transform_dictionary(%{longitude: longitude, latitude: latitude, to: to}, dictionary) do

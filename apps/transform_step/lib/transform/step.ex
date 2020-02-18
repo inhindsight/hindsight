@@ -1,4 +1,4 @@
-defprotocol Transformer.Step do
+defprotocol Transform.Step do
   @spec transform_dictionary(step :: t, dictionary :: Dictionary.t()) ::
           {:ok, Dictionary.t()} | {:error, term}
   def transform_dictionary(step, dictionary)

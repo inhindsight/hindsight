@@ -15,7 +15,7 @@ defmodule Transformer.WKT.PointTest do
         to: "point"
       )
 
-    assert {:ok, result} = Transformer.Step.transform_dictionary(step, dictionary)
+    assert {:ok, result} = Transform.Step.transform_dictionary(step, dictionary)
 
     expected =
       Dictionary.from_list([
@@ -52,7 +52,7 @@ defmodule Transformer.WKT.PointTest do
         to: ["wkt", "point"]
       )
 
-    assert {:ok, result} = Transformer.Step.transform_dictionary(step, dictionary)
+    assert {:ok, result} = Transform.Step.transform_dictionary(step, dictionary)
 
     assert get_in(result, ["wkt", "point"]) ==
              Dictionary.Type.Wkt.Point.new!(name: "point")
@@ -72,7 +72,7 @@ defmodule Transformer.WKT.PointTest do
         to: "point"
       )
 
-    assert {:error, :invalid_longitude} = Transformer.Step.transform_dictionary(step, dictionary)
+    assert {:error, :invalid_longitude} = Transform.Step.transform_dictionary(step, dictionary)
   end
 
   test "transform_dictionary will return an error tuple if latitude is not the correct type" do
@@ -89,7 +89,7 @@ defmodule Transformer.WKT.PointTest do
         to: "point"
       )
 
-    assert {:error, :invalid_latitude} = Transformer.Step.transform_dictionary(step, dictionary)
+    assert {:error, :invalid_latitude} = Transform.Step.transform_dictionary(step, dictionary)
   end
 
   test "transform_function returns function to create point" do
@@ -111,7 +111,7 @@ defmodule Transformer.WKT.PointTest do
       "lat" => -34.16
     }
 
-    assert {:ok, function} = Transformer.Step.create_function(step, dictionary)
+    assert {:ok, function} = Transform.Step.create_function(step, dictionary)
     assert {:ok, result} = function.(value)
 
     assert result == %{

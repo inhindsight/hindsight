@@ -1,5 +1,5 @@
-defmodule Transformer.MoveField do
-  use Definition, schema: Transformer.MoveField.V1
+defmodule Transform.MoveField do
+  use Definition, schema: Transform.MoveField.V1
 
   @type t :: %__MODULE__{
           from: String.t() | [String.t()],
@@ -8,7 +8,7 @@ defmodule Transformer.MoveField do
 
   defstruct [:from, :to]
 
-  defimpl Transformer.Step, for: __MODULE__ do
+  defimpl Transform.Step, for: __MODULE__ do
     import Dictionary.Access, only: [to_access_path: 1, to_access_path: 2]
 
     def transform_dictionary(%{from: from, to: to}, dictionary) do
@@ -44,11 +44,11 @@ defmodule Transformer.MoveField do
   end
 end
 
-defmodule Transformer.MoveField.V1 do
+defmodule Transform.MoveField.V1 do
   use Definition.Schema
 
   def s do
-    schema(%Transformer.MoveField{
+    schema(%Transform.MoveField{
       from: access_path(),
       to: access_path()
     })

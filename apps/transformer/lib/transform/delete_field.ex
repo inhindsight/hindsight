@@ -1,5 +1,5 @@
-defmodule Transformer.DeleteField do
-  use Definition, schema: Transformer.DeleteField.V1
+defmodule Transform.DeleteField do
+  use Definition, schema: Transform.DeleteField.V1
 
   @type t :: %__MODULE__{
           name: String.t() | [String.t()]
@@ -9,7 +9,7 @@ defmodule Transformer.DeleteField do
 
   import Dictionary.Access, only: [to_access_path: 1]
 
-  defimpl Transformer.Step, for: __MODULE__ do
+  defimpl Transform.Step, for: __MODULE__ do
     def transform_dictionary(%{name: name}, dictionary) do
       name_path = to_access_path(name)
       {_, new_dictionary} = pop_in(dictionary, name_path)
@@ -28,11 +28,11 @@ defmodule Transformer.DeleteField do
   end
 end
 
-defmodule Transformer.DeleteField.V1 do
+defmodule Transform.DeleteField.V1 do
   use Definition.Schema
 
   def s do
-    schema(%Transformer.DeleteField{
+    schema(%Transform.DeleteField{
       name: access_path()
     })
   end

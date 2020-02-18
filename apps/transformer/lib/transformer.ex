@@ -9,22 +9,22 @@ defmodule Transformer do
   defstruct function: nil,
             dictionary: nil
 
-  @spec transform_dictionary([Transformer.Step.t()], Dictionary.t()) ::
+  @spec transform_dictionary([Transform.Step.t()], Dictionary.t()) ::
           {:ok, Dictionary.t()} | {:error, term}
   def transform_dictionary(steps, dictionary) do
     Ok.reduce(steps, dictionary, fn step, acc ->
-      Transformer.Step.transform_dictionary(step, acc)
+      Transform.Step.transform_dictionary(step, acc)
     end)
   end
 
-  @spec create([Transformer.Step.t()], Dictionary.t()) ::
+  @spec create([Transform.Step.t()], Dictionary.t()) ::
           {:ok, transform_function} | {:error, term}
   def create(steps, dictionary) do
     initial = %__MODULE__{dictionary: dictionary, function: fn {:ok, x} -> Ok.ok(x) end}
 
     Ok.reduce(steps, initial, fn step, acc ->
-      with {:ok, new_dictionary} <- Transformer.Step.transform_dictionary(step, acc.dictionary),
-           {:ok, transform_function} <- Transformer.Step.create_function(step, acc.dictionary) do
+      with {:ok, new_dictionary} <- Transform.Step.transform_dictionary(step, acc.dictionary),
+           {:ok, transform_function} <- Transform.Step.create_function(step, acc.dictionary) do
         %{
           acc
           | dictionary: new_dictionary,

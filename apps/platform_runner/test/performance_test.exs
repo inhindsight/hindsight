@@ -55,7 +55,6 @@ defmodule Platform.Runner.PerformanceTest do
         subset_id: "default",
         dictionary: dictionary,
         steps: [
-          # Transformer.MoveField.new!(from: "letter", to: "single_letter")
         ]
       )
 
