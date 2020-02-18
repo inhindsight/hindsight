@@ -7,6 +7,7 @@ defmodule Fake.Step do
     def execute(step, context) do
       source = fn _ ->
         step.values
+        |> Stream.map(&Extract.Message.new(data: &1))
       end
 
       context
