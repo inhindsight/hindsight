@@ -3,6 +3,7 @@ defmodule Persist.Compactor.PrestoIntTest do
   use Divo
   require Temp.Env
   require Logger
+  import AssertAsync
 
   @prestige [
     url: "http://localhost:8080",
@@ -44,23 +45,33 @@ defmodule Persist.Compactor.PrestoIntTest do
 
     1..10
     |> Enum.each(fn _ ->
-        Prestige.execute!(session, "INSERT INTO #{persist.destination}(name, age) values(#{generate_row()})")
+      Prestige.execute!(
+        session,
+        "INSERT INTO #{persist.destination}(name, age) values(#{generate_row()})"
+      )
     end)
 
     Prestige.execute!(session, "select * from #{persist.destination}")
     |> Prestige.Result.as_maps()
 
-    assert 10 <= number_of_s3_files(persist.destination)
+    assert_async do
+      assert 10 <= number_of_s3_files(persist.destination)
+    end
 
     assert :ok == Persist.Compactor.Presto.compact(persist)
 
-    assert 1 == number_of_s3_files(persist.destination)
+    assert_async do
+      assert 1 == number_of_s3_files(persist.destination)
+    end
   end
 
   defp number_of_s3_files(table) do
     ExAws.S3.list_objects("kdp-cloud-storage")
     |> ExAws.request!()
-    |> (fn response -> Logger.error("#{__MODULE__}: ex aws request: #{inspect(response)}"); response end).()
+    |> (fn response ->
+          Logger.error("#{__MODULE__}: ex aws request: #{inspect(response)}")
+          response
+        end).()
     |> (fn response -> response.body.contents end).()
     |> Enum.map(&Map.get(&1, :key))
     |> Enum.filter(&String.starts_with?(&1, "hive-s3/#{table}/"))
