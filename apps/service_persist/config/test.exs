@@ -1,5 +1,7 @@
 use Mix.Config
 
+config :logger, level: :debug
+
 config :ex_aws,
   debug_requests: true,
   access_key_id: "testing_access_key",

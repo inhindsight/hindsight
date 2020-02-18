@@ -9,6 +9,7 @@ defmodule Schedule do
           dataset_id: String.t(),
           subset_id: String.t(),
           cron: String.t(),
+          compaction_cron: String.t(),
           extract: Extract.t(),
           transform: Transform.t(),
           load: list
@@ -19,6 +20,7 @@ defmodule Schedule do
             dataset_id: nil,
             subset_id: nil,
             cron: nil,
+            compaction_cron: "@default",
             extract: nil,
             transform: nil,
             load: []

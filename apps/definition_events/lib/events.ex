@@ -4,6 +4,8 @@ defmodule Events do
     {"accept:end", Accept},
     {"extract:start", Extract},
     {"extract:end", Extract},
+    {"compact:start", Load.Persist},
+    {"compact:end", Load.Persist},
     {"load:broadcast:start", Load.Broadcast},
     {"load:broadcast:end", Load.Broadcast},
     {"load:persist:start", Load.Persist},
@@ -30,9 +32,10 @@ defmodule Events do
 
   Enum.map(@events, fn {type, struct_module} ->
     parts = String.split(type, ":")
+    step = List.first(parts)
     action = List.last(parts)
 
-    def get_event_type(unquote(action), %unquote(struct_module){}) do
+    def get_event_type(unquote(step), unquote(action), %unquote(struct_module){}) do
       unquote(type)
     end
   end)

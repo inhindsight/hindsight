@@ -1,53 +1,60 @@
 defmodule OrchestrateTest do
   use ExUnit.Case
   use Placebo
-  import Events, only: [extract_start: 0]
+  import Events, only: [extract_start: 0, compact_start: 0]
   import ExUnit.CaptureLog
 
   @instance Orchestrate.Application.instance()
 
-  describe "run_schedule/1" do
-    setup do
-      Brook.Test.clear_view_state(@instance, "schedules")
+  setup do
+    Brook.Test.clear_view_state(@instance, "schedules")
 
-      schedule =
-        Schedule.new!(
-          id: "schedule-1",
-          dataset_id: "ds1",
-          subset_id: "kpi",
-          cron: "* * * * *",
-          extract:
-            Extract.new!(
-              id: "extract-1",
-              dataset_id: "ds1",
-              subset_id: "kpi",
-              destination: "topic-1",
-              steps: [],
-              dictionary: []
-            ),
-          transform:
-            Transform.new!(
-              id: "transform-1",
-              dataset_id: "ds1",
-              subset_id: "kp1",
-              dictionary: [],
-              steps: []
-            ),
-          load: [
-            Load.Persist.new!(
-              id: "persist-1",
-              dataset_id: "ds1",
-              subset_id: "kpi",
-              source: "topic-1",
-              destination: "table-1",
-              schema: []
-            )
-          ]
-        )
+    schedule =
+      Schedule.new!(
+        id: "schedule-1",
+        dataset_id: "ds1",
+        subset_id: "kpi",
+        cron: "* * * * *",
+        extract:
+          Extract.new!(
+            id: "extract-1",
+            dataset_id: "ds1",
+            subset_id: "kpi",
+            destination: "topic-1",
+            steps: [],
+            dictionary: []
+          ),
+        transform:
+          Transform.new!(
+            id: "transform-1",
+            dataset_id: "ds1",
+            subset_id: "kp1",
+            dictionary: [],
+            steps: []
+          ),
+        load: [
+          Load.Persist.new!(
+            id: "persist-1",
+            dataset_id: "ds1",
+            subset_id: "kpi",
+            source: "topic-1",
+            destination: "table-1",
+            schema: []
+          ),
+          Load.Broadcast.new!(
+            id: "broadcast-1",
+            dataset_id: "ds1",
+            subset_id: "kpi",
+            source: "topic-1",
+            destination: "kpi"
+          )
+        ]
+      )
 
-      [schedule: schedule]
-    end
+    [schedule: schedule]
+  end
 
+  describe "run_extract/1" do
     test "should send extract:start event", %{schedule: schedule} do
       allow UUID.uuid4(), return: "uuid-1"
 
@@ -55,7 +62,7 @@ defmodule OrchestrateTest do
         Orchestrate.Schedule.Store.persist(schedule)
       end)
 
-      Orchestrate.run_schedule(schedule.dataset_id, schedule.subset_id)
+      Orchestrate.run_extract(schedule.dataset_id, schedule.subset_id)
 
       extract = schedule.extract |> Map.put(:id, "uuid-1")
 
@@ -65,13 +72,36 @@ defmodule OrchestrateTest do
     test "should log an error if schedule does not exist", %{schedule: schedule} do
       log =
         capture_log([level: :error], fn ->
-          Orchestrate.run_schedule(schedule.dataset_id, schedule.subset_id)
+          Orchestrate.run_extract(schedule.dataset_id, schedule.subset_id)
         end)
 
       assert log =~
                "Unable to find schedule with : dataset_id #{schedule.dataset_id} subset_id #{
                  schedule.subset_id
                }"
+    end
+  end
+
+  describe "run_compaction" do
+    test "should send a #{compact_start()} event", %{schedule: schedule} do
+      Brook.Test.with_event(@instance, fn ->
+        Orchestrate.Schedule.Store.persist(schedule)
+      end)
+
+      [persist, _] = schedule.load
+
+      Orchestrate.run_compaction(schedule.dataset_id, schedule.subset_id)
+
+      assert_receive {:brook_event, %Brook.Event{type: compact_start(), data: ^persist}}
+    end
+
+    test "should log an error when schedule does not exit" do
+      log =
+        capture_log([level: :error], fn ->
+          Orchestrate.run_compaction("ds1", "sb1")
+        end)
+
+      assert log =~ "Unable to find schedule with : dataset_id ds1 subset_id sb1"
     end
   end
 end

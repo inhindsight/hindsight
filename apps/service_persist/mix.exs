@@ -33,6 +33,7 @@ defmodule Persist.MixProject do
       {:initializer, in_umbrella: true},
       {:annotated_retry, in_umbrella: true},
       {:properties, in_umbrella: true},
+      {:management, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:off_broadway_kafka, "~> 0.5"},
       {:ex_aws_s3, "~> 2.0"},
@@ -40,7 +41,8 @@ defmodule Persist.MixProject do
       {:poison, "~> 4.0"},
       {:sweet_xml, "~> 0.6.6"},
       {:mox, "~> 0.5", only: [:test]},
-      {:testing, in_umbrella: true, only: [:test]}
+      {:testing, in_umbrella: true, only: [:test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}
     ]
   end
 

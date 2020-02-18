@@ -10,6 +10,7 @@ defmodule Orchestrate.Event.HandlerTest do
   @moduletag capture_log: true
 
   setup do
+    Brook.Test.clear_view_state(@instance, "schedules")
     Orchestrate.Scheduler.delete_all_jobs()
 
     schedule =
@@ -18,6 +19,7 @@ defmodule Orchestrate.Event.HandlerTest do
         dataset_id: "ds1",
         subset_id: "kpi",
         cron: "* * * * *",
+        compaction_cron: "0 10 * * *",
         extract:
           Extract.new!(
             id: "extract-1",
@@ -43,6 +45,13 @@ defmodule Orchestrate.Event.HandlerTest do
             source: "topic-1",
             destination: "table-1",
             schema: []
+          ),
+          Load.Broadcast.new!(
+            id: "broadcast-1",
+            dataset_id: "ds1",
+            subset_id: "kpi",
+            source: "topic-1",
+            destination: "ds1"
           )
         ]
       )
@@ -50,20 +59,60 @@ defmodule Orchestrate.Event.HandlerTest do
     [schedule: schedule]
   end
 
-  test "schedules job on schedule:start", %{schedule: schedule} do
+  test "schedules extract job on schedule:start", %{schedule: schedule} do
     Brook.Test.send(@instance, schedule_start(), "testing", schedule)
 
     expected_cron = Crontab.CronExpression.Parser.parse!(schedule.cron)
     expected_name = :"#{schedule.dataset_id}__#{schedule.subset_id}"
-    expected_task = {Orchestrate, :run_schedule, [schedule.dataset_id, schedule.subset_id]}
+    expected_task = {Orchestrate, :run_extract, [schedule.dataset_id, schedule.subset_id]}
 
-    assert_async debug: true do
+    assert_async do
       assert %{name: ^expected_name, schedule: ^expected_cron, task: ^expected_task} =
                Orchestrate.Scheduler.find_job(expected_name)
     end
 
     assert_async do
       assert schedule == Orchestrate.Schedule.Store.get!(schedule.dataset_id, schedule.subset_id)
+    end
+  end
+
+  describe "compaction" do
+    test "schedules compaction job on schedule:start", %{schedule: schedule} do
+      Brook.Test.send(@instance, schedule_start(), "testing", schedule)
+
+      expected_cron = Crontab.CronExpression.Parser.parse!(schedule.compaction_cron)
+      expected_name = :"#{schedule.dataset_id}__#{schedule.subset_id}_compaction"
+      expected_task = {Orchestrate, :run_compaction, [schedule.dataset_id, schedule.subset_id]}
+
+      assert_async do
+        assert %{name: ^expected_name, schedule: ^expected_cron, task: ^expected_task} =
+                 Orchestrate.Scheduler.find_job(expected_name)
+      end
+    end
+
+    test "schedule compaction job according to @default scheule", %{schedule: schedule} do
+      schedule = %{schedule | compaction_cron: "@default"}
+
+      Brook.Test.send(@instance, schedule_start(), "testing", schedule)
+
+      expected_name = :"#{schedule.dataset_id}__#{schedule.subset_id}_compaction"
+
+      assert %{schedule: actual_cron} = Orchestrate.Scheduler.find_job(expected_name)
+      [hour] = actual_cron.hour
+      assert [0] == actual_cron.minute
+      assert hour >= 0
+      assert hour < 24
+    end
+
+    test "should not schedule job is no Load.Persist is available", %{schedule: schedule} do
+      [_persist, broadcast] = schedule.load
+      schedule = %{schedule | load: [broadcast]}
+
+      Brook.Test.send(@instance, schedule_start(), "testing", schedule)
+
+      expected_name = :"#{schedule.dataset_id}__#{schedule.subset_id}_compaction"
+
+      assert nil == Orchestrate.Scheduler.find_job(expected_name)
     end
   end
 
@@ -103,7 +152,7 @@ defmodule Orchestrate.Event.HandlerTest do
 
   test "deletes job on schedule:end", %{schedule: schedule} do
     Orchestrate.Scheduler.new_job()
-    |> Job.set_name(:"#{schedule.id}")
+    |> Job.set_name(:"#{schedule.dataset_id}__#{schedule.subset_id}")
     |> Job.set_schedule(Crontab.CronExpression.Parser.parse!("* * * * *"))
     |> Job.set_task({IO, :puts, ["hello"]})
     |> Orchestrate.Scheduler.add_job()
@@ -115,7 +164,8 @@ defmodule Orchestrate.Event.HandlerTest do
     Brook.Test.send(@instance, schedule_end(), "testing", schedule)
 
     assert_async do
-      assert nil == Orchestrate.Scheduler.find_job(:"#{schedule.id}")
+      assert nil ==
+               Orchestrate.Scheduler.find_job(:"#{schedule.dataset_id}__#{schedule.subset_id}")
     end
 
     assert_async do
