@@ -29,7 +29,7 @@ defmodule Gather.MixProject do
       {:definition_extract, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
-      {:extract_steps, in_umbrella: true},
+      {:extractor, in_umbrella: true},
       {:extract_http, in_umbrella: true},
       {:extract_kafka, in_umbrella: true},
       {:extract_decode_gtfs, in_umbrella: true},

@@ -1,6 +1,5 @@
-defmodule Extract.StepsTest do
+defmodule ExtractorTest do
   use ExUnit.Case
-  doctest Extract.Steps
 
   alias Extract.Context
 
@@ -12,7 +11,7 @@ defmodule Extract.StepsTest do
         %Test.Steps.TransformStream{transform: fn x -> x * 2 end}
       ]
 
-      {:ok, context} = Extract.Steps.execute(steps)
+      {:ok, context} = Extractor.execute(steps)
 
       actual = Context.get_stream(context) |> Enum.to_list()
       assert actual == [2, 4, 6, 8, 10, 12]

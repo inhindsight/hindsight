@@ -1,4 +1,4 @@
-defmodule Extract.Steps do
+defmodule Extractor do
   @spec execute(Enum.t()) :: {:ok, Extract.Context.t()} | {:error, term}
   def execute(steps) do
     Ok.reduce(steps, Extract.Context.new(), &Extract.Step.execute/2)

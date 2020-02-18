@@ -3,7 +3,7 @@ defmodule Extract.Steps.MixProject do
 
   def project do
     [
-      app: :extract_steps,
+      app: :extractor,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
