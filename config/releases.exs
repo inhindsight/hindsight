@@ -294,11 +294,9 @@ config :service_acquire, Acquire.Application,
     storage: [
       module: Brook.Storage.Redis,
       init_arg: [redix_args: redix_args, namespace: "service:acquire:view"]
-    ],
     dispatcher: Brook.Dispatcher.Noop
   ]
 
 config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")
 
-config :redix, :args,
-  redix_args
+config :redix, :args, redix_args
