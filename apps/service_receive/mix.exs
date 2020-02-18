@@ -29,13 +29,18 @@ defmodule Receive.MixProject do
       {:annotated_retry, in_umbrella: true},
       {:brook, "~> 0.5"},
       {:definition_accept, in_umbrella: true},
+      {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:extractor, in_umbrella: true},
       {:initializer, in_umbrella: true},
       {:properties, in_umbrella: true},
+      {:transformer, in_umbrella: true},
       {:writer_kafka, in_umbrella: true},
-      {:testing, in_umbrella: true, only: [:test]},
+
+      # Dev/Test Dependencies
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:mox, "~> 0.5.1", only: [:test]},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 

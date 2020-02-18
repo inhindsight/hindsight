@@ -25,21 +25,24 @@ defmodule Gather.MixProject do
 
   defp deps do
     [
-      {:brook, "~> 0.5"},
-      {:definition_extract, in_umbrella: true},
-      {:definition_events, in_umbrella: true},
-      {:definition_dictionary, in_umbrella: true},
-      {:extractor, in_umbrella: true},
-      {:writer, in_umbrella: true},
-      {:writer_kafka, in_umbrella: true},
-      {:writer_dlq, in_umbrella: true},
-      {:properties, in_umbrella: true},
       {:annotated_retry, in_umbrella: true},
-      {:retry, "~> 0.13.0"},
+      {:brook, "~> 0.5"},
+      {:definition_dictionary, in_umbrella: true},
+      {:definition_events, in_umbrella: true},
+      {:definition_extract, in_umbrella: true},
+      {:extractor, in_umbrella: true},
       {:initializer, in_umbrella: true},
+      {:properties, in_umbrella: true},
+      {:retry, "~> 0.13.0"},
+      {:transformer, in_umbrella: true},
+      {:writer, in_umbrella: true},
+      {:writer_dlq, in_umbrella: true},
+      {:writer_kafka, in_umbrella: true},
+
+      # Dev/Test Dependencies
       {:bypass, "~> 1.0", only: [:test]},
-      {:testing, in_umbrella: true, only: [:test]},
-      {:mox, "~> 0.5.1", only: [:test]}
+      {:mox, "~> 0.5.1", only: [:test]},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 
