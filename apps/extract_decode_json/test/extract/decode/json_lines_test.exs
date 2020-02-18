@@ -25,18 +25,26 @@ defmodule Extract.Decode.JsonLinesTest do
           json(%{"name" => "Fred", "age" => 34}),
           json(%{"name" => "george", "age" => 36})
         ]
+        |> to_extract_messages()
       end
 
       context = Context.new() |> Context.set_source(source)
       {:ok, context} = Extract.Step.execute(%Extract.Decode.JsonLines{}, context)
 
-      assert Context.get_stream(context) |> Enum.to_list() == [
-               %{"name" => "john", "age" => 21},
-               %{"name" => "Fred", "age" => 34},
-               %{"name" => "george", "age" => 36}
-             ]
+      assert Context.get_stream(context) |> Enum.to_list() ==
+               [
+                 %{"name" => "john", "age" => 21},
+                 %{"name" => "Fred", "age" => 34},
+                 %{"name" => "george", "age" => 36}
+               ]
+               |> to_extract_messages()
     end
   end
 
   defp json(map), do: Jason.encode!(map)
+
+  defp to_extract_messages(list) do
+    list
+    |> Enum.map(fn data -> Extract.Message.new(data: data) end)
+  end
 end

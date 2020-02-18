@@ -78,7 +78,8 @@ defmodule Extract.Http.PostTest do
 
       {:ok, context} = Extract.Step.execute(step, context)
 
-      assert ["goodbye"] == Context.get_stream(context) |> Enum.to_list()
+      expected_message = Extract.Message.new(data: "goodbye")
+      assert [expected_message] == Context.get_stream(context) |> Enum.to_list()
     end
 
     test "execute will return error tuple for any status != 200", %{bypass: bypass} do

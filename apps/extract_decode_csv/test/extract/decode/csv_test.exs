@@ -41,19 +41,29 @@ defmodule Extract.Decode.CsvTest do
         skip_first_line: false
       }
 
-      source = fn _ -> ["brian,21\n", "rick,34", "johnson,45\n", "greg,89"] end
+      source = fn _ ->
+        ["brian,21\n", "rick,34", "johnson,45\n", "greg,89"] |> to_extract_messages()
+      end
+
       context = Context.new() |> Context.set_source(source)
 
       {:ok, context} = Extract.Step.execute(step, context)
 
       stream = Context.get_stream(context) |> Enum.to_list()
 
-      assert stream == [
-               %{"name" => "brian", "age" => "21"},
-               %{"name" => "rick", "age" => "34"},
-               %{"name" => "johnson", "age" => "45"},
-               %{"name" => "greg", "age" => "89"}
-             ]
+      assert stream ==
+               [
+                 %{"name" => "brian", "age" => "21"},
+                 %{"name" => "rick", "age" => "34"},
+                 %{"name" => "johnson", "age" => "45"},
+                 %{"name" => "greg", "age" => "89"}
+               ]
+               |> to_extract_messages()
     end
+  end
+
+  defp to_extract_messages(list) do
+    list
+    |> Enum.map(&Extract.Message.new(data: &1))
   end
 end

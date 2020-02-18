@@ -64,7 +64,8 @@ defmodule Gather.Extraction do
     Context.get_stream(context)
     |> Stream.chunk_every(chunk_size())
     |> Ok.each(fn chunk ->
-      with normalized_messages <- normalize(extract, chunk),
+      with data <- Enum.map(chunk, &Map.get(&1, :data)),
+           normalized_messages <- normalize(extract, data),
            :ok <- writer().write(writer, normalized_messages, writer_opts) do
         Context.run_after_functions(context, chunk)
         :ok

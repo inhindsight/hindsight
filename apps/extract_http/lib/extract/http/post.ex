@@ -38,7 +38,7 @@ defmodule Extract.Http.Post do
       |> File.stream!([], lines_or_bytes(opts))
       |> Stream.transform(
         fn -> :ok end,
-        fn line, acc -> {[line], acc} end,
+        fn line, acc -> {[Extract.Message.new(data: line)], acc} end,
         fn _acc -> File.rm!(response.destination) end
       )
     end

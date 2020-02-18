@@ -36,38 +36,58 @@ defmodule Extract.Kafka.Subscribe do
 
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Context
-    alias Extract.Kafka.Subscribe.Acknowledger
+
+    @dialyzer [:no_return, :no_fail_call]
 
     def execute(%{endpoints: endpoints, topic: topic}, context) do
       ensure_topic(endpoints, topic)
       connection = :"kafka_subscribe_#{topic}"
 
-      {:ok, acknowledger} = Acknowledger.start_link(connection: connection)
-
       source = fn _opts ->
         Stream.resource(
-          initialize(endpoints, topic, connection, acknowledger),
+          initialize(endpoints, topic, connection),
           &receive_messages/1,
           &shutdown/1
         )
       end
 
       context
-      |> register_after_function(&acknowledge_values(acknowledger, &1))
+      |> register_after_function(&acknowledge_messages(connection, &1))
       |> set_source(source)
       |> Ok.ok()
     end
 
-    defp acknowledge_values(acknowledger, values) do
-      Acknowledger.ack(acknowledger, values)
+    defp acknowledge_messages(connection, messages) do
+      %{
+        "topic" => topic,
+        "partition" => partition,
+        "generation_id" => generation_id,
+        "offset" => offset
+      } =
+        messages
+        |> Enum.map(&get_in(&1, [Access.key(:meta), "kafka"]))
+        |> Enum.max_by(&Map.get(&1, "offset"))
+
+      :ok = Elsa.Group.Acknowledger.ack(connection, topic, partition, generation_id, offset)
     end
 
-    defp receive_messages(%{acknowledger: acknowledger} = acc) do
+    defp receive_messages(acc) do
       receive do
         {:kafka_subscribe, messages} ->
-          Acknowledger.cache(acknowledger, messages)
-          unwrapped_messages = Enum.map(messages, fn %{value: payload} -> payload end)
-          {unwrapped_messages, acc}
+          extract_messages =
+            Enum.map(messages, fn %{value: payload} = elsa_message ->
+              meta =
+                elsa_message
+                |> Map.from_struct()
+                |> Map.drop([:value, :timestamp, :headers, :key])
+                |> Enum.reduce(%{}, fn {k, v}, acc ->
+                  Map.put(acc, to_string(k), v)
+                end)
+
+              Extract.Message.new(data: payload, meta: %{"kafka" => meta})
+            end)
+
+          {extract_messages, acc}
       end
     end
 
@@ -77,7 +97,7 @@ defmodule Extract.Kafka.Subscribe do
       end
     end
 
-    defp initialize(endpoints, topic, connection, acknowledger) do
+    defp initialize(endpoints, topic, connection) do
       fn ->
         {:ok, elsa} =
           Elsa.Supervisor.start_link(
@@ -97,13 +117,12 @@ defmodule Extract.Kafka.Subscribe do
             ]
           )
 
-        %{elsa_supervisor: elsa, acknowledger: acknowledger}
+        %{elsa_supervisor: elsa}
       end
     end
 
-    defp shutdown(%{elsa_supervisor: elsa, acknowledger: acknowledger} = acc) do
+    defp shutdown(%{elsa_supervisor: elsa} = acc) do
       Process.exit(elsa, :normal)
-      Process.exit(acknowledger, :normal)
       acc
     end
   end

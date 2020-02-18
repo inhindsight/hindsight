@@ -21,15 +21,31 @@ defmodule Extract.Decode.GtfsTest do
     test "decodes gtfs into stream" do
       source = fn opts ->
         lines_or_bytes = Context.lines_or_bytes(opts)
+
         File.stream!("VehiclePositions.pb", [], lines_or_bytes)
+        |> Stream.transform(0, fn data, acc ->
+          {[Extract.Message.new(data: data, meta: %{"id" => acc})], acc + 1}
+        end)
       end
+
+      expected_id =
+        source.(read: :bytes)
+        |> Enum.to_list()
+        |> List.last()
+        |> get_in([Access.key(:meta), "id"])
 
       context = Context.new() |> Context.set_source(source)
 
-      expected = File.read!("VehiclePositions.pb") |> TransitRealtime.FeedMessage.decode()
+      expected =
+        File.read!("VehiclePositions.pb")
+        |> TransitRealtime.FeedMessage.decode()
+        |> Map.get(:entity)
+        |> Enum.map(fn entity ->
+          Extract.Message.new(data: entity, meta: %{"id" => expected_id})
+        end)
 
       {:ok, context} = Extract.Step.execute(%Extract.Decode.Gtfs{}, context)
-      assert expected.entity == Context.get_stream(context)
+      assert expected == Context.get_stream(context)
     end
   end
 end
