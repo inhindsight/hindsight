@@ -61,7 +61,7 @@ defmodule Persist.Compactor.PrestoIntTest do
     assert :ok == Persist.Compactor.Presto.compact(persist)
 
     assert_async do
-      assert 1 == number_of_s3_files(persist.destination)
+      assert 10 >= number_of_s3_files(persist.destination)
     end
   end
 
