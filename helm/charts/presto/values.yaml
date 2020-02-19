@@ -50,7 +50,7 @@ metastore:
       type: UseG1GC
       g1:
         heapRegionSize: 32M
-  allowDropTable: false
+  allowDropTable: true
   timeout: 1m
   service:
     type: ClusterIP
