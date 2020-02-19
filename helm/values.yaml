@@ -53,8 +53,9 @@ image:
 global:
   objectStore:
     bucketName: hindsight-object-storage
-    accessKey: accessKey
-    accessSecret: accessSecret
+    region: us-east-1
+    accessKey: false
+    accessSecret: false
 
 imagePullSecrets: []
 nameOverride: ""

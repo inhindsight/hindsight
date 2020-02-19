@@ -41,6 +41,8 @@ kafka_endpoints =
   |> Enum.map(fn entry -> String.split(entry, ":") end)
   |> Enum.map(fn [host, port] -> {String.to_atom(host), String.to_integer(port)} end)
 
+bucket_region = System.get_env("BUCKET_REGION", "local")
+
 # SERVICE_RECEIVE
 config :service_receive, Receive.Application,
   kafka_endpoints: kafka_endpoints,
@@ -164,6 +166,11 @@ config :service_broadcast, Broadcast.Stream.Broadway,
   ]
 
 # SERVICE PERSIST
+config :ex_aws,
+  region: bucket_region
+
+config :ex_aws, :s3, region: bucket_region
+
 config :service_persist, Persist.Application,
   kafka_endpoints: kafka_endpoints,
   brook: [
