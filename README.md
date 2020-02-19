@@ -20,3 +20,15 @@ Once Strimzi's CRDs are defined, install Hindsight with:
 ```bash
 helm install [NAME] ./helm [opts]
 ```
+
+### AWS
+
+To deploy to AWS, we suggest you start with:
+
+```bash
+helm upgrade --install [NAME] \
+     --namespace [NAMESPACE] \
+     --set global.objectStore.bucketName=[BUCKET_NAME] \
+     --set global.objectStore.region=[AWS_REGION] \
+     --set presto.minio.enable=false
+```
