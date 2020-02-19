@@ -41,8 +41,8 @@ kafka_endpoints =
   |> Enum.map(fn entry -> String.split(entry, ":") end)
   |> Enum.map(fn [host, port] -> {String.to_atom(host), String.to_integer(port)} end)
 
-<<<<<<< HEAD
 bucket_region = System.get_env("BUCKET_REGION", "local")
+redix_args = [host: (System.get_env("REDIS_HOST") || "localhost"), password: System.get_env("REDIS_PASSWORD")]
 
 # SERVICE_RECEIVE
 config :service_receive, Receive.Application,

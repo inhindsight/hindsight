@@ -46,6 +46,10 @@ spec:
                 secretKeyRef:
                   name: {{ template "hindsight.fullname" . }}-acquire-key-base
                   key: secret_key_base
+            - name: REDIS_HOST
+              value: {{ .Values.redis.host }}
+            - name: REDIS_PASSWORD
+              value: {{ .Values.redis.password }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
