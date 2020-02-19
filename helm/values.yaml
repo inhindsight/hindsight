@@ -53,6 +53,7 @@ image:
 global:
   objectStore:
     bucketName: hindsight-object-storage
+    region: us-east-1
     accessKey: false
     accessSecret: false
 
