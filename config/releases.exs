@@ -42,7 +42,11 @@ kafka_endpoints =
   |> Enum.map(fn [host, port] -> {String.to_atom(host), String.to_integer(port)} end)
 
 bucket_region = System.get_env("BUCKET_REGION", "local")
-redix_args = [host: (System.get_env("REDIS_HOST") || "localhost"), password: System.get_env("REDIS_PASSWORD")]
+
+redix_args = [
+  host: System.get_env("REDIS_HOST") || "localhost",
+  password: System.get_env("REDIS_PASSWORD")
+]
 
 # SERVICE_RECEIVE
 config :service_receive, Receive.Application,
@@ -72,7 +76,7 @@ config :service_receive, Receive.Writer,
   app_name: "service_receive",
   kafka_endpoints: kafka_endpoints
 
-get_redix_args = fn (host, password) ->
+get_redix_args = fn host, password ->
   [host: host, password: password]
   |> Enum.filter(fn
     {_, nil} -> false
@@ -80,6 +84,7 @@ get_redix_args = fn (host, password) ->
     _ -> true
   end)
 end
+
 redix_args = get_redix_args.(System.get_env("REDIS_HOST"), System.get_env("REDIS_PASSWORD"))
 
 # SERVICE_GATHER
@@ -294,6 +299,7 @@ config :service_acquire, Acquire.Application,
     storage: [
       module: Brook.Storage.Redis,
       init_arg: [redix_args: redix_args, namespace: "service:acquire:view"]
+    ],
     dispatcher: Brook.Dispatcher.Noop
   ]
 

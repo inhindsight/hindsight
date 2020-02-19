@@ -1,21 +1,9 @@
-<<<<<<< HEAD
 defmodule Extract.Steps.MixProject do
-=======
-defmodule Accept.MixProject do
->>>>>>> WIP: adding redis as helm dependency
   use Mix.Project
 
   def project do
     [
-<<<<<<< HEAD
       app: :extractor,
-=======
-<<<<<<< HEAD:apps/definition_accept/mix.exs
-      app: :definition_accept,
-=======
-      app: :extractor,
->>>>>>> WIP: adding redis as helm dependency:apps/extractor/mix.exs
->>>>>>> WIP: adding redis as helm dependency
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -37,14 +25,6 @@ defmodule Accept.MixProject do
 
   defp deps do
     [
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD:apps/definition_accept/mix.exs
-      {:definition, in_umbrella: true},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:checkov, "~> 1.0", only: [:dev, :test]}
-=======
->>>>>>> WIP: adding redis as helm dependency
       {:extract_step, in_umbrella: true},
       {:extract_decode_csv, in_umbrella: true},
       {:extract_decode_gtfs, in_umbrella: true},
@@ -54,10 +34,6 @@ defmodule Accept.MixProject do
       {:ok, in_umbrella: true},
       {:definition, in_umbrella: true},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
-<<<<<<< HEAD
-=======
->>>>>>> WIP: adding redis as helm dependency:apps/extractor/mix.exs
->>>>>>> WIP: adding redis as helm dependency
     ]
   end
 
