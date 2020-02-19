@@ -12,13 +12,13 @@ Hindsight currently uses [Kafka](https://kafka.apache.org/) to decouple services
 
 ```bash
 helm repo add strimzi https://strimzi.io/charts/
-helm install strimzi-kafka-operator strimzi/strimzi-kafka-operator --version 0.16.2 [opts]
+helm install strimzi-kafka-operator strimzi/strimzi-kafka-operator --version 0.16.2 --set watchAnyNamespace=true [opts]
 ```
 
 Once Strimzi's CRDs are defined, install Hindsight with:
 
 ```bash
-helm install [NAME] ./helm [opts]
+helm install [NAME] ./helm --namespace [NAMESPACE] [opts]
 ```
 
 ### AWS
@@ -26,7 +26,7 @@ helm install [NAME] ./helm [opts]
 To deploy to AWS, we suggest you start with:
 
 ```bash
-helm upgrade --install [NAME] \
+helm upgrade --install [NAME] ./helm \
      --namespace [NAMESPACE] \
      --set global.objectStore.bucketName=[BUCKET_NAME] \
      --set global.objectStore.region=[AWS_REGION] \
