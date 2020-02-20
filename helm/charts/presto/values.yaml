@@ -79,7 +79,7 @@ postgres:
   enable: true
   db:
     name: metastore
-    user: hive
+    user: postgres
     password: password123
   service:
     type: ClusterIP
