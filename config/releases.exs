@@ -44,8 +44,8 @@ kafka_endpoints =
 bucket_region = System.get_env("BUCKET_REGION", "local")
 
 redix_args = [
-  host: System.get_env("REDIS_HOST") || "localhost",
-  password: System.get_env("REDIS_PASSWORD")
+  host: System.get_env("REDIS_HOST", "localhost"),
+  password: System.get_env("REDIS_PASSWORD", "redispwd")
 ]
 
 # SERVICE_RECEIVE
@@ -75,17 +75,6 @@ config :service_receive, Receive.Application,
 config :service_receive, Receive.Writer,
   app_name: "service_receive",
   kafka_endpoints: kafka_endpoints
-
-get_redix_args = fn host, password ->
-  [host: host, password: password]
-  |> Enum.filter(fn
-    {_, nil} -> false
-    {_, ""} -> false
-    _ -> true
-  end)
-end
-
-redix_args = get_redix_args.(System.get_env("REDIS_HOST"), System.get_env("REDIS_PASSWORD"))
 
 # SERVICE_GATHER
 config :service_gather, Gather.Application,
