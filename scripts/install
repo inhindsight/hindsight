@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+function usage {
+    echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] [set-kv-pairs]"
+    echo
+    echo "EXAMPLE"
+    echo "    ./scripts/install foo bar abc=123 x.y.z=42"
+    echo
+    exit 0
+}
+
+function strimzi {
+    helm repo add strimzi https://strimzi.io/charts/
+
+    helm upgrade strimzi-kafka-operator strimzi/strimzi-kafka-operator \
+         --install \
+         --version 0.16.2 \
+         --set watchAnyNamespace=true
+
+    kubectl wait pod \
+            --selector name=strimzi-cluster-operator \
+            --for condition=Ready \
+            --timeout=300s
+}
+
+function hindsight {
+    local -r release="${1:?Release name required.}"
+    local -r ns="${2:?Namespace required.}"
+    shift 2
+
+    if [ $# -gt 0 ]; then
+        local -r vals=$(IFS=, ; echo "$*")
+        local -r set_values="--set $vals"
+    fi
+
+    helm upgrade ${release} ./helm \
+         --install \
+         --namespace ${ns} \
+         ${set_values}
+}
+
+[[ "$1" == "-h" || "$1" == "--help" ]] && usage
+
+strimzi
+hindsight "${@}"

@@ -10,15 +10,10 @@ Hindsight requires you to use [Helm](https://helm.sh) v3. Our [.tool-versions](.
 
 Hindsight currently uses [Kafka](https://kafka.apache.org/) to decouple services, and we suggest using [Strimzi](https://github.com/strimzi/strimzi-kafka-operator) to deploy Kafka to Kubernetes. The helm chart assumes you'll use Strimzi but does not install it. You must do that yourself or toggle Strimzi off via helm values (`--set strimzi.enabled=false`).
 
-```bash
-helm repo add strimzi https://strimzi.io/charts/
-helm install strimzi-kafka-operator strimzi/strimzi-kafka-operator --version 0.16.2 [opts]
-```
-
-Once Strimzi's CRDs are defined, install Hindsight with:
+Our [install](./scripts/install) script will install Strimzi, wait for a `Ready` state, then deploy Hindsight.
 
 ```bash
-helm install [NAME] ./helm [opts]
+./scripts/install [RELEASE_NAME] [NAMESPACE] [values]
 ```
 
 ### AWS
@@ -26,9 +21,11 @@ helm install [NAME] ./helm [opts]
 To deploy to AWS, we suggest you start with:
 
 ```bash
-helm upgrade --install [NAME] \
-     --namespace [NAMESPACE] \
-     --set global.objectStore.bucketName=[BUCKET_NAME] \
-     --set global.objectStore.region=[AWS_REGION] \
-     --set presto.minio.enable=false
+./scripts/install [RELEASE_NAME] [NAMESPACE] \
+                  global.objectStore.bucketName=[BUCKET_NAME] \
+                  global.objectStore.region=[AWS_REGION] \
+                  presto.minio.enable=false \
+                  presto.postgres.enable=false \
+                  presto.postgres.service.externalAddress=[RDS_URL] \
+                  presto.postgres.db.password=[DB_PASSWORD]
 ```
