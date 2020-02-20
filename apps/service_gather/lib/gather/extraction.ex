@@ -31,6 +31,8 @@ defmodule Gather.Extraction do
 
     case extract(extract) do
       :ok ->
+        Logger.debug("#{__MODULE__}: Extraction Completed: #{inspect(extract)}")
+        Brook.Event.send(Gather.Application.instance(), "extract:end", "gather", extract)
         {:stop, :normal, state}
 
       {:error, reason} ->
