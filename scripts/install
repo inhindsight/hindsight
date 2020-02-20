@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eo pipefail
+
 function usage {
     echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] [set-kv-pairs]"
     echo
