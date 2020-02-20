@@ -81,3 +81,9 @@ resources: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+redis:
+  host: redis.example.com
+  password: "changeme123"
+  usePassword: true
+  

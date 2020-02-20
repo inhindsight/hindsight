@@ -33,3 +33,13 @@ services:
       interval: 10s
       timeout: 30s
       retries: 10
+  redis:
+    image: redis:latest
+    command: redis-server --requirepass redispwd
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 5s
+      timeout: 10s
+      retries: 3

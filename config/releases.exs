@@ -43,6 +43,11 @@ kafka_endpoints =
 
 bucket_region = System.get_env("BUCKET_REGION", "local")
 
+redix_args = [
+  host: System.get_env("REDIS_HOST", "localhost"),
+  password: System.get_env("REDIS_PASSWORD", "redispwd")
+]
+
 # SERVICE_RECEIVE
 config :service_receive, Receive.Application,
   kafka_endpoints: kafka_endpoints,
@@ -89,8 +94,8 @@ config :service_gather, Gather.Application,
     ],
     handlers: [Gather.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: redix_args, namespace: "service:gather:view"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -126,8 +131,8 @@ config :service_broadcast, Broadcast.Application,
     ],
     handlers: [Broadcast.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: redix_args, namespace: "service:broadcast:view"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -188,8 +193,8 @@ config :service_persist, Persist.Application,
     ],
     handlers: [Persist.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: redix_args, namespace: "service:persist:view"]
     ],
     dispatcher: Brook.Dispatcher.Noop,
     event_processing_timeout: 20_000
@@ -251,8 +256,8 @@ config :service_orchestrate, Orchestrate.Application,
     ],
     handlers: [Orchestrate.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: redix_args, namespace: "service:orchestrate:view"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -281,10 +286,12 @@ config :service_acquire, Acquire.Application,
     ],
     handlers: [Acquire.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: redix_args, namespace: "service:acquire:view"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
 
 config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")
+
+config :redix, :args, redix_args

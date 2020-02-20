@@ -7,3 +7,7 @@ appVersion: 0.0.2
 home: https://github.com/inhindsight
 sources:
   - https://github.com/inhindsight/hindsight
+dependencies:
+  - name: redis
+    version: 10.5.3
+    repository:  https://kubernetes-charts.storage.googleapis.com

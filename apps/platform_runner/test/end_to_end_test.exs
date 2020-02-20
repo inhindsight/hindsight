@@ -85,7 +85,7 @@ defmodule PlatformRunner.EndToEndTest do
                |> Enum.map(&Map.values(&1))
     end
 
-    assert_receive %{"single_letter" => "a", "number" => "1"}, 45_000
+    assert_receive %{"single_letter" => "a", "number" => "1"}, 60_000
     assert_receive %{"single_letter" => "b", "number" => "2"}, 1_000
     assert_receive %{"single_letter" => "c", "number" => "3"}, 1_000
 
@@ -102,11 +102,20 @@ defmodule PlatformRunner.EndToEndTest do
     assert_async sleep: 1_000, max_tries: 30, debug: true do
       with {:ok, result} <-
              Prestige.query(session, "select * from e2e__csv order by single_letter") do
-        assert Prestige.Result.as_maps(result) == [
-                 %{"single_letter" => "a", "number" => "1"},
-                 %{"single_letter" => "b", "number" => "2"},
-                 %{"single_letter" => "c", "number" => "3"}
-               ]
+        assert Enum.member?(Prestige.Result.as_maps(result), %{
+                 "single_letter" => "a",
+                 "number" => "1"
+               })
+
+        assert Enum.member?(Prestige.Result.as_maps(result), %{
+                 "single_letter" => "b",
+                 "number" => "2"
+               })
+
+        assert Enum.member?(Prestige.Result.as_maps(result), %{
+                 "single_letter" => "c",
+                 "number" => "3"
+               })
       else
         {:error, reason} -> flunk(inspect(reason))
       end
@@ -114,7 +123,7 @@ defmodule PlatformRunner.EndToEndTest do
 
     expected = %{"single_letter" => "b"}
 
-    assert {:ok, [^expected]} =
+    assert {:ok, [^expected | _]} =
              AcquireClient.data("/e2e-csv-ds/csv-subset?fields=single_letter&filter=number=2")
 
     assert {:ok, [_, _]} = AcquireClient.data("/e2e-csv-ds/csv-subset?limit=2")
