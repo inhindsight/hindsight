@@ -47,6 +47,7 @@ strimzi:
         memory: 512Mi
 redis:
   enabled: true
+  usePassword: false
   cluster:
     enabled: false
   externalAddress: ""
