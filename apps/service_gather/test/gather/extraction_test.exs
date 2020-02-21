@@ -1,11 +1,16 @@
 defmodule Gather.ExtractionTest do
   use Gather.Case
+  use Placebo
   import Mox
+  import AssertAsync
   require Temp.Env
 
   alias Gather.Extraction
+  alias Extract.Http.File.Downloader
+  alias Extract.Http.File.Downloader.Response
 
   @moduletag capture_log: true
+  @download_file "./test.csv"
 
   alias Writer.DLQ.DeadLetter
 
@@ -29,6 +34,7 @@ defmodule Gather.ExtractionTest do
 
     on_exit(fn ->
       Gather.Extraction.Supervisor.kill_all_children()
+      File.rm(@download_file)
     end)
 
     :ok
@@ -173,5 +179,44 @@ defmodule Gather.ExtractionTest do
     ref = Process.monitor(pid)
     Process.exit(pid, :kill)
     assert_receive {:DOWN, ^ref, _, _, _}
+  end
+
+  test "cleans up downloaded file after extract complete" do
+    Gather.WriterMock
+    |> expect(:start_link, 1, fn _ -> Agent.start_link(fn -> :dummy end) end)
+
+    request_url = "http://example/download/path"
+
+    allow(Downloader.download(request_url, to: @download_file, headers: []),
+      return: write_temp_file(@download_file)
+    )
+
+    allow(Temp.path(any()), return: {:ok, @download_file})
+
+    extract =
+      Extract.new!(
+        id: "extract-1",
+        dataset_id: "ds1",
+        subset_id: "happy-path",
+        destination: "topic1",
+        steps: [
+          Extract.Http.Get.new!(url: request_url),
+          Extract.Decode.Json.new!([])
+        ],
+        dictionary: [
+          Dictionary.Type.Integer.new!(name: "one")
+        ]
+      )
+
+    {:ok, _} = Extraction.start_link(extract: extract)
+
+    assert_async sleep: 1000 do
+      assert !File.exists?(@download_file)
+    end
+  end
+
+  defp write_temp_file(file_name) do
+    File.write(file_name, "")
+    {:ok, %Response{destination: file_name}}
   end
 end
