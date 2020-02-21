@@ -1,4 +1,5 @@
 defmodule Gather.Extraction do
+  import Events
   use GenServer, restart: :transient
   require Logger
   use Properties, otp_app: :service_gather
@@ -31,6 +32,8 @@ defmodule Gather.Extraction do
 
     case extract(extract) do
       :ok ->
+        Logger.debug("#{__MODULE__}: Extraction Completed: #{inspect(extract)}")
+        Brook.Event.send(Gather.Application.instance(), extract_end(), "gather", extract)
         {:stop, :normal, state}
 
       {:error, reason} ->

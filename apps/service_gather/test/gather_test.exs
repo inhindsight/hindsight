@@ -104,4 +104,28 @@ defmodule GatherTest do
       assert nil == Extraction.Store.get!(extract.dataset_id, extract.subset_id)
     end
   end
+
+  test "sends extract_end on extract completion" do
+    test = self()
+    {:ok, dummy_process} = Agent.start_link(fn -> :dummy_process end)
+
+    extract =
+      Extract.new!(
+        id: "extract-45",
+        dataset_id: "ds45",
+        subset_id: "get_some_data",
+        destination: "topic1",
+        steps: []
+      )
+
+    Gather.WriterMock
+    |> expect(:start_link, fn args ->
+      send(test, {:start_link, args})
+      {:ok, dummy_process}
+    end)
+
+    Brook.Test.send(@instance, extract_start(), "testing", extract)
+
+    assert_receive {:brook_event, %{type: extract_end(), data: ^extract}}, 5_000
+  end
 end
