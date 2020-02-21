@@ -43,4 +43,16 @@ defmodule Persist.InitTest do
 
     assert_called Persist.Compact.Supervisor.start_child(load)
   end
+
+  test "ignores load events marked done", %{load: load} do
+    allow Persist.Compact.Supervisor.start_child(any()), return: {:ok, :pid}
+
+    Brook.Test.with_event(@instance, fn ->
+      Persist.Load.Store.mark_done(load)
+    end)
+
+    assert {:ok, :state} = Persist.Init.on_start(:state)
+
+    refute_called Persist.Compact.Supervisor.start_child(load)
+  end
 end
