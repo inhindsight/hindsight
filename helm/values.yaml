@@ -51,7 +51,7 @@ redis:
   password: 9b265149b78dd210cdfdfc209ab3
   cluster:
     enabled: false
-  externalAddress: false
+  externalAddress: ""
 
 image:
   repository: inhindsight/hindsight

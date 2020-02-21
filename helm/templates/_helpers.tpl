@@ -47,11 +47,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{- define "redis.host" -}}
-{{- if .Values.redis.enabled -}}
 {{ printf "%s-%s" .Release.Name "redis-master" | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{ .Values.redis.externalAddress -}}
-{{- end -}}
 {{- end -}}
 
 {{/*
