@@ -35,6 +35,9 @@ function hindsight {
         local -r set_values="--set $vals"
     fi
 
+    helm repo add google https://kubernetes-charts.storage.googleapis.com
+    (cd ./helm; helm dependency build)
+
     helm upgrade ${release} ./helm \
          --install \
          --namespace ${ns} \

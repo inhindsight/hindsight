@@ -3,7 +3,7 @@ name: hindsight
 description: A data ingestion engine
 type: application
 version: 0.1.0
-appVersion: 0.0.2
+appVersion: 0.0.3
 home: https://github.com/inhindsight
 sources:
   - https://github.com/inhindsight/hindsight
@@ -11,3 +11,4 @@ dependencies:
   - name: redis
     version: 10.5.3
     repository:  https://kubernetes-charts.storage.googleapis.com
+    condition: redis.enabled
