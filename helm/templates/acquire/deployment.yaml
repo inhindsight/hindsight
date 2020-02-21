@@ -48,8 +48,6 @@ spec:
                   key: secret_key_base
             - name: REDIS_HOST
               value: {{ template "redis.host" . }}
-            - name: REDIS_PASSWORD
-              value: {{ .Values.redis.password }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

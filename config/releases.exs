@@ -43,10 +43,8 @@ kafka_endpoints =
 
 bucket_region = System.get_env("BUCKET_REGION", "local")
 
-redix_args = [
-  host: System.get_env("REDIS_HOST", "localhost"),
-  password: System.get_env("REDIS_PASSWORD", "redispwd")
-]
+redix_args = [host: System.get_env("REDIS_HOST", "localhost")]
+config :redix, :args, redix_args
 
 # SERVICE_RECEIVE
 config :service_receive, Receive.Application,
@@ -293,5 +291,3 @@ config :service_acquire, Acquire.Application,
   ]
 
 config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")
-
-config :redix, :args, redix_args

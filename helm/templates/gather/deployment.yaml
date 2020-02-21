@@ -37,8 +37,6 @@ spec:
               value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092
             - name: REDIS_HOST
               value: {{ template "redis.host" . }}
-            - name: REDIS_PASSWORD
-              value: {{ .Values.redis.password }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
