@@ -45,6 +45,13 @@ strimzi:
       limits:
         cpu: 100m
         memory: 512Mi
+redis:
+  enabled: true
+  usePassword: true
+  password: 9b265149b78dd210cdfdfc209ab3
+  cluster:
+    enabled: false
+  externalAddress: false
 
 image:
   repository: inhindsight/hindsight
@@ -81,9 +88,3 @@ resources: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
-
-redis:
-  host: redis.example.com
-  password: "changeme123"
-  usePassword: true
-  
