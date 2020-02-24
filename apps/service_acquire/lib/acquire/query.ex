@@ -24,7 +24,7 @@ defmodule Acquire.Query do
 
       ["SELECT", fields, "FROM", query.table, where, limit]
       |> Enum.filter(& &1)
-      |> Enum.join(" ")
+      |> Enum.join(" ") |> IO.inspect(label: "Action.Queryable query")
     end
 
     def parse_input(%Acquire.Query{where: nil}), do: []
