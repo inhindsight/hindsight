@@ -107,7 +107,14 @@ defmodule Avro.TranslatorTest do
             dictionary: [
               Dictionary.Type.String.new!(name: "name"),
               Dictionary.Type.Integer.new!(name: "age"),
-              Dictionary.Type.Date.new!(name: "birthdate", format: "%Y")
+              Dictionary.Type.Date.new!(name: "birthdate", format: "%Y"),
+              Dictionary.Type.Map.new!(
+                name: "position",
+                dictionary: [
+                  Dictionary.Type.Integer.new!(name: "x"),
+                  Dictionary.Type.Integer.new!(name: "y")
+                ]
+              )
             ]
           )
       )
@@ -120,8 +127,18 @@ defmodule Avro.TranslatorTest do
 
     {:ok, input} =
       Avro.Translator.value(type, [
-        %{"name" => "bob", "age" => 21, "birthdate" => "1956-12-01"},
-        %{"name" => "fred", "age" => 22, "birthdate" => "1975-01-01"}
+        %{
+          "name" => "bob",
+          "age" => 21,
+          "birthdate" => "1956-12-01",
+          "position" => %{"x" => 3, "y" => 4}
+        },
+        %{
+          "name" => "fred",
+          "age" => 22,
+          "birthdate" => "1975-01-01",
+          "position" => %{"x" => 1, "y" => 2}
+        }
       ])
 
     result =
@@ -130,8 +147,16 @@ defmodule Avro.TranslatorTest do
       |> decoder.()
       |> Map.new()
       |> Map.get("friends")
-      |> Enum.map(&Map.new/1)
+      |> Enum.map(&nested_map/1)
 
     assert result == input
+  end
+
+  defp nested_map(list) do
+    Enum.map(list, fn
+      {"position", vals} -> {"position", Enum.into(vals, %{})}
+      kv -> kv
+    end)
+    |> Map.new()
   end
 end

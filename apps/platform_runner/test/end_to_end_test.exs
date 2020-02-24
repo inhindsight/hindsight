@@ -133,7 +133,8 @@ defmodule PlatformRunner.EndToEndTest do
     test "gathered" do
       bp = Bypass.open()
 
-      data = ~s|{"name":"LeBron","number":23,"teammates":[{"name":"Kyrie"},{"name":"Kevin"}]}|
+      data =
+        ~s|{"name":{"first":"LeBron","last":"James"},"number":23,"teammates":[{"name":"Kyrie"},{"name":"Kevin"}]}|
 
       Bypass.expect(bp, "GET", "/json", fn conn ->
         Plug.Conn.resp(conn, 200, data)
@@ -151,7 +152,13 @@ defmodule PlatformRunner.EndToEndTest do
             Extract.Decode.Json.new!([])
           ],
           dictionary: [
-            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Map.new!(
+              name: "name",
+              dictionary: [
+                Dictionary.Type.String.new!(name: "first"),
+                Dictionary.Type.String.new!(name: "last")
+              ]
+            ),
             Dictionary.Type.Integer.new!(name: "number"),
             Dictionary.Type.List.new!(
               name: "teammates",
@@ -175,7 +182,13 @@ defmodule PlatformRunner.EndToEndTest do
           dataset_id: "e2e-json-ds",
           subset_id: "json-subset",
           dictionary: [
-            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Map.new!(
+              name: "name",
+              dictionary: [
+                Dictionary.Type.String.new!(name: "first"),
+                Dictionary.Type.String.new!(name: "last")
+              ]
+            ),
             Dictionary.Type.Integer.new!(name: "number"),
             Dictionary.Type.List.new!(
               name: "teammates",
@@ -250,7 +263,10 @@ defmodule PlatformRunner.EndToEndTest do
         with {:ok, result} <- Prestige.query(session, "select * from e2e__json") do
           assert Prestige.Result.as_maps(result) == [
                    %{
-                     "name" => "LeBron",
+                     "name" => %{
+                       "first" => "LeBron",
+                       "last" => "James"
+                     },
                      "number" => 23,
                      "teammates" => [
                        %{"name" => "Kyrie"},
@@ -266,7 +282,10 @@ defmodule PlatformRunner.EndToEndTest do
 
     test "acquired" do
       expected = %{
-        "name" => "LeBron",
+        "name" => %{
+          "first" => "LeBron",
+          "last" => "James"
+        },
         "number" => 23,
         "teammates" => [
           %{"name" => "Kyrie"},
