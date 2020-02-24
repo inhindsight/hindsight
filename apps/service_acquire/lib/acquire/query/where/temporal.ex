@@ -37,7 +37,7 @@ defmodule Acquire.Query.Where.Temporal do
 
     field(field)
     |> date_diff(parsed_timestamp)
-    |> gt(literal(0))
+    |> lt(literal(0))
   end
 
   defp before_clause(_, ""), do: nil
@@ -50,7 +50,7 @@ defmodule Acquire.Query.Where.Temporal do
 
     field(field)
     |> date_diff(parsed_timestamp)
-    |> lt(literal(0))
+    |> gt(literal(0))
   end
 
   defp and_clause([item]), do: item
