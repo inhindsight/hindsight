@@ -17,7 +17,7 @@ defmodule Broadcast.Stream do
     cache_name = Broadcast.Cache.Registry.via(load.destination)
 
     children = [
-      {Broadcast.Cache, name: cache_name},
+      {Broadcast.Cache, name: cache_name, load: load},
       {Broadcast.Stream.Broadway, load: load}
     ]
 

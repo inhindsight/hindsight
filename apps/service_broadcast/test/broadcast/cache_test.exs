@@ -4,12 +4,18 @@ defmodule Broadcast.CacheTest do
 
   alias Broadcast.Cache
 
-  Temp.Env.modify([
-    %{app: :service_broadcast, key: Broadcast.Cache, set: [cache_size: 10]}
-  ])
-
   setup do
-    {:ok, pid} = Broadcast.Cache.start_link([])
+    load =
+      Load.Broadcast.new!(
+        id: "broadcast-1",
+        dataset_id: "ds1",
+        subset_id: "sb1",
+        source: "topic-1",
+        destination: "channel-1",
+        cache: 10
+      )
+
+    {:ok, pid} = start_supervised({Broadcast.Cache, load: load})
 
     [pid: pid]
   end

@@ -62,7 +62,11 @@ defmodule Broadcast.Stream.Broadway do
 
   def handle_batch(_batcher, messages, _batch_info, context) do
     data = Enum.map(messages, &Map.get(&1, :data)) |> Enum.map(&Map.get(&1, :value))
-    Broadcast.Cache.add(context.cache, data)
+
+    unless context.load.cache == 0 do
+      Broadcast.Cache.add(context.cache, data)
+    end
+
     messages
   end
 
