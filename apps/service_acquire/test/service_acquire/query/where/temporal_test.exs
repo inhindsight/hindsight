@@ -33,7 +33,7 @@ defmodule Acquire.Query.Where.TemporalTest do
       result = Temporal.to_queryable("ds1", "sb1", "2020-01-01T00:00:00", "")
 
       assert Queryable.parse_statement(result) ==
-               "date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0"
+               "date_diff('millisecond', date_parse(?, '%Y-%m-%dT%H:%i:%S'), __timestamp__) > 0"
 
       assert Queryable.parse_input(result) == ["2020-01-01T00:00:00"]
     end
@@ -42,7 +42,7 @@ defmodule Acquire.Query.Where.TemporalTest do
       result = Temporal.to_queryable("ds1", "sb1", "", "2020-01-01T00:00:00")
 
       assert Queryable.parse_statement(result) ==
-               "date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0"
+               "date_diff('millisecond', date_parse(?, '%Y-%m-%dT%H:%i:%S'), __timestamp__) < 0"
 
       assert Queryable.parse_input(result) == ["2020-01-01T00:00:00"]
     end
@@ -51,7 +51,7 @@ defmodule Acquire.Query.Where.TemporalTest do
       result = Temporal.to_queryable("ds1", "sb1", "2018-01-01T00:00:00", "2020-01-01T00:00:00")
 
       assert Queryable.parse_statement(result) ==
-               "(date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0 AND date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0)"
+               "(date_diff('millisecond', date_parse(?, '%Y-%m-%dT%H:%i:%S'), __timestamp__) > 0 AND date_diff('millisecond', date_parse(?, '%Y-%m-%dT%H:%i:%S'), __timestamp__) < 0)"
 
       assert Queryable.parse_input(result) == ["2018-01-01T00:00:00", "2020-01-01T00:00:00"]
     end
@@ -89,7 +89,7 @@ defmodule Acquire.Query.Where.TemporalTest do
       result = Temporal.to_queryable("ds1", "sb1", "2018-01-01T00:00:00", "2020-01-01T00:00:00")
 
       assert Queryable.parse_statement(result) ==
-               "((date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0 AND date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0) OR (date_diff('millisecond', map.__timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0 AND date_diff('millisecond', map.__timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0))"
+               "((date_diff('millisecond', date_parse(?, '%Y-%m-%dT%H:%i:%S'), __timestamp__) > 0 AND date_diff('millisecond', date_parse(?, '%Y-%m-%dT%H:%i:%S'), __timestamp__) < 0) OR (date_diff('millisecond', date_parse(?, '%Y-%m-%dT%H:%i:%S'), map.__timestamp__) > 0 AND date_diff('millisecond', date_parse(?, '%Y-%m-%dT%H:%i:%S'), map.__timestamp__) < 0))"
 
       assert Queryable.parse_input(result) == [
                "2018-01-01T00:00:00",
