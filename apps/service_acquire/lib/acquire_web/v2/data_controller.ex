@@ -6,7 +6,6 @@ defmodule AcquireWeb.V2.DataController do
 
   def select(conn, params) do
     {:ok, query} = Acquire.Query.from_params(params)
-    IO.inspect(query, label: "in datacontroller.ex/select")
 
     statement = Acquire.Queryable.parse_statement(query)
     input = Acquire.Queryable.parse_input(query)
