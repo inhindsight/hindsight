@@ -20,8 +20,12 @@ defmodule Extract.Decode.Csv do
     def execute(step, context) do
       source = fn opts ->
         get_stream(context, opts)
-        |> Stream.map(fn message ->
-          Extract.Message.update_data(message, &parse(&1, step))
+        |> Stream.transform(%{skip: step.skip_first_line}, fn
+          message, %{skip: false} = acc ->
+            {[Extract.Message.update_data(message, &parse(&1, step.headers))], acc}
+
+          _message, %{skip: true} = acc ->
+            {[], %{acc | skip: false}}
         end)
       end
 
@@ -30,10 +34,10 @@ defmodule Extract.Decode.Csv do
       |> Ok.ok()
     end
 
-    defp parse(data, step) do
-      Extract.Decode.Csv.Parser.parse_string(data, skip_headers: step.skip_first_line)
+    defp parse(data, headers) do
+      Extract.Decode.Csv.Parser.parse_string(data, skip_headers: false)
       |> List.flatten()
-      |> zip(step.headers)
+      |> zip(headers)
       |> Map.new()
     end
 
