@@ -94,7 +94,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
   end
 
   describe "query/2" do
-    test "retrieves data", %{conn: conn} do
+    setup do
       Brook.Test.with_event(@instance, fn ->
         Acquire.Dictionaries.persist(
           Transform.new!(
@@ -119,7 +119,9 @@ defmodule AcquireWeb.V2.DataControllerTest do
           )
         )
       end)
+    end
 
+    test "retrieves data", %{conn: conn} do
       data = [%{"a" => 42}]
       query = "SELECT * FROM table_destination"
       Mox.expect(Acquire.Db.Mock, :execute, fn ^query, [] -> {:ok, data} end)
@@ -136,31 +138,6 @@ defmodule AcquireWeb.V2.DataControllerTest do
     end
 
     test "fails on invalid query", %{conn: conn} do
-      Brook.Test.with_event(@instance, fn ->
-        Acquire.Dictionaries.persist(
-          Transform.new!(
-            id: "transform-1",
-            dataset_id: "dataset_id_1",
-            subset_id: "subset_id_1",
-            dictionary: [
-              Dictionary.Type.Wkt.Point.new!(name: "__wkt__"),
-              Dictionary.Type.Timestamp.new!(name: "__timestamp__", format: "__format__")
-            ],
-            steps: []
-          )
-        )
-
-        Acquire.Dictionaries.persist(
-          Load.Persist.new!(
-            id: "persist-1",
-            dataset_id: "dataset_id_1",
-            subset_id: "subset_id_1",
-            source: "topic-a",
-            destination: "table_destination"
-          )
-        )
-      end)
-
       data = ["Bad request"]
       query = "SULAKT * FROM table_destination"
       Mox.expect(Acquire.Db.Mock, :execute, fn ^query, [] -> {:error, data} end)
