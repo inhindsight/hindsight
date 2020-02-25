@@ -66,17 +66,17 @@ defmodule AcquireWeb.V2.DataControllerTest do
         ],
         [
           "/api/v2/data/a/b?after=2020-01-01T00:00:00",
-          "SELECT * FROM table_destination WHERE date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0",
-          ["2020-01-01T00:00:00"]
-        ],
-        [
-          "/api/v2/data/a/b?before=2020-01-01T00:00:00",
           "SELECT * FROM table_destination WHERE date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0",
           ["2020-01-01T00:00:00"]
         ],
         [
+          "/api/v2/data/a/b?before=2020-01-01T00:00:00",
+          "SELECT * FROM table_destination WHERE date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0",
+          ["2020-01-01T00:00:00"]
+        ],
+        [
           "/api/v2/data/a/b?after=2020-01-01T00:00:00&before=2022-01-01T00:00:00",
-          "SELECT * FROM table_destination WHERE (date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0 AND date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0)",
+          "SELECT * FROM table_destination WHERE (date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0 AND date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0)",
           ["2020-01-01T00:00:00", "2022-01-01T00:00:00"]
         ],
         [
