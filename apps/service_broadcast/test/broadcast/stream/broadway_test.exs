@@ -47,7 +47,7 @@ defmodule Broadcast.Stream.BroadwayTest do
       socket(BroadcastWeb.UserSocket, %{}, %{})
       |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:channel-1", %{})
 
-    {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
+    {:ok, pid} = start_supervised({Broadcast.Stream.Broadway, load: load})
 
     value = %{"one" => 1} |> Jason.encode!()
     message = %{topic: "topic-1", value: value}
@@ -56,12 +56,18 @@ defmodule Broadcast.Stream.BroadwayTest do
     assert_push "update", %{"one" => 1}, 2_000
     assert_receive {:ack, ^msg_ref, [message] = _successful, _failed}, 1_000
 
-    assert_down(pid)
     leave(socket)
   end
 
   test "transforms message before sending it to channel" do
-    cache = start_cache("channel-2")
+    load =
+      Load.Broadcast.new!(
+        id: "load-1",
+        dataset_id: "ds1",
+        subset_id: "fake-ds",
+        source: "topic-1",
+        destination: "channel-2"
+      )
 
     transform =
       Transform.new!(
@@ -81,20 +87,11 @@ defmodule Broadcast.Stream.BroadwayTest do
       Broadcast.Transformations.persist(transform)
     end)
 
-    load =
-      Load.Broadcast.new!(
-        id: "load-1",
-        dataset_id: "ds1",
-        subset_id: "fake-ds",
-        source: "topic-1",
-        destination: "channel-2"
-      )
-
     {:ok, _, socket} =
       socket(BroadcastWeb.UserSocket, %{}, %{})
       |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:channel-2", %{})
 
-    {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
+    {:ok, pid} = start_supervised({Broadcast.Stream.Broadway, load: load})
 
     value = %{"name" => "Johnny Appleseed", "age" => 110} |> Jason.encode!()
     message = %{topic: "topic-1", value: value}
@@ -103,9 +100,35 @@ defmodule Broadcast.Stream.BroadwayTest do
     assert_push "update", %{"fullname" => "Johnny Appleseed", "age" => 110}, 2_000
     assert_receive {:ack, ^msg_ref, [message] = _successful, _failed}, 1_000
 
-    assert [%{"fullname" => "Johnny Appleseed", "age" => 110}] == Broadcast.Cache.get(cache)
+    leave(socket)
+  end
 
-    assert_down(pid)
+  test "caches messages" do
+    load =
+      Load.Broadcast.new!(
+        id: "load-1",
+        dataset_id: "ds1",
+        subset_id: "fake-ds",
+        source: "topic-1",
+        destination: "channel-1",
+        cache: 200
+      )
+
+    cache = start_cache("channel-1", load)
+
+    {:ok, _, socket} =
+      socket(BroadcastWeb.UserSocket, %{}, %{})
+      |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:channel-1", %{})
+
+    {:ok, pid} = start_supervised({Broadcast.Stream.Broadway, load: load})
+
+    value = %{"one" => 1} |> Jason.encode!()
+    message = %{topic: "topic-1", value: value}
+    msg_ref = Broadway.test_messages(pid, [message])
+
+    assert_receive {:ack, ^msg_ref, [message] = _successful, _failed}, 1_000
+    assert [%{"one" => 1}] == Broadcast.Cache.get(cache)
+
     leave(socket)
   end
 
@@ -119,7 +142,7 @@ defmodule Broadcast.Stream.BroadwayTest do
         destination: "channel-2"
       )
 
-    {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
+    {:ok, pid} = start_supervised({Broadcast.Stream.Broadway, load: load})
 
     value = "{\"one\""
     message = %{topic: "topic-2", value: value}
@@ -137,8 +160,6 @@ defmodule Broadcast.Stream.BroadwayTest do
 
     assert_receive {:dlq, [^expected_dead_letter]}
     assert_receive {:ack, ^msg_ref, _successful, [message] = _failed}
-
-    assert_down(pid)
   end
 
   test "registers itself under under source" do
@@ -151,10 +172,8 @@ defmodule Broadcast.Stream.BroadwayTest do
         destination: "channel-3"
       )
 
-    {:ok, pid} = Broadcast.Stream.Broadway.start_link(load: load)
+    {:ok, pid} = start_supervised({Broadcast.Stream.Broadway, load: load})
     assert pid == Broadcast.Stream.Registry.whereis(:"topic-3")
-
-    assert_down(pid)
   end
 
   test "start-link returns error tuple if unable to create transformer" do
@@ -188,16 +207,9 @@ defmodule Broadcast.Stream.BroadwayTest do
     assert {:error, "failed"} == Broadcast.Stream.Broadway.start_link(load: load)
   end
 
-  defp assert_down(pid) do
-    ref = Process.monitor(pid)
-    Process.exit(pid, :normal)
-    assert_receive {:DOWN, ^ref, _, _, _}
-  end
-
-  defp start_cache(destination) do
+  defp start_cache(destination, load) do
     name = Broadcast.Cache.Registry.via(destination)
-    {:ok, pid} = Broadcast.Cache.start_link(name: name)
-    on_exit(fn -> assert_down(pid) end)
+    start_supervised!({Broadcast.Cache, name: name, load: load})
     name
   end
 end

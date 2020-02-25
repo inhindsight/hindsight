@@ -2,7 +2,6 @@ defmodule Broadcast.Cache do
   use GenServer
   use Properties, otp_app: :service_broadcast
 
-  getter(:cache_size, default: 200)
   getter(:cache_reclaim, default: 0.5)
 
   @spec add(GenServer.server(), list) :: :ok
@@ -16,17 +15,18 @@ defmodule Broadcast.Cache do
   end
 
   def start_link(init_arg) do
-    name = Keyword.get(init_arg, :name, nil)
-    GenServer.start_link(__MODULE__, init_arg, name: name)
+    server_opts = Keyword.take(init_arg, [:name])
+    GenServer.start_link(__MODULE__, init_arg, server_opts)
   end
 
-  def init(_init_arg) do
+  def init(init_arg) do
     Process.flag(:trap_exit, true)
+    broadcast = Keyword.fetch!(init_arg, :load)
 
     state = %{
       list: [],
-      max: cache_size(),
-      min: Float.ceil(cache_reclaim() * cache_size()) |> trunc(),
+      max: broadcast.cache,
+      min: Float.ceil(cache_reclaim() * broadcast.cache) |> trunc(),
       reclaim: cache_reclaim()
     }
 

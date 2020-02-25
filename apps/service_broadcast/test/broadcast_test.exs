@@ -9,19 +9,20 @@ defmodule BroadcastTest do
   setup do
     Brook.Test.clear_view_state(@instance, "transformations")
 
-    :ok
-  end
-
-  test "sending #{load_broadcast_start()} will stream data to channel" do
     load =
       Load.Broadcast.new!(
         id: "load-1",
         dataset_id: "ds1",
         subset_id: "intersections",
         source: "topic-intersections",
-        destination: "ds1_intersections"
+        destination: "ds1_intersections",
+        cache: 200
       )
 
+    [load: load]
+  end
+
+  test "sending #{load_broadcast_start()} will stream data to channel", %{load: load} do
     {:ok, _, socket} =
       socket(BroadcastWeb.UserSocket, %{}, %{})
       |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:ds1_intersections", %{})
@@ -52,9 +53,9 @@ defmodule BroadcastTest do
     leave(socket)
   end
 
-  test "joining a channel will send all the cached data" do
+  test "joining a channel will send all the cached data", %{load: load} do
     cache = Broadcast.Cache.Registry.via("cache_join")
-    {:ok, pid} = Broadcast.Cache.start_link(name: cache)
+    {:ok, pid} = Broadcast.Cache.start_link(name: cache, load: load)
 
     Broadcast.Cache.add(pid, [%{"one" => 1}, %{"two" => 2}])
 

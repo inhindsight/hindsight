@@ -19,7 +19,9 @@ defmodule Load.BroadcastTest do
         [:source, nil],
         [:source, ""],
         [:destination, nil],
-        [:destination, ""]
+        [:destination, ""],
+        [:cache, "one"],
+        [:cache, nil]
       ]
     end
   end

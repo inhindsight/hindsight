@@ -9,7 +9,8 @@ defmodule Load.Broadcast do
           dataset_id: String.t(),
           subset_id: String.t(),
           source: String.t(),
-          destination: String.t()
+          destination: String.t(),
+          cache: integer
         }
 
   defstruct version: 1,
@@ -17,7 +18,8 @@ defmodule Load.Broadcast do
             dataset_id: nil,
             subset_id: nil,
             source: nil,
-            destination: nil
+            destination: nil,
+            cache: 0
 end
 
 defmodule Load.Broadcast.V1 do
@@ -31,7 +33,8 @@ defmodule Load.Broadcast.V1 do
       dataset_id: required_string(),
       subset_id: required_string(),
       source: required_string(),
-      destination: required_string()
+      destination: required_string(),
+      cache: spec(is_integer())
     })
   end
 end
