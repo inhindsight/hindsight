@@ -92,4 +92,70 @@ defmodule AcquireWeb.V2.DataControllerTest do
       ]
     end
   end
+
+  describe "query/2" do
+    data_test "retrieves data", %{conn: conn} do
+      Brook.Test.with_event(@instance, fn ->
+        Acquire.Dictionaries.persist(
+          Transform.new!(
+            id: "transform-1",
+            dataset_id: "dataset_id_1",
+            subset_id: "subset_id_1",
+            dictionary: [
+              Dictionary.Type.Wkt.Point.new!(name: "__wkt__"),
+              Dictionary.Type.Timestamp.new!(name: "__timestamp__", format: "__format__")
+            ],
+            steps: []
+          )
+        )
+
+        Acquire.Dictionaries.persist(
+          Load.Persist.new!(
+            id: "persist-1",
+            dataset_id: "dataset_id_1",
+            subset_id: "subset_id_1",
+            source: "topic-a",
+            destination: "table_destination"
+          )
+        )
+      end)
+
+      data = [%{"a" => 42}]
+      Mox.expect(Acquire.Db.Mock, :execute, fn ^query, [] -> {:ok, data} end)
+
+      path = "/api/v2/data/"
+
+      actual =
+        conn
+        |> put_req_header("content-type", "text/plain")
+        |> post(path, query)
+        |> json_response(200)
+
+      assert actual == data
+
+      where [
+        [:query],
+        ["SELECT * FROM table_destination"],
+        ["SELECT * FROM table_destination"],
+        ["SELECT * FROM table_destination LIMIT 1"],
+        ["SELECT * FROM table_destination WHERE a != ?"],
+        ["SELECT c FROM table_destination WHERE (c = ? AND d = ?)"],
+        [
+          "SELECT * FROM table_destination WHERE date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0"
+        ],
+        [
+          "SELECT * FROM table_destination WHERE date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0"
+        ],
+        [
+          "SELECT * FROM table_destination WHERE (date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0 AND date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0)"
+        ],
+        [
+          "SELECT * FROM table_destination WHERE ST_Intersects(ST_Envelope(ST_LineString(array[ST_Point(?, ?), ST_Point(?, ?)])), ST_GeometryFromText(__wkt__))"
+        ],
+        [
+          "SELECT * FROM table_destination WHERE (c >= ? AND ST_Intersects(ST_Envelope(ST_LineString(array[ST_Point(?, ?), ST_Point(?, ?)])), ST_GeometryFromText(__wkt__)))"
+        ]
+      ]
+    end
+  end
 end

@@ -14,4 +14,12 @@ defmodule AcquireWeb.V2.DataController do
 
     json(conn, result)
   end
+
+  def query(conn, _) do
+    {:ok, query, conn} = Plug.Conn.read_body(conn)
+
+    {:ok, result} = presto_client().execute(query, [])
+
+    json(conn, result)
+  end
 end

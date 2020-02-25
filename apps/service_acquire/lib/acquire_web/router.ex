@@ -10,5 +10,6 @@ defmodule AcquireWeb.Router do
 
     get "/data/:dataset", DataController, :select
     get "/data/:dataset/:subset", DataController, :select
+    post "/data", DataController, :query
   end
 end
