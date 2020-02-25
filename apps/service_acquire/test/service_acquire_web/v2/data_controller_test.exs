@@ -94,7 +94,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
   end
 
   describe "query/2" do
-    data_test "retrieves data", %{conn: conn} do
+    test "retrieves data", %{conn: conn} do
       Brook.Test.with_event(@instance, fn ->
         Acquire.Dictionaries.persist(
           Transform.new!(
@@ -121,6 +121,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
       end)
 
       data = [%{"a" => 42}]
+      query = "SELECT * FROM table_destination"
       Mox.expect(Acquire.Db.Mock, :execute, fn ^query, [] -> {:ok, data} end)
 
       path = "/api/v2/data/"
@@ -132,30 +133,6 @@ defmodule AcquireWeb.V2.DataControllerTest do
         |> json_response(200)
 
       assert actual == data
-
-      where [
-        [:query],
-        ["SELECT * FROM table_destination"],
-        ["SELECT * FROM table_destination"],
-        ["SELECT * FROM table_destination LIMIT 1"],
-        ["SELECT * FROM table_destination WHERE a != ?"],
-        ["SELECT c FROM table_destination WHERE (c = ? AND d = ?)"],
-        [
-          "SELECT * FROM table_destination WHERE date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0"
-        ],
-        [
-          "SELECT * FROM table_destination WHERE date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0"
-        ],
-        [
-          "SELECT * FROM table_destination WHERE (date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) > 0 AND date_diff('millisecond', __timestamp__, date_parse(?, '%Y-%m-%dT%H:%i:%S')) < 0)"
-        ],
-        [
-          "SELECT * FROM table_destination WHERE ST_Intersects(ST_Envelope(ST_LineString(array[ST_Point(?, ?), ST_Point(?, ?)])), ST_GeometryFromText(__wkt__))"
-        ],
-        [
-          "SELECT * FROM table_destination WHERE (c >= ? AND ST_Intersects(ST_Envelope(ST_LineString(array[ST_Point(?, ?), ST_Point(?, ?)])), ST_GeometryFromText(__wkt__)))"
-        ]
-      ]
     end
   end
 end
