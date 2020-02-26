@@ -92,4 +92,65 @@ defmodule AcquireWeb.V2.DataControllerTest do
       ]
     end
   end
+
+  describe "query/2" do
+    setup do
+      Brook.Test.with_event(@instance, fn ->
+        Acquire.Dictionaries.persist(
+          Transform.new!(
+            id: "transform-1",
+            dataset_id: "dataset_id_1",
+            subset_id: "subset_id_1",
+            dictionary: [
+              Dictionary.Type.Wkt.Point.new!(name: "__wkt__"),
+              Dictionary.Type.Timestamp.new!(name: "__timestamp__", format: "__format__")
+            ],
+            steps: []
+          )
+        )
+
+        Acquire.Dictionaries.persist(
+          Load.Persist.new!(
+            id: "persist-1",
+            dataset_id: "dataset_id_1",
+            subset_id: "subset_id_1",
+            source: "topic-a",
+            destination: "table_destination"
+          )
+        )
+      end)
+    end
+
+    test "retrieves data", %{conn: conn} do
+      data = [%{"a" => 42}]
+      query = "SELECT * FROM table_destination"
+      Mox.expect(Acquire.Db.Mock, :execute, fn ^query, [] -> {:ok, data} end)
+
+      path = "/api/v2/data/"
+
+      actual =
+        conn
+        |> put_req_header("content-type", "text/plain")
+        |> post(path, query)
+        |> json_response(200)
+
+      assert actual == data
+    end
+
+    test "fails on invalid query", %{conn: conn} do
+      data = ["Bad request"]
+      query = "SULAKT * FROM table_destination"
+      Mox.expect(Acquire.Db.Mock, :execute, fn ^query, [] -> {:error, data} end)
+
+      path = "/api/v2/data/"
+
+      actual =
+        conn
+        |> put_req_header("content-type", "text/plain")
+        |> post(path, query)
+        |> json_response(400)
+
+      assert actual == data
+    end
+  end
 end
