@@ -20,7 +20,9 @@ defmodule Accept.Websocket.SocketTest do
     ]
 
     start_supervised({Accept.Websocket.Supervisor, socket_opts})
-    {:ok, client} = start_supervised({SourceWebsocket, host: "localhost", path: "/receive/socket", port: 8080})
+
+    {:ok, client} =
+      start_supervised({SourceWebsocket, host: "localhost", path: "/receive/socket", port: 8080})
 
     [client: client]
   end
