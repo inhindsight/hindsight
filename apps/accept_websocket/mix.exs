@@ -23,8 +23,6 @@ defmodule AcceptWebsocket.MixProject do
 
   defp deps do
     [
-      # Remove this override when gun releases a 2.0+ vs. to hex using cowlib 2.8
-      {:cowlib, "~> 2.8.0", override: true},
       {:definition, in_umbrella: true},
       {:definition_accept, in_umbrella: true},
       {:plug_cowboy, "~> 2.1.0"},

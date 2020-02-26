@@ -25,9 +25,8 @@ defmodule Receive.MixProject do
 
   defp deps do
     [
-      # Remove this override when gun releases a 2.0+ vs. to hex using cowlib 2.8
-      {:cowlib, "~> 2.8.0", override: true},
       {:accept_udp, in_umbrella: true},
+      {:accept_websocket, in_umbrella: true},
       {:annotated_retry, in_umbrella: true},
       {:brook, "~> 0.5"},
       {:definition_accept, in_umbrella: true},

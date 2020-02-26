@@ -52,11 +52,7 @@ defmodule Hindsight.MixProject do
   end
 
   defp deps do
-    [
-      # Remove this override when gun releases a 2.0+ vs. to hex using cowlib 2.8
-      {:cowlib, "~> 2.8.0", override: true},
-      {:gun, github: "ninenines/gun", tag: "2.0.0-pre.1", override: true}
-    ]
+    []
   end
 
   defp aliases() do

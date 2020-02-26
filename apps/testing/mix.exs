@@ -23,9 +23,8 @@ defmodule Testing.MixProject do
 
   defp deps do
     [
-      # Remove this override when gun releases a 2.0+ vs. to hex using cowlib 2.8
       {:cowlib, "~> 2.8.0", override: true},
-      {:glock, github: "jeffgrunewald/glock", tag: "0.1.0"}
+      {:glock, "~> 0.1.0"}
     ]
   end
 end
