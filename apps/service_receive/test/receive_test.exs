@@ -84,7 +84,6 @@ defmodule ReceiveTest do
 
   describe "Receive Websocket" do
     setup do
-      {:ok, client} = start_supervised({SourceWebsocket, port: 6789, host: "localhost", path: "/receive/ws"})
       {:ok, dummy_writer} = start_supervised({Agent, fn -> :dummy_writer end})
       test = self()
 
@@ -104,14 +103,14 @@ defmodule ReceiveTest do
           dataset_id: "test-ds2",
           subset_id: "test-ss2",
           destination: "test-ds2",
-          connection: Accept.Websocket.new!(port: 6789, path: "/receive/ws")
+          connection: Accept.Websocket.new!(port: 6790, path: "/receive/ws")
         )
 
       on_exit(fn ->
         Receive.Accept.Supervisor.kill_all_children()
       end)
 
-      [accept: accept, dummy: dummy_writer, client: client]
+      [accept: accept, dummy: dummy_writer]
     end
 
     setup do
@@ -122,15 +121,18 @@ defmodule ReceiveTest do
       :ok
     end
 
-    test "receives data from source", %{accept: accept, dummy: dummy, client: client} do
+    test "receives data from source", %{accept: accept, dummy: dummy} do
       Brook.Test.send(@instance, accept_start(), "testing", accept)
 
-      assert_async do
-        Enum.map(0..9, fn int -> SourceWebsocket.push(client, "msg#{int}") end)
+      {:ok, client} = start_supervised({SourceWebsocket, port: 6790, host: "localhost", path: "/receive/ws"})
 
-        assert_receive {:write, ^dummy, messages, [dataset_id: "test-ds2", subset_id: "test-ss1"]}
+      assert_async do
+        Enum.map(0..10, fn int -> SourceWebsocket.push(client, "msg#{int}") end)
+
+        assert_receive {:write, ^dummy, messages, [dataset_id: "test-ds2", subset_id: "test-ss2"]}
 
         assert length(messages) == 10
+        refute "msg10" in messages
 
         assert accept == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
       end

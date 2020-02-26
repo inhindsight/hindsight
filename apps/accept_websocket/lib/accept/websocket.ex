@@ -12,6 +12,7 @@ defmodule Accept.Websocket do
     def connect(accept, opts) do
       {
         Accept.Websocket.Supervisor,
+        :start_link,
         [
           path: accept.path,
           port: accept.port,
