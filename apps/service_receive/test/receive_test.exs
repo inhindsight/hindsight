@@ -84,7 +84,7 @@ defmodule ReceiveTest do
 
   describe "Receive Websocket" do
     setup do
-      {:ok, client} = start_supervised({SourceWebSocket, port: 6789, host: "localhost", path: "/receive/ws"})
+      {:ok, client} = start_supervised({SourceWebsocket, port: 6789, host: "localhost", path: "/receive/ws"})
       {:ok, dummy_writer} = start_supervised({Agent, fn -> :dummy_writer end})
       test = self()
 
@@ -126,7 +126,7 @@ defmodule ReceiveTest do
       Brook.Test.send(@instance, accept_start(), "testing", accept)
 
       assert_async do
-        Enum.map(0..9, fn int -> SourceWebSocket.push(client, "msg#{int}") end)
+        Enum.map(0..9, fn int -> SourceWebsocket.push(client, "msg#{int}") end)
 
         assert_receive {:write, ^dummy, messages, [dataset_id: "test-ds2", subset_id: "test-ss1"]}
 
