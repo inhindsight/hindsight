@@ -110,7 +110,8 @@ config :service_broadcast, BroadcastWeb.Endpoint,
   secret_key_base: secret_key_base,
   render_errors: [view: BroadcastWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Broadcast.PubSub, adapter: Phoenix.PubSub.PG2],
-  server: true
+  server: true,
+  check_origin: false
 
 config :service_broadcast, Broadcast.Application,
   kafka_endpoints: kafka_endpoints,
