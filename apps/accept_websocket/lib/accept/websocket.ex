@@ -18,7 +18,8 @@ defmodule Accept.Websocket do
           port: accept.port,
           idle_timeout: accept.idle_timeout,
           hibernate: accept.hibernate
-        ] ++ opts
+        ]
+        |> Keyword.merge(opts)
       }
     end
   end

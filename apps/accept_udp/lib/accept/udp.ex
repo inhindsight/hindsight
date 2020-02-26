@@ -14,7 +14,12 @@ defmodule Accept.Udp do
 
   defimpl Accept.Connection, for: __MODULE__ do
     def connect(accept, opts) do
-      {Accept.Udp.Socket, :start_link, [port: accept.port] ++ opts}
+      {
+        Accept.Udp.Socket,
+        :start_link,
+        [port: accept.port]
+        |> Keyword.merge(opts)
+      }
     end
   end
 end
