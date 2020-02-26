@@ -1,13 +1,11 @@
 defmodule Accept.Udp.Socket do
   @moduledoc "TODO"
 
-  @type init_opts :: Accept.Socket.init_opts()
-
   use GenServer
   use Accept.Socket
   require Logger
 
-  @spec start_link(init_opts) :: GenServer.on_start()
+  @spec start_link(init_opts :: keyword) :: GenServer.on_start()
   def start_link(init_opts) do
     server_opts = Keyword.take(init_opts, [:name])
 
