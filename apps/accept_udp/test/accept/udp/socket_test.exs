@@ -18,19 +18,14 @@ defmodule Accept.Udp.SocketTest do
       timeout: 500
     ]
 
-    {:ok, receiver} = Accept.Udp.Socket.start_link(udp_opts)
-    {:ok, source} = SourceSocket.start_link(source_opts)
-
-    on_exit(fn ->
-      Process.exit(source, :kill)
-      Process.exit(receiver, :kill)
-    end)
+    start_supervised({Accept.Udp.Socket, udp_opts})
+    start_supervised({SourceUdpSocket, source_opts})
 
     :ok
   end
 
   test "reads from the incoming socket within the timeout" do
-    Enum.each(1..10, fn _ -> SourceSocket.hit_me() end)
+    Enum.each(1..10, fn _ -> SourceUdpSocket.hit_me() end)
 
     assert_receive({:udp_payload, messages}, 600)
     assert length(messages) == 10
@@ -38,7 +33,7 @@ defmodule Accept.Udp.SocketTest do
   end
 
   test "sends a full batch within the timeout" do
-    Enum.each(1..30, fn _ -> SourceSocket.hit_me() end)
+    Enum.each(1..30, fn _ -> SourceUdpSocket.hit_me() end)
 
     assert_receive({:udp_payload, messages}, 500)
     assert length(messages) == 25

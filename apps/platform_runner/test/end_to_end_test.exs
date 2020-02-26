@@ -300,7 +300,7 @@ defmodule PlatformRunner.EndToEndTest do
         end
       end
 
-      start_supervised({SourceSocket, port: 6789, messages: data})
+      start_supervised({SourceUdpSocket, port: 6789, messages: data})
 
       assert_async debug: true, sleep: 1_000 do
         assert {:ok, _, messages} = Elsa.fetch(@kafka, "e2e-push-receive")

@@ -2,10 +2,9 @@ defprotocol Accept.Connection do
   @type connection_opts :: [
           writer: function,
           batch_size: non_neg_integer,
-          timeout: non_neg_integer,
-          name: GenServer.name()
+          timeout: non_neg_integer
         ]
 
-  @spec connect(accept :: t, connection_opts) :: {module, keyword}
+  @spec connect(accept :: t, connection_opts) :: {module, function, keyword}
   def connect(accept, options)
 end

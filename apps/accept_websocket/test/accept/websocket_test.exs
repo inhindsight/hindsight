@@ -6,8 +6,8 @@ defmodule Accept.WebsocketTest do
   describe "new/1" do
     data_test "validates #{inspect(field)} against bad input" do
       assert {:error, [%{input: value, path: [field]} | _]} =
-        put_in(%{}, [field], value)
-        |> Accept.Websocket.new()
+               put_in(%{}, [field], value)
+               |> Accept.Websocket.new()
 
       where([
         [:field, :value],
@@ -16,7 +16,11 @@ defmodule Accept.WebsocketTest do
         [:port, nil],
         [:port, "8080"],
         [:path, ""],
-        [:path, nil]
+        [:path, nil],
+        [:idle_timeout, "8080"],
+        [:idle_timeout, -10_000],
+        [:hibernate, "false"],
+        [:hibernate, 1]
       ])
     end
   end
@@ -32,7 +36,10 @@ defmodule Accept.WebsocketTest do
     test "brook serializer can (de)serialize" do
       websocket_conn = Accept.Websocket.new!(port: 8080, path: "/socket")
 
-      assert {:ok, ^websocket_conn} = Brook.Serializer.serialize(websocket_conn) |> elem(1) |> Brook.Deserializer.deserialize()
+      assert {:ok, ^websocket_conn} =
+               Brook.Serializer.serialize(websocket_conn)
+               |> elem(1)
+               |> Brook.Deserializer.deserialize()
     end
   end
 end
