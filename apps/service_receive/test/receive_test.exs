@@ -19,64 +19,124 @@ defmodule ReceiveTest do
   setup :set_mox_global
   setup :verify_on_exit!
 
-  setup do
-    start_supervised({SourceSocket, port: 6789, schedule: true, interval: 100})
-    {:ok, dummy_writer} = start_supervised({Agent, fn -> :dummy_writer end})
-    test = self()
+  describe "Receive Udp" do
+    setup do
+      start_supervised({SourceUdpSocket, port: 6789, schedule: true, interval: 100})
+      {:ok, dummy_writer} = start_supervised({Agent, fn -> :dummy_writer end})
+      test = self()
 
-    Receive.WriterMock
-    |> stub(:start_link, fn args ->
-      send(test, {:start_link, args})
-      {:ok, dummy_writer}
-    end)
-    |> stub(:write, fn server, messages, opts ->
-      send(test, {:write, server, messages, opts})
+      Receive.WriterMock
+      |> stub(:start_link, fn args ->
+        send(test, {:start_link, args})
+        {:ok, dummy_writer}
+      end)
+      |> stub(:write, fn server, messages, opts ->
+        send(test, {:write, server, messages, opts})
+        :ok
+      end)
+
+      accept =
+        Accept.new!(
+          id: "accept-id-1",
+          dataset_id: "test-ds1",
+          subset_id: "test-ss1",
+          destination: "test-ds1",
+          connection: Accept.Udp.new!(port: 6789)
+        )
+
+      on_exit(fn ->
+        Receive.Accept.Supervisor.kill_all_children()
+      end)
+
+      [accept: accept, dummy: dummy_writer]
+    end
+
+    setup do
+      on_exit(fn ->
+        Brook.Test.clear_view_state(@instance, "accepts")
+      end)
+
       :ok
-    end)
+    end
 
-    accept =
-      Accept.new!(
-        id: "accept-id-1",
-        dataset_id: "test-ds1",
-        subset_id: "test-ss1",
-        destination: "test-ds1",
-        connection: Accept.Udp.new!(port: 6789)
-      )
+    test "receives data from source", %{accept: accept, dummy: dummy} do
+      Brook.Test.send(@instance, accept_start(), "testing", accept)
 
-    on_exit(fn ->
-      Receive.Accept.Supervisor.kill_all_children()
-    end)
+      assert_receive {:write, ^dummy, messages, [dataset_id: "test-ds1", subset_id: "test-ss1"]},
+                     5_000
 
-    [accept: accept, dummy: dummy_writer]
+      assert length(messages) == 10
+
+      assert accept == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
+    end
+
+    test "removes stored receipt on #{accept_end()}", %{accept: accept} do
+      Brook.Test.send(@instance, accept_start(), "testing", accept)
+      Process.sleep(100)
+
+      Brook.Test.send(@instance, accept_end(), "testing", accept)
+
+      assert_async do
+        assert nil == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
+      end
+    end
   end
 
-  setup do
-    on_exit(fn ->
-      Brook.Test.clear_view_state(@instance, "accepts")
-    end)
+  describe "Receive Websocket" do
+    setup do
+      {:ok, dummy_writer} = start_supervised({Agent, fn -> :dummy_writer end})
+      test = self()
 
-    :ok
-  end
+      Receive.WriterMock
+      |> stub(:start_link, fn args ->
+        send(test, {:start_link, args})
+        {:ok, dummy_writer}
+      end)
+      |> stub(:write, fn server, messages, opts ->
+        send(test, {:write, server, messages, opts})
+        :ok
+      end)
 
-  test "receives data from source", %{accept: accept, dummy: dummy} do
-    Brook.Test.send(@instance, accept_start(), "testing", accept)
+      accept =
+        Accept.new!(
+          id: "accept-id-2",
+          dataset_id: "test-ds2",
+          subset_id: "test-ss2",
+          destination: "test-ds2",
+          connection: Accept.Websocket.new!(port: 6790, path: "/receive/ws")
+        )
 
-    assert_receive {:write, ^dummy, messages, [dataset_id: "test-ds1", subset_id: "test-ss1"]},
-                   5_000
+      on_exit(fn ->
+        Receive.Accept.Supervisor.kill_all_children()
+      end)
 
-    assert length(messages) == 10
+      [accept: accept, dummy: dummy_writer]
+    end
 
-    assert accept == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
-  end
+    setup do
+      on_exit(fn ->
+        Brook.Test.clear_view_state(@instance, "accepts")
+      end)
 
-  test "removes stored receipt on #{accept_end()}", %{accept: accept} do
-    Brook.Test.send(@instance, accept_start(), "testing", accept)
-    Process.sleep(100)
+      :ok
+    end
 
-    Brook.Test.send(@instance, accept_end(), "testing", accept)
+    test "receives data from source", %{accept: accept, dummy: dummy} do
+      Brook.Test.send(@instance, accept_start(), "testing", accept)
 
-    assert_async do
-      assert nil == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
+      {:ok, client} =
+        start_supervised({SourceWebsocket, port: 6790, host: "localhost", path: "/receive/ws"})
+
+      assert_async do
+        Enum.map(0..10, fn int -> SourceWebsocket.push(client, "msg#{int}") end)
+
+        assert_receive {:write, ^dummy, messages, [dataset_id: "test-ds2", subset_id: "test-ss2"]}
+
+        assert length(messages) == 10
+        refute "msg10" in messages
+
+        assert accept == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
+      end
     end
   end
 end

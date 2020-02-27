@@ -1,9 +1,9 @@
-defmodule Testing.MixProject do
+defmodule AcceptWebsocket.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :testing,
+      app: :accept_websocket,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -23,8 +23,12 @@ defmodule Testing.MixProject do
 
   defp deps do
     [
-      {:cowlib, "~> 2.8.0", override: true},
-      {:glock, "~> 0.1.0"}
+      {:definition, in_umbrella: true},
+      {:definition_accept, in_umbrella: true},
+      {:plug_cowboy, "~> 2.1.0"},
+      {:brook_serializer, "~> 2.2", only: [:test]},
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

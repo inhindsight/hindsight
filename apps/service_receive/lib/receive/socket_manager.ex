@@ -51,7 +51,7 @@ defmodule Receive.SocketManager do
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
   defp start_socket(accept, writer) do
-    {socket_module, args} =
+    {socket_module, start_function, args} =
       Accept.Connection.connect(
         accept.connection,
         writer: writer,
@@ -60,6 +60,6 @@ defmodule Receive.SocketManager do
         name: Receive.Accept.Registry.via(:"#{accept.destination}_socket")
       )
 
-    socket_module.start_link(args)
+    apply(socket_module, start_function, [args])
   end
 end

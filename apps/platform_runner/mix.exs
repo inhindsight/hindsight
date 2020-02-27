@@ -24,6 +24,7 @@ defmodule PlatformRunner.MixProject do
 
   defp deps do
     [
+      {:cowlib, "~> 2.8.0", override: true},
       {:service_receive, in_umbrella: true},
       {:service_gather, in_umbrella: true},
       {:service_broadcast, in_umbrella: true},

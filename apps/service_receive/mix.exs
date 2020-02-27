@@ -26,6 +26,7 @@ defmodule Receive.MixProject do
   defp deps do
     [
       {:accept_udp, in_umbrella: true},
+      {:accept_websocket, in_umbrella: true},
       {:annotated_retry, in_umbrella: true},
       {:brook, "~> 0.5"},
       {:definition_accept, in_umbrella: true},
