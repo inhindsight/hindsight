@@ -24,7 +24,7 @@ defmodule Kafka.Subscribe.MixProject do
   defp deps do
     [
       {:definition, in_umbrella: true},
-      {:elsa, "~> 0.11.1"},
+      {:elsa, git: "https://github.com/bbalser/elsa", override: true},
       {:ok, in_umbrella: true},
       {:extract_step, in_umbrella: true},
       {:brook_serializer, "~> 2.2"},

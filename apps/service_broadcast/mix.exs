@@ -32,6 +32,7 @@ defmodule Broadcast.MixProject do
       {:brook, "~> 0.5"},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:elsa, git: "https://github.com/bbalser/elsa", override: true},
       {:extractor, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:initializer, in_umbrella: true},

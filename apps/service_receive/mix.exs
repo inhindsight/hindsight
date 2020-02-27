@@ -31,6 +31,7 @@ defmodule Receive.MixProject do
       {:definition_accept, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:elsa, git: "https://github.com/bbalser/elsa", override: true},
       {:extractor, in_umbrella: true},
       {:initializer, in_umbrella: true},
       {:properties, in_umbrella: true},
