@@ -1,6 +1,14 @@
 defmodule Persist.Uploader do
+  use Properties, otp_app: :service_persist
+
   @callback upload(file_path :: String.t(), upload_path :: String.t()) ::
               {:ok, term} | {:error, term}
+
+  getter(:impl, default: Persist.Uploader.S3)
+
+  def upload(file_path, upload_path) do
+    impl().upload(file_path, upload_path)
+  end
 end
 
 defmodule Persist.Uploader.S3 do

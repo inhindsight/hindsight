@@ -1,16 +1,11 @@
 defmodule Persist.Writer.DirectUpload do
   @behaviour Writer
   use GenServer
-  use Properties, otp_app: :service_persist
 
   @type init_opts :: [
           load: Load.Persist.t(),
           dictionary: Dictionary.t()
         ]
-
-  getter(:data_file, default: Persist.DataFile.Avro)
-  getter(:uploader, default: Persist.Uploader.S3)
-  getter(:table_creator, default: Persist.TableCreator.Presto)
 
   @impl Writer
   def write(server, messages, opts \\ []) do
@@ -36,7 +31,7 @@ defmodule Persist.Writer.DirectUpload do
       dictionary: dictionary
     }
 
-    case table_creator().create(load.destination, dictionary) do
+    case Persist.TableCreator.create(load.destination, dictionary) do
       :ok -> {:ok, state}
       {:error, reason} -> {:stop, reason}
     end
@@ -44,8 +39,8 @@ defmodule Persist.Writer.DirectUpload do
 
   @impl GenServer
   def handle_call({:write, messages, _opts}, _from, state) do
-    with {:ok, data_file} <- data_file().open(state.load.destination, state.dictionary),
-         {:ok, _size} <- data_file().write(data_file, messages),
+    with {:ok, data_file} <- Persist.DataFile.open(state.load.destination, state.dictionary),
+         {:ok, _size} <- Persist.DataFile.write(data_file, messages),
          {:ok, _} <- upload_file(data_file, state.load.destination) do
       {:reply, :ok, state}
     else
@@ -54,8 +49,9 @@ defmodule Persist.Writer.DirectUpload do
   end
 
   defp upload_file(data_file, destination) do
-    file_path = data_file().close(data_file)
-    result = uploader().upload(file_path, "#{destination}/#{:erlang.system_time(:nanosecond)}")
+    file_path = Persist.DataFile.close(data_file)
+    extension = Path.extname(file_path)
+    result = Persist.Uploader.upload(file_path, "#{destination}/#{:erlang.system_time(:nanosecond)}#{extension}")
     File.rm(file_path)
     result
   end

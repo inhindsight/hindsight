@@ -9,11 +9,23 @@ defmodule Persist.Writer.DirectUploadTest do
   Temp.Env.modify([
     %{
       app: :service_persist,
-      key: Persist.Writer.DirectUpload,
+      key: Persist.DataFile,
       set: [
-        data_file: Persist.DataFileMock,
-        uploader: Persist.UploaderMock,
-        table_creator: Persist.TableCreatorMock
+        impl: Persist.DataFileMock
+      ]
+    },
+    %{
+      app: :service_persist,
+      key: Persist.TableCreator,
+      set: [
+        impl: Persist.TableCreatorMock
+      ]
+    },
+    %{
+      app: :service_persist,
+      key: Persist.Uploader,
+      set: [
+        impl: Persist.UploaderMock
       ]
     }
   ])
