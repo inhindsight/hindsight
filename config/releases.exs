@@ -64,8 +64,8 @@ config :service_receive, Receive.Application,
     ],
     handlers: [Receive.Event.Handler],
     storage: [
-      module: Brook.Storage.Ets,
-      init_arg: []
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: redix_args, namespace: "service:receive:view"]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
