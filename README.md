@@ -46,7 +46,7 @@ To deploy to AWS, we suggest you start with:
 ./scripts/install [RELEASE_NAME] [NAMESPACE] \
                   global.objectStore.bucketName=[BUCKET_NAME] \
                   global.objectStore.region=[AWS_REGION] \
-                  presto.minio.enable=false \
+                  global.objectStore.minio.enabled=false \
                   presto.postgres.enable=false \
                   presto.postgres.service.externalAddress=[RDS_URL] \
                   presto.postgres.db.password=[DB_PASSWORD]

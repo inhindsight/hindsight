@@ -44,7 +44,7 @@ data:
     hive.s3.aws-secret-key={{ .Values.global.objectStore.accessSecret }}
 {{- end }}
     hive.s3.path-style-access=true
-{{- if .Values.minio.enable }}
+{{- if .Values.global.objectStore.minio.enabled }}
     hive.s3.endpoint=http://{{ template "presto.minio.fullname" . }}:{{ .Values.minio.service.port }}
     hive.s3.ssl.enabled=false
 {{- end }}

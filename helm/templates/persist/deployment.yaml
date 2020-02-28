@@ -33,6 +33,14 @@ spec:
             - start
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+          {{- if .Values.global.objectStore.minio.enabled -}}
+            - name: BUCKET_HOST
+              value: {{ template "presto.minio.fullname" . }}
+            - name: BUCKET_PORT
+              value: {{ .Values.global.objectStore.minio.port }}
+            - name: BUCKET_SCHEME
+              value: {{ .Values.global.objectStore.minio.scheme }}
+          {{- end -}}
             - name: BUCKET_NAME
               value: {{ .Values.global.objectStore.bucketName }}
             - name: BUCKET_REGION
