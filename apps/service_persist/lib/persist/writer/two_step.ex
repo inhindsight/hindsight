@@ -2,6 +2,7 @@ defmodule Persist.Writer.TwoStep do
   @behaviour Writer
   use GenServer
   use Properties, otp_app: :service_persist
+  require Logger
 
   getter(:writer, default: Persist.Writer.DirectUpload)
   getter(:call_timeout, default: 25_000)
@@ -30,7 +31,8 @@ defmodule Persist.Writer.TwoStep do
 
     state = %{
       load: Keyword.fetch!(init_opts, :load),
-      dictionary: Keyword.fetch!(init_opts, :dictionary)
+      dictionary: Keyword.fetch!(init_opts, :dictionary),
+      staged: 0
     }
 
     {:ok, state, {:continue, :init}}
@@ -53,12 +55,29 @@ defmodule Persist.Writer.TwoStep do
   end
 
   @impl GenServer
-  def handle_call({:write, messages, opts}, _from, state) do
-    writer().write(state.writer_pid, messages, opts)
-    Persist.TableManager.copy(state.staging_table, state.load.destination)
-    Persist.DataStorage.delete(state.staging_table)
+  def handle_call({:write, messages, opts}, from, state) do
+    :ok = writer().write(state.writer_pid, messages, opts)
 
-    {:reply, :ok, state}
+    new_staged = state.staged + 1
+
+    case new_staged >= 1_000 do
+      true ->
+        GenServer.reply(from, :ok)
+        copy_to_production(state)
+        {:noreply, %{state | staged: 0}}
+      false ->
+        {:reply, :ok, %{state | staged: new_staged}, 2_000}
+    end
+  end
+
+  @impl GenServer
+  def handle_info(:timeout, %{staged: staged} = state) when staged > 0 do
+    copy_to_production(state)
+    {:noreply, %{state | staged: 0}}
+  end
+
+  def handle_info(:timeout, state) do
+    {:noreply, state}
   end
 
   @impl GenServer
@@ -68,5 +87,12 @@ defmodule Persist.Writer.TwoStep do
     end
 
     state
+  end
+
+  defp copy_to_production(state) do
+    Logger.info(fn -> "#{__MODULE__}: Copying from #{state.staging_table} to #{state.load.destination}" end)
+    {:ok, _} = Persist.TableManager.copy(state.staging_table, state.load.destination)
+    :ok = Persist.DataStorage.delete(state.staging_table)
+    Logger.info(fn -> "#{__MODULE__}: DONE Copying from #{state.staging_table} to #{state.load.destination}" end)
   end
 end
