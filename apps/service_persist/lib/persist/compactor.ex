@@ -28,7 +28,7 @@ defmodule Persist.Compactor.Presto do
   defp create_table(session, from, to) do
     create_task =
       Task.async(fn ->
-        Persist.TableCreator.create_from(to, from)
+        Persist.TableManager.create_from(to, from)
         |> get_count()
       end)
 

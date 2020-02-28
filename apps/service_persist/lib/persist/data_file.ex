@@ -3,12 +3,19 @@ defmodule Persist.DataFile do
   @type t :: term
   @type file_path :: String.t()
 
+  @type format :: :json | :orc | :avro
+
+  @callback format() :: format()
   @callback open(destination :: String.t(), dictionary :: Dictionary.t()) ::
               {:ok, t} | {:error, term}
   @callback write(t, messages :: list()) :: {:ok, non_neg_integer} | {:error, term}
   @callback close(t) :: file_path
 
   getter(:impl, default: Persist.DataFile.Json)
+
+  def format() do
+    impl().format()
+  end
 
   def open(destination, dictionary) do
     impl().open(destination, dictionary)
@@ -26,6 +33,8 @@ end
 defmodule Persist.DataFile.Avro do
   @behaviour Persist.DataFile
 
+  def format(), do: :avro
+
   defdelegate open(destination, dictionary), to: Avro
   defdelegate write(avro, data), to: Avro
   defdelegate close(avro), to: Avro
@@ -40,6 +49,9 @@ defmodule Persist.DataFile.Json do
         }
 
   defstruct [:file_path, :file]
+
+  @impl true
+  def format(), do: :json
 
   @impl true
   def open(_destination, _dictionary) do

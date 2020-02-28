@@ -16,22 +16,25 @@ defmodule Persist.Writer.DirectUploadTest do
     },
     %{
       app: :service_persist,
-      key: Persist.TableCreator,
+      key: Persist.TableManager,
       set: [
-        impl: Persist.TableCreatorMock
+        impl: Persist.TableManagerMock
       ]
     },
     %{
       app: :service_persist,
-      key: Persist.Uploader,
+      key: Persist.DataStorage,
       set: [
-        impl: Persist.UploaderMock
+        impl: Persist.DataStorageMock
       ]
     }
   ])
 
   setup do
     Process.flag(:trap_exit, true)
+
+    Persist.DataFileMock
+    |> stub(:format, fn -> :json end)
 
     load =
       Load.Persist.new!(
@@ -46,8 +49,8 @@ defmodule Persist.Writer.DirectUploadTest do
   end
 
   test "will stop process when unable to create table", %{load: load} do
-    Persist.TableCreatorMock
-    |> stub(:create, fn _destination, _dictionary ->
+    Persist.TableManagerMock
+    |> stub(:create, fn _destination, _dictionary, _format ->
       {:error, "failed to create"}
     end)
 
@@ -56,8 +59,8 @@ defmodule Persist.Writer.DirectUploadTest do
   end
 
   test "will stop process when unable to open datafile", %{load: load} do
-    Persist.TableCreatorMock
-    |> stub(:create, fn _, _ -> :ok end)
+    Persist.TableManagerMock
+    |> stub(:create, fn _, _, _ -> :ok end)
 
     Persist.DataFileMock
     |> stub(:open, fn _, _ -> {:error, "failed to open"} end)
@@ -67,8 +70,8 @@ defmodule Persist.Writer.DirectUploadTest do
   end
 
   test "will stop process when unable to write to data file", %{load: load} do
-    Persist.TableCreatorMock
-    |> stub(:create, fn _, _ -> :ok end)
+    Persist.TableManagerMock
+    |> stub(:create, fn _, _, _ -> :ok end)
 
     Persist.DataFileMock
     |> stub(:open, fn _, _ -> {:ok, :data_file} end)
@@ -79,15 +82,15 @@ defmodule Persist.Writer.DirectUploadTest do
   end
 
   test "will stop process when unable to upload data file", %{load: load} do
-    Persist.TableCreatorMock
-    |> stub(:create, fn _, _ -> :ok end)
+    Persist.TableManagerMock
+    |> stub(:create, fn _, _, _ -> :ok end)
 
     Persist.DataFileMock
     |> stub(:open, fn _, _ -> {:ok, :data_file} end)
     |> stub(:write, fn _, _ -> {:ok, 101} end)
     |> stub(:close, fn _ -> "file" end)
 
-    Persist.UploaderMock
+    Persist.DataStorageMock
     |> stub(:upload, fn _, _ -> {:error, "failed to upload"} end)
 
     {:ok, pid} = Persist.Writer.DirectUpload.start_link(load: load, dictionary: :dictionary)
