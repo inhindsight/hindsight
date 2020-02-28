@@ -41,8 +41,6 @@ kafka_endpoints =
   |> Enum.map(fn entry -> String.split(entry, ":") end)
   |> Enum.map(fn [host, port] -> {String.to_atom(host), String.to_integer(port)} end)
 
-bucket_region = System.get_env("BUCKET_REGION", "local")
-
 redix_args = [host: System.get_env("REDIS_HOST", "localhost")]
 config :redix, :args, redix_args
 
@@ -170,10 +168,15 @@ config :service_broadcast, Broadcast.Stream.Broadway,
   ]
 
 # SERVICE PERSIST
-config :ex_aws,
-  region: bucket_region
+bucket_region = [region: System.get_env("BUCKET_REGION", "local")]
 
-config :ex_aws, :s3, region: bucket_region
+object_storage =
+  [host: System.get_env("BUCKET_HOST"), scheme: System.get_env("BUCKET_SCHEME"), port: System.get_env("BUCKET_PORT")]
+  |> Enum.filter(fn {_, val} -> val end)
+  |> Keyword.merge(bucket_region)
+
+config :ex_aws, bucket_region
+config :ex_aws, :s3, object_storage
 
 config :service_persist, Persist.Application,
   kafka_endpoints: kafka_endpoints,
