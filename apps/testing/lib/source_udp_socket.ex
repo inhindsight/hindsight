@@ -1,4 +1,4 @@
-defmodule SourceSocket do
+defmodule SourceUdpSocket do
   use GenServer
 
   def hit_me(), do: GenServer.cast(__MODULE__, :hit_me)
