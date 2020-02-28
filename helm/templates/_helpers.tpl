@@ -27,6 +27,13 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Hindsight image and tag.
+*/}}
+{{- define "hindsight.image" -}}
+{{- printf "%s:%s" .Values.image.repository (default .Chart.AppVersion .Values.image.tag) -}}
+{{- end -}}
+
+{{/*
 Common labels
 */}}
 {{- define "hindsight.labels" -}}
