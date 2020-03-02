@@ -45,11 +45,11 @@ defmodule GatherTest do
     end)
 
     Gather.WriterMock
-    |> expect(:start_link, fn args ->
+    |> stub(:start_link, fn args ->
       send(test, {:start_link, args})
       {:ok, dummy_process}
     end)
-    |> expect(:write, fn server, messages, opts ->
+    |> stub(:write, fn server, messages, opts ->
       send(test, {:write, server, messages, opts})
       :ok
     end)
@@ -75,11 +75,10 @@ defmodule GatherTest do
     Brook.Test.send(@instance, extract_start(), "testing", extract)
 
     assert_receive {:write, ^dummy_process, messages, [dataset_id: "test-ds1"]}, 5_000
+    assert messages == [%{"A" => "one", "B" => "two", "C" => "three"}]
 
-    assert messages == [
-             %{"A" => "one", "B" => "two", "C" => "three"},
-             %{"A" => "four", "B" => "five", "C" => "six"}
-           ]
+    assert_receive {:write, ^dummy_process, messages, [dataset_id: "test-ds1"]}, 5_000
+    assert messages == [%{"A" => "four", "B" => "five", "C" => "six"}]
 
     assert extract == Extraction.Store.get!(extract.dataset_id, extract.subset_id)
   end
