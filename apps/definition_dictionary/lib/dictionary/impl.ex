@@ -1,4 +1,6 @@
 defmodule Dictionary.Impl do
+  require Logger
+
   @behaviour Access
 
   @type t :: %__MODULE__{
@@ -30,6 +32,8 @@ defmodule Dictionary.Impl do
 
   @spec get_by_type(t | [Dictionary.Type.Normalizer.t()], module) :: list(list(String.t()))
   def get_by_type(dictionary, module) when is_list(dictionary) do
+    Logger.warn(fn -> "#{__MODULE__}.get_by_type/2: Received list #{inspect(dictionary)}" end)
+
     from_list(dictionary)
     |> get_by_type(module)
   end
