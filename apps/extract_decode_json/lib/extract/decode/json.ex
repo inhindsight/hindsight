@@ -9,7 +9,7 @@ defmodule Extract.Decode.Json do
 
     def execute(_step, context) do
       source = fn opts ->
-        data_list = get_stream(context, opts) |> Enum.to_list()
+        data_list = get_stream(context, opts) |> Enum.to_list() |> List.flatten()
         meta = List.last(data_list) |> Map.get(:meta)
 
         data_list

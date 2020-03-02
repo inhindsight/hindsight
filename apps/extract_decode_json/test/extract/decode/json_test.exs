@@ -21,12 +21,10 @@ defmodule Extract.Decode.JsonTest do
     test "decodes context stream to json" do
       source = fn _ ->
         [
-          ~s([),
-          ~s({\"name\": \"Kyle\", \"age\": 2},{\"name\": \"Joe\"),
-          ~s(, \"age\": 21},{\"name\": \"Bobby\",\"age\": 62}),
-          ~s(])
+          [~s([), ~s({\"name\": \"Kyle\", \"age\": 2},{\"name\": \"Joe\")]
+          |> to_extract_messages(),
+          [~s(, \"age\": 21},{\"name\": \"Bobby\",\"age\": 62}), ~s(])] |> to_extract_messages(4)
         ]
-        |> to_extract_messages()
       end
 
       context = Context.new() |> Context.set_source(source)
@@ -46,10 +44,12 @@ defmodule Extract.Decode.JsonTest do
     test "decodes a non-list stream to json" do
       source = fn _ ->
         [
-          ~s({"name": "Jay",),
-          ~s("age": 42})
+          [
+            ~s({"name": "Jay",),
+            ~s("age": 42})
+          ]
+          |> to_extract_messages()
         ]
-        |> to_extract_messages()
       end
 
       context = Context.new() |> Context.set_source(source)
