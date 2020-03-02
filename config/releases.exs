@@ -267,7 +267,8 @@ config :service_acquire, AcquireWeb.Endpoint,
   secret_key_base: secret_key_base,
   render_errors: [view: AcquireWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Acquire.PubSub, adapter: Phoenix.PubSub.PG2],
-  server: true
+  server: true,
+  check_origin: false
 
 config :service_acquire, Acquire.Application,
   brook: [
