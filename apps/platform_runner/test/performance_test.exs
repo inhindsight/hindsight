@@ -9,7 +9,7 @@ defmodule Platform.Runner.PerformanceTest do
     Logger.configure(level: :info)
     bp = Bypass.open()
 
-    data = File.read!("perf2.data")
+    data = File.read!("perf.data")
 
     Bypass.stub(bp, "GET", "/file.csv", fn conn ->
       Plug.Conn.resp(conn, 200, data)
@@ -29,8 +29,16 @@ defmodule Platform.Runner.PerformanceTest do
   end
 
   defp csv(opts) do
-    dictionary = Enum.map(1..100, fn i -> Dictionary.Type.String.new!(name: "string_#{i}") end)
-    headers = Enum.map(dictionary, &Map.get(&1, :name))
+    # dictionary = Enum.map(1..100, fn i -> Dictionary.Type.String.new!(name: "string_#{i}") end)
+    # headers = Enum.map(dictionary, &Map.get(&1, :name))
+
+    dictionary =
+      Dictionary.from_list([
+        Dictionary.Type.String.new!(name: "letter"),
+        Dictionary.Type.Integer.new!(name: "number")
+      ])
+
+    headers = ["letter", "number"]
 
     extract =
       Extract.new!(

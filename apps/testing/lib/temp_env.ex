@@ -27,6 +27,11 @@ defmodule Temp.Env do
         end)
 
         on_exit(fn ->
+          unquote(entries)
+          |> Enum.each(fn %{app: app, key: key} ->
+            Application.delete_env(app, key)
+          end)
+
           Application.put_all_env(backup, persistent: true)
         end)
 

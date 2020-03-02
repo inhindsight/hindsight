@@ -54,7 +54,8 @@ redis:
 
 image:
   repository: inhindsight/hindsight
-  pullPolicy: IfNotPresent
+  tag: ""
+  pullPolicy: Always
 
 global:
   objectStore:

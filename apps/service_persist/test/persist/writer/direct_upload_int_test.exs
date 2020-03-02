@@ -9,7 +9,7 @@ defmodule Persist.Writer.DirectUploadIntTest do
   Temp.Env.modify([
     %{
       app: :service_persist,
-      key: Persist.TableCreator.Presto,
+      key: Persist.TableManager.Presto,
       set: [
         url: "http://localhost:8080",
         user: "testing",
@@ -19,7 +19,7 @@ defmodule Persist.Writer.DirectUploadIntTest do
     },
     %{
       app: :service_persist,
-      key: Persist.Uploader.S3,
+      key: Persist.DataStorage.S3,
       set: [
         s3_bucket: "kdp-cloud-storage",
         s3_path: "hive-s3"
