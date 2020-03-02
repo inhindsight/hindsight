@@ -10,7 +10,8 @@ defmodule Persist.Writer.TwoStepTest do
       app: :service_persist,
       key: Persist.Writer.TwoStep,
       set: [
-        writer: WriterMock
+        writer: WriterMock,
+        staged_batches_count: 1
       ]
     },
     %{
@@ -89,7 +90,10 @@ defmodule Persist.Writer.TwoStepTest do
     assert_receive {:writer_start_link, [load: ^updated_load, dictionary: ^dictionary]}
   end
 
-  test "two step will delegate to subwriter and then copy data over and delete", %{load: load, dictionary: dictionary} do
+  test "two step will delegate to subwriter and then copy data over and delete", %{
+    load: load,
+    dictionary: dictionary
+  } do
     messages = [%{"name" => "brian", "age" => 38}]
 
     {:ok, pid} = start_supervised({Persist.Writer.TwoStep, load: load, dictionary: dictionary})

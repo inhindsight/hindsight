@@ -3,8 +3,10 @@ defmodule Persist.TableManager do
 
   @formats %{json: "JSON", avro: "AVRO", orc: "ORC"}
 
-  @callback create(table :: String.t(), dictionary :: Dictionary.t(), Persist.DataFile.format()) :: :ok | {:error, term}
-  @callback create_from(table :: String.t(), from :: String.t(), Persist.DataFile.format()) :: {:ok, term} | {:error, term}
+  @callback create(table :: String.t(), dictionary :: Dictionary.t(), Persist.DataFile.format()) ::
+              :ok | {:error, term}
+  @callback create_from(table :: String.t(), from :: String.t(), Persist.DataFile.format()) ::
+              {:ok, term} | {:error, term}
   @callback copy(from_table :: String.t(), to_table :: String.t()) :: {:ok, term} | {:error, term}
 
   getter(:impl, default: Persist.TableManager.Presto)
@@ -42,7 +44,8 @@ defmodule Persist.TableManager.Presto do
       end)
       |> Enum.join(",")
 
-    create_table = "CREATE TABLE IF NOT EXISTS #{table} (#{columns}) with ( format = '#{format}' )"
+    create_table =
+      "CREATE TABLE IF NOT EXISTS #{table} (#{columns}) with ( format = '#{format}' )"
 
     case Prestige.execute(new_session(), create_table) do
       {:ok, _} -> :ok

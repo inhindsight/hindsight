@@ -1,11 +1,11 @@
 defmodule Persist.DataFile do
   use Properties, otp_app: :service_persist
   @type t :: term
-  @type file_path :: String.t()
+  @type file_path :: Path.t()
 
   @type format :: :json | :orc | :avro
 
-  @callback format() :: format()
+  @callback format() :: format
   @callback open(destination :: String.t(), dictionary :: Dictionary.t()) ::
               {:ok, t} | {:error, term}
   @callback write(t, messages :: list()) :: {:ok, non_neg_integer} | {:error, term}
@@ -13,18 +13,22 @@ defmodule Persist.DataFile do
 
   getter(:impl, default: Persist.DataFile.Json)
 
+  @spec format() :: format
   def format() do
     impl().format()
   end
 
+  @spec open(String.t(), Dictionary.t()) :: {:ok, t} | {:error, term}
   def open(destination, dictionary) do
     impl().open(destination, dictionary)
   end
 
+  @spec write(t, list()) :: {:ok, non_neg_integer} | {:error, term}
   def write(t, messages) do
     impl().write(t, messages)
   end
 
+  @spec close(t) :: file_path
   def close(t) do
     impl().close(t)
   end
@@ -44,7 +48,7 @@ defmodule Persist.DataFile.Json do
   @behaviour Persist.DataFile
 
   @type t :: %__MODULE__{
-          file_path: String.t(),
+          file_path: Path.t(),
           file: :file.io_device()
         }
 
@@ -55,7 +59,7 @@ defmodule Persist.DataFile.Json do
 
   @impl true
   def open(_destination, _dictionary) do
-    with {:ok, path} <- Temp.path(suffix: ".gz"),
+    with {:ok, path} <- Temp.path(%{suffix: ".gz"}),
          {:ok, file} <- :file.open(path, [:write, :raw, :delayed_write, :compressed]) do
       %__MODULE__{
         file_path: path,

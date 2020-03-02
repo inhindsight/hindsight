@@ -6,6 +6,8 @@ defmodule Persist.Writer.TwoStep do
 
   getter(:writer, default: Persist.Writer.DirectUpload)
   getter(:call_timeout, default: 25_000)
+  getter(:no_activity_timeout, default: 10_000)
+  getter(:staged_batches_count, default: 50)
 
   @type init_opts :: [
           load: Load.Persist.t(),
@@ -60,13 +62,14 @@ defmodule Persist.Writer.TwoStep do
 
     new_staged = state.staged + 1
 
-    case new_staged >= 1_000 do
+    case new_staged >= staged_batches_count() do
       true ->
         GenServer.reply(from, :ok)
         copy_to_production(state)
         {:noreply, %{state | staged: 0}}
+
       false ->
-        {:reply, :ok, %{state | staged: new_staged}, 2_000}
+        {:reply, :ok, %{state | staged: new_staged}, no_activity_timeout()}
     end
   end
 
@@ -82,7 +85,7 @@ defmodule Persist.Writer.TwoStep do
 
   @impl GenServer
   def terminate(reason, state) do
-    unless Map.get(state, :writer_pid) |> is_pid() do
+    if Map.get(state, :writer_pid) |> is_pid() do
       Process.exit(state.writer_pid, reason)
     end
 
@@ -90,9 +93,15 @@ defmodule Persist.Writer.TwoStep do
   end
 
   defp copy_to_production(state) do
-    Logger.info(fn -> "#{__MODULE__}: Copying from #{state.staging_table} to #{state.load.destination}" end)
+    Logger.debug(fn ->
+      "#{__MODULE__}: Copying from #{state.staging_table} to #{state.load.destination}"
+    end)
+
     {:ok, _} = Persist.TableManager.copy(state.staging_table, state.load.destination)
     :ok = Persist.DataStorage.delete(state.staging_table)
-    Logger.info(fn -> "#{__MODULE__}: DONE Copying from #{state.staging_table} to #{state.load.destination}" end)
+
+    Logger.debug(fn ->
+      "#{__MODULE__}: DONE Copying from #{state.staging_table} to #{state.load.destination}"
+    end)
   end
 end
