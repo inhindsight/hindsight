@@ -199,9 +199,9 @@ config :service_persist, Persist.Application,
     event_processing_timeout: 20_000
   ]
 
-config :service_persist, Persist.TableCreator.Presto, Keyword.put(presto_db, :user, "hindsight")
+config :service_persist, Persist.TableManager.Presto, Keyword.put(presto_db, :user, "hindsight")
 
-config :service_persist, Persist.Uploader.S3,
+config :service_persist, Persist.DataStorage.S3,
   s3_bucket: System.get_env("BUCKET_NAME", "kdp-cloud-storage"),
   s3_path: "hive-s3"
 
