@@ -28,7 +28,12 @@ defmodule Dictionary.Impl do
     end
   end
 
-  @spec get_by_type(t, module) :: list(list(String.t()))
+  @spec get_by_type(t | [Dictionary.Type.Normalizer.t()], module) :: list(list(String.t()))
+  def get_by_type(dictionary, module) when is_list(dictionary) do
+    from_list(dictionary)
+    |> get_by_type(module)
+  end
+
   def get_by_type(%__MODULE__{by_type: by_type, ordered: ordered}, type) do
     local =
       Map.get(by_type, type, [])
