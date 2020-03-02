@@ -26,11 +26,13 @@ defmodule Extract.Decode.GtfsTest do
         |> Stream.transform(0, fn data, acc ->
           {[Extract.Message.new(data: data, meta: %{"id" => acc})], acc + 1}
         end)
+        |> Stream.chunk_every(10)
       end
 
       expected_id =
         source.(read: :bytes)
         |> Enum.to_list()
+        |> List.flatten()
         |> List.last()
         |> get_in([Access.key(:meta), "id"])
 

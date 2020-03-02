@@ -11,7 +11,7 @@ defmodule Extract.Decode.Gtfs do
       source = fn opts ->
         opts = Keyword.put(opts, :read, :bytes)
 
-        data_list = get_stream(context, opts) |> Enum.to_list()
+        data_list = get_stream(context, opts) |> Enum.to_list() |> List.flatten()
         meta = List.last(data_list) |> Map.get(:meta)
 
         data_list
