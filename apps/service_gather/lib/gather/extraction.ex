@@ -12,7 +12,6 @@ defmodule Gather.Extraction do
   @initial_delay get_config_value(:initial_delay, default: 500)
   getter(:writer, default: Gather.Writer)
   getter(:dlq, default: Gather.DLQ)
-  getter(:chunk_size, default: 1_000)
   getter(:app_name, required: true)
 
   def start_link(args) do
@@ -65,12 +64,11 @@ defmodule Gather.Extraction do
     writer_opts = [dataset_id: extract.dataset_id]
 
     Context.get_stream(context)
-    |> Stream.chunk_every(chunk_size())
-    |> Ok.each(fn chunk ->
-      with data <- Enum.map(chunk, &Map.get(&1, :data)),
+    |> Ok.each(fn message ->
+      with data <- [Map.get(message, :data)],
            normalized_messages <- normalize(extract, data),
            :ok <- writer().write(writer, normalized_messages, writer_opts) do
-        Context.run_after_functions(context, chunk)
+        Context.run_after_functions(context, [message])
         :ok
       end
     end)

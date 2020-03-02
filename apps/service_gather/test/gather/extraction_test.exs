@@ -38,8 +38,8 @@ defmodule Gather.ExtractionTest do
     test = self()
 
     Gather.WriterMock
-    |> expect(:start_link, 1, fn _ -> Agent.start_link(fn -> :dummy end) end)
-    |> expect(:write, 10, fn server, messages, opts ->
+    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
+    |> stub(:write, fn server, messages, opts ->
       send(test, {:write, server, messages, opts})
       :ok
     end)
@@ -61,11 +61,10 @@ defmodule Gather.ExtractionTest do
     {:ok, pid} = Extraction.start_link(extract: extract)
 
     assert_receive {:EXIT, ^pid, :normal}, 2_000
-    expected = Enum.map(1..10, fn _ -> %{"one" => 1} end)
-    Enum.each(1..10, fn _ -> assert_receive {:write, _, ^expected, _} end)
+    Enum.each(1..100, fn _ -> assert_receive {:write, _, [%{"one" => 1}], _} end)
 
-    originals = Enum.map(1..10, fn _ -> Extract.Message.new(data: %{"one" => "1"}) end)
-    Enum.each(1..10, fn _ -> assert_receive {:after, ^originals} end)
+    original = Extract.Message.new(data: %{"one" => "1"})
+    Enum.each(1..100, fn _ -> assert_receive {:after, [^original]} end)
 
     assert_down(pid)
   end
