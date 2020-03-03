@@ -9,14 +9,14 @@ defmodule Receive.Accept.Store do
 
   @spec persist(Accept.t()) :: :ok
   def persist(accept) do
-    Brook.ViewState.merge(@collection, identifier(accept), %{accept: accept})
+    Brook.ViewState.merge(@collection, identifier(accept), %{"accept" => accept})
   end
 
   @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: Accept.t()
   def get!(dataset_id, subset_id) do
     case Brook.get!(@instance, @collection, identifier(dataset_id, subset_id)) do
       nil -> nil
-      map -> Map.get(map, :accept)
+      map -> Map.get(map, "accept")
     end
   end
 
@@ -28,6 +28,6 @@ defmodule Receive.Accept.Store do
   @spec get_all!() :: [Accept.t()]
   def get_all!() do
     Brook.get_all_values!(@instance, @collection)
-    |> Enum.map(&Map.get(&1, :accept))
+    |> Enum.map(&Map.get(&1, "accept"))
   end
 end
