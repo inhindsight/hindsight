@@ -5,7 +5,7 @@ defmodule Extract.Kafka.SubscribeTest do
   import AssertAsync
   require Logger
 
-  @moduletag integration: true, divo: true
+  @moduletag integration: true, divo: true, capture_log: true
 
   alias Extract.Context
 
@@ -59,16 +59,13 @@ defmodule Extract.Kafka.SubscribeTest do
         Elsa.produce([localhost: 9092], "topic-a", messages, partition: 0)
       end)
 
-      actuals =
+      [actuals] =
         context
         |> Context.get_stream()
-        |> Stream.take(100)
-        |> Stream.chunk_every(10)
-        |> Stream.each(fn chunk ->
-          Context.run_after_functions(context, chunk)
-        end)
+        |> Stream.take(1)
         |> Enum.to_list()
-        |> List.flatten()
+
+      Context.run_after_functions(context, actuals)
 
       assert actuals ==
                messages

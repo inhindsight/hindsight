@@ -1,9 +1,11 @@
 defmodule Extract.Context do
   @type source_opts :: [
           read: :lines | :bytes,
-          byte_count: integer()
+          byte_count: non_neg_integer,
+          chunk_size: non_neg_integer
         ]
 
+  @typedoc "A function that that returns a stream of chunks of extract messages"
   @type source :: (source_opts -> Enumerable.t())
 
   @type t() :: %__MODULE__{
@@ -65,12 +67,17 @@ defmodule Extract.Context do
     end)
   end
 
-  @spec lines_or_bytes(source_opts) :: :line | integer()
+  @spec lines_or_bytes(source_opts) :: :line | non_neg_integer
   def lines_or_bytes(opts) do
     case Keyword.get(opts, :read) do
       nil -> :line
       :lines -> :line
       :bytes -> Keyword.get(opts, :byte_count, 100)
     end
+  end
+
+  @spec chunk_size(source_opts) :: non_neg_integer
+  def chunk_size(opts) do
+    Keyword.get(opts, :chunk_size, 1_000)
   end
 end

@@ -10,14 +10,18 @@ defmodule Extract.Decode.JsonLines do
     def execute(_step, context) do
       source = fn opts ->
         get_stream(context, opts)
-        |> Stream.map(fn message ->
-          Extract.Message.update_data(message, &Jason.decode!/1)
-        end)
+        |> Stream.map(&decode_chunk/1)
       end
 
       context
       |> set_source(source)
       |> Ok.ok()
+    end
+
+    defp decode_chunk(chunk) do
+      Enum.map(chunk, fn message ->
+        Extract.Message.update_data(message, &Jason.decode!/1)
+      end)
     end
   end
 end

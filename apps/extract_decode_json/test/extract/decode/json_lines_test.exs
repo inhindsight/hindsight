@@ -21,11 +21,10 @@ defmodule Extract.Decode.JsonLinesTest do
     test "decodes json lines file as a stream" do
       source = fn _ ->
         [
-          json(%{"name" => "john", "age" => 21}),
-          json(%{"name" => "Fred", "age" => 34}),
-          json(%{"name" => "george", "age" => 36})
+          [json(%{"name" => "john", "age" => 21}), json(%{"name" => "Fred", "age" => 34})]
+          |> to_extract_messages(),
+          [json(%{"name" => "george", "age" => 36})] |> to_extract_messages()
         ]
-        |> to_extract_messages()
       end
 
       context = Context.new() |> Context.set_source(source)
@@ -33,11 +32,10 @@ defmodule Extract.Decode.JsonLinesTest do
 
       assert Context.get_stream(context) |> Enum.to_list() ==
                [
-                 %{"name" => "john", "age" => 21},
-                 %{"name" => "Fred", "age" => 34},
-                 %{"name" => "george", "age" => 36}
+                 [%{"name" => "john", "age" => 21}, %{"name" => "Fred", "age" => 34}]
+                 |> to_extract_messages(),
+                 [%{"name" => "george", "age" => 36}] |> to_extract_messages()
                ]
-               |> to_extract_messages()
     end
   end
 

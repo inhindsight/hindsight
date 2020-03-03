@@ -52,7 +52,7 @@ defmodule Extract.Http.GetTest do
       {:ok, context} = Extract.Step.execute(step, Context.new())
 
       expected_message = Extract.Message.new(data: "hello")
-      assert [expected_message] == Context.get_stream(context) |> Enum.to_list()
+      assert [[expected_message]] == Context.get_stream(context) |> Enum.to_list()
     end
 
     test "execute will replace variables in url", %{bypass: bypass} do
@@ -65,7 +65,7 @@ defmodule Extract.Http.GetTest do
       {:ok, context} = Extract.Step.execute(step, context)
 
       expected_message = Extract.Message.new(data: "hello")
-      assert [expected_message] == Context.get_stream(context) |> Enum.to_list()
+      assert [[expected_message]] == Context.get_stream(context) |> Enum.to_list()
     end
 
     test "execute will add headers to request", %{bypass: bypass} do

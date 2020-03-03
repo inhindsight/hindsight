@@ -91,7 +91,7 @@ defmodule Extract.Kafka.Subscribe do
             end)
 
           Logger.debug(fn -> "#{__MODULE__}: adding to source #{inspect(extract_messages)}" end)
-          {extract_messages, acc}
+          {[extract_messages], acc}
       end
     end
 

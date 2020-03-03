@@ -26,11 +26,13 @@ defmodule Extract.Decode.GtfsTest do
         |> Stream.transform(0, fn data, acc ->
           {[Extract.Message.new(data: data, meta: %{"id" => acc})], acc + 1}
         end)
+        |> Stream.chunk_every(10)
       end
 
       expected_id =
         source.(read: :bytes)
         |> Enum.to_list()
+        |> List.flatten()
         |> List.last()
         |> get_in([Access.key(:meta), "id"])
 
@@ -45,7 +47,9 @@ defmodule Extract.Decode.GtfsTest do
         end)
 
       {:ok, context} = Extract.Step.execute(%Extract.Decode.Gtfs{}, context)
-      assert expected == Context.get_stream(context)
+
+      assert Enum.chunk_every(expected, 2) ==
+               Context.get_stream(context, chunk_size: 2) |> Enum.to_list()
     end
   end
 end

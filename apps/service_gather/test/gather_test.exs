@@ -75,10 +75,11 @@ defmodule GatherTest do
     Brook.Test.send(@instance, extract_start(), "testing", extract)
 
     assert_receive {:write, ^dummy_process, messages, [dataset_id: "test-ds1"]}, 5_000
-    assert messages == [%{"A" => "one", "B" => "two", "C" => "three"}]
 
-    assert_receive {:write, ^dummy_process, messages, [dataset_id: "test-ds1"]}, 5_000
-    assert messages == [%{"A" => "four", "B" => "five", "C" => "six"}]
+    assert messages == [
+             %{"A" => "one", "B" => "two", "C" => "three"},
+             %{"A" => "four", "B" => "five", "C" => "six"}
+           ]
 
     assert extract == Extraction.Store.get!(extract.dataset_id, extract.subset_id)
   end
