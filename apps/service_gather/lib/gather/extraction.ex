@@ -64,11 +64,11 @@ defmodule Gather.Extraction do
     writer_opts = [dataset_id: extract.dataset_id]
 
     Context.get_stream(context)
-    |> Ok.each(fn message ->
-      with data <- [Map.get(message, :data)],
+    |> Ok.each(fn chunk ->
+      with data <- Enum.map(chunk, &Map.get(&1, :data)),
            normalized_messages <- normalize(extract, data),
            :ok <- writer().write(writer, normalized_messages, writer_opts) do
-        Context.run_after_functions(context, [message])
+        Context.run_after_functions(context, chunk)
         :ok
       end
     end)

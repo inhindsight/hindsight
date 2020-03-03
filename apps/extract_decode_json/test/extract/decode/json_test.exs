@@ -30,15 +30,16 @@ defmodule Extract.Decode.JsonTest do
       context = Context.new() |> Context.set_source(source)
       {:ok, context} = Extract.Step.execute(%Extract.Decode.Json{}, context)
 
-      expected =
+      expected = [
         [
           %{"name" => "Kyle", "age" => 2},
           %{"name" => "Joe", "age" => 21},
           %{"name" => "Bobby", "age" => 62}
         ]
         |> to_extract_messages(4)
+      ]
 
-      assert Context.get_stream(context) == expected
+      assert Context.get_stream(context) |> Enum.to_list() == expected
     end
 
     test "decodes a non-list stream to json" do
@@ -55,8 +56,8 @@ defmodule Extract.Decode.JsonTest do
       context = Context.new() |> Context.set_source(source)
       {:ok, context} = Extract.Step.execute(%Extract.Decode.Json{}, context)
 
-      expected = [%{"name" => "Jay", "age" => 42}] |> to_extract_messages(2)
-      assert Context.get_stream(context) == expected
+      expected = [[%{"name" => "Jay", "age" => 42}] |> to_extract_messages(2)]
+      assert Context.get_stream(context) |> Enum.to_list() == expected
     end
   end
 

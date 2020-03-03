@@ -20,6 +20,7 @@ defmodule Extract.Decode.Gtfs do
         |> TransitRealtime.FeedMessage.decode()
         |> Map.get(:entity)
         |> Enum.map(&Extract.Message.new(data: &1, meta: meta))
+        |> Stream.chunk_every(chunk_size(opts))
       end
 
       context

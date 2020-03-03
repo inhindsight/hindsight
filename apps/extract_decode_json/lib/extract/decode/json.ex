@@ -18,6 +18,7 @@ defmodule Extract.Decode.Json do
         |> Jason.decode!()
         |> List.wrap()
         |> Enum.map(&Extract.Message.new(data: &1, meta: meta))
+        |> Stream.chunk_every(chunk_size(opts))
       end
 
       context

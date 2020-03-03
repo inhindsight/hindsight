@@ -47,7 +47,9 @@ defmodule Extract.Decode.GtfsTest do
         end)
 
       {:ok, context} = Extract.Step.execute(%Extract.Decode.Gtfs{}, context)
-      assert expected == Context.get_stream(context)
+
+      assert Enum.chunk_every(expected, 2) ==
+               Context.get_stream(context, chunk_size: 2) |> Enum.to_list()
     end
   end
 end
