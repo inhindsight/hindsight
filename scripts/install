@@ -11,18 +11,43 @@ function usage {
     exit 0
 }
 
-function strimzi {
-    helm repo add strimzi https://strimzi.io/charts/
+function info {
+    local -r message=${1:?MESSAGE REQUIRED}
+    echo "[INFO] $message"
+}
 
-    helm upgrade strimzi-kafka-operator strimzi/strimzi-kafka-operator \
-         --install \
-         --version 0.16.2 \
-         --set watchAnyNamespace=true
+function check_strimzi {
+    local timeout=${1:-10s}
 
     kubectl wait pod \
             --selector name=strimzi-cluster-operator \
             --for condition=Ready \
-            --timeout=300s
+            --timeout=${timeout}
+}
+
+function deps {
+    local -r added_p=$(helm repo list | grep -s google)
+
+    if [[ ! $added_p ]]; then
+        info "Installing Helm dependencies"
+        helm repo add google https://kubernetes-charts.storage.googleapis.com
+        (cd ./helm; helm dependency build)
+    fi
+}
+
+function strimzi {
+    if [[ ! $(check_strimzi) ]]; then
+        info "Adding strimzi repo"
+        helm repo add strimzi https://strimzi.io/charts/
+
+        info "Installing Strimzi"
+        helm upgrade strimzi-kafka-operator strimzi/strimzi-kafka-operator \
+             --install \
+             --version 0.16.2 \
+             --set watchAnyNamespace=true
+
+        check_strimzi 300s
+    fi
 }
 
 function hindsight {
@@ -35,9 +60,9 @@ function hindsight {
         local -r set_values="--set $vals"
     fi
 
-    helm repo add google https://kubernetes-charts.storage.googleapis.com
-    (cd ./helm; helm dependency build)
+    deps
 
+    info "Installing Hindsight"
     helm upgrade ${release} ./helm \
          --install \
          --namespace ${ns} \
