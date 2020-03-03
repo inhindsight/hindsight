@@ -3,10 +3,11 @@
 set -eo pipefail
 
 function usage {
-    echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] [set-kv-pairs]"
+    echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] [aws|local] [<key=value>, ...]"
     echo
     echo "EXAMPLE"
-    echo "    ./scripts/install foo bar abc=123 x.y.z=42"
+    echo "    ./scripts/install foo bar local abc=123 x.y.z=42"
+    echo "    ./scripts/install abc default aws image.tag=latest"
     echo
     exit 0
 }
@@ -53,7 +54,8 @@ function strimzi {
 function hindsight {
     local -r release="${1:?Release name required.}"
     local -r ns="${2:?Namespace required.}"
-    shift 2
+    local -r location="${3:?Location required.}"
+    shift 3
 
     if [ $# -gt 0 ]; then
         local -r vals=$(IFS=, ; echo "$*")
@@ -66,6 +68,7 @@ function hindsight {
     helm upgrade ${release} ./helm \
          --install \
          --namespace ${ns} \
+         --values ./helm/presets/${location}.yaml \
          ${set_values}
 }
 
