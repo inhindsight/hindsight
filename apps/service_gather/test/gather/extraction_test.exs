@@ -51,7 +51,11 @@ defmodule Gather.ExtractionTest do
         subset_id: "happy-path",
         destination: "topic1",
         steps: [
-          %Fake.Step{pid: self(), values: Stream.cycle([%{"one" => "1"}]) |> Stream.take(100)}
+          %Fake.Step{
+            pid: self(),
+            chunk_size: 10,
+            values: Stream.cycle([%{"one" => "1"}]) |> Stream.take(100)
+          }
         ],
         dictionary: [
           Dictionary.Type.Integer.new!(name: "one")
@@ -61,10 +65,11 @@ defmodule Gather.ExtractionTest do
     {:ok, pid} = Extraction.start_link(extract: extract)
 
     assert_receive {:EXIT, ^pid, :normal}, 2_000
-    Enum.each(1..100, fn _ -> assert_receive {:write, _, [%{"one" => 1}], _} end)
+    expected = Enum.map(1..10, fn _ -> %{"one" => 1} end)
+    Enum.each(1..10, fn _ -> assert_receive {:write, _, ^expected, _} end)
 
-    original = Extract.Message.new(data: %{"one" => "1"})
-    Enum.each(1..100, fn _ -> assert_receive {:after, [^original]} end)
+    originals = Enum.map(1..10, fn _ -> Extract.Message.new(data: %{"one" => "1"}) end)
+    Enum.each(1..10, fn _ -> assert_receive {:after, ^originals} end)
 
     assert_down(pid)
   end

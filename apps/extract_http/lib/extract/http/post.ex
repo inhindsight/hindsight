@@ -41,6 +41,7 @@ defmodule Extract.Http.Post do
         fn line, acc -> {[Extract.Message.new(data: line)], acc} end,
         fn _acc -> File.rm!(response.destination) end
       )
+      |> Stream.chunk_every(chunk_size(opts))
     end
 
     defp replace_variables_in_headers(context, headers) do

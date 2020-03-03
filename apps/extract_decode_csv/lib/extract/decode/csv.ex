@@ -20,18 +20,28 @@ defmodule Extract.Decode.Csv do
     def execute(step, context) do
       source = fn opts ->
         get_stream(context, opts)
-        |> Stream.transform(%{skip: step.skip_first_line}, fn
-          message, %{skip: false} = acc ->
-            {[Extract.Message.update_data(message, &parse(&1, step.headers))], acc}
-
-          _message, %{skip: true} = acc ->
-            {[], %{acc | skip: false}}
+        |> Stream.transform(%{skip: step.skip_first_line}, fn chunk, %{skip: skip} = acc ->
+          parsed_chunk = parse_chunk(chunk, step.headers, skip)
+          {[parsed_chunk], %{acc | skip: false}}
         end)
       end
 
       context
       |> set_source(source)
       |> Ok.ok()
+    end
+
+    defp parse_chunk(chunk, headers, skip) do
+      {buffer, _} =
+        Enum.reduce(chunk, {[], skip}, fn
+          message, {buffer, false} ->
+            {[Extract.Message.update_data(message, &parse(&1, headers)) | buffer], false}
+
+          _message, {buffer, true} ->
+            {buffer, false}
+        end)
+
+      Enum.reverse(buffer)
     end
 
     defp parse(data, headers) do
