@@ -171,7 +171,11 @@ config :service_broadcast, Broadcast.Stream.Broadway,
 bucket_region = [region: System.get_env("BUCKET_REGION", "local")]
 
 object_storage =
-  [host: System.get_env("BUCKET_HOST"), scheme: System.get_env("BUCKET_SCHEME"), port: System.get_env("BUCKET_PORT")]
+  [
+    host: System.get_env("BUCKET_HOST"),
+    scheme: System.get_env("BUCKET_SCHEME"),
+    port: System.get_env("BUCKET_PORT")
+  ]
   |> Enum.filter(fn {_, val} -> val end)
   |> Keyword.merge(bucket_region)
 
