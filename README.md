@@ -16,6 +16,14 @@ Our [install](./scripts/install) script will install Strimzi, wait for a `Ready`
 ./scripts/install [RELEASE_NAME] [NAMESPACE] [values]
 ```
 
+### Versioning
+
+By default, `.Chart.AppVersion` from our Helm chart will be deployed. This can be overwritten by setting `image.tag`. The `latest` tag is auto-published to Docker [hub](https://hub.docker.com/r/inhindsight/hindsight) on every merge to master, so use it to get the latest-and-greatest updates. Make sure you set `image.pullPolicy` to `Always` when you do it:
+
+```bash
+./scripts/install [RELEASE_NAME] [NAMESPACE] image.tag=latest image.pullPolicy=Always [...]
+```
+
 ### AWS
 
 To deploy to AWS, we suggest you start with:

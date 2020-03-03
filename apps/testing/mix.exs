@@ -22,6 +22,9 @@ defmodule Testing.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:cowlib, "~> 2.8.0", override: true},
+      {:glock, "~> 0.1.0"}
+    ]
   end
 end

@@ -42,7 +42,10 @@ defmodule Extract.Decode.CsvTest do
       }
 
       source = fn _ ->
-        ["brian,21\n", "rick,34", "johnson,45\n", "greg,89"] |> to_extract_messages()
+        [
+          ["brian,21\n", "rick,34"] |> to_extract_messages(),
+          ["johnson,45\n", "greg,89"] |> to_extract_messages()
+        ]
       end
 
       context = Context.new() |> Context.set_source(source)
@@ -53,12 +56,11 @@ defmodule Extract.Decode.CsvTest do
 
       assert stream ==
                [
-                 %{"name" => "brian", "age" => "21"},
-                 %{"name" => "rick", "age" => "34"},
-                 %{"name" => "johnson", "age" => "45"},
-                 %{"name" => "greg", "age" => "89"}
+                 [%{"name" => "brian", "age" => "21"}, %{"name" => "rick", "age" => "34"}]
+                 |> to_extract_messages(),
+                 [%{"name" => "johnson", "age" => "45"}, %{"name" => "greg", "age" => "89"}]
+                 |> to_extract_messages()
                ]
-               |> to_extract_messages()
     end
 
     test "parses csv while skipping first line" do
@@ -68,7 +70,10 @@ defmodule Extract.Decode.CsvTest do
       }
 
       source = fn _ ->
-        ["brian,21\n", "rick,34", "johnson,45\n", "greg,89"] |> to_extract_messages()
+        [
+          ["brian,21\n", "rick,34"] |> to_extract_messages(),
+          ["johnson,45\n", "greg,89"] |> to_extract_messages()
+        ]
       end
 
       context = Context.new() |> Context.set_source(source)
@@ -79,11 +84,10 @@ defmodule Extract.Decode.CsvTest do
 
       assert stream ==
                [
-                 %{"name" => "rick", "age" => "34"},
-                 %{"name" => "johnson", "age" => "45"},
-                 %{"name" => "greg", "age" => "89"}
+                 [%{"name" => "rick", "age" => "34"}] |> to_extract_messages(),
+                 [%{"name" => "johnson", "age" => "45"}, %{"name" => "greg", "age" => "89"}]
+                 |> to_extract_messages()
                ]
-               |> to_extract_messages()
     end
   end
 

@@ -52,7 +52,9 @@ defmodule Hindsight.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:cowlib, "~> 2.8.0", override: true}
+    ]
   end
 
   defp aliases() do

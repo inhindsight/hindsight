@@ -45,11 +45,11 @@ defmodule GatherTest do
     end)
 
     Gather.WriterMock
-    |> expect(:start_link, fn args ->
+    |> stub(:start_link, fn args ->
       send(test, {:start_link, args})
       {:ok, dummy_process}
     end)
-    |> expect(:write, fn server, messages, opts ->
+    |> stub(:write, fn server, messages, opts ->
       send(test, {:write, server, messages, opts})
       :ok
     end)

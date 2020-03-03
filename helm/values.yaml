@@ -54,14 +54,15 @@ redis:
 
 image:
   repository: inhindsight/hindsight
-  pullPolicy: IfNotPresent
+  tag: ""
+  pullPolicy: Always
 
 global:
   objectStore:
     bucketName: hindsight-object-storage
     region: us-east-1
-    accessKey: false
-    accessSecret: false
+    accessKey: hindsightAccessKey
+    accessSecret: hindsightAccessSecret
 
 imagePullSecrets: []
 nameOverride: ""

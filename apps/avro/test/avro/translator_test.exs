@@ -32,6 +32,11 @@ defmodule Avro.TranslatorTest do
         "1977-05-27T00:00:00Z",
         233_539_200_000
       ],
+      [
+        Dictionary.Type.Timestamp.new!(name: "timestamp", format: "%Y-%m-%dT%H:%i:%S"),
+        "1977-05-27T00:00:00",
+        233_539_200_000
+      ],
       [Dictionary.Type.Latitude.new!(name: "lat"), 85.65, 85.65],
       [Dictionary.Type.Longitude.new!(name: "long"), 100.65, 100.65],
       [

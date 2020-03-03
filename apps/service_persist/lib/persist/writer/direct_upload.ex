@@ -5,23 +5,22 @@ defmodule Persist.Writer.DirectUpload do
 
   @type init_opts :: [
           load: Load.Persist.t(),
-          dictionary: Dictionary.t()
+          dictionary: Dictionary.t(),
+          name: GenServer.name()
         ]
 
-  getter(:data_file, default: Persist.DataFile.Avro)
-  getter(:uploader, default: Persist.Uploader.S3)
-  getter(:table_creator, default: Persist.TableCreator.Presto)
+  getter(:call_timeout, default: 20_000)
 
   @impl Writer
   def write(server, messages, opts \\ []) do
-    GenServer.call(server, {:write, messages, opts})
+    GenServer.call(server, {:write, messages, opts}, call_timeout())
   end
 
   @impl Writer
   @spec start_link(init_opts) :: GenServer.on_start()
-  def start_link(init_arg) do
-    name = Keyword.get(init_arg, :name, nil)
-    GenServer.start_link(__MODULE__, init_arg, name: name)
+  def start_link(init_opts) do
+    server_opts = Keyword.take(init_opts, [:name])
+    GenServer.start_link(__MODULE__, init_opts, server_opts)
   end
 
   @impl GenServer
@@ -36,7 +35,7 @@ defmodule Persist.Writer.DirectUpload do
       dictionary: dictionary
     }
 
-    case table_creator().create(load.destination, dictionary) do
+    case Persist.TableManager.create(load.destination, dictionary, Persist.DataFile.format()) do
       :ok -> {:ok, state}
       {:error, reason} -> {:stop, reason}
     end
@@ -44,19 +43,23 @@ defmodule Persist.Writer.DirectUpload do
 
   @impl GenServer
   def handle_call({:write, messages, _opts}, _from, state) do
-    with {:ok, data_file} <- data_file().open(state.load.destination, state.dictionary),
-         {:ok, _size} <- data_file().write(data_file, messages),
-         {:ok, _} <- upload_file(data_file, state.load.destination) do
+    with {:ok, data_file} <- Persist.DataFile.open(state.load.destination, state.dictionary),
+         {:ok, _size} <- Persist.DataFile.write(data_file, messages),
+         file_path <- Persist.DataFile.close(data_file),
+         {:ok, _} <- upload_file(file_path, state.load.destination) do
+      File.rm(file_path)
       {:reply, :ok, state}
     else
       {:error, reason} -> {:stop, reason, {:error, reason}, state}
     end
   end
 
-  defp upload_file(data_file, destination) do
-    file_path = data_file().close(data_file)
-    result = uploader().upload(file_path, "#{destination}/#{:erlang.system_time(:nanosecond)}")
-    File.rm(file_path)
-    result
+  defp upload_file(file_path, destination) do
+    extension = Path.extname(file_path)
+
+    Persist.DataStorage.upload(
+      file_path,
+      "#{destination}/#{:erlang.system_time(:nanosecond)}#{extension}"
+    )
   end
 end

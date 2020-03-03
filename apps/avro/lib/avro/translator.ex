@@ -140,6 +140,13 @@ defimpl Avro.Translator, for: Dictionary.Type.Timestamp do
     :avro_union.type([timestamp, :null])
   end
 
+  def value(_, iso_timestamp) when byte_size(iso_timestamp) == 19 do
+    with {:ok, timestamp} <- NaiveDateTime.from_iso8601(iso_timestamp) do
+      NaiveDateTime.diff(timestamp, Timex.to_naive_datetime(@epoch), :millisecond)
+      |> Ok.ok()
+    end
+  end
+
   def value(_, iso_timestamp) do
     with {:ok, timestamp, _} <- DateTime.from_iso8601(iso_timestamp) do
       DateTime.diff(timestamp, @epoch, :millisecond)

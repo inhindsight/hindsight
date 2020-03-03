@@ -4,6 +4,18 @@ on:
     branches:
       - master
 jobs:
+  publish:
+    name: Push latest Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Push
+        uses: elgohr/Publish-Docker-Github-Action@2.12
+        with:
+          name: inhindsight/hindsight
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
   dialyzer:
     name: Cache PLT
     runs-on: ubuntu-latest

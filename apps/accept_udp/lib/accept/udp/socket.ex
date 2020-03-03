@@ -1,18 +1,15 @@
 defmodule Accept.Udp.Socket do
   @moduledoc "TODO"
 
-  @type init_opts :: Accept.Socket.init_opts()
-
   use GenServer
   use Accept.Socket
   require Logger
 
-  @impl Accept.Socket
+  @spec start_link(init_opts :: keyword) :: GenServer.on_start()
   def start_link(init_opts) do
-    port = Keyword.fetch!(init_opts, :port)
-    name = Keyword.get(init_opts, :name, :"udp_#{port}_receiver")
+    server_opts = Keyword.take(init_opts, [:name])
 
-    GenServer.start_link(__MODULE__, init_opts, name: name)
+    GenServer.start_link(__MODULE__, init_opts, server_opts)
   end
 
   @impl GenServer

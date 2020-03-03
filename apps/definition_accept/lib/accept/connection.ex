@@ -6,6 +6,6 @@ defprotocol Accept.Connection do
           name: GenServer.name()
         ]
 
-  @spec connect(accept :: t, connection_opts) :: {module, keyword}
+  @spec connect(accept :: t, connection_opts) :: {module, atom, keyword}
   def connect(accept, options)
 end

@@ -1,5 +1,6 @@
 defmodule Extract.Kafka.Subscribe do
   use Definition, schema: Extract.Kafka.Subscribe.V1
+  require Logger
 
   @type t :: %__MODULE__{
           version: integer,
@@ -74,6 +75,8 @@ defmodule Extract.Kafka.Subscribe do
     defp receive_messages(acc) do
       receive do
         {:kafka_subscribe, messages} ->
+          Logger.debug(fn -> "#{__MODULE__}: received #{inspect(messages)}" end)
+
           extract_messages =
             Enum.map(messages, fn %{value: payload} = elsa_message ->
               meta =
@@ -87,7 +90,8 @@ defmodule Extract.Kafka.Subscribe do
               Extract.Message.new(data: payload, meta: %{"kafka" => meta})
             end)
 
-          {extract_messages, acc}
+          Logger.debug(fn -> "#{__MODULE__}: adding to source #{inspect(extract_messages)}" end)
+          {[extract_messages], acc}
       end
     end
 
@@ -98,6 +102,8 @@ defmodule Extract.Kafka.Subscribe do
     end
 
     defp initialize(endpoints, topic, connection) do
+      Logger.debug(fn -> "#{__MODULE__}: Initializing for topic #{topic}" end)
+
       fn ->
         {:ok, elsa} =
           Elsa.Supervisor.start_link(
@@ -130,8 +136,10 @@ end
 
 defmodule Extract.Kafka.Subscribe.Handler do
   use Elsa.Consumer.MessageHandler
+  require Logger
 
   def handle_messages(messages, state) do
+    Logger.debug(fn -> "#{__MODULE__}: received #{inspect(messages)}" end)
     send(state.pid, {:kafka_subscribe, messages})
     {:no_ack, state}
   end

@@ -38,8 +38,8 @@ defmodule Gather.ExtractionTest do
     test = self()
 
     Gather.WriterMock
-    |> expect(:start_link, 1, fn _ -> Agent.start_link(fn -> :dummy end) end)
-    |> expect(:write, 10, fn server, messages, opts ->
+    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
+    |> stub(:write, fn server, messages, opts ->
       send(test, {:write, server, messages, opts})
       :ok
     end)
@@ -51,7 +51,11 @@ defmodule Gather.ExtractionTest do
         subset_id: "happy-path",
         destination: "topic1",
         steps: [
-          %Fake.Step{pid: self(), values: Stream.cycle([%{"one" => "1"}]) |> Stream.take(100)}
+          %Fake.Step{
+            pid: self(),
+            chunk_size: 10,
+            values: Stream.cycle([%{"one" => "1"}]) |> Stream.take(100)
+          }
         ],
         dictionary: [
           Dictionary.Type.Integer.new!(name: "one")
