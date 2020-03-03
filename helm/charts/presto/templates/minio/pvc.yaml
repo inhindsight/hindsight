@@ -1,4 +1,4 @@
-{{- if .Values.minio.enable -}}
+{{- if .Values.global.objectStore.minio.enabled -}}
 {{ if not .Values.minio.azure.enable }}
 kind: PersistentVolumeClaim
 apiVersion: v1

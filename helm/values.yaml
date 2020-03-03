@@ -59,8 +59,12 @@ image:
 
 global:
   objectStore:
+    minio:
+      enabled: true
+      port: 9000
+      scheme: "http://"
     bucketName: hindsight-object-storage
-    region: us-east-1
+    region: local
     accessKey: hindsightAccessKey
     accessSecret: hindsightAccessSecret
 

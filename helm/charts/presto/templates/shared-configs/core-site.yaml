@@ -17,7 +17,7 @@ data:
         <final>true</final>
       </property>
 
-{{- if .Values.minio.enable -}}
+{{- if .Values.global.objectStore.minio.enabled -}}
       <property>
         <name>fs.s3a.endpoint</name>
         <value>http://{{ template "presto.minio.fullname" . }}:{{ .Values.minio.service.port }}</value>
