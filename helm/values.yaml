@@ -33,27 +33,6 @@ strimzi:
     storage:
       enabled: false
       size: ""
-    resources:
-      requests:
-        cpu: 500m
-        memory: 1000M
-      limits:
-        cpu: 500m
-        memory: 1000M
-  zookeeper:
-    resources:
-      requests:
-        cpu: 10m
-        memory: 512Mi
-      limits:
-        cpu: 100m
-        memory: 512Mi
-redis:
-  enabled: true
-  usePassword: false
-  cluster:
-    enabled: false
-  externalAddress: ""
 
 image:
   repository: inhindsight/hindsight
@@ -62,14 +41,7 @@ image:
 
 global:
   objectStore:
-    minio:
-      enabled: true
-      port: 9000
-      scheme: "http://"
     bucketName: ""
-    region: local
-    accessKey: hindsightAccessKey
-    accessSecret: hindsightAccessSecret
 
 imagePullSecrets: []
 nameOverride: ""

@@ -1,0 +1,33 @@
+strimzi:
+  kafka:
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1000M
+      limits:
+        cpu: 500m
+        memory: 1000M
+  zookeeper:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 512Mi
+      limits:
+        cpu: 100m
+        memory: 512Mi
+redis:
+  enabled: true
+  usePassword: false
+  cluster:
+    enabled: false
+  externalAddress: ""
+global:
+  objectStore:
+    bucketName: hindsight-object-storage
+    region: local
+    accessKey: hindsightAccessKey
+    accessSecret: hindsightAccessSecret
+    minio:
+      enabled: true
+      port: 9000
+      scheme: "http://"
