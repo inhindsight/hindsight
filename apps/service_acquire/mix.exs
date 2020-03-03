@@ -39,6 +39,7 @@ defmodule Acquire.MixProject do
       {:definition, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:elsa, "~> 0.12", override: true},
       {:extractor, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
