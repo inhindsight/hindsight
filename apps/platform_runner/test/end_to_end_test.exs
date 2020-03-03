@@ -78,6 +78,7 @@ defmodule PlatformRunner.EndToEndTest do
     end
 
     assert_async debug: true, sleep: 1_000, max_tries: 30 do
+      assert Elsa.topic?(@kafka, "e2e-csv-gather")
       assert {:ok, _, messages} = Elsa.fetch(@kafka, "e2e-csv-gather")
 
       assert [["a", "1"], ["b", "2"], ["c", "3"]] =
@@ -195,6 +196,7 @@ defmodule PlatformRunner.EndToEndTest do
       |> Events.send_transform_define("e2e-json", transform)
 
       assert_async debug: true, sleep: 500 do
+        assert Elsa.topic?(@kafka, "e2e-json-gather")
         assert {:ok, _, [message]} = Elsa.fetch(@kafka, "e2e-json-gather")
         assert message.value == data
       end
@@ -340,7 +342,8 @@ defmodule PlatformRunner.EndToEndTest do
       Gather.Application.instance()
       |> Events.send_extract_start("e2e-push-json", extract)
 
-      assert_async debug: true, max_tries: 10, sleep: 5_000 do
+      assert_async debug: true, max_tries: 15, sleep: 5_000 do
+        assert Elsa.topic?(@kafka, "e2e-push-gather")
         assert {:ok, _, messages} = Elsa.fetch(@kafka, "e2e-push-gather")
         assert length(messages) == 6
 

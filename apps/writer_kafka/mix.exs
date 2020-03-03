@@ -24,7 +24,7 @@ defmodule WriterKafka.MixProject do
   defp deps do
     [
       {:writer, in_umbrella: true},
-      {:elsa, git: "https://github.com/bbalser/elsa", override: true},
+      {:elsa, "~> 0.12", override: true},
       {:retry, "~> 0.13.0"},
       {:ok, in_umbrella: true},
       {:telemetry, "~> 0.4.1"},

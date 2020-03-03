@@ -25,7 +25,7 @@ defmodule WriterDlq.MixProject do
   defp deps do
     [
       {:definition, in_umbrella: true},
-      {:elsa, git: "https://github.com/bbalser/elsa", override: true},
+      {:elsa, "~> 0.12", override: true},
       {:writer, in_umbrella: true},
       {:writer_kafka, in_umbrella: true},
       {:properties, in_umbrella: true},

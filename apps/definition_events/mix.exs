@@ -24,7 +24,7 @@ defmodule DefinitionEvents.MixProject do
   defp deps do
     [
       {:brook, "~> 0.5"},
-      {:elsa, git: "https://github.com/bbalser/elsa", override: true},
+      {:elsa, "~> 0.12", override: true},
       {:definition_accept, in_umbrella: true},
       {:definition_extract, in_umbrella: true},
       {:definition_load_broadcast, in_umbrella: true},
