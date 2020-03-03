@@ -10,6 +10,7 @@ defmodule Receive.Event.Handler do
 
     Receive.Accept.Supervisor.start_child({SocketManager, accept: accept})
     Receive.Accept.Store.persist(accept)
+    :ok
   end
 
   def handle_event(%Brook.Event{
@@ -21,5 +22,7 @@ defmodule Receive.Event.Handler do
 
     Receive.Accept.Registry.whereis(:"#{accept.destination}_manager")
     |> Receive.Accept.Supervisor.terminate_child()
+
+    :ok
   end
 end
