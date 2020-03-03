@@ -6,21 +6,21 @@ receive:
     type: ClusterIP
     port: 80
   service_tcp:
-    type: LoadBalancer
+    type: ClusterIP
     port: 6790
 gather:
   replicaCount: 1
 broadcast:
   replicaCount: 1
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 80
 persist:
   replicaCount: 1
 acquire:
   replicaCount: 1
   service:
-    type: LoadBalancer
+    type: ClusterIP
     port: 80
 presto:
   service:
@@ -66,7 +66,7 @@ global:
       enabled: true
       port: 9000
       scheme: "http://"
-    bucketName: hindsight-object-storage
+    bucketName: ""
     region: local
     accessKey: hindsightAccessKey
     accessSecret: hindsightAccessSecret

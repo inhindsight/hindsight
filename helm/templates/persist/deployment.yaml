@@ -46,7 +46,7 @@ spec:
               value: {{ .Values.global.objectStore.accessSecret }}
             {{- end }}
             - name: BUCKET_NAME
-              value: {{ .Values.global.objectStore.bucketName }}
+              value: {{ .Values.global.objectStore.bucketName | required "global.objectStore.bucketName must be set" }}
             - name: BUCKET_REGION
               value: {{ .Values.global.objectStore.region }}
             - name: PRESTO_URL
