@@ -19,62 +19,27 @@ defmodule Platform.Runner.PerformanceTest do
   end
 
   @tag timeout: :infinity
-  test "performance", %{bypass: bypass} do
+  test "performance through persist", %{bypass: bypass} do
     Benchee.run(
       %{
-        "csv" => fn -> csv(port: bypass.port) end
+        "csv_persist" => fn -> persist_csv(port: bypass.port, dataset: "persisted") end,
+        "csv_broadcast" => fn -> broadcast_csv(port: bypass.port, dataset: "broadcasted") end
       },
       warmup: 0
     )
   end
 
-  defp csv(opts) do
-    # dictionary = Enum.map(1..100, fn i -> Dictionary.Type.String.new!(name: "string_#{i}") end)
-    # headers = Enum.map(dictionary, &Map.get(&1, :name))
-
-    dictionary =
-      Dictionary.from_list([
-        Dictionary.Type.String.new!(name: "letter"),
-        Dictionary.Type.Integer.new!(name: "number")
-      ])
-
-    headers = ["letter", "number"]
-
-    extract =
-      Extract.new!(
-        id: "perf-csv-extract-1",
-        dataset_id: "perf-csv-ds",
-        subset_id: "default",
-        destination: "perf-csv",
-        steps: [
-          Extract.Http.Get.new!(url: "http://localhost:#{Keyword.fetch!(opts, :port)}/file.csv"),
-          Extract.Decode.Csv.new!(headers: headers)
-        ],
-        dictionary: dictionary
-      )
-
-    Gather.Application.instance()
-    |> Events.send_extract_start("performance", extract)
-
-    transform =
-      Transform.new!(
-        id: "perf-csv-tranform-1",
-        dataset_id: "perf-csv-ds",
-        subset_id: "default",
-        dictionary: dictionary,
-        steps: []
-      )
-
-    Gather.Application.instance()
-    |> Events.send_transform_define("performance", transform)
+  defp persist_csv(opts) do
+    ds = Keyword.fetch!(opts, :dataset)
+    csv(opts)
 
     persist =
       Load.Persist.new!(
-        id: "perf-csv-persist-1",
-        dataset_id: "perf-csv-ds",
+        id: "perf-#{ds}-persist-1",
+        dataset_id: "perf-#{ds}",
         subset_id: "default",
-        source: "perf-csv",
-        destination: "perf_csv"
+        source: "perf-#{ds}-csv",
+        destination: "perf_#{ds}_persist"
       )
 
     Gather.Application.instance()
@@ -89,11 +54,78 @@ defmodule Platform.Runner.PerformanceTest do
       )
 
     assert_async sleep: 1_000, max_tries: 1_000, debug: true do
-      with {:ok, result} <- Prestige.query(session, "select count(*) from perf_csv") do
+      with {:ok, result} <- Prestige.query(session, "select count(*) from perf_#{ds}_persist") do
         assert result.rows == [[100_000]]
       else
         {:error, reason} -> flunk(inspect(reason))
       end
     end
+  end
+
+  defp broadcast_csv(opts) do
+    ds = Keyword.fetch!(opts, :dataset)
+    csv(opts)
+
+    broadcast =
+      Load.Broadcast.new!(
+        id: "perf-#{ds}-broadcast-1",
+        dataset_id: "perf-#{ds}",
+        subset_id: "default",
+        source: "perf-#{ds}-csv",
+        destination: "perf_#{ds}_broadcast"
+      )
+
+    {:ok, _} =
+      PlatformRunner.BroadcastClient.join(
+        caller: self(),
+        topic: broadcast.destination
+      )
+
+    Gather.Application.instance()
+    |> Events.send_load_broadcast_start("performance", broadcast)
+
+    assert_receive %{"letter" => "b", "number" => 100_000}, 90_000
+  end
+
+  defp csv(opts) do
+    # dictionary = Enum.map(1..100, fn i -> Dictionary.Type.String.new!(name: "string_#{i}") end)
+    # headers = Enum.map(dictionary, &Map.get(&1, :name))
+    ds = Keyword.fetch!(opts, :dataset)
+
+    dictionary =
+      Dictionary.from_list([
+        Dictionary.Type.String.new!(name: "letter"),
+        Dictionary.Type.Integer.new!(name: "number")
+      ])
+
+    headers = ["letter", "number"]
+
+    extract =
+      Extract.new!(
+        id: "perf-#{ds}-extract-1",
+        dataset_id: "perf-#{ds}",
+        subset_id: "default",
+        destination: "perf-#{ds}-csv",
+        steps: [
+          Extract.Http.Get.new!(url: "http://localhost:#{Keyword.fetch!(opts, :port)}/file.csv"),
+          Extract.Decode.Csv.new!(headers: headers)
+        ],
+        dictionary: dictionary
+      )
+
+    Gather.Application.instance()
+    |> Events.send_extract_start("performance", extract)
+
+    transform =
+      Transform.new!(
+        id: "perf-#{ds}-tranform-1",
+        dataset_id: "perf-#{ds}",
+        subset_id: "default",
+        dictionary: dictionary,
+        Steps: []
+      )
+
+    Gather.Application.instance()
+    |> Events.send_transform_define("performance", transform)
   end
 end

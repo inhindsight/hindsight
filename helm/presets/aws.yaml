@@ -7,6 +7,13 @@ broadcast:
 acquire:
   service:
     type: LoadBalancer
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 strimzi:
   kafka:
     resources:
