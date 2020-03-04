@@ -29,6 +29,10 @@ strimzi:
     storage:
       enabled: false
       size: ""
+redis:
+  usePassword: false
+  cluster:
+    enabled: false
 
 image:
   repository: inhindsight/hindsight
