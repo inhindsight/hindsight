@@ -5,5 +5,5 @@ metadata:
   name: {{ template "redis.host" . }}
 spec:
   type: ExternalName
-  externalName: {{ .Values.redis.externalAddress }}
+  externalName: {{ .Values.redis.externalAddress | required "redis.externalAddress must be set" }}
 {{- end -}}

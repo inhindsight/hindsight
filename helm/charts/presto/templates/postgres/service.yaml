@@ -6,10 +6,7 @@ metadata:
     component: postgres
 {{ include "presto.labels" . | indent 4 }}
 spec:
-{{- if .Values.postgres.service.externalAddress }}
-  type: ExternalName
-  externalName: {{ .Values.postgres.service.externalAddress }}
-{{- else }}
+{{- if .Values.postgres.enable }}
   type: {{ .Values.postgres.service.type }}
   ports:
   - port: {{ .Values.postgres.service.port }}
@@ -18,4 +15,7 @@ spec:
   selector:
     component: postgres
 {{ include "presto.labels" . | indent 4 }}
+{{- else }}
+  type: ExternalName
+  externalName: {{ .Values.postgres.service.externalAddress | required "presto.postgres.service.externalAddress must be set" }}
 {{- end }}

@@ -31,7 +31,7 @@ data:
   hive.properties: |
     connector.name=hive-hadoop2
     hive.metastore.uri=thrift://{{ template "presto.metastore.fullname" . }}:{{ .Values.metastore.service.port }}
-    hive.metastore.username={{ .Values.postgres.db.user }}
+    hive.metastore.username={{ .Values.postgres.db.user | required "presto.postgres.db.user must be set" }}
     hive.config.resources=/etc/hadoop/conf/core-site.xml
     hive.metastore-timeout={{ .Values.metastore.timeout }}
     hive.allow-drop-table={{ .Values.metastore.allowDropTable }}

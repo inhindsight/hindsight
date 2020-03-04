@@ -13,7 +13,7 @@ data:
 
       <property>
         <name>fs.defaultFS</name>
-        <value>s3a://{{ .Values.global.objectStore.bucketName }}</value>
+        <value>s3a://{{ .Values.global.objectStore.bucketName | required "global.objectStore.bucketName must be set" }}</value>
         <final>true</final>
       </property>
 
