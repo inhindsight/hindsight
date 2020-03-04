@@ -42,6 +42,7 @@ defmodule Extract.Decode.GtfsTest do
         File.read!("VehiclePositions.pb")
         |> TransitRealtime.FeedMessage.decode()
         |> Map.get(:entity)
+        |> Enum.map(&Extract.Decode.Gtfs.decode_struct/1)
         |> Enum.map(fn entity ->
           Extract.Message.new(data: entity, meta: %{"id" => expected_id})
         end)
