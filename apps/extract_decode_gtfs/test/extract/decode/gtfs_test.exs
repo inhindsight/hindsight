@@ -42,6 +42,7 @@ defmodule Extract.Decode.GtfsTest do
         File.read!("VehiclePositions.pb")
         |> TransitRealtime.FeedMessage.decode()
         |> Map.get(:entity)
+        |> Enum.map(&decode_struct/1)
         |> Enum.map(fn entity ->
           Extract.Message.new(data: entity, meta: %{"id" => expected_id})
         end)
@@ -52,4 +53,12 @@ defmodule Extract.Decode.GtfsTest do
                Context.get_stream(context, chunk_size: 2) |> Enum.to_list()
     end
   end
+
+  defp decode_struct(%_struct{} = entity) do
+    entity
+    |> Map.from_struct()
+    |> Map.new(fn {k, v} -> {Atom.to_string(k), decode_struct(v)} end)
+  end
+
+  defp decode_struct(element), do: element
 end

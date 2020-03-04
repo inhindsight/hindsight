@@ -19,6 +19,7 @@ defmodule Extract.Decode.Gtfs do
         |> Enum.join()
         |> TransitRealtime.FeedMessage.decode()
         |> Map.get(:entity)
+        |> Enum.map(&decode_struct/1)
         |> Enum.map(&Extract.Message.new(data: &1, meta: meta))
         |> Stream.chunk_every(chunk_size(opts))
       end
@@ -27,6 +28,14 @@ defmodule Extract.Decode.Gtfs do
       |> set_source(source)
       |> Ok.ok()
     end
+
+    defp decode_struct(%_struct{} = entity) do
+      entity
+      |> Map.from_struct()
+      |> Map.new(fn {k, v} -> {Atom.to_string(k), decode_struct(v)} end)
+    end
+
+    defp decode_struct(element), do: element
   end
 end
 
