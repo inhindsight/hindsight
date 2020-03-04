@@ -1,3 +1,14 @@
+receive:
+  service:
+    type: NodePort
+  service_tcp:
+    type: NodePort
+broadcast:
+  service:
+    type: NodePort
+acquire:
+  service:
+    type: NodePort
 strimzi:
   kafka:
     resources:

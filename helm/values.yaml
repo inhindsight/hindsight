@@ -3,28 +3,24 @@ orchestrate:
 receive:
   replicaCount: 1
   service:
-    type: ClusterIP
     port: 80
   service_tcp:
-    type: ClusterIP
     port: 6790
 gather:
   replicaCount: 1
 broadcast:
   replicaCount: 1
   service:
-    type: ClusterIP
     port: 80
 persist:
   replicaCount: 1
 acquire:
   replicaCount: 1
   service:
-    type: ClusterIP
     port: 80
 presto:
   service:
-    type: NodePort
+    type: ClusterIP
     port: 8080
 strimzi:
   enabled: true
