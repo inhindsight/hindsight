@@ -25,6 +25,7 @@ defmodule Extract.Steps.MixProject do
 
   defp deps do
     [
+      {:elsa, "~> 0.12", override: true},
       {:extract_step, in_umbrella: true},
       {:extract_decode_csv, in_umbrella: true},
       {:extract_decode_gtfs, in_umbrella: true},

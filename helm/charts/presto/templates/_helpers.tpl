@@ -55,11 +55,7 @@ Create a fully qualified postgres name.
 Create a fully qualified minio name.
 */}}
 {{- define "presto.minio.fullname" -}}
-{{- if .Values.minio.fullnameOverride -}}
-{{- .Values.minio.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
 {{- printf "%s-%s-%s" .Release.Name "hindsight" "minio" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
 {{- end -}}
 
 {{/*

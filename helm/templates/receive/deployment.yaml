@@ -36,6 +36,9 @@ spec:
             - name: http
               containerPort: 80
               protocol: UDP
+            - name: websocket
+              containerPort: 6790
+              protocol: TCP
           env:
             - name: KAFKA_ENDPOINTS
               value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092

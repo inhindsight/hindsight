@@ -16,7 +16,7 @@ data:
       </property>
       <property>
         <name>metastore.warehouse.dir</name>
-        <value>s3a://{{ .Values.global.objectStore.bucketName }}/{{ .Values.metastore.warehouseDir }}</value>
+        <value>s3a://{{ .Values.global.objectStore.bucketName | required "global.objectStore.bucketName must be set" }}/{{ .Values.metastore.warehouseDir }}</value>
       </property>
       <property>
         <name>metastore.task.threads.always</name>
@@ -36,11 +36,11 @@ data:
       </property>
       <property>
         <name>javax.jdo.option.ConnectionUserName</name>
-        <value>{{ .Values.postgres.db.user }}</value>
+        <value>{{ .Values.postgres.db.user | required "presto.postgres.db.user must be set" }}</value>
       </property>
       <property>
         <name>javax.jdo.option.ConnectionPassword</name>
-        <value>{{ .Values.postgres.db.password }}</value>
+        <value>{{ .Values.postgres.db.password | required "presto.postgres.db.password must be set" }}</value>
       </property>
       <property>
         <name>metastore.metastore.event.db.notification.api.auth</name>

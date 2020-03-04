@@ -33,8 +33,20 @@ spec:
             - start
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            {{- if .Values.global.objectStore.minio.enabled }}
+            - name: BUCKET_HOST
+              value: {{ template "presto.minio.fullname" . }}
+            - name: BUCKET_PORT
+              value: {{ .Values.global.objectStore.minio.port | quote }}
+            - name: BUCKET_SCHEME
+              value: {{ .Values.global.objectStore.minio.scheme }}
+            - name: AWS_ACCESS_KEY_ID
+              value: {{ .Values.global.objectStore.accessKey }}
+            - name: AWS_SECRET_ACCESS_KEY
+              value: {{ .Values.global.objectStore.accessSecret }}
+            {{- end }}
             - name: BUCKET_NAME
-              value: {{ .Values.global.objectStore.bucketName }}
+              value: {{ .Values.global.objectStore.bucketName | required "global.objectStore.bucketName must be set" }}
             - name: BUCKET_REGION
               value: {{ .Values.global.objectStore.region }}
             - name: PRESTO_URL

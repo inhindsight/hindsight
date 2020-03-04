@@ -27,6 +27,7 @@ defmodule Orchestrate.MixProject do
       {:brook, "~> 0.5"},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:elsa, "~> 0.12", override: true},
       {:extractor, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:quantum, "~> 2.3"},

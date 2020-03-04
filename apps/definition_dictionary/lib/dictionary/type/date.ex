@@ -15,7 +15,7 @@ defmodule Dictionary.Type.Date do
     end
 
     def normalize(%{format: format}, value) do
-      with {:ok, date} <- Timex.parse(VALUE, Format, @tokenizer) do
+      with {:ok, date} <- Timex.parse(value, format, @tokenizer) do
         date
         |> Date.to_iso8601()
         |> Ok.ok()

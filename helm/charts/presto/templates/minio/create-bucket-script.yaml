@@ -1,4 +1,4 @@
-{{- if .Values.minio.enable -}}
+{{- if .Values.global.objectStore.minio.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -16,6 +16,6 @@ data:
 
     sleep 10
     mc config host add hindsight http://{{ template "presto.minio.fullname" . }}:{{ .Values.minio.service.port }} {{ .Values.global.objectStore.accessKey }} {{ .Values.global.objectStore.accessSecret }}
-    mc mb hindsight/{{ .Values.global.objectStore.bucketName }}
-    mc policy set public hindsight/{{ .Values.global.objectStore.bucketName }}
+    mc mb hindsight/{{ .Values.global.objectStore.bucketName | required "global.objectStore.bucketName must be set" }}
+    mc policy set public hindsight/{{ .Values.global.objectStore.bucketName | required "global.objectStore.bucketName must be set" }}
 {{- end }}

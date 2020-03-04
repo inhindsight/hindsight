@@ -9,6 +9,6 @@ metadata:
 data:
   init.sql: |-
     CREATE DATABASE {{ .Values.postgres.db.name }};
-    CREATE USER {{ .Values.postgres.db.user }} WITH PASSWORD '{{ .Values.postgres.db.password }}';
-    GRANT ALL PRIVILEGES ON DATABASE {{ .Values.postgres.db.name }} TO {{ .Values.postgres.db.user }};
+    CREATE USER {{ .Values.postgres.db.user | required "presto.postgres.db.user must be set" }} WITH PASSWORD '{{ .Values.postgres.db.password | required "presto.postgres.db.password must be set" }}';
+    GRANT ALL PRIVILEGES ON DATABASE {{ .Values.postgres.db.name }} TO {{ .Values.postgres.db.user | required "presto.postgres.db.user must be set" }};
 {{- end }}

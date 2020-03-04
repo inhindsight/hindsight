@@ -1,4 +1,4 @@
-{{- if .Values.minio.enable -}}
+{{- if .Values.global.objectStore.minio.enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:

@@ -1,4 +1,4 @@
-{{- if .Values.minio.enable -}}
+{{- if .Values.global.objectStore.minio.enabled -}}
 {{- if .Values.minio.ingress.enable -}}
 {{- $serviceName := include "presto.minio.fullname" . }}
 {{- $servicePort := .Values.minio.service.port -}}

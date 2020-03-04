@@ -3,44 +3,72 @@
 set -eo pipefail
 
 function usage {
-    echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] [set-kv-pairs]"
+    echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] [aws|local] [<key=value>, ...]"
     echo
     echo "EXAMPLE"
-    echo "    ./scripts/install foo bar abc=123 x.y.z=42"
+    echo "    ./scripts/install foo bar local abc=123 x.y.z=42"
+    echo "    ./scripts/install abc default aws image.tag=latest"
     echo
     exit 0
 }
 
-function strimzi {
-    helm repo add strimzi https://strimzi.io/charts/
+function info {
+    local -r message=${1:?MESSAGE REQUIRED}
+    echo "[INFO] $message"
+}
 
-    helm upgrade strimzi-kafka-operator strimzi/strimzi-kafka-operator \
-         --install \
-         --version 0.16.2 \
-         --set watchAnyNamespace=true
+function check_strimzi {
+    local timeout=${1:-10s}
 
     kubectl wait pod \
             --selector name=strimzi-cluster-operator \
             --for condition=Ready \
-            --timeout=300s
+            --timeout=${timeout}
+}
+
+function deps {
+    local -r added_p=$(helm repo list | grep -s google)
+
+    if [[ ! $added_p ]]; then
+        info "Installing Helm dependencies"
+        helm repo add google https://kubernetes-charts.storage.googleapis.com
+        (cd ./helm; helm dependency build)
+    fi
+}
+
+function strimzi {
+    if [[ ! $(check_strimzi) ]]; then
+        info "Adding strimzi repo"
+        helm repo add strimzi https://strimzi.io/charts/
+
+        info "Installing Strimzi"
+        helm upgrade strimzi-kafka-operator strimzi/strimzi-kafka-operator \
+             --install \
+             --version 0.16.2 \
+             --set watchAnyNamespace=true
+
+        check_strimzi 300s
+    fi
 }
 
 function hindsight {
     local -r release="${1:?Release name required.}"
     local -r ns="${2:?Namespace required.}"
-    shift 2
+    local -r location="${3:?Location required.}"
+    shift 3
 
     if [ $# -gt 0 ]; then
         local -r vals=$(IFS=, ; echo "$*")
         local -r set_values="--set $vals"
     fi
 
-    helm repo add google https://kubernetes-charts.storage.googleapis.com
-    (cd ./helm; helm dependency build)
+    deps
 
+    info "Installing Hindsight"
     helm upgrade ${release} ./helm \
          --install \
          --namespace ${ns} \
+         --values ./helm/presets/${location}.yaml \
          ${set_values}
 }
 

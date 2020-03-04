@@ -50,6 +50,8 @@ defmodule Writer.Kafka.Topic do
         ]
       )
 
+    Elsa.Producer.ready?(state.connection)
+
     Ok.ok(%{state | elsa_sup: elsa_sup})
   end
 

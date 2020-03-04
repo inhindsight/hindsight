@@ -29,6 +29,7 @@ defmodule Persist.MixProject do
       {:avro, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:elsa, "~> 0.12", override: true},
       {:ex_aws_s3, "~> 2.0"},
       {:extractor, in_umbrella: true},
       {:hackney, "~> 1.15"},
