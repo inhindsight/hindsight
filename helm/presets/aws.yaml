@@ -1,6 +1,8 @@
 receive:
   service:
     type: LoadBalancer
+  service_tcp:
+    type: LoadBalancer
 broadcast:
   service:
     type: LoadBalancer
