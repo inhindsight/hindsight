@@ -46,15 +46,13 @@ defmodule Broadcast.Stream.Broadway do
       Endpoint.broadcast!("broadcast:#{load.destination}", "update", transformed_value)
       Broadway.Message.update_data(message, &Map.put(&1, :value, transformed_value))
     else
-      {:error, reason} ->
-        Message.update_data(message, &to_dead_letter(load, &1, reason))
-        |> Message.failed(reason)
+      {:error, reason} -> Message.failed(message, reason)
     end
   end
 
-  def handle_failed(messages, _context) do
+  def handle_failed(messages, context) do
     messages
-    |> Enum.map(fn message -> message.data end)
+    |> Enum.map(&to_dead_letter(context.load, &1.data, &1.status))
     |> dlq().write()
 
     messages
