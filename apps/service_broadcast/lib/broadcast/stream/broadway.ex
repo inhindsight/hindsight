@@ -112,6 +112,7 @@ defmodule Broadcast.Stream.Broadway do
   defp to_dead_letter(load, data, reason) do
     DeadLetter.new(
       dataset_id: load.dataset_id,
+      subset_id: load.subset_id,
       original_message: data,
       app_name: @app_name,
       reason: reason

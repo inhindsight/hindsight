@@ -45,13 +45,14 @@ defmodule WriterDlqTest do
       now = DateTime.utc_now()
 
       dead_letters = [
-        %DeadLetter{
+        DeadLetter.new(
           dataset_id: "ds1",
+          subset_id: "sb1",
           app_name: "app1",
           original_message: %{"name" => "message1"},
           reason: "testing",
           timestamp: now
-        }
+        )
       ]
 
       assert :ok == Writer.DLQ.write(:pid, dead_letters)
@@ -60,9 +61,10 @@ defmodule WriterDlqTest do
       assert match?(
                %{
                  "dataset_id" => "ds1",
+                 "subset_id" => "sb1",
                  "original_message" => %{"name" => "message1"},
                  "app_name" => "app1",
-                 "reason" => "testing",
+                 "reason" => "** (ErlangError) Erlang error: \"testing\"",
                  "stacktrace" => _,
                  "timestamp" => _
                },
@@ -72,12 +74,12 @@ defmodule WriterDlqTest do
 
     test "handles message that is not json encodable" do
       dead_letters = [
-        %DeadLetter{
+        DeadLetter.new(
           dataset_id: "ds1",
           app_name: "app1",
           original_message: <<80, 75, 3, 4, 20, 0, 6, 0, 8, 0, 0, 0, 33, 0, 235, 122, 210>>,
           reason: "testing"
-        }
+        )
       ]
 
       assert :ok == Writer.DLQ.write(:pid, dead_letters)

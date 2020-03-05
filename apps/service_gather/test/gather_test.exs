@@ -74,7 +74,7 @@ defmodule GatherTest do
 
     Brook.Test.send(@instance, extract_start(), "testing", extract)
 
-    assert_receive {:write, ^dummy_process, messages, [dataset_id: "test-ds1"]}, 5_000
+    assert_receive {:write, ^dummy_process, messages, [extract: ^extract]}, 5_000
 
     assert messages == [
              %{"A" => "one", "B" => "two", "C" => "three"},

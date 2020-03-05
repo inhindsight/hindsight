@@ -153,12 +153,14 @@ defmodule Broadcast.Stream.BroadwayTest do
     expected_dead_letter =
       DeadLetter.new(
         dataset_id: "ds1",
+        subset_id: "fake-ds",
         original_message: message,
         app_name: "service_broadcast",
         reason: reason
-      )
+      ) |> Map.merge(%{stacktrace: nil, timestamp: nil})
 
-    assert_receive {:dlq, [^expected_dead_letter]}
+    assert_receive {:dlq, [actual_dead_letter]}
+    assert expected_dead_letter == actual_dead_letter |> Map.merge(%{stacktrace: nil, timestamp: nil})
     assert_receive {:ack, ^msg_ref, _successful, [message] = _failed}
   end
 
