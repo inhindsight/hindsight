@@ -38,7 +38,7 @@ defmodule Gather.Writer do
 
   @impl Writer
   def write(server, messages, opts \\ []) do
-    dataset_id = Keyword.fetch!(opts, :dataset_id)
+    extract = Keyword.fetch!(opts, :extract)
 
     results =
       Enum.reduce(messages, %{ok: [], error: []}, fn message, acc ->
@@ -49,7 +49,7 @@ defmodule Gather.Writer do
       end)
 
     with :ok <- forward(server, Enum.reverse(results.ok)) do
-      dlq(dataset_id, Enum.reverse(results.error))
+      dlq(extract, Enum.reverse(results.error))
       :ok
     end
   end
@@ -62,16 +62,17 @@ defmodule Gather.Writer do
 
   defp dlq(_, []), do: :ok
 
-  defp dlq(dataset_id, errors) do
-    with dead_letters <- Enum.map(errors, &to_dead_letter(dataset_id, &1)),
+  defp dlq(extract, errors) do
+    with dead_letters <- Enum.map(errors, &to_dead_letter(extract, &1)),
          {:error, reason} <- dlq().write(dead_letters) do
       log_dlq_error(dead_letters, reason)
     end
   end
 
-  defp to_dead_letter(dataset_id, {og, reason}) do
+  defp to_dead_letter(extract, {og, reason}) do
     DeadLetter.new(
-      dataset_id: dataset_id,
+      dataset_id: extract.dataset_id,
+      subset_id: extract.subset_id,
       original_message: og,
       app_name: app_name(),
       reason: reason

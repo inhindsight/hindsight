@@ -40,9 +40,7 @@ defmodule Persist.Load.Broadway do
          {:ok, transformed_data} <- context.transformer.(decoded_data) do
       Message.update_data(message, fn _ -> transformed_data end)
     else
-      {:error, reason} ->
-        Message.update_data(message, &to_dead_letter(context.load, &1, reason))
-        |> Message.failed(reason)
+      {:error, reason} -> Message.failed(message, reason)
     end
   end
 
@@ -54,9 +52,9 @@ defmodule Persist.Load.Broadway do
   end
 
   @impl Broadway
-  def handle_failed(messages, _context) do
+  def handle_failed(messages, context) do
     messages
-    |> Enum.map(&Map.get(&1, :data))
+    |> Enum.map(&to_dead_letter(context.load, &1.data, &1.status))
     |> dlq().write()
 
     messages
@@ -65,6 +63,7 @@ defmodule Persist.Load.Broadway do
   defp to_dead_letter(load, data, reason) do
     DeadLetter.new(
       dataset_id: load.dataset_id,
+      subset_id: load.subset_id,
       original_message: data,
       app_name: @app_name,
       reason: reason

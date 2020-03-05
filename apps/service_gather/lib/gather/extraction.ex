@@ -61,7 +61,7 @@ defmodule Gather.Extraction do
   end
 
   defp write(writer, extract, context) do
-    writer_opts = [dataset_id: extract.dataset_id]
+    writer_opts = [extract: extract]
 
     Context.get_stream(context)
     |> Ok.each(fn chunk ->
@@ -82,7 +82,7 @@ defmodule Gather.Extraction do
             %{acc | good: [normalized_message | acc.good]}
 
           {:error, reason} ->
-            dead_letter = to_dead_letter(extract.dataset_id, message, reason)
+            dead_letter = to_dead_letter(extract, message, reason)
             %{acc | bad: [dead_letter | acc.bad]}
         end
       end)
@@ -94,9 +94,10 @@ defmodule Gather.Extraction do
     Enum.reverse(good)
   end
 
-  defp to_dead_letter(dataset_id, og, reason) do
+  defp to_dead_letter(extract, og, reason) do
     DeadLetter.new(
-      dataset_id: dataset_id,
+      dataset_id: extract.dataset_id,
+      subset_id: extract.subset_id,
       original_message: og,
       app_name: app_name(),
       reason: reason

@@ -65,7 +65,21 @@ defmodule Gather.WriterTest do
   end
 
   describe "write/3" do
-    test "writes message to child writer" do
+    setup do
+      extract =
+        Extract.new!(
+          id: "extract-1",
+          dataset_id: "ds1",
+          subset_id: "sb1",
+          destination: "topic-a",
+          steps: [],
+          dictionary: []
+        )
+
+      [extract: extract]
+    end
+
+    test "writes message to child writer", %{extract: extract} do
       stub_writer(:ok)
 
       messages = [
@@ -73,13 +87,13 @@ defmodule Gather.WriterTest do
         %{"one" => "three"}
       ]
 
-      :ok = Gather.Writer.write(:pid, messages, dataset_id: "ds1")
+      :ok = Gather.Writer.write(:pid, messages, extract: extract)
 
       assert_receive {:write, :pid, actuals}
       assert actuals == Enum.map(messages, &Jason.encode!/1)
     end
 
-    test "write to DLQ if message cannot be encoded" do
+    test "write to DLQ if message cannot be encoded", %{extract: extract} do
       stub_writer(:ok)
       stub_dlq(:ok)
 
@@ -88,7 +102,7 @@ defmodule Gather.WriterTest do
         %{"one" => "three"}
       ]
 
-      :ok = Gather.Writer.write(:pid, messages, dataset_id: "ds1")
+      :ok = Gather.Writer.write(:pid, messages, extract: extract)
 
       assert_receive {:write, :pid, actuals}
       assert actuals = messages |> Enum.at(1) |> Jason.encode!() |> List.wrap()
@@ -99,15 +113,18 @@ defmodule Gather.WriterTest do
       expected =
         DeadLetter.new(
           dataset_id: "ds1",
+          subset_id: "sb1",
           original_message: List.first(messages),
           app_name: "service_gather",
           reason: reason
         )
+        |> Map.merge(%{stacktrace: nil, timestamp: nil})
 
-      assert dead_letters == [expected]
+      assert [expected] ==
+               Enum.map(dead_letters, &Map.merge(&1, %{stacktrace: nil, timestamp: nil}))
     end
 
-    test "only writes to dlq if child writer call succeeds" do
+    test "only writes to dlq if child writer call succeeds", %{extract: extract} do
       stub_writer({:error, "failure to write"})
       stub_dlq(:ok)
 
@@ -116,12 +133,12 @@ defmodule Gather.WriterTest do
         %{"one" => "three"}
       ]
 
-      assert {:error, "failure to write"} = Gather.Writer.write(:pid, messages, dataset_id: "ds1")
+      assert {:error, "failure to write"} = Gather.Writer.write(:pid, messages, extract: extract)
 
       refute_receive {:dlq, _}
     end
 
-    test "dlq returns error tuple" do
+    test "dlq returns error tuple", %{extract: extract} do
       stub_dlq({:error, "failure to dlq"})
 
       messages = [
@@ -130,25 +147,11 @@ defmodule Gather.WriterTest do
 
       log =
         capture_log(fn ->
-          assert :ok == Gather.Writer.write(:pid, messages, dataset_id: "ds1")
+          assert :ok == Gather.Writer.write(:pid, messages, extract: extract)
         end)
 
-      {:error, reason} = messages |> List.first() |> Jason.encode()
-
-      expected_dead_letter =
-        DeadLetter.new(
-          dataset_id: "ds1",
-          original_message: List.first(messages),
-          app_name: "service_gather",
-          reason: reason
-        )
-
-      expected_log = Enum.map([expected_dead_letter], &inspect/1) |> Enum.join("\n")
-
       assert log =~
-               "Unable to send following messages to DLQ due to 'failure to dlq' :\n#{
-                 expected_log
-               }"
+               "Unable to send following messages to DLQ due to 'failure to dlq' :\n%Writer.DLQ.DeadLetter"
     end
   end
 

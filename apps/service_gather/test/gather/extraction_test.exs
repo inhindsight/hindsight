@@ -108,14 +108,20 @@ defmodule Gather.ExtractionTest do
 
     assert_receive {:write, _, [%{"one" => 2}], _}
 
-    expected_dead_letter = %DeadLetter{
-      dataset_id: "ds1",
-      original_message: %{"one" => "abc"},
-      app_name: "service_gather",
-      reason: %{"one" => :invalid_integer}
-    }
+    expected_dead_letter =
+      DeadLetter.new(
+        dataset_id: "ds1",
+        subset_id: "happy-path",
+        original_message: %{"one" => "abc"},
+        app_name: "service_gather",
+        reason: %{"one" => :invalid_integer}
+      )
+      |> Map.merge(%{stacktrace: nil, timestamp: nil})
 
-    assert_receive {:dlq, [^expected_dead_letter]}
+    assert_receive {:dlq, [actual_dead_letter]}
+
+    assert expected_dead_letter ==
+             actual_dead_letter |> Map.merge(%{stacktrace: nil, timestamp: nil})
   end
 
   test "when child write return error tuple it retries and then dies" do

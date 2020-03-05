@@ -314,6 +314,7 @@ defmodule PlatformRunner.EndToEndTest do
       start_supervised({SourceUdpSocket, port: 6789, messages: data})
 
       assert_async debug: true, sleep: 1_000 do
+        assert Elsa.topic?(@kafka, "e2e-push-receive")
         assert {:ok, _, messages} = Elsa.fetch(@kafka, "e2e-push-receive")
         assert length(messages) == 6
         retrieved_messages = Enum.map(messages, fn message -> message.value end)
