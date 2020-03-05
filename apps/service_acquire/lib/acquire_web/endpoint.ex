@@ -1,6 +1,10 @@
 defmodule AcquireWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :service_acquire
 
+  plug(Corsica,
+    origins: "*"
+  )
+
   socket "/socket", AcquireWeb.UserSocket,
     websocket: true,
     longpoll: false
