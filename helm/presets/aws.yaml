@@ -1,6 +1,6 @@
 receive:
   service:
-    type: LoadBalancer
+    type: ClusterIP
   service_tcp:
     type: LoadBalancer
 broadcast:
