@@ -157,10 +157,14 @@ defmodule Broadcast.Stream.BroadwayTest do
         original_message: message,
         app_name: "service_broadcast",
         reason: reason
-      ) |> Map.merge(%{stacktrace: nil, timestamp: nil})
+      )
+      |> Map.merge(%{stacktrace: nil, timestamp: nil})
 
     assert_receive {:dlq, [actual_dead_letter]}
-    assert expected_dead_letter == actual_dead_letter |> Map.merge(%{stacktrace: nil, timestamp: nil})
+
+    assert expected_dead_letter ==
+             actual_dead_letter |> Map.merge(%{stacktrace: nil, timestamp: nil})
+
     assert_receive {:ack, ^msg_ref, _successful, [message] = _failed}
   end
 

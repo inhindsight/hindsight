@@ -17,14 +17,15 @@ defmodule Writer.DLQ.DeadLetterTest do
       assert dead_letter.reason == "** (ErlangError) Erlang error: \"some error\""
     end
 
-    test  "is formatted for  any atom" do
+    test "is formatted for  any atom" do
       dead_letter = DeadLetter.new(reason: :some_error)
 
       assert dead_letter.reason == "** (ErlangError) Erlang error: :some_error"
     end
 
     test "is formatted for {kind, reason, stacktrace}" do
-      reason = {_, _, stacktrace} =
+      reason =
+        {_, _, stacktrace} =
         try do
           raise ArgumentError, message: "some error"
         catch

@@ -66,14 +66,15 @@ defmodule Gather.WriterTest do
 
   describe "write/3" do
     setup do
-      extract = Extract.new!(
-        id: "extract-1",
-        dataset_id: "ds1",
-        subset_id: "sb1",
-        destination: "topic-a",
-        steps: [],
-        dictionary: []
-      )
+      extract =
+        Extract.new!(
+          id: "extract-1",
+          dataset_id: "ds1",
+          subset_id: "sb1",
+          destination: "topic-a",
+          steps: [],
+          dictionary: []
+        )
 
       [extract: extract]
     end
@@ -116,9 +117,11 @@ defmodule Gather.WriterTest do
           original_message: List.first(messages),
           app_name: "service_gather",
           reason: reason
-        ) |> Map.merge(%{stacktrace: nil, timestamp: nil})
+        )
+        |> Map.merge(%{stacktrace: nil, timestamp: nil})
 
-      assert [expected] == Enum.map(dead_letters, &Map.merge(&1, %{stacktrace: nil, timestamp: nil}))
+      assert [expected] ==
+               Enum.map(dead_letters, &Map.merge(&1, %{stacktrace: nil, timestamp: nil}))
     end
 
     test "only writes to dlq if child writer call succeeds", %{extract: extract} do

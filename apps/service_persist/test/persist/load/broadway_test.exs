@@ -111,18 +111,25 @@ defmodule Persist.Load.BroadwayTest do
         original_message: Enum.at(messages, 1),
         app_name: "service_persist",
         reason: reason
-      ) |> Map.merge(%{stacktrace: nil, timestamp: nil})
+      )
+      |> Map.merge(%{stacktrace: nil, timestamp: nil})
 
     assert_receive {:write, [%{"fullname" => "bob", "age" => 21}]}
     assert_receive {:dlq, [actual_dead_letter]}, 2_000
-    assert expected_dead_letter == actual_dead_letter |> Map.merge(%{stacktrace: nil, timestamp: nil})
+
+    assert expected_dead_letter ==
+             actual_dead_letter |> Map.merge(%{stacktrace: nil, timestamp: nil})
 
     assert_receive {:ack, ^ref, [%{data: %{"fullname" => "bob", "age" => 21}}], []}
     assert_receive {:ack, ^ref, [], [%{data: %{value: "{\"one\""}}]}
   end
 
-  test "sends to dlq if exception is raised while processing message", %{load: load, transform: transform} do
+  test "sends to dlq if exception is raised while processing message", %{
+    load: load,
+    transform: transform
+  } do
     test = self()
+
     writer = fn _msgs ->
       raise "something terrible happened"
     end
@@ -137,7 +144,7 @@ defmodule Persist.Load.BroadwayTest do
       start_supervised({Persist.Load.Broadway, load: load, transform: transform, writer: writer})
 
     messages = [
-      %{value: %{"name" => "bob", "age" => 21} |> Jason.encode!()},
+      %{value: %{"name" => "bob", "age" => 21} |> Jason.encode!()}
     ]
 
     ref = Broadway.test_messages(broadway, messages)
