@@ -5,7 +5,7 @@ defmodule Persist.DictionaryTest do
   alias Persist.Dictionary.Translator
   alias Persist.Dictionary.Translator.Result
 
-  data_test "something, something, translate" do
+  data_test "something, something, something translate" do
     result = Translator.translate_type(field)
 
     assert expected == result

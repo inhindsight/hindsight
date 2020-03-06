@@ -24,7 +24,7 @@ defmodule Management.SupervisorTest do
     end
   end
 
-  test "something, something supervisor" do
+  test "something, something, something supervisor" do
     start_supervised(Reg)
     start_supervised(Sup)
 
