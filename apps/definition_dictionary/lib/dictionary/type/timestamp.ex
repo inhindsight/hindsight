@@ -46,7 +46,7 @@ defmodule Dictionary.Type.Timestamp.V1 do
   def s do
     schema(%Dictionary.Type.Timestamp{
       version: version(1),
-      name: required_string(),
+      name: lowercase_string(),
       description: string(),
       format: required_string(),
       timezone: required_string()

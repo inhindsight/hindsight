@@ -67,7 +67,7 @@ defmodule GatherTest do
         ],
         dictionary: [
           Dictionary.Type.String.new!(name: "A"),
-          Dictionary.Type.String.new!(name: "B"),
+          Dictionary.Type.String.new!(name: "b"),
           Dictionary.Type.String.new!(name: "C")
         ]
       )
@@ -77,8 +77,8 @@ defmodule GatherTest do
     assert_receive {:write, ^dummy_process, messages, [extract: ^extract]}, 5_000
 
     assert messages == [
-             %{"A" => "one", "B" => "two", "C" => "three"},
-             %{"A" => "four", "B" => "five", "C" => "six"}
+             %{"a" => "one", "b" => "two", "c" => "three"},
+             %{"a" => "four", "b" => "five", "c" => "six"}
            ]
 
     assert extract == Extraction.Store.get!(extract.dataset_id, extract.subset_id)

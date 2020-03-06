@@ -64,7 +64,7 @@ defmodule Dictionary.Type.List.V1 do
   def s do
     schema(%Dictionary.Type.List{
       version: version(1),
-      name: required_string(),
+      name: lowercase_string(),
       description: string(),
       item_type: spec(is_map())
     })

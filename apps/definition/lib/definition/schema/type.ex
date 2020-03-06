@@ -7,11 +7,22 @@ defmodule Definition.Schema.Type do
   import Norm
   import Definition.Schema.Validation
 
-  @type spec :: %Norm.Spec{} | %Norm.Spec.And{} | %Norm.Spec.Or{} | %Norm.Spec.Union{}
+  @type spec :: Norm.Conformer.Conformable.t()
 
   @spec required_string() :: spec
   def required_string do
     spec(is_binary() and not_empty?())
+  end
+
+  @spec lowercase_string() :: spec
+  def lowercase_string() do
+    %Norm.Spec.And{
+      left: %Norm.Spec.And{
+        left: spec(is_binary()),
+        right: spec(not_empty?())
+      },
+      right: %Definition.Schema.Type.Lowercase{}
+    }
   end
 
   @spec string() :: spec

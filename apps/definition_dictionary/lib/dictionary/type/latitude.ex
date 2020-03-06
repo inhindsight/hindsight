@@ -34,7 +34,7 @@ defmodule Dictionary.Type.Latitude.V1 do
   def s do
     schema(%Dictionary.Type.Latitude{
       version: version(1),
-      name: required_string(),
+      name: lowercase_string(),
       description: string()
     })
   end
