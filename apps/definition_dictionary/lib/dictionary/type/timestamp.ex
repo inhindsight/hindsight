@@ -5,24 +5,37 @@ defmodule Dictionary.Type.Timestamp do
   defstruct version: 1,
             name: nil,
             description: "",
-            format: nil
+            format: nil,
+            timezone: "Etc/UTC"
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
     @tokenizer Timex.Parse.DateTime.Tokenizers.Strftime
+    @utc "Etc/UTC"
+
     def normalize(_, value) when is_nil(value) or value == "" do
       Ok.ok("")
     end
 
-    def normalize(%{format: format}, value) do
+    def normalize(%{format: format, timezone: timezone}, value) do
       with {:ok, date} <- Timex.parse(value, format, @tokenizer) do
         date
-        |> to_iso()
-        |> Ok.ok()
+        |> attach_timezone(timezone)
+        |> Ok.map(&to_utc/1)
+        |> Ok.map(&NaiveDateTime.to_iso8601/1)
       end
     end
 
-    defp to_iso(%DateTime{} = datetime), do: DateTime.to_iso8601(datetime)
-    defp to_iso(%NaiveDateTime{} = datetime), do: NaiveDateTime.to_iso8601(datetime)
+    defp attach_timezone(%NaiveDateTime{} = datetime, timezone) do
+      DateTime.from_naive(datetime, timezone)
+    end
+
+    defp attach_timezone(datetime, _), do: Ok.ok(datetime)
+
+    defp to_utc(%DateTime{} = datetime) do
+      DateTime.shift_zone(datetime, @utc)
+    end
+
+    defp to_utc(datetime), do: Ok.ok(datetime)
   end
 end
 
@@ -35,7 +48,8 @@ defmodule Dictionary.Type.Timestamp.V1 do
       version: version(1),
       name: required_string(),
       description: string(),
-      format: required_string()
+      format: required_string(),
+      timezone: required_string()
     })
   end
 end

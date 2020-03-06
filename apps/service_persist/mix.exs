@@ -40,11 +40,13 @@ defmodule Persist.MixProject do
       {:poison, "~> 4.0"},
       {:properties, in_umbrella: true},
       {:sweet_xml, "~> 0.6.6"},
+      {:timex, "~> 3.6"},
       {:transformer, in_umbrella: true},
       {:writer_dlq, in_umbrella: true},
       {:writer_presto, in_umbrella: true},
 
       # Dev/Test Dependencies
+      {:checkov, "~> 1.0", only: [:dev, :test]},
       {:mox, "~> 0.5", only: [:test]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}

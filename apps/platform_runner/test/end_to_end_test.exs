@@ -283,12 +283,12 @@ defmodule PlatformRunner.EndToEndTest do
   describe "Pushed data" do
     test "pushed" do
       data = [
-        ~s|{"name":"bob","date":"2019-12-20"}|,
-        ~s|{"name":"steve","date":"2019-12-29"}|,
-        ~s|{"name":"mike","date":"2020-01-05"}|,
-        ~s|{"name":"doug","date":"2020-01-16"}|,
-        ~s|{"name":"alex","date":"2020-02-18"}|,
-        ~s|{"name":"dave","date":"2020-02-03"}|
+        ~s|{"name":"bob","ts":"2019-12-20 01:01:01"}|,
+        ~s|{"name":"steve","ts":"2019-12-29 02:02:02"}|,
+        ~s|{"name":"mike","ts":"2020-01-05 03:03:03"}|,
+        ~s|{"name":"doug","ts":"2020-01-16 04:04:04"}|,
+        ~s|{"name":"alex","ts":"2020-02-18 05:05:05"}|,
+        ~s|{"name":"dave","ts":"2020-02-03 06:06:06"}|
       ]
 
       accept =
@@ -336,7 +336,7 @@ defmodule PlatformRunner.EndToEndTest do
           ],
           dictionary: [
             Dictionary.Type.String.new!(name: "name"),
-            Dictionary.Type.Date.new!(name: "date", format: "%Y-%m-%d")
+            Dictionary.Type.Timestamp.new!(name: "ts", format: "%Y-%m-%d %H:%M:%S")
           ]
         )
 
@@ -349,13 +349,54 @@ defmodule PlatformRunner.EndToEndTest do
         assert length(messages) == 6
 
         assert [
-                 %{"name" => "bob", "date" => "2019-12-20"},
-                 %{"name" => "steve", "date" => "2019-12-29"},
-                 %{"name" => "mike", "date" => "2020-01-05"},
-                 %{"name" => "doug", "date" => "2020-01-16"},
-                 %{"name" => "alex", "date" => "2020-02-18"},
-                 %{"name" => "dave", "date" => "2020-02-03"}
+                 %{"name" => "bob", "ts" => "2019-12-20T01:01:01"},
+                 %{"name" => "steve", "ts" => "2019-12-29T02:02:02"},
+                 %{"name" => "mike", "ts" => "2020-01-05T03:03:03"},
+                 %{"name" => "doug", "ts" => "2020-01-16T04:04:04"},
+                 %{"name" => "alex", "ts" => "2020-02-18T05:05:05"},
+                 %{"name" => "dave", "ts" => "2020-02-03T06:06:06"}
                ] == Enum.map(messages, fn %{value: val} -> Jason.decode!(val) end)
+      end
+    end
+
+    test "acquired" do
+      transform =
+        Transform.new!(
+          id: "e2e-push-transform-1",
+          dataset_id: "e2e-push-ds",
+          subset_id: "e2e-push-ss",
+          steps: [],
+          dictionary: [
+            Dictionary.Type.String.new!(name: "name"),
+            Dictionary.Type.Timestamp.new!(name: "ts", format: "%Y-%m-%d %H:%M:%S")
+          ]
+        )
+
+      Gather.Application.instance()
+      |> Events.send_transform_define("e2e-push-json", transform)
+
+      persist =
+        Load.Persist.new!(
+          id: "e2e-push-persist-1",
+          dataset_id: "e2e-push-ds",
+          subset_id: "e2e-push-ss",
+          source: "e2e-push-gather",
+          destination: "e2e_push_ds"
+        )
+
+      Persist.Application.instance()
+      |> Events.send_load_persist_start("e2e-push-json", persist)
+
+      Process.sleep(5_000)
+
+      expected = [
+        %{"name" => "alex", "ts" => "2020-02-18 05:05:05.000"},
+        %{"name" => "dave", "ts" => "2020-02-03 06:06:06.000"}
+      ]
+
+      assert_async sleep: 1_000, max_tries: 30, debug: true do
+        assert {:ok, ^expected} =
+                 AcquireClient.data("/e2e-push-ds/e2e-push-ss?after=2020-01-23T00:00:00")
       end
     end
   end
