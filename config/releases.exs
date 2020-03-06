@@ -25,6 +25,8 @@ config :logger,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
 secret_key_base =
   System.get_env(
     "SECRET_KEY_BASE",

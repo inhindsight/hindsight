@@ -49,21 +49,23 @@ defmodule Persist.DataFile.Json do
 
   @type t :: %__MODULE__{
           file_path: Path.t(),
-          file: :file.io_device()
+          file: :file.io_device(),
+          dictionary: Dictionary.t()
         }
 
-  defstruct [:file_path, :file]
+  defstruct [:file_path, :file, :dictionary]
 
   @impl true
   def format(), do: :json
 
   @impl true
-  def open(_destination, _dictionary) do
+  def open(_destination, dictionary) do
     with {:ok, path} <- Temp.path(%{suffix: ".gz"}),
          {:ok, file} <- :file.open(path, [:write, :raw, :delayed_write, :compressed]) do
       %__MODULE__{
         file_path: path,
-        file: file
+        file: file,
+        dictionary: dictionary
       }
       |> Ok.ok()
     end
@@ -71,7 +73,8 @@ defmodule Persist.DataFile.Json do
 
   @impl true
   def write(t, data) do
-    with :ok <- Ok.each(data, &write_record(t, &1)) do
+    with {:ok, transformed_data} <- Ok.transform(data, &transform_data(t.dictionary, &1)),
+         :ok <- Ok.each(transformed_data, &write_record(t, &1)) do
       File.stat!(t.file_path)
       |> Map.get(:size)
       |> Ok.ok()
@@ -88,5 +91,12 @@ defmodule Persist.DataFile.Json do
     with {:ok, encoded_record} <- Jason.encode(record) do
       :file.write(t.file, encoded_record <> "\n")
     end
+  end
+
+  defp transform_data(dictionary, datum) do
+    Ok.reduce(dictionary, datum, fn field, row ->
+      Persist.Json.Translator.translate(field, Map.get(row, field.name))
+      |> Ok.map(&Map.put(row, field.name, &1))
+    end)
   end
 end

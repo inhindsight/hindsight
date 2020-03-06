@@ -133,23 +133,16 @@ end
 
 defimpl Avro.Translator, for: Dictionary.Type.Timestamp do
   use Avro.Translator.Default
-  @epoch DateTime.from_unix!(0)
+  @epoch DateTime.from_unix!(0) |> DateTime.to_naive()
 
   def type(_) do
     timestamp = :avro_primitive.type(:long, [{"logicalType", "timestamp-millis"}])
     :avro_union.type([timestamp, :null])
   end
 
-  def value(_, iso_timestamp) when byte_size(iso_timestamp) == 19 do
+  def value(_, iso_timestamp) do
     with {:ok, timestamp} <- NaiveDateTime.from_iso8601(iso_timestamp) do
       NaiveDateTime.diff(timestamp, Timex.to_naive_datetime(@epoch), :millisecond)
-      |> Ok.ok()
-    end
-  end
-
-  def value(_, iso_timestamp) do
-    with {:ok, timestamp, _} <- DateTime.from_iso8601(iso_timestamp) do
-      DateTime.diff(timestamp, @epoch, :millisecond)
       |> Ok.ok()
     end
   end
