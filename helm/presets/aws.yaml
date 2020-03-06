@@ -19,6 +19,9 @@ resources:
 strimzi:
   kafka:
     resources:
+      jvm:
+        xms: 4g
+        xmx: 4g
       requests:
         cpu: 500m
         memory: 8Gi
