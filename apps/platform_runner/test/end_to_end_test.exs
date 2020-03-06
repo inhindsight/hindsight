@@ -12,7 +12,7 @@ defmodule PlatformRunner.EndToEndTest do
     bp = Bypass.open()
 
     Bypass.stub(bp, "GET", "/file.csv", fn conn ->
-      Plug.Conn.resp(conn, 200, "a,1\nb,2\nc,3")
+      Plug.Conn.resp(conn, 200, "a,1,0.1\nb,2,0.2\nc,3,")
     end)
 
     schedule =
@@ -30,11 +30,12 @@ defmodule PlatformRunner.EndToEndTest do
             destination: "e2e-csv-gather",
             steps: [
               Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/file.csv"),
-              Extract.Decode.Csv.new!(headers: ["letter", "number"])
+              Extract.Decode.Csv.new!(headers: ["letter", "number", "float"])
             ],
             dictionary: [
               Dictionary.Type.String.new!(name: "letter"),
-              Dictionary.Type.String.new!(name: "number")
+              Dictionary.Type.String.new!(name: "number"),
+              Dictionary.Type.Float.new!(name: "float")
             ]
           ),
         transform:
@@ -44,7 +45,8 @@ defmodule PlatformRunner.EndToEndTest do
             subset_id: "csv-subset",
             dictionary: [
               Dictionary.Type.String.new!(name: "letter"),
-              Dictionary.Type.String.new!(name: "number")
+              Dictionary.Type.String.new!(name: "number"),
+              Dictionary.Type.Float.new!(name: "float")
             ],
             steps: [
               Transform.MoveField.new!(from: "letter", to: "single_letter")
@@ -81,14 +83,14 @@ defmodule PlatformRunner.EndToEndTest do
       assert Elsa.topic?(@kafka, "e2e-csv-gather")
       assert {:ok, _, messages} = Elsa.fetch(@kafka, "e2e-csv-gather")
 
-      assert [["a", "1"], ["b", "2"], ["c", "3"]] =
+      assert [[0.1, "a", "1"], [0.2, "b", "2"], [nil, "c", "3"]] =
                Enum.map(messages, fn %{value: val} -> Jason.decode!(val) end)
                |> Enum.map(&Map.values(&1))
     end
 
-    assert_receive %{"single_letter" => "a", "number" => "1"}, 60_000
-    assert_receive %{"single_letter" => "b", "number" => "2"}, 1_000
-    assert_receive %{"single_letter" => "c", "number" => "3"}, 1_000
+    assert_receive %{"single_letter" => "a", "number" => "1", "float" => 0.1}, 60_000
+    assert_receive %{"single_letter" => "b", "number" => "2", "float" => 0.2}, 1_000
+    assert_receive %{"single_letter" => "c", "number" => "3", "float" => nil}, 1_000
 
     BroadcastClient.kill(pid)
 
@@ -105,17 +107,20 @@ defmodule PlatformRunner.EndToEndTest do
              Prestige.query(session, "select * from e2e__csv order by single_letter") do
         assert Enum.member?(Prestige.Result.as_maps(result), %{
                  "single_letter" => "a",
-                 "number" => "1"
+                 "number" => "1",
+                 "float" => 0.1
                })
 
         assert Enum.member?(Prestige.Result.as_maps(result), %{
                  "single_letter" => "b",
-                 "number" => "2"
+                 "number" => "2",
+                 "float" => 0.2
                })
 
         assert Enum.member?(Prestige.Result.as_maps(result), %{
                  "single_letter" => "c",
-                 "number" => "3"
+                 "number" => "3",
+                 "float" => nil
                })
       else
         {:error, reason} -> flunk(inspect(reason))
@@ -134,7 +139,8 @@ defmodule PlatformRunner.EndToEndTest do
     test "gathered" do
       bp = Bypass.open()
 
-      data = ~s|{"name":"LeBron","number":23,"teammates":[{"name":"Kyrie"},{"name":"Kevin"}]}|
+      data =
+        ~s|{"name":"LeBron","number":23,"popularity":null,"teammates":[{"name":"Kyrie"},{"name":"Kevin"}]}|
 
       Bypass.expect(bp, "GET", "/json", fn conn ->
         Plug.Conn.resp(conn, 200, data)
@@ -154,6 +160,7 @@ defmodule PlatformRunner.EndToEndTest do
           dictionary: [
             Dictionary.Type.String.new!(name: "name"),
             Dictionary.Type.Integer.new!(name: "number"),
+            Dictionary.Type.Float.new!(name: "popularity"),
             Dictionary.Type.List.new!(
               name: "teammates",
               item_type:
@@ -178,6 +185,7 @@ defmodule PlatformRunner.EndToEndTest do
           dictionary: [
             Dictionary.Type.String.new!(name: "name"),
             Dictionary.Type.Integer.new!(name: "number"),
+            Dictionary.Type.Float.new!(name: "popularity"),
             Dictionary.Type.List.new!(
               name: "teammates",
               item_type:
@@ -220,6 +228,7 @@ defmodule PlatformRunner.EndToEndTest do
       assert_receive %{
                        "name" => "LeBron",
                        "number" => 23,
+                       "popularity" => nil,
                        "teammates" => [%{"name" => "Kyrie"}, %{"name" => "Kevin"}]
                      },
                      1_000
@@ -254,6 +263,7 @@ defmodule PlatformRunner.EndToEndTest do
                    %{
                      "name" => "LeBron",
                      "number" => 23,
+                     "popularity" => nil,
                      "teammates" => [
                        %{"name" => "Kyrie"},
                        %{"name" => "Kevin"}
@@ -270,6 +280,7 @@ defmodule PlatformRunner.EndToEndTest do
       expected = %{
         "name" => "LeBron",
         "number" => 23,
+        "popularity" => nil,
         "teammates" => [
           %{"name" => "Kyrie"},
           %{"name" => "Kevin"}

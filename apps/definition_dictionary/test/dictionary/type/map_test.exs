@@ -102,4 +102,17 @@ defmodule Dictionary.Type.MapTest do
       ["fred", "abc", {:error, %{"age" => :invalid_integer}}]
     ]
   end
+
+  test "handles nil" do
+    field =
+      Dictionary.Type.Map.new!(
+        name: "spouse",
+        dictionary: [
+          %Dictionary.Type.String{name: "name"},
+          %Dictionary.Type.Integer{name: "age"}
+        ]
+      )
+
+    assert {:ok, nil} == Dictionary.Type.Normalizer.normalize(field, nil)
+  end
 end

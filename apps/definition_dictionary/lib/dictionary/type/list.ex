@@ -48,6 +48,8 @@ defmodule Dictionary.Type.List do
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
     alias Dictionary.Type.Normalizer
 
+    def normalize(_, nil), do: Ok.ok(nil)
+
     def normalize(%{item_type: item_type}, list) do
       Ok.transform(list, &Normalizer.normalize(item_type, &1))
       |> Ok.map_if_error(fn reason -> {:invalid_list, reason} end)

@@ -52,7 +52,9 @@ defmodule Dictionary.Type.FloatTest do
       [:value, :result],
       [3.14, {:ok, 3.14}],
       ["25.1", {:ok, 25.1}],
-      ["quarter", {:error, :invalid_float}]
+      ["quarter", {:error, :invalid_float}],
+      [nil, {:ok, nil}],
+      ["", {:ok, nil}]
     ]
   end
 end

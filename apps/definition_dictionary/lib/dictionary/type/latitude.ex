@@ -5,6 +5,8 @@ defmodule Dictionary.Type.Latitude do
   defstruct version: 1, name: nil, description: ""
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
+    def normalize(_latitude, value) when value in [nil, ""], do: Ok.ok(nil)
+
     def normalize(_latitude, value) do
       parse(value)
       |> Ok.map(&validate/1)
