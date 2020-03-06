@@ -64,7 +64,8 @@ defmodule Dictionary.Type.LatitudeTest do
       [-91, {:error, :invalid_latitude}],
       [-91.000001, {:error, :invalid_latitude}],
       [-89.9999999, {:ok, -89.9999999}],
-      ["seventy-six", {:error, :invalid_latitude}]
+      ["seventy-six", {:error, :invalid_latitude}],
+      [nil, {:ok, nil}]
     ]
   end
 end

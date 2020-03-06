@@ -52,7 +52,8 @@ defmodule Dictionary.Type.IntegerTest do
       [:value, :result],
       [1, {:ok, 1}],
       ["123", {:ok, 123}],
-      ["one", {:error, :invalid_integer}]
+      ["one", {:error, :invalid_integer}],
+      [nil, {:ok, nil}]
     ]
   end
 end

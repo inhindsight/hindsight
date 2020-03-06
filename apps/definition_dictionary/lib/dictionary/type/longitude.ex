@@ -5,6 +5,8 @@ defmodule Dictionary.Type.Longitude do
   defstruct version: 1, name: nil, description: ""
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
+    def normalize(_longitude, nil), do: Ok.ok(nil)
+
     def normalize(_longitude, value) do
       parse(value)
       |> Ok.map(&validate/1)

@@ -64,7 +64,8 @@ defmodule Dictionary.Type.LongitudeTest do
       [-181, {:error, :invalid_longitude}],
       [-181.000001, {:error, :invalid_longitude}],
       [-179.9999999, {:ok, -179.9999999}],
-      ["seventy-six", {:error, :invalid_longitude}]
+      ["seventy-six", {:error, :invalid_longitude}],
+      [nil, {:ok, nil}]
     ]
   end
 end

@@ -52,7 +52,8 @@ defmodule Dictionary.Type.BooleanTest do
       [:value, :result],
       [true, {:ok, true}],
       ["false", {:ok, false}],
-      ["sure", {:error, :invalid_boolean}]
+      ["sure", {:error, :invalid_boolean}],
+      [nil, {:ok, nil}]
     ]
   end
 end

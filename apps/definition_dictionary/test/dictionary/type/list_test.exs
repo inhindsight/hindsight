@@ -140,6 +140,14 @@ defmodule Dictionary.Type.ListTest do
     assert {:ok, ["one", "two"]} == Dictionary.Type.Normalizer.normalize(field, value)
   end
 
+  test "handles nil" do
+    field = %Dictionary.Type.List{
+      item_type: Dictionary.Type.String.new!(name: "in_list")
+    }
+
+    assert {:ok, nil} == Dictionary.Type.Normalizer.normalize(field, nil)
+  end
+
   describe "access" do
     setup do
       list =

@@ -47,6 +47,8 @@ defmodule Dictionary.Type.Map do
   end
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
+    def normalize(_, nil), do: Ok.ok(nil)
+
     def normalize(%{dictionary: dictionary}, map) do
       Dictionary.normalize(dictionary, map)
     end
