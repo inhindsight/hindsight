@@ -151,6 +151,7 @@ config :service_broadcast, Broadcast.Stream.Broadway,
            group_consumer: [
              config: [
                begin_offset: :earliest,
+               offset_reset_policy: :reset_to_latest,
                prefetch_count: 0,
                prefetch_bytes: 2_097_152
              ]
@@ -229,6 +230,7 @@ config :service_persist, Persist.Load.Broadway,
            group_consumer: [
              config: [
                begin_offset: :earliest,
+               offset_reset_policy: :reset_to_earliest,
                prefetch_count: 0,
                prefetch_bytes: 2_097_152
              ]
