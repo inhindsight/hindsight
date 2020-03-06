@@ -7,7 +7,7 @@ defmodule Dictionary.Type.Integer do
             description: ""
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
-    def normalize(_field, nil), do: Ok.ok(nil)
+    def normalize(_field, value) when value in [nil, ""], do: Ok.ok(nil)
 
     def normalize(_field, value) when is_integer(value), do: Ok.ok(value)
 
