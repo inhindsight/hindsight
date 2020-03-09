@@ -23,7 +23,7 @@ defmodule Dictionary.Type.Wkt.Point.V1 do
   def s do
     schema(%Dictionary.Type.Wkt.Point{
       version: version(1),
-      name: required_string(),
+      name: lowercase_string(),
       description: string()
     })
   end

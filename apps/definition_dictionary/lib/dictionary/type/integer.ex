@@ -27,7 +27,7 @@ defmodule Dictionary.Type.Integer.V1 do
   def s do
     schema(%Dictionary.Type.Integer{
       version: version(1),
-      name: required_string(),
+      name: lowercase_string(),
       description: string()
     })
   end

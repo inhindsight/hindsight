@@ -62,7 +62,7 @@ defmodule Dictionary.Type.Map.V1 do
   def s do
     schema(%Dictionary.Type.Map{
       version: version(1),
-      name: required_string(),
+      name: lowercase_string(),
       description: string(),
       dictionary: of_struct(Dictionary.Impl)
     })
