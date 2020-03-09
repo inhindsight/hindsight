@@ -39,6 +39,11 @@ defmodule Writer.Kafka.Topic do
       producer_opts: determine_producer_opts(opts)
     }
 
+    {:ok, state, {:continue, :init}}
+  end
+
+  @impl GenServer
+  def handle_continue(:init, state) do
     unless Elsa.topic?(state.endpoints, state.topic) do
       create_topic(state.endpoints, state.topic)
     end
@@ -54,7 +59,7 @@ defmodule Writer.Kafka.Topic do
 
     Elsa.Producer.ready?(state.connection)
 
-    Ok.ok(%{state | elsa_sup: elsa_sup})
+    {:noreply, %{state | elsa_sup: elsa_sup}}
   end
 
   @impl GenServer
