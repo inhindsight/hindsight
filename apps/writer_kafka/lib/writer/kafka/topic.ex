@@ -8,11 +8,12 @@ defmodule Writer.Kafka.Topic do
           connection: atom,
           endpoints: [{atom, non_neg_integer}],
           topic: String.t(),
-          metric_metadata: %{}
+          metric_metadata: %{},
+          partitioner: :random | :md5
         ]
 
   defmodule State do
-    defstruct [:connection, :endpoints, :topic, :elsa_sup, :metric_metadata]
+    defstruct [:connection, :endpoints, :topic, :elsa_sup, :metric_metadata, :producer_opts]
   end
 
   @impl Writer
@@ -34,7 +35,8 @@ defmodule Writer.Kafka.Topic do
       connection: Keyword.get(opts, :connection, default_connection_name()),
       endpoints: Keyword.fetch!(opts, :endpoints),
       topic: topic,
-      metric_metadata: Keyword.get(opts, :metric_metadata, %{}) |> Map.put(:topic, topic)
+      metric_metadata: Keyword.get(opts, :metric_metadata, %{}) |> Map.put(:topic, topic),
+      producer_opts: determine_producer_opts(opts)
     }
 
     unless Elsa.topic?(state.endpoints, state.topic) do
@@ -56,8 +58,14 @@ defmodule Writer.Kafka.Topic do
   end
 
   @impl GenServer
-  def handle_call({:write, messages, _opts}, _from, state) do
-    with :ok <- Elsa.produce(state.connection, state.topic, messages) do
+  def handle_call({:write, messages, opts}, _from, state) do
+    producer_opts =
+      case Keyword.take(opts, [:partition, :partitioner]) do
+        [] -> state.producer_opts
+        custom_opts -> custom_opts
+      end
+
+    with :ok <- Elsa.produce(state.connection, state.topic, messages, producer_opts) do
       send_metric(state, length(messages))
       {:reply, :ok, state}
     else
@@ -85,4 +93,11 @@ defmodule Writer.Kafka.Topic do
   end
 
   defp default_connection_name(), do: :"#{__MODULE__}_#{inspect(self())}"
+
+  defp determine_producer_opts(opts) do
+    case Keyword.get(opts, :partitioner) do
+      nil -> [partition: 0]
+      partitioner -> [partitioner: partitioner]
+    end
+  end
 end

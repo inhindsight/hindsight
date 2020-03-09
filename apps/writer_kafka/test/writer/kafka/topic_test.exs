@@ -50,7 +50,7 @@ defmodule Writer.Kafka.TopicTest do
   end
 
   test "topic writer will report correct number of messages sent, in case of partial failure" do
-    allow Elsa.produce(any(), "topic-435", any()), return: {:error, "failure", ["message3"]}
+    allow Elsa.produce(any(), "topic-435", any(), any()), return: {:error, "failure", ["message3"]}
 
     {:ok, writer} = start_supervised({Topic, endpoints: @server, topic: "topic-435"})
 
@@ -58,5 +58,29 @@ defmodule Writer.Kafka.TopicTest do
              Topic.write(writer, ["message1", "message2", "message3"])
 
     assert_receive {:telemetry_event, [:writer, :kafka, :produce], %{count: 2}, _, _}, 5_000
+  end
+
+  test "topic writer will allow custom partition to be defined" do
+    expect Elsa.produce(any(), "topic-123", any(), [partitioner: :md5]), return: :ok
+
+    {:ok, writer} = start_supervised({Topic, endpoints: @server, topic: "topic-123", partitioner: :md5})
+
+    assert :ok == Topic.write(writer, ["message1"])
+  end
+
+  test "write can overwrite partition" do
+    expect Elsa.produce(any(), "topic-123", any(), [partition: 0]), return: :ok
+
+    {:ok, writer} = start_supervised({Topic, endpoints: @server, topic: "topic-123", partitioner: :md5})
+
+    assert :ok == Topic.write(writer, ["message"], partition: 0)
+  end
+
+  test "write can overwrite partitioner" do
+    expect Elsa.produce(any(), "topic-123", any(), [partitioner: :random]), return: :ok
+
+    {:ok, writer} = start_supervised({Topic, endpoints: @server, topic: "topic-123", partitioner: :md5})
+
+    assert :ok == Topic.write(writer, ["message"], partitioner: :random)
   end
 end
