@@ -87,4 +87,16 @@ defmodule Writer.Kafka.TopicTest do
 
     assert :ok == Topic.write(writer, ["message"], partitioner: :random)
   end
+
+  test "will create topic with specified number of partitions" do
+    {:ok, _writer} =
+      start_supervised(
+        {Topic, endpoints: @server, topic: "topic-4p", partitioner: :md5, partitions: 4}
+      )
+
+    assert_async debug: true do
+      assert Elsa.topic?(@server, "topic-4p")
+      assert 4 == Elsa.Util.partition_count(@server, "topic-4p")
+    end
+  end
 end

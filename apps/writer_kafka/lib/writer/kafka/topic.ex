@@ -39,13 +39,13 @@ defmodule Writer.Kafka.Topic do
       producer_opts: determine_producer_opts(opts)
     }
 
-    {:ok, state, {:continue, :init}}
+    {:ok, state, {:continue, {:init, opts}}}
   end
 
   @impl GenServer
-  def handle_continue(:init, state) do
+  def handle_continue({:init, opts}, state) do
     unless Elsa.topic?(state.endpoints, state.topic) do
-      create_topic(state.endpoints, state.topic)
+      create_topic(state.endpoints, state.topic, opts)
     end
 
     {:ok, elsa_sup} =
@@ -81,8 +81,8 @@ defmodule Writer.Kafka.Topic do
     end
   end
 
-  defp create_topic(endpoints, topic) do
-    Elsa.create_topic(endpoints, topic)
+  defp create_topic(endpoints, topic, opts) do
+    Elsa.create_topic(endpoints, topic, opts)
 
     wait exponential_backoff(100) |> Stream.take(10) do
       Elsa.topic?(endpoints, topic)
