@@ -9,7 +9,7 @@ defmodule Define.MixProject do
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      elixir: "~> 1.9",
+      elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -17,6 +17,9 @@ defmodule Define.MixProject do
     ]
   end
 
+  # Configuration for the OTP application.
+  #
+  # Type `mix help compile.app` for more information.
   def application do
     [
       mod: {Define.Application, []},
@@ -24,28 +27,23 @@ defmodule Define.MixProject do
     ]
   end
 
+  # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
+  # Specifies your project dependencies.
+  #
+  # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:brook, "~> 0.5"},
-      {:definition_dictionary, in_umbrella: true},
-      {:definition_events, in_umbrella: true},
-      {:elsa, "~> 0.12", override: true},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:phoenix, "~> 1.4.14"},
+      {:phoenix, "~> 1.4.15"},
+      {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.9.0"},
-      {:phoenix_pubsub, "~> 1.1"},
-      {:plug_cowboy, "~> 2.0"},
-
-      #Dev.Test Dependencies
-      {:mox, "~> 0.5.1", only: [:test]},
-      {:checkov, "~> 1.0", only: [:dev, :test]},
-      {:testing, in_umbrella: true, only: [:test]}
+      {:gettext, "~> 0.11"},
+      {:jason, "~> 1.0"},
+      {:plug_cowboy, "~> 2.0"}
     ]
   end
 end

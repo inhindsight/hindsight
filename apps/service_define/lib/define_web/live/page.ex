@@ -7,8 +7,15 @@ defmodule DefineWeb.Page do
 
   def render(assigns) do
     ~L"""
-    <h1>We did it</h1>
+    <div>
+      <h1>We did it!</h1>
+      <button phx-click="dec">HERE</button>
+    </div>
     """
   end
-end
 
+  def handle_event("dec", _, socket) do
+    socket |> IO.inspect(label: "lib/define_web/live/page.ex:18") 
+    {:noreply, socket}
+  end
+end

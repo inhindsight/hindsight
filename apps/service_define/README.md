@@ -1,4 +1,4 @@
-# ServiceDefine
+# Define
 
 To start your Phoenix server:
 

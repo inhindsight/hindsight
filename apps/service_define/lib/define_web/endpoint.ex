@@ -6,15 +6,15 @@ defmodule DefineWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_service_define_key",
-    signing_salt: "Q/yo0AV+"
+    key: "_define_key",
+    signing_salt: "+YSBmf7s"
   ]
 
   socket "/socket", DefineWeb.UserSocket,
     websocket: true,
     longpoll: false
 
-  socket "/live", Phoenix.LiveView.Socket
+  socket "/live", Phoenix.LiveView.Socket 
 
   # Serve at "/" the static files from "priv/static" directory.
   #

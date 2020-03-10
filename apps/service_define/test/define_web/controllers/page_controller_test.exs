@@ -1,5 +1,5 @@
-defmodule ServiceDefineWeb.PageControllerTest do
-  use ServiceDefineWeb.ConnCase
+defmodule DefineWeb.PageControllerTest do
+  use DefineWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")

@@ -23,7 +23,7 @@ defmodule DefineWeb do
 
       import Plug.Conn
       import DefineWeb.Gettext
-      import Phoenix.LiveView.Controller
+      import Phoenix.LiveView.Controller, only: [live_render: 3]
       alias DefineWeb.Router.Helpers, as: Routes
     end
   end
@@ -31,7 +31,7 @@ defmodule DefineWeb do
   def view do
     quote do
       use Phoenix.View,
-        root: "lib/service_define_web/templates",
+        root: "lib/define_web/templates",
         namespace: DefineWeb
 
       # Import convenience functions from controllers
@@ -42,8 +42,9 @@ defmodule DefineWeb do
 
       import DefineWeb.ErrorHelpers
       import DefineWeb.Gettext
-      import Phoenix.LiveView.Helpers
       alias DefineWeb.Router.Helpers, as: Routes
+
+      import Phoenix.LiveView.Helpers
     end
   end
 
@@ -52,7 +53,7 @@ defmodule DefineWeb do
       use Phoenix.Router
       import Plug.Conn
       import Phoenix.Controller
-      import Phoenix.LiveView.Router
+      import Phoenix.LiveView.Router 
     end
   end
 
