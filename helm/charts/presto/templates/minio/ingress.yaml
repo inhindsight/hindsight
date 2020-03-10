@@ -5,12 +5,10 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-{{- if .Values.minio.ingress.annotations }}
   annotations:
-{{ toYaml .Values.minio.ingress.annotations | trim | indent 4 }}
-{{- if .Values.global.ingress.annotations }}
 {{ toYaml .Values.global.ingress.annotations | trim | indent 4 }}
-{{- end }}
+{{- if .Values.minio.ingress.annotations }}
+{{ toYaml .Values.minio.ingress.annotations | trim | indent 4 }}
 {{- end }}
   name: {{ template "presto.minio.fullname" . }}
   labels:

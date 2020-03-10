@@ -32,18 +32,18 @@ redis:
 nginx-ingress:
   controller:
     service:
-      type: NodePort
+      type: LoadBalancer
 presto:
   presto:
     ingress:
       enable: true
       hosts:
-        - chart-example.local/presto-ui
+        - chart-example.local/ui
   minio:
     ingress:
       enable: true
       hosts:
-        - chart-example.local/minio-ui
+        - chart-example.local/minio.*
 global:
   objectStore:
     bucketName: hindsight-object-storage

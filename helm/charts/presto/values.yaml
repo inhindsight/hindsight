@@ -40,8 +40,6 @@ presto:
     useJmxExporter: false
   ingress:
     enable: false
-    annotations:
-      alb.ingress.kubernetes.io/healthcheck-path: /v1/cluster
 
 metastore:
   jvm:
