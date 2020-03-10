@@ -1,6 +1,4 @@
-{{- if .Values.ingress.enabled -}}
 {{- $fullName := include "hindsight.fullname" . -}}
-{{- $svcPort := .Values.acquire.service.port -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- else -}}
@@ -27,15 +25,29 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
+  {{- if .Values.ingress.acquire }}
+  {{- range .Values.ingress.acquire.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
         {{- range .paths }}
-          - path: {{ . }}
+          - path: {{ . | quote }}
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
+              serviceName: {{ $fullName }}-acquire
+              servicePort: {{ $.Values.acquire.service.port }}
         {{- end }}
   {{- end }}
-{{- end }}
+  {{- end }}
+  {{- if .Values.ingress.broadcast }}
+  {{- range .Values.ingress.broadcast.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ . | quote }}
+            backend:
+              serviceName: {{ $fullName }}-broadcast
+              servicePort: {{ $.Values.broadcast.service.port }}
+        {{- end }}
+  {{- end }}
+  {{- end }}

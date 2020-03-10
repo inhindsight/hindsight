@@ -1,7 +1,7 @@
 presto:
   workers: 0
   service:
-    type: NodePort
+    type: ClusterIP
     port: 8080
   logLevel: INFO
   environment: production
@@ -106,7 +106,7 @@ minio:
     mode: ReadWriteOnce
     size: 5Gi
   service:
-    type: NodePort
+    type: ClusterIP
     port: 9000
   deploy:
     replicas: 1

@@ -19,9 +19,10 @@ acquire:
   service:
     port: 80
 presto:
-  service:
-    type: ClusterIP
-    port: 8080
+  presto:
+    service:
+      type: ClusterIP
+      port: 8080
 strimzi:
   enabled: true
   kafka:
@@ -33,6 +34,12 @@ redis:
   usePassword: false
   cluster:
     enabled: false
+nginx-ingress:
+  controller:
+    metrics:
+      enabled: true
+    service:
+      type: LoadBalancer
 
 image:
   repository: inhindsight/hindsight
@@ -42,6 +49,7 @@ image:
 global:
   objectStore:
     bucketName: ""
+  ingress: {}
 
 imagePullSecrets: []
 nameOverride: ""
@@ -56,11 +64,15 @@ podSecurityContext: {}
 securityContext: {}
 
 ingress:
-  enabled: false
   annotations: {}
-  hosts:
-    - host: chart-example.local
-      paths: []
+  acquire:
+    hosts:
+      - host: chart-example.local
+        paths: ["/acquire"]
+  broadcast:
+    hosts:
+      - host: chart-example.local
+        paths: ["/broadcast"]
   tls: []
 
 resources: {}
