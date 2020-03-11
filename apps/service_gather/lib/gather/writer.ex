@@ -43,8 +43,11 @@ defmodule Gather.Writer do
     results =
       Enum.reduce(messages, %{ok: [], error: []}, fn message, acc ->
         case Jason.encode(message) do
-          {:ok, json} -> Map.update!(acc, :ok, fn l -> [json | l] end)
-          {:error, reason} -> Map.update!(acc, :error, fn l -> [{message, reason} | l] end)
+          {:ok, json} ->
+            Map.update!(acc, :ok, fn l -> [{key(message, extract.message_key), json} | l] end)
+
+          {:error, reason} ->
+            Map.update!(acc, :error, fn l -> [{message, reason} | l] end)
         end
       end)
 
@@ -53,6 +56,9 @@ defmodule Gather.Writer do
       :ok
     end
   end
+
+  defp key(_message, []), do: ""
+  defp key(message, path), do: get_in(message, path) || ""
 
   defp forward(_server, []), do: :ok
 

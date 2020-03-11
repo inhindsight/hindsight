@@ -90,7 +90,24 @@ defmodule Gather.WriterTest do
       :ok = Gather.Writer.write(:pid, messages, extract: extract)
 
       assert_receive {:write, :pid, actuals}
-      assert actuals == Enum.map(messages, &Jason.encode!/1)
+      assert actuals == Enum.map(messages, &{"", Jason.encode!(&1)})
+    end
+
+    test "writes message with proper key", %{extract: extract} do
+      stub_writer(:ok)
+
+      messages = [
+        %{"spouse" => %{"name" => "joe"}},
+        %{"spouse" => %{"name" => "mary"}}
+      ]
+
+      assert :ok ==
+               Gather.Writer.write(:pid, messages,
+                 extract: %{extract | message_key: ["spouse", "name"]}
+               )
+
+      assert_receive {:write, :pid, actuals}
+      assert actuals == Enum.map(messages, &{get_in(&1, ["spouse", "name"]), Jason.encode!(&1)})
     end
 
     test "write to DLQ if message cannot be encoded", %{extract: extract} do
