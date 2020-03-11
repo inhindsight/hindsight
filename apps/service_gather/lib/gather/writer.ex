@@ -22,7 +22,8 @@ defmodule Gather.Writer do
         app: app_name(),
         dataset_id: extract.dataset_id,
         subset_id: extract.subset_id
-      }
+      },
+      config: extract.config
     ]
 
     writer().start_link(writer_args)
