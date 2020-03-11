@@ -16,8 +16,8 @@ defmodule Definition.Schema.Type do
 
   @spec lowercase_string() :: spec
   def lowercase_string() do
-    %Norm.Spec.And{
-      left: %Norm.Spec.And{
+    %Norm.Core.Spec.And{
+      left: %Norm.Core.Spec.And{
         left: spec(is_binary()),
         right: spec(not_empty?())
       },

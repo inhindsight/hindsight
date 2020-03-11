@@ -9,7 +9,7 @@ defmodule Definition do
   @callback new(map | keyword) :: {:ok, struct} | {:error, term}
   @callback new!(map | keyword) :: struct
   @callback from_json(String.t()) :: {:ok, struct} | {:error, term}
-  @callback schema() :: %Norm.Schema{}
+  @callback schema() :: %Norm.Core.Schema{}
   @callback on_new(struct) :: {:ok, struct} | {:error, term}
   @callback migrate(struct) :: {:ok, struct} | {:error, term}
 
