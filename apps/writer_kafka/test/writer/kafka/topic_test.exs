@@ -36,16 +36,17 @@ defmodule Writer.Kafka.TopicTest do
          metric_metadata: %{app: "testing", dataset_id: "ds1", subset_id: "sb1"}}
       )
 
-    :ok = Topic.write(writer, ["message1"])
+    :ok = Topic.write(writer, ["message1", {"key2", "message2"}])
 
     assert_async debug: true do
+      assert Elsa.topic?(@server, "topic-435")
       {:ok, _count, messages} = Elsa.fetch(@server, "topic-435")
-      assert Enum.any?(messages, &match?(%{value: "message1"}, &1))
+      assert [{"", "message1"}, {"key2", "message2"}] == Enum.map(messages, &{&1.key, &1.value})
     end
 
     expected_metadata = %{app: "testing", dataset_id: "ds1", subset_id: "sb1", topic: "topic-435"}
 
-    assert_receive {:telemetry_event, [:writer, :kafka, :produce], %{count: 1},
+    assert_receive {:telemetry_event, [:writer, :kafka, :produce], %{count: 2},
                     ^expected_metadata, %{}}
   end
 
@@ -64,35 +65,28 @@ defmodule Writer.Kafka.TopicTest do
   test "topic writer will allow custom partition to be defined" do
     expect Elsa.produce(any(), "topic-123", any(), partitioner: :md5), return: :ok
 
+    config = %{
+      "kafka" => %{
+        "partitioner" => "md5"
+      }
+    }
+
     {:ok, writer} =
-      start_supervised({Topic, endpoints: @server, topic: "topic-123", partitioner: :md5})
+      start_supervised({Topic, endpoints: @server, topic: "topic-123", config: config})
 
     assert :ok == Topic.write(writer, ["message1"])
   end
 
-  test "write can overwrite partition" do
-    expect Elsa.produce(any(), "topic-123", any(), partition: 0), return: :ok
-
-    {:ok, writer} =
-      start_supervised({Topic, endpoints: @server, topic: "topic-123", partitioner: :md5})
-
-    assert :ok == Topic.write(writer, ["message"], partition: 0)
-  end
-
-  test "write can overwrite partitioner" do
-    expect Elsa.produce(any(), "topic-123", any(), partitioner: :random), return: :ok
-
-    {:ok, writer} =
-      start_supervised({Topic, endpoints: @server, topic: "topic-123", partitioner: :md5})
-
-    assert :ok == Topic.write(writer, ["message"], partitioner: :random)
-  end
-
   test "will create topic with specified number of partitions" do
+    config = %{
+      "kafka" => %{
+        "partitions" => 4,
+        "partitioner" => "md5"
+      }
+    }
+
     {:ok, _writer} =
-      start_supervised(
-        {Topic, endpoints: @server, topic: "topic-4p", partitioner: :md5, partitions: 4}
-      )
+      start_supervised({Topic, endpoints: @server, topic: "topic-4p", config: config})
 
     assert_async debug: true do
       assert Elsa.topic?(@server, "topic-4p")
