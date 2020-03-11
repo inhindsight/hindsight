@@ -197,11 +197,10 @@ defmodule Gather.ExtractionTest do
 
     request_url = "http://example/download/path"
 
-    allow(Downloader.download(request_url, to: @download_file, headers: []),
+    allow Downloader.download(request_url, to: @download_file, headers: []),
       return: write_temp_file(@download_file)
-    )
 
-    allow(Temp.path(any()), return: {:ok, @download_file})
+    allow Temp.path(any()), return: {:ok, @download_file}
 
     extract =
       Extract.new!(
@@ -221,7 +220,7 @@ defmodule Gather.ExtractionTest do
     {:ok, _} = Extraction.start_link(extract: extract)
 
     assert_async sleep: 1000 do
-      assert !File.exists?(@download_file)
+      refute File.exists?(@download_file)
     end
   end
 
