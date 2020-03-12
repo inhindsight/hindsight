@@ -52,7 +52,12 @@ defmodule Persist.Loader do
 
   @impl GenServer
   def handle_info({:EXIT, pid, reason}, state) do
-    Logger.warn(fn -> "#{__MODULE__}: Stopping due to exit from pid(#{inspect(pid)}) : reason #{inspect(reason)} : state #{inspect(state, pretty: true)}" end)
+    Logger.warn(fn ->
+      "#{__MODULE__}: Stopping due to exit from pid(#{inspect(pid)}) : reason #{inspect(reason)} : state #{
+        inspect(state, pretty: true)
+      }"
+    end)
+
     stop(state.broadway_pid, reason)
     stop(state.writer_pid, reason)
     {:stop, reason, state}
@@ -73,16 +78,20 @@ defmodule Persist.Loader do
   end
 
   defp stop(nil, _), do: :ok
+
   defp stop(pid, reason) do
     case Process.alive?(pid) do
       true ->
         Process.exit(pid, reason)
+
         receive do
           {:EXIT, ^pid, _} -> :ok
         after
           30_000 -> Logger.warn(fn -> "#{__MODULE__}: unable to kill #{inspect(pid)}" end)
         end
-      false -> :ok
+
+      false ->
+        :ok
     end
   end
 end

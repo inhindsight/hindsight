@@ -30,7 +30,10 @@ defmodule Persist.Load.Broadway do
     with {:ok, transformer} <- create_transformer(transform),
          {:ok, config} <-
            configuration().configure([], %{load: load, transformer: transformer, writer: writer}) do
-      Logger.debug(fn -> "#{__MODULE__}: calling Broadway.start_link with config #{inspect(config, pretty: true)}" end)
+      Logger.debug(fn ->
+        "#{__MODULE__}: calling Broadway.start_link with config #{inspect(config, pretty: true)}"
+      end)
+
       Broadway.start_link(__MODULE__, config)
     end
   end
