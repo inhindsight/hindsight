@@ -1,5 +1,5 @@
 defmodule Persist.Loader do
-  use GenServer
+  use GenServer, shutdown: 30_000
   use Annotated.Retry
   use Properties, otp_app: :service_persist
   require Logger
@@ -25,7 +25,7 @@ defmodule Persist.Loader do
   def init(init_arg) do
     Process.flag(:trap_exit, true)
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
-    Logger.debug(fn -> "#{__MODULE__}: initializied for #{inspect(load)}" end)
+    Logger.debug(fn -> "#{__MODULE__}:#{inspect(self())} initializied for #{inspect(load)}" end)
 
     with {:ok, transform} when not is_nil(transform) <-
            Transformations.get(load.dataset_id, load.subset_id),
@@ -51,8 +51,15 @@ defmodule Persist.Loader do
   end
 
   @impl GenServer
-  def handle_info({:EXIT, _pid, reason}, state) do
-    Logger.warn(fn -> "#{__MODULE__}: Stopping : #{inspect(reason)}" end)
+  def handle_info({:EXIT, pid, reason}, state) do
+    Logger.warn(fn ->
+      "#{__MODULE__}: Stopping due to exit from pid(#{inspect(pid)}) : reason #{inspect(reason)} : state #{
+        inspect(state, pretty: true)
+      }"
+    end)
+
+    stop(state.broadway_pid, reason)
+    stop(state.writer_pid, reason)
     {:stop, reason, state}
   end
 
@@ -68,5 +75,23 @@ defmodule Persist.Loader do
   @retry with: exponential_backoff(100) |> take(@max_retries)
   defp start_broadway(load, transform, writer) do
     broadway().start_link(load: load, transform: transform, writer: writer)
+  end
+
+  defp stop(nil, _), do: :ok
+
+  defp stop(pid, reason) do
+    case Process.alive?(pid) do
+      true ->
+        Process.exit(pid, reason)
+
+        receive do
+          {:EXIT, ^pid, _} -> :ok
+        after
+          30_000 -> Logger.warn(fn -> "#{__MODULE__}: unable to kill #{inspect(pid)}" end)
+        end
+
+      false ->
+        :ok
+    end
   end
 end

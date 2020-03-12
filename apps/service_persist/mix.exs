@@ -27,6 +27,7 @@ defmodule Persist.MixProject do
     [
       {:annotated_retry, in_umbrella: true},
       {:avro, in_umbrella: true},
+      {:broadway_configurator, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:elsa, "~> 0.12", override: true},

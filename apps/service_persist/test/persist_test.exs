@@ -13,7 +13,9 @@ defmodule PersistTest do
       app: :service_persist,
       key: Persist.Load.Broadway,
       update: fn config ->
-        Keyword.put(config, :dlq, Persist.DLQMock)
+        config
+        |> Keyword.put(:dlq, Persist.DLQMock)
+        |> Keyword.put(:configuration, BroadwayConfigurator.Dummy)
       end
     },
     %{
@@ -83,7 +85,7 @@ defmodule PersistTest do
       assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
     end
 
-    broadway = Process.whereis(:"persist_broadway_#{load.source}")
+    broadway = Process.whereis(:broadway_dummy)
 
     messages = [
       %{value: %{"name" => "bob", "age" => 12} |> Jason.encode!()}
