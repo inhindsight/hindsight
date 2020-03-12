@@ -32,7 +32,7 @@ defmodule Gather.InitTest do
     test = self()
 
     steps = [
-      %{step: "Fake.Step", values: [%{"one" => "1"}]}
+      %Fake.Step{values: [%{"one" => "1"}]}
     ]
 
     extracts = [
@@ -61,20 +61,14 @@ defmodule Gather.InitTest do
       send(test, {:start_link, args})
       Agent.start_link(fn -> :dummy end)
     end)
+    |> stub(:write, fn _, _, _ -> :ok end)
 
-    {:ok, pid} = Gather.Init.start_link(name: :init_test)
+    {:ok, _pid} = start_supervised({Gather.Init, name: :init_test})
 
     Enum.each(extracts, fn extract ->
       assert_receive {:start_link, [extract: ^extract]}, 5_000
     end)
 
-    assert_down(pid)
     Gather.Extraction.Supervisor.kill_all_children()
-  end
-
-  defp assert_down(pid) do
-    ref = Process.monitor(pid)
-    Process.exit(pid, :kill)
-    assert_receive {:DOWN, ^ref, _, _, _}
   end
 end

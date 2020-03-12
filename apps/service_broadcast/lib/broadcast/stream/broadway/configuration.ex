@@ -1,6 +1,6 @@
-defmodule Persist.Load.Broadway.Configuration do
+defmodule Broadcast.Stream.Broadway.Configuration do
   use BroadwayConfigurator.OffBroadwayKafka
-  use Properties, otp_app: :service_persist
+  use Properties, otp_app: :service_broadcast
 
   getter(:broadway_config, required: true)
   getter(:endpoints, required: true)
@@ -14,7 +14,7 @@ defmodule Persist.Load.Broadway.Configuration do
   end
 
   def name(context) do
-    :"persist_broadway_#{context.load.source}"
+    :"broadcast_broadway_#{context.load.source}"
     |> Ok.ok()
   end
 
@@ -23,11 +23,11 @@ defmodule Persist.Load.Broadway.Configuration do
   end
 
   def connection(context) do
-    :"persist_connection_#{context.load.source}"
+    :"broadcast_connection_#{context.load.source}"
   end
 
   def group(context) do
-    "persist-#{context.load.source}"
+    "broadcast-#{context.load.source}"
   end
 
   def topics(context) do
@@ -35,7 +35,7 @@ defmodule Persist.Load.Broadway.Configuration do
   end
 
   def offset_reset_policy(_) do
-    :reset_to_earliest
+    :reset_to_latest
   end
 
   defp create_opts(context) do
@@ -44,5 +44,4 @@ defmodule Persist.Load.Broadway.Configuration do
       partitions -> [partitions: partitions]
     end
   end
-
 end

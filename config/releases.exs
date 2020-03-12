@@ -139,24 +139,10 @@ config :service_broadcast, Broadcast.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_broadcast, Broadcast.Stream.Broadway,
-  app_name: "service_broadcast",
+config :service_broadcast, Broadcast.Stream.Broadway.Configuration,
+  endpoints: kafka_endpoints,
   broadway_config: [
     producer: [
-      module:
-        {OffBroadway.Kafka.Producer,
-         [
-           endpoints: kafka_endpoints,
-           create_topics: true,
-           group_consumer: [
-             config: [
-               begin_offset: :earliest,
-               offset_reset_policy: :reset_to_latest,
-               prefetch_count: 0,
-               prefetch_bytes: 2_097_152
-             ]
-           ]
-         ]},
       stages: 1
     ],
     processors: [
@@ -172,6 +158,9 @@ config :service_broadcast, Broadcast.Stream.Broadway,
       ]
     ]
   ]
+
+config :service_broadcast, Broadcast.Stream.Broadway,
+  app_name: "service_broadcast"
 
 # SERVICE PERSIST
 bucket_region = [region: System.get_env("BUCKET_REGION", "local")]

@@ -19,13 +19,14 @@ defmodule Persist.Load.Broadway do
 
   @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(init_arg) do
-    Logger.debug(fn -> "#{__MODULE__}: start_link is invoked" end)
+    Logger.debug(fn -> "#{__MODULE__}: start_link is invoked with configuration #{configuration()}" end)
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
     transform = Keyword.fetch!(init_arg, :transform)
     writer = Keyword.fetch!(init_arg, :writer)
 
     with {:ok, transformer} <- create_transformer(transform),
-         {:ok, config} <- configuration().configure([], %{load: load, transformer: transformer, writer: writer}) do
+         {:ok, config} <-
+           configuration().configure([], %{load: load, transformer: transformer, writer: writer}) do
       Logger.debug(fn -> "#{__MODULE__}: calling Broadway.start_link" end)
       Broadway.start_link(__MODULE__, config)
     end
