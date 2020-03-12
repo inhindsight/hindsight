@@ -36,12 +36,17 @@ defmodule Define.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:brook, "~> 0.5.1"},
+      {:definition, in_umbrella: true},
+      {:definition_dictionary, in_umbrella: true},
+      {:definition_events, in_umbrella: true},
       {:phoenix, "~> 1.4.15"},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_html, "~> 2.13"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.9.0"},
+      {:properties, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"}

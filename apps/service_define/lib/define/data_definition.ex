@@ -1,8 +1,10 @@
 defmodule Define.DataDefinition do
   use Ecto.Schema
+  use Definition, schema: DataDefinition.V1
   import Ecto.Changeset
 
   schema "data_definition" do
+    field(:version, :integer, default: 1)
     field(:dataset_id, :string)
     field(:subset_id, :string, default: "default")
     # {:map, inner_type}
@@ -37,5 +39,32 @@ defmodule Define.DataDefinition do
 
   def update(user, attrs \\ %{}) do
     changeset(user, attrs)
+  end
+
+  @impl Definition
+  def on_new(%{dictionary: list} = data) when is_list(list) do
+    Map.put(data, :dictionary, Dictionary.from_list(list))
+    |> Ok.ok()
+  end
+
+  def on_new(data), do: Ok.ok(data)
+end
+
+defmodule DataDefinition.V1 do
+  use Definition.Schema
+
+  @impl true
+  def s do
+    schema(%Define.DataDefinition{
+      version: version(1),
+      dataset_id: required_string(),
+      subset_id: required_string(),
+      dictionary: of_struct(Dictionary.Impl),
+      extract_destination: required_string(),
+      extract_steps: required_string(),
+      transform_steps: required_string(),
+      persist_source: required_string(),
+      persist_destination: required_string()
+    })
   end
 end
