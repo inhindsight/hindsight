@@ -79,30 +79,4 @@ defmodule Persist.Load.Broadway do
   defp create_transformer(transform) do
     Transformer.create(transform.steps, transform.dictionary)
   end
-
-  # defp setup_config(load, transformer, writer) do
-  #   Keyword.put(broadway_config(), :name, :"persist_broadway_#{load.source}")
-  #   |> Keyword.update!(:producer, &update_producer(load, &1))
-  #   |> Keyword.put(:context, %{
-  #     load: load,
-  #     writer: writer,
-  #     transformer: transformer
-  #   })
-  # end
-
-  # defp update_producer(load, producer_config) do
-  #   producer_config
-  #   |> Keyword.update!(:module, fn {module, config} ->
-  #     config =
-  #       config
-  #       |> Keyword.put(:connection, :"persist_connection_#{load.source}")
-  #       |> Keyword.update(:group_consumer, [], fn group_consumer ->
-  #         group_consumer
-  #         |> Keyword.put(:group, "persist-#{load.source}")
-  #         |> Keyword.put(:topics, [load.source])
-  #       end)
-
-  #     {module, config}
-  #   end)
-  # end
 end
