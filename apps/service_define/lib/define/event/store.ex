@@ -8,8 +8,8 @@ defmodule Define.Store do
     get(data.dataset_id)
     |> Map.put("dataset_id", data.dataset_id)
     |> Map.put("subset_id", data.subset_id)
-    |> Map.put("destination", data.destination)
-    |> Map.put("steps", data.steps)
+    |> Map.put("extract_destination", data.destination)
+    |> Map.put("extract_steps", data.steps)
     |> Map.put("dictionary", data.dictionary)
     |> verify_and_persist()
   end
@@ -27,8 +27,8 @@ defmodule Define.Store do
     get(data.dataset_id)
     |> Map.put("dataset_id", data.dataset_id)
     |> Map.put("subset_id", data.subset_id)
-    |> Map.put("source", data.source)
-    |> Map.put("destination", data.destination)
+    |> Map.put("persist_source", data.source)
+    |> Map.put("persist_destination", data.destination)
     |> verify_and_persist()
   end
 
