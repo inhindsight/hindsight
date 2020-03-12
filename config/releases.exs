@@ -159,8 +159,7 @@ config :service_broadcast, Broadcast.Stream.Broadway.Configuration,
     ]
   ]
 
-config :service_broadcast, Broadcast.Stream.Broadway,
-  app_name: "service_broadcast"
+config :service_broadcast, Broadcast.Stream.Broadway, app_name: "service_broadcast"
 
 # SERVICE PERSIST
 bucket_region = [region: System.get_env("BUCKET_REGION", "local")]
@@ -227,8 +226,7 @@ config :service_persist, Persist.Load.Broadway.Configuration,
     ]
   ]
 
-config :service_persist, Persist.Load.Broadway,
-  app_name: "service_persist"
+config :service_persist, Persist.Load.Broadway, app_name: "service_persist"
 
 # SERVICE ORCHESTRATE
 config :service_orchestrate, Orchestrate.Application,

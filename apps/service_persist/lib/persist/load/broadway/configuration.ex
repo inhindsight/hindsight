@@ -44,5 +44,4 @@ defmodule Persist.Load.Broadway.Configuration do
       partitions -> [partitions: partitions]
     end
   end
-
 end

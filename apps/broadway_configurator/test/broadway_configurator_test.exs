@@ -29,12 +29,14 @@ defmodule BroadwayConfiguratorTest do
       batchers: :batchers
     }
 
-    assert Example.configure([], context) == {:ok, [
-      name: :name,
-      producer: :producer,
-      processors: :processors,
-      batchers: :batchers,
-      context: context
-    ]}
+    assert Example.configure([], context) ==
+             {:ok,
+              [
+                name: :name,
+                producer: :producer,
+                processors: :processors,
+                batchers: :batchers,
+                context: context
+              ]}
   end
 end

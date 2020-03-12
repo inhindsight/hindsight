@@ -19,7 +19,10 @@ defmodule Persist.Load.Broadway do
 
   @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(init_arg) do
-    Logger.debug(fn -> "#{__MODULE__}: start_link is invoked with configuration #{configuration()}" end)
+    Logger.debug(fn ->
+      "#{__MODULE__}: start_link is invoked with configuration #{configuration()}"
+    end)
+
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
     transform = Keyword.fetch!(init_arg, :transform)
     writer = Keyword.fetch!(init_arg, :writer)
