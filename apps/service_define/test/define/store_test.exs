@@ -4,6 +4,11 @@ defmodule Define.StoreTest do
   @instance Define.Application.instance()
 
   describe "update_definition/1" do
+    setup do
+      on_exit(fn -> Define.Store.delete_all_definitions() end)
+      :ok
+    end
+
     test "persists a new extract" do
       id = "adataset"
 

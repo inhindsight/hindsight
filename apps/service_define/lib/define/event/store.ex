@@ -48,6 +48,10 @@ defmodule Define.Store do
     end
   end
 
+  def delete_all_definitions() do
+    Brook.Test.clear_view_state(@instance, @collection)
+  end
+
   defp persist(data) do
     Brook.ViewState.merge(@collection, data.dataset_id, data)
   end
