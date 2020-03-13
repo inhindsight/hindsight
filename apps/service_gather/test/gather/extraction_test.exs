@@ -132,7 +132,7 @@ defmodule Gather.ExtractionTest do
 
   test "when child write return error tuple it retries and then dies" do
     Gather.WriterMock
-    |> expect(:start_link, 4, fn _ -> Agent.start_link(fn -> :dummy end) end)
+    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
     |> expect(:write, 4, fn _server, _messages, _opts -> {:error, "failure to write"} end)
 
     extract =
@@ -235,16 +235,17 @@ defmodule Gather.ExtractionTest do
 
     allow Temp.path(any()), return: {:ok, @download_file}
 
-    extract = Extract.new!(
-      id: "extract-1",
-      dataset_id: "ds1",
-      subset_id: "failure",
-      destination: "topic1",
-      steps: [
-        Extract.Http.Get.new!(url: request_url),
-        Extract.Blowup.new!([])
-      ]
-    )
+    extract =
+      Extract.new!(
+        id: "extract-1",
+        dataset_id: "ds1",
+        subset_id: "failure",
+        destination: "topic1",
+        steps: [
+          Extract.Http.Get.new!(url: request_url),
+          Extract.Blowup.new!([])
+        ]
+      )
 
     {:ok, _} = Extraction.start_link(extract: extract)
 
