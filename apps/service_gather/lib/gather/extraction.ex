@@ -15,7 +15,8 @@ defmodule Gather.Extraction do
   getter(:app_name, required: true)
 
   def start_link(args) do
-    GenServer.start_link(__MODULE__, args)
+    server_opts = Keyword.take(args, [:name])
+    GenServer.start_link(__MODULE__, args, server_opts)
   end
 
   @impl GenServer

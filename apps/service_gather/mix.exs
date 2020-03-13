@@ -33,6 +33,7 @@ defmodule Gather.MixProject do
       {:elsa, "~> 0.12", override: true},
       {:extractor, in_umbrella: true},
       {:initializer, in_umbrella: true},
+      {:management, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:retry, "~> 0.13.0"},
       {:transformer, in_umbrella: true},

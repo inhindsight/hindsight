@@ -8,7 +8,7 @@ defmodule Gather.Event.Handler do
   def handle_event(%Brook.Event{type: extract_start(), data: %Extract{} = extract}) do
     Logger.debug(fn -> "#{__MODULE__}: Received event #{extract_start()}: #{inspect(extract)}" end)
 
-    Extraction.Supervisor.start_child({Extraction, extract: extract})
+    Extraction.Supervisor.start_child(extract)
     Extraction.Store.persist(extract)
   end
 
