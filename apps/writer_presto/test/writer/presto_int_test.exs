@@ -13,7 +13,7 @@ defmodule Writer.PrestoIntTest do
     :ok
   end
 
-  test "something, something, presto" do
+  test "something, something, somemthing presto" do
     table_schema = [
       {"name", "varchar"},
       {"age", "integer"},

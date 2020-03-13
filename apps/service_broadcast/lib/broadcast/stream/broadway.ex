@@ -9,8 +9,8 @@ defmodule Broadcast.Stream.Broadway do
 
   @app_name get_config_value(:app_name, required: true)
 
-  getter(:broadway_config, required: true)
   getter(:dlq, default: Broadcast.DLQ)
+  getter(:configuration, default: Broadcast.Stream.Broadway.Configuration)
 
   @type init_opts :: [
           load: Load.Broadcast.t()
@@ -22,7 +22,12 @@ defmodule Broadcast.Stream.Broadway do
     Logger.debug(fn -> "#{__MODULE__}: Starting for #{inspect(load)}" end)
 
     with {:ok, transformer} <- create_transformer(load.dataset_id),
-         config <- setup_config(load, transformer),
+         {:ok, config} <-
+           configuration().configure([], %{
+             load: load,
+             transformer: transformer,
+             cache: Broadcast.Cache.Registry.via(load.destination)
+           }),
          {:ok, pid} <- Broadway.start_link(__MODULE__, config) do
       :"#{load.source}"
       |> Broadcast.Stream.Registry.register_name(pid)
@@ -79,32 +84,6 @@ defmodule Broadcast.Stream.Broadway do
       result ->
         result
     end
-  end
-
-  defp setup_config(load, transformer) do
-    Keyword.put(broadway_config(), :name, :"broadcast_broadway_#{load.source}")
-    |> Keyword.update!(:producer, &update_producer(load, &1))
-    |> Keyword.put(:context, %{
-      load: load,
-      transformer: transformer,
-      cache: Broadcast.Cache.Registry.via(load.destination)
-    })
-  end
-
-  defp update_producer(load, producer_config) do
-    producer_config
-    |> Keyword.update!(:module, fn {module, config} ->
-      config =
-        config
-        |> Keyword.put(:connection, :"broadcast_connection_#{load.source}")
-        |> Keyword.update(:group_consumer, [], fn group_consumer ->
-          group_consumer
-          |> Keyword.put(:group, "broadcast-#{load.source}")
-          |> Keyword.put(:topics, [load.source])
-        end)
-
-      {module, config}
-    end)
   end
 
   defp to_dead_letter(load, data, reason) do

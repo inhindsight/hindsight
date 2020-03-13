@@ -30,7 +30,7 @@ defmodule WriterDlq.MixProject do
       {:writer_kafka, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:mox, "~> 0.5.1", only: [:test]},
-      {:checkov, "~> 1.0", only: [:test]},
+      {:checkov, "~> 1.0", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}
     ]
   end

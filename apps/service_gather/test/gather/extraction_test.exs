@@ -163,9 +163,8 @@ defmodule Gather.ExtractionTest do
         subset_id: "test-extract",
         destination: "topic1",
         steps: [
-          %{
-            "step" => "Fake.Step",
-            "values" => [
+          %Fake.Step{
+            values: [
               %{"name" => "joe", "age" => 21},
               %{"name" => "pete", "age" => 28}
             ]

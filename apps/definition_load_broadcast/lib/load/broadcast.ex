@@ -10,7 +10,8 @@ defmodule Load.Broadcast do
           subset_id: String.t(),
           source: String.t(),
           destination: String.t(),
-          cache: integer
+          cache: integer,
+          config: map
         }
 
   defstruct version: 1,
@@ -19,7 +20,8 @@ defmodule Load.Broadcast do
             subset_id: nil,
             source: nil,
             destination: nil,
-            cache: 0
+            cache: 0,
+            config: %{}
 end
 
 defmodule Load.Broadcast.V1 do
@@ -34,7 +36,8 @@ defmodule Load.Broadcast.V1 do
       subset_id: required_string(),
       source: required_string(),
       destination: required_string(),
-      cache: spec(is_integer())
+      cache: spec(is_integer()),
+      config: spec(is_map())
     })
   end
 end

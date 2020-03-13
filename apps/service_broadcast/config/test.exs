@@ -21,21 +21,3 @@ config :service_broadcast, Broadcast.Application,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
-
-config :service_broadcast, Broadcast.Stream.Broadway,
-  broadway_config: [
-    producer: [
-      module: {Broadway.DummyProducer, []},
-      stages: 1
-    ],
-    processors: [
-      default: [
-        stages: 1
-      ]
-    ],
-    batchers: [
-      default: [
-        stages: 1
-      ]
-    ]
-  ]

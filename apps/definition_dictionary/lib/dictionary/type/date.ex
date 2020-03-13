@@ -31,7 +31,7 @@ defmodule Dictionary.Type.Date.V1 do
   def s do
     schema(%Dictionary.Type.Date{
       version: version(1),
-      name: required_string(),
+      name: lowercase_string(),
       description: string(),
       format: required_string()
     })

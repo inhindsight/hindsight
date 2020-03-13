@@ -1,10 +1,21 @@
 defmodule BroadcastTest do
   use BroadcastWeb.ChannelCase
+  require Temp.Env
   import AssertAsync
 
   import Events, only: [load_broadcast_start: 0, load_broadcast_end: 0]
 
   @instance Broadcast.Application.instance()
+
+  Temp.Env.modify([
+    %{
+      app: :service_broadcast,
+      key: Broadcast.Stream.Broadway,
+      set: [
+        configuration: BroadwayConfigurator.Dummy
+      ]
+    }
+  ])
 
   setup do
     Brook.Test.clear_view_state(@instance, "transformations")

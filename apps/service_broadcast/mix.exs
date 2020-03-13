@@ -29,6 +29,7 @@ defmodule Broadcast.MixProject do
 
   defp deps do
     [
+      {:broadway_configurator, in_umbrella: true},
       {:brook, "~> 0.5"},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
