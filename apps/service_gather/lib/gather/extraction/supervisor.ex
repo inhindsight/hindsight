@@ -11,7 +11,7 @@ defmodule Gather.Extraction.Supervisor do
   end
 
   @impl Management.Supervisor
-  def on_start_child(%Extract{} = extract, name)  do
+  def on_start_child(%Extract{} = extract, name) do
     {Gather.Extraction, extract: extract, name: name}
   end
 end
