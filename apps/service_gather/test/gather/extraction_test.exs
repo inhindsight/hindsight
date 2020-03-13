@@ -224,6 +224,35 @@ defmodule Gather.ExtractionTest do
     end
   end
 
+  test "cleans up downloaded file after an extraction stream failure" do
+    Gather.WriterMock
+    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
+
+    request_url = "http://example/download/path"
+
+    allow Downloader.download(request_url, to: @download_file, headers: []),
+      return: write_temp_file(@download_file)
+
+    allow Temp.path(any()), return: {:ok, @download_file}
+
+    extract = Extract.new!(
+      id: "extract-1",
+      dataset_id: "ds1",
+      subset_id: "failure",
+      destination: "topic1",
+      steps: [
+        Extract.Http.Get.new!(url: request_url),
+        Extract.Blowup.new!([])
+      ]
+    )
+
+    {:ok, _} = Extraction.start_link(extract: extract)
+
+    assert_async sleep: 1_000 do
+      refute File.exists?(@download_file)
+    end
+  end
+
   defp write_temp_file(file_name) do
     File.write(file_name, "")
     {:ok, %Response{destination: file_name}}
