@@ -55,41 +55,88 @@ defmodule Define.StoreTest do
 
       expected = %Define.DataDefinition{
         dataset_id: id,
+        subset_id: "default",
         dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
+        transform_steps: [],
+        version: 1
+      }
+
+      assert ^expected = persisted
+    end
+
+    test "persists a new persist" do
+      id = "bdataset"
+
+      Brook.Test.with_event(@instance, fn ->
+        event =
+          Load.Persist.new!(
+            id: "persist-1",
+            dataset_id: id,
+            subset_id: "default",
+            source: "akafkatopic",
+            destination: "storage__json"
+          )
+
+        Define.Store.update_definition(event)
+      end)
+
+      persisted = Define.Store.get(id)
+
+      expected = %Define.DataDefinition{
+        dataset_id: id,
+        persist_source: "akafkatopic",
+        persist_destination: "storage__json",
         subset_id: "default",
         version: 1
       }
 
       assert ^expected = persisted
     end
-  end
 
-  test "persists a new persist" do
-    id = "bdataset"
+    test "persists updated fields when two events are posted" do
+      id = "cDataset"
 
-    Brook.Test.with_event(@instance, fn ->
-      event =
-        Load.Persist.new!(
-          id: "persist-1",
-          dataset_id: id,
-          subset_id: "default",
-          source: "akafkatopic",
-          destination: "storage__json"
-        )
+      Brook.Test.with_event(@instance, fn ->
+        event =
+          Extract.new!(
+            id: "extract-1",
+            dataset_id: id,
+            subset_id: "default",
+            destination: "success",
+            dictionary: [],
+            steps: []
+          )
 
-      Define.Store.update_definition(event)
-    end)
+        Define.Store.update_definition(event)
+      end)
 
-    persisted = Define.Store.get(id)
+      Brook.Test.with_event(@instance, fn ->
+        event =
+          Load.Persist.new!(
+            id: "persist-1",
+            dataset_id: id,
+            subset_id: "default",
+            source: "akafkatopic",
+            destination: "storage__json"
+          )
 
-    expected = %Define.DataDefinition{
-      dataset_id: id,
-      persist_source: "akafkatopic",
-      persist_destination: "storage__json",
-      subset_id: "default",
-      version: 1
-    }
+        Define.Store.update_definition(event)
+      end)
 
-    assert ^expected = persisted
+      persisted = Define.Store.get(id)
+
+      expected = %Define.DataDefinition{
+        dataset_id: id,
+        extract_destination: "success",
+        extract_steps: [],
+        dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
+        persist_source: "akafkatopic",
+        persist_destination: "storage__json",
+        subset_id: "default",
+        version: 1
+      }
+
+      assert ^expected = persisted
+    end
   end
 end
