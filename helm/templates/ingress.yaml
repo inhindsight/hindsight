@@ -26,29 +26,14 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- if .Values.ingress.acquire }}
-  {{- range .Values.ingress.acquire.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-        {{- range .paths }}
-          - path: {{ . | quote }}
-            backend:
-              serviceName: {{ $fullName }}-acquire
-              servicePort: {{ $.Values.acquire.service.port }}
-        {{- end }}
-  {{- end }}
-  {{- end }}
-  {{- if .Values.ingress.broadcast }}
-  {{- range .Values.ingress.broadcast.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-        {{- range .paths }}
-          - path: {{ . | quote }}
-            backend:
-              serviceName: {{ $fullName }}-broadcast
-              servicePort: {{ $.Values.broadcast.service.port }}
-        {{- end }}
-  {{- end }}
-  {{- end }}
+    {{- range .Values.ingress.hosts }}
+      - host: {{ .host | quote }}
+        http:
+          paths:
+            {{- range .paths }}
+              - path: {{ .path | quote }}
+                backend:
+                  serviceName: {{ $fullName }}-{{ .name }}
+                  servicePort: {{ (index $.Values .name).service.port }}
+            {{- end }}
+    {{- end }}

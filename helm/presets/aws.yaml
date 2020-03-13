@@ -33,6 +33,14 @@ strimzi:
       limits:
         cpu: 250m
         memory: 1Gi
+ingress:
+  hosts:
+    - host: ingress.agnosticdataengine.com
+      paths:
+        - name: acquire
+          path: "/api/v[0-9]+/data/.*"
+        - name: broadcast
+          path: "/socket/websocket"
 redis:
   enabled: false
   externalAddress: ""
