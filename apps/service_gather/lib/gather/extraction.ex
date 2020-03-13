@@ -73,6 +73,10 @@ defmodule Gather.Extraction do
         :ok
       end
     end)
+  catch
+    _, reason ->
+      Context.run_error_functions(context)
+      {:error, reason}
   end
 
   defp normalize(extract, messages) do
