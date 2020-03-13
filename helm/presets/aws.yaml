@@ -35,7 +35,7 @@ strimzi:
         memory: 1Gi
 ingress:
   hosts:
-    - host: ingress.agnosticdataengine.com
+    - host: hindsight.com
       paths:
         - name: acquire
           path: "/api/v[0-9]+/data/.*"
