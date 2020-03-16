@@ -39,6 +39,7 @@ defmodule Acquire.MixProject do
       {:corsica, "~> 1.0"},
       {:definition, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
+      {:definition_delete, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:elsa, "~> 0.12", override: true},
       {:extractor, in_umbrella: true},

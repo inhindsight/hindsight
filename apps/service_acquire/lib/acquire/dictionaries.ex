@@ -17,6 +17,11 @@ defmodule Acquire.Dictionaries do
     Brook.ViewState.merge(@collection, identifier(persist), %{"destination" => destination})
   end
 
+  @spec delete(Delete.t()) :: :ok
+  def delete(%Delete{} = delete) do
+    Brook.ViewState.delete(@collection, identifier(delete))
+  end
+
   @spec get_dictionary(dataset_id :: String.t(), subset_id :: String.t()) ::
           {:ok, Dictionary.t()} | {:error, term}
   def get_dictionary(dataset_id, subset_id) do
