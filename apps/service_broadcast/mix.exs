@@ -38,7 +38,7 @@ defmodule Broadcast.MixProject do
       {:gettext, "~> 0.11"},
       {:initializer, in_umbrella: true},
       {:jason, "~> 1.1"},
-      {:off_broadway_kafka, "~> 0.5"},
+      {:off_broadway_kafka, "~> 1.0"},
       {:phoenix, "~> 1.4.11"},
       {:phoenix_pubsub, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
