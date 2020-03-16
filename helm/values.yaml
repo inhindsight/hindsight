@@ -61,13 +61,12 @@ podSecurityContext: {}
 securityContext: {}
 
 ingress:
-  hosts:
-    - host: chart-example.local
-      paths:
-        - name: acquire
-          path: "/api/v[0-9]+/data/.*"
-        - name: broadcast
-          path: "/socket/websocket"
+  host: ""
+  paths:
+    - name: acquire
+      path: "/api/v[0-9]+/data/.*"
+    - name: broadcast
+      path: "/socket/websocket"
   tls: []
 
 resources: {}

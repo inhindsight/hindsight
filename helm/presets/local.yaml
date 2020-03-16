@@ -9,6 +9,8 @@ broadcast:
 acquire:
   service:
     type: ClusterIP
+ingress:
+  host: chart-example.local
 strimzi:
   kafka:
     resources:
