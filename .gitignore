@@ -27,3 +27,4 @@ erl_crash.dump
 /helm/charts/*.tgz
 
 *.swp
+.vscode/

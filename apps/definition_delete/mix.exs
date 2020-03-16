@@ -3,7 +3,7 @@ defmodule Delete.MixProject do
 
   def project do
     [
-      app: :definition_accept,
+      app: :definition_delete,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
