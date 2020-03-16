@@ -17,6 +17,6 @@ defmodule Acquire.Event.Handler do
       "#{__MODULE__}: Received event #{definition_delete()}: #{inspect(delete)}"
     end)
 
-    Aquire.Dictionaries.delete(delete)
+    Acquire.Dictionaries.delete(delete)
   end
 end
