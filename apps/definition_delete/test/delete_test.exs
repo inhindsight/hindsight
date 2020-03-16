@@ -11,7 +11,8 @@ defmodule DeleteTest do
         [:field, :value],
         [:version, "1"],
         [:id, ""],
-        [:dataset_id, 2001]
+        [:dataset_id, 2001],
+        [:subset_id, 2002]
       ])
     end
   end
