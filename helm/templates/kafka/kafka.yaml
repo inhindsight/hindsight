@@ -6,6 +6,11 @@ metadata:
 spec:
   kafka:
     replicas: {{ .Values.strimzi.kafka.replicaCount }}
+    {{- if .Values.strimzi.kafka.resources.jvm }}
+    jvmOptions:
+      "-Xms": {{ .Values.strimzi.kafka.resources.jvm.xms }}
+      "-Xmx": {{ .Values.strimzi.kafka.resources.jvm.xmx }}
+    {{- end }}
     listeners:
       plain: {}
       tls: {}
@@ -27,6 +32,11 @@ spec:
     {{ end }}
   zookeeper:
     replicas: {{ .Values.strimzi.kafka.replicaCount }}
+    {{- if .Values.strimzi.zookeeper.resources.jvm }}
+    jvmOptions:
+      "-Xms": {{ .Values.strimzi.zookeeper.resources.jvm.xms }}
+      "-Xmx": {{ .Values.strimzi.zookeeper.resources.jvm.xmx }}
+    {{- end }}
     storage:
       {{ if .Values.strimzi.kafka.storage.enabled }}
       type: persistent-claim

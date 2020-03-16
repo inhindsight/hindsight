@@ -102,7 +102,7 @@ defmodule PlatformRunner.EndToEndTest do
         schema: "default"
       )
 
-    assert_async sleep: 1_000, max_tries: 30, debug: true do
+    assert_async sleep: 1_000, max_tries: 60, debug: true do
       with {:ok, result} <-
              Prestige.query(session, "select * from e2e__csv order by single_letter") do
         assert Enum.member?(Prestige.Result.as_maps(result), %{

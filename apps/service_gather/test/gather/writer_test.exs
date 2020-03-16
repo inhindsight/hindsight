@@ -45,7 +45,10 @@ defmodule Gather.WriterTest do
               "step" => "Decode.Csv",
               "headers" => ["A", "B", "C"]
             }
-          ]
+          ],
+          config: %{
+            "key" => "value"
+          }
         )
 
       Gather.Writer.start_link(extract: extract, name: :joe)
@@ -55,6 +58,7 @@ defmodule Gather.WriterTest do
       assert Keyword.get(actual, :endpoints) == [localhost: 9092]
       assert Keyword.get(actual, :topic) == "topic-1"
       assert Keyword.get(actual, :name) == :joe
+      assert Keyword.get(actual, :config) == extract.config
 
       assert Keyword.get(actual, :metric_metadata) == %{
                app: "service_gather",
@@ -90,7 +94,24 @@ defmodule Gather.WriterTest do
       :ok = Gather.Writer.write(:pid, messages, extract: extract)
 
       assert_receive {:write, :pid, actuals}
-      assert actuals == Enum.map(messages, &Jason.encode!/1)
+      assert actuals == Enum.map(messages, &{"", Jason.encode!(&1)})
+    end
+
+    test "writes message with proper key", %{extract: extract} do
+      stub_writer(:ok)
+
+      messages = [
+        %{"spouse" => %{"name" => "joe"}},
+        %{"spouse" => %{"name" => "mary"}}
+      ]
+
+      assert :ok ==
+               Gather.Writer.write(:pid, messages,
+                 extract: %{extract | message_key: ["spouse", "name"]}
+               )
+
+      assert_receive {:write, :pid, actuals}
+      assert actuals == Enum.map(messages, &{get_in(&1, ["spouse", "name"]), Jason.encode!(&1)})
     end
 
     test "write to DLQ if message cannot be encoded", %{extract: extract} do

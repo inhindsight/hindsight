@@ -16,6 +16,11 @@ defmodule Dictionary.Type.StringTest do
         [:description, nil]
       ]
     end
+
+    test "name gets lowercased" do
+      assert Dictionary.Type.String.new!(name: "name") ==
+               Dictionary.Type.String.new!(name: "Name")
+    end
   end
 
   test "can be encoded to json" do

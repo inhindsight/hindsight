@@ -20,4 +20,24 @@ defmodule Broadcast.Stream.Supervisor do
   def terminate_child(pid) do
     DynamicSupervisor.terminate_child(__MODULE__, pid)
   end
+
+  @spec kill_all_children() :: :ok
+  def kill_all_children() do
+    child_pids =
+      DynamicSupervisor.which_children(__MODULE__)
+      |> Enum.map(fn {_, pid, _, _} -> pid end)
+
+    refs = Enum.map(child_pids, &Process.monitor/1)
+
+    Enum.each(child_pids, &terminate_child/1)
+
+    Enum.each(refs, fn ref ->
+      receive do
+        {:DOWN, ^ref, _, _, _} -> :ok
+      after
+        1_000 ->
+          raise "Unable to verify death of child: #{inspect(Process.info(self(), :messages))}"
+      end
+    end)
+  end
 end

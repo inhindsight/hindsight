@@ -27,7 +27,8 @@ defmodule Definition.MixProject do
       {:norm, "~> 0.10.2"},
       {:jason, "~> 1.1"},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:stream_data, "~> 0.4.0", only: [:dev, :test]}
+      {:stream_data, "~> 0.4.0", only: [:dev, :test]},
+      {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
 end

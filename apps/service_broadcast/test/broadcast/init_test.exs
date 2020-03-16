@@ -1,7 +1,18 @@
 defmodule Broadcast.InitTest do
   use ExUnit.Case
+  require Temp.Env
 
   @instance Broadcast.Application.instance()
+
+  Temp.Env.modify([
+    %{
+      app: :service_broadcast,
+      key: Broadcast.Stream.Broadway,
+      set: [
+        configuration: BroadwayConfigurator.Dummy
+      ]
+    }
+  ])
 
   setup do
     Process.flag(:trap_exit, true)
@@ -31,14 +42,7 @@ defmodule Broadcast.InitTest do
       Enum.each(loads, &Broadcast.Stream.Store.persist/1)
     end)
 
-    {:ok, pid} = Broadcast.Init.start_link([])
-
-    assert_down(pid)
-  end
-
-  defp assert_down(pid) do
-    ref = Process.monitor(pid)
-    Process.exit(pid, :kill)
-    assert_receive {:DOWN, ^ref, _, _, _}
+    start_supervised(Broadcast.Init)
+    Broadcast.Stream.Supervisor.kill_all_children()
   end
 end

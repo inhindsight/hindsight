@@ -15,7 +15,8 @@ defmodule Gather.Extraction do
   getter(:app_name, required: true)
 
   def start_link(args) do
-    GenServer.start_link(__MODULE__, args)
+    server_opts = Keyword.take(args, [:name])
+    GenServer.start_link(__MODULE__, args, server_opts)
   end
 
   @impl GenServer
@@ -66,7 +67,8 @@ defmodule Gather.Extraction do
     Context.get_stream(context)
     |> Ok.each(fn chunk ->
       with data <- Enum.map(chunk, &Map.get(&1, :data)),
-           normalized_messages <- normalize(extract, data),
+           lowercase_data <- Enum.map(data, &lowercase_fields/1),
+           normalized_messages <- normalize(extract, lowercase_data),
            :ok <- writer().write(writer, normalized_messages, writer_opts) do
         Context.run_after_functions(context, chunk)
         :ok
@@ -109,4 +111,14 @@ defmodule Gather.Extraction do
       "#{__MODULE__}: Failed with reason: #{inspect(reason)}, extract: #{inspect(extract)}"
     )
   end
+
+  defp lowercase_fields(%{} = map) do
+    for {key, value} <- map, do: {String.downcase(key), lowercase_fields(value)}, into: %{}
+  end
+
+  defp lowercase_fields(list) when is_list(list) do
+    Enum.map(list, &lowercase_fields/1)
+  end
+
+  defp lowercase_fields(v), do: v
 end
