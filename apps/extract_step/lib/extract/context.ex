@@ -12,9 +12,10 @@ defmodule Extract.Context do
           response: term,
           variables: map,
           source: source,
-          after_functions: [(list -> no_return())]
+          after_functions: [(list -> no_return())],
+          error_functions: [(() -> no_return)]
         }
-  defstruct response: nil, variables: %{}, source: nil, after_functions: []
+  defstruct response: nil, variables: %{}, source: nil, after_functions: [], error_functions: []
 
   @spec new() :: %__MODULE__{}
   def new() do
@@ -55,6 +56,21 @@ defmodule Extract.Context do
     |> Enum.each(fn fun ->
       fun.(messages)
     end)
+
+    context
+  end
+
+  @spec register_error_function(context :: t, (() -> no_return)) :: t
+  def register_error_function(context, error_function) do
+    Map.update!(context, :error_functions, fn functions ->
+      functions ++ [error_function]
+    end)
+  end
+
+  @spec run_error_functions(context :: t) :: t
+  def run_error_functions(context) do
+    context.error_functions
+    |> Enum.each(fn fun -> fun.() end)
 
     context
   end

@@ -44,6 +44,7 @@ defmodule Gather.MixProject do
       # Dev/Test Dependencies
       {:bypass, "~> 1.0", only: [:test]},
       {:mox, "~> 0.5.1", only: [:test]},
+      {:placebo, "~> 2.0.0-rc2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}
     ]
   end

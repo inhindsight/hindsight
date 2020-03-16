@@ -14,6 +14,7 @@ defmodule Extract.Http.Get do
 
   defimpl Extract.Step, for: __MODULE__ do
     import Extract.Context
+    require Logger
 
     alias Extract.Http.File.Downloader
 
@@ -25,6 +26,12 @@ defmodule Extract.Http.Get do
            {:ok, response} <- download(temp_path, url, headers) do
         context
         |> set_source(&stream_from_file(response, &1))
+        |> register_error_function(fn ->
+          File.rm(response.destination)
+          |> Ok.map_if_error(
+            &Logger.warn(fn -> "#{__MODULE__}: Failed to cleanup file #{inspect(&1)}" end)
+          )
+        end)
         |> Ok.ok()
       end
     end
