@@ -1,6 +1,6 @@
-import {AppView} from "../model/AppView"
+import {AppView} from "../../model/AppView"
 import React, { FunctionComponent, PropsWithChildren } from "react"
-import {defaultState} from "../default-state"
+import {defaultState} from "../../default-state"
 import { Socket, Channel } from "phoenix"
 
 export type PushEvent = (event: any) => void
