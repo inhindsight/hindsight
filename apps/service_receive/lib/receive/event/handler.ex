@@ -21,7 +21,7 @@ defmodule Receive.Event.Handler do
         data: %Accept{dataset_id: id, subset_id: sid} = accept
       }) do
     Logger.debug(fn -> "#{__MODULE__}: Received event #{accept_end()}: #{inspect(accept)}" end)
-    Receive.Accept.Store.delete(id, sid)
+    Receive.Accept.Store.mark_done(dataset_id: id, subset_id: sid)
 
     Receive.Accept.Registry.whereis(:"#{accept.destination}_manager")
     |> Receive.Accept.Supervisor.terminate_child()
