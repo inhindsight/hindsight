@@ -289,6 +289,20 @@ defmodule PlatformRunner.EndToEndTest do
 
       assert {:ok, [^expected]} = AcquireClient.data("/e2e-json-ds/json-subset")
     end
+
+    test "deleted" do
+      delete =
+        Delete.new!(id: "e2e-json-delete-1", dataset_id: "e2e-json-ds", subset_id: "json-subset")
+
+      Orchestrate.Application.instance()
+      |> Events.send_definition_delete("e2e", delete)
+
+      assert_async sleep: 500, max_tries: 10 do
+        # We error out because that data / definition no longer exist
+        assert {:ok, %{"errors" => %{"detail" => "Internal Server Error"}}} =
+                 AcquireClient.data("/e2e-json-ds/json-subset")
+      end
+    end
   end
 
   describe "Pushed data" do

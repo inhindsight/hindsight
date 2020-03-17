@@ -1,9 +1,12 @@
 defmodule Receive.Event.Handler do
   use Brook.Event.Handler
+  use Properties, otp_app: :service_persist
   require Logger
 
   alias Receive.SocketManager
   import Events, only: [accept_start: 0, accept_end: 0, definition_delete: 0]
+
+  getter(:endpoints, required: true)
 
   def handle_event(%Brook.Event{type: accept_start(), data: %Accept{} = accept}) do
     Logger.debug(fn -> "#{__MODULE__}: Received event #{accept_start()}: #{inspect(accept)}" end)
@@ -38,6 +41,9 @@ defmodule Receive.Event.Handler do
       accept ->
         Receive.Accept.Registry.whereis(:"#{accept.destination}_manager")
         |> Receive.Accept.Supervisor.terminate_child()
+
+        if Elsa.topic?(endpoints(), accept.destination),
+          do: Elsa.delete_topic(endpoints(), accept.destination)
     end
 
     Receive.Accept.Store.delete(delete.dataset_id, delete.subset_id)
