@@ -29,6 +29,7 @@ defmodule DefinitionEvents.MixProject do
       {:definition_extract, in_umbrella: true},
       {:definition_load_broadcast, in_umbrella: true},
       {:definition_load_persist, in_umbrella: true},
+      {:definition_profile_update, in_umbrella: true},
       {:definition_schedule, in_umbrella: true}
     ]
   end
