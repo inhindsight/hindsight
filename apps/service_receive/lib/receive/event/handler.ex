@@ -31,11 +31,16 @@ defmodule Receive.Event.Handler do
       "#{__MODULE__}: Received event #{definition_delete()}: #{inspect(delete)}"
     end)
 
+    case Receive.Accept.Store.get!(delete.dataset_id, delete.subset_id) do
+      nil ->
+        nil
+
+      accept ->
+        Receive.Accept.Registry.whereis(:"#{accept.destination}_manager")
+        |> Receive.Accept.Supervisor.terminate_child()
+    end
+
     Receive.Accept.Store.delete(delete.dataset_id, delete.subset_id)
-
-    Receive.Accept.Registry.whereis(:"#{delete.destination}_manager")
-    |> Receive.Accept.Supervisor.terminate_child()
-
     :ok
   end
 end
