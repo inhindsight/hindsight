@@ -210,7 +210,7 @@ defmodule Gather.ExtractionTest do
         ]
       )
 
-    {:ok, _} = Extraction.start_link(extract: extract)
+    start_supervised({Extraction, [extract: extract]})
 
     assert_async sleep: 1000 do
       refute File.exists?(@download_file)
@@ -240,7 +240,7 @@ defmodule Gather.ExtractionTest do
         ]
       )
 
-    {:ok, _} = Extraction.start_link(extract: extract)
+    start_supervised({Extraction, [extract: extract]})
 
     assert_async sleep: 1_000 do
       refute File.exists?(@download_file)
