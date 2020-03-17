@@ -143,16 +143,16 @@ config :service_broadcast, Broadcast.Stream.Broadway.Configuration,
   endpoints: kafka_endpoints,
   broadway_config: [
     producer: [
-      stages: 1
+      concurrency: 1
     ],
     processors: [
       default: [
-        stages: 1
+        concurrency: 1
       ]
     ],
     batchers: [
       default: [
-        stages: 1,
+        concurrency: 1,
         batch_size: 1_000,
         batch_timeout: 1_000
       ]
@@ -210,16 +210,16 @@ config :service_persist, Persist.Load.Broadway.Configuration,
   endpoints: kafka_endpoints,
   broadway_config: [
     producer: [
-      stages: 1
+      concurrency: 1
     ],
     processors: [
       default: [
-        stages: 100
+        concurrency: 100
       ]
     ],
     batchers: [
       default: [
-        stages: 2,
+        concurrency: 2,
         batch_size: 1_000,
         batch_timeout: 2_000
       ]
