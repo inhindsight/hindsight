@@ -14,10 +14,4 @@ defmodule Broadcast.Transformations do
       Ok.ok(transform)
     end
   end
-
-  @spec delete(Delete.t()) :: :ok
-  def delete(%Delete{} = delete) do
-    Brook.ViewState.delete(@collection, delete.dataset_id)
-  end
-
 end

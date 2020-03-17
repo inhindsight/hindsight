@@ -9,7 +9,8 @@ defmodule Persist.Event.Handler do
       load_persist_end: 0,
       transform_define: 0,
       compact_start: 0,
-      compact_end: 0
+      compact_end: 0,
+      definition_delete: 0
     ]
 
   @instance Persist.Application.instance()
@@ -58,5 +59,24 @@ defmodule Persist.Event.Handler do
       true -> Persist.Load.Store.delete(load.dataset_id, load.subset_id)
       false -> Persist.Load.Supervisor.start_child(load)
     end
+  end
+
+  @impl Brook.Event.Handler
+  def handle_event(%Brook.Event{type: definition_delete(), data: %Delete{} = delete}) do
+    Logger.debug(fn ->
+      "#{__MODULE__}: Received event #{definition_delete()}: #{inspect(delete)}"
+    end)
+
+    case Persist.Load.Store.get!(delete.dataset_id, delete.subset_id) do
+      nil ->
+        nil
+
+      load ->
+        Persist.Compact.Supervisor.terminate_child(load)
+        Persist.Load.Supervisor.terminate_child(load)
+        Persist.TableManager.delete(load.destination)
+    end
+
+    Persist.Load.Store.delete(delete.dataset_id, delete.subset_id)
   end
 end

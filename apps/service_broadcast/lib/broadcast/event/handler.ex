@@ -2,7 +2,13 @@ defmodule Broadcast.Event.Handler do
   use Brook.Event.Handler
   require Logger
 
-  import Events, only: [load_broadcast_start: 0, load_broadcast_end: 0, transform_define: 0, definition_delete: 0]
+  import Events,
+    only: [
+      load_broadcast_start: 0,
+      load_broadcast_end: 0,
+      transform_define: 0,
+      definition_delete: 0
+    ]
 
   def handle_event(%Brook.Event{type: load_broadcast_start(), data: %Load.Broadcast{} = load}) do
     Logger.debug(fn ->
@@ -46,7 +52,6 @@ defmodule Broadcast.Event.Handler do
       pid ->
         Broadcast.Stream.Supervisor.terminate_child(pid)
         Broadcast.Stream.Store.delete(delete.dataset_id, delete.subset_id)
-        Broadcast.Transformations.delete(delete)
         :ok
     end
   end
