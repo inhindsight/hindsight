@@ -16,6 +16,7 @@ defmodule Persist.Event.Handler do
   @instance Persist.Application.instance()
 
   getter(:compactor, default: Persist.Compactor.Presto)
+  getter(:endpoints, required: true)
 
   @impl Brook.Event.Handler
   def handle_event(%Brook.Event{type: load_persist_start(), data: %Load.Persist{} = load}) do
@@ -75,6 +76,7 @@ defmodule Persist.Event.Handler do
         Persist.Compact.Supervisor.terminate_child(load)
         Persist.Load.Supervisor.terminate_child(load)
         Persist.TableManager.delete(load.destination)
+        Elsa.delete_topic(endpoints(), load.source)
     end
 
     Persist.Load.Store.delete(delete.dataset_id, delete.subset_id)
