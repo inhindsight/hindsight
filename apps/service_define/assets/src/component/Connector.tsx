@@ -41,8 +41,8 @@ export class StateProvider extends React.Component<PropsWithChildren<{}>, { read
         this.socket = new Socket("/socket")
         this.socket.connect()
 
-        this.channel = this.socket.channel("view_state", {})
-        this.channel.on("update", (appView: AppView) => this.setState({ appView }))
+        this.channel = this.socket.channel("view_messages", {})
+        this.channel.on("view_state_update", (appView: AppView) => this.setState({ appView }))
         this.channel.join()
     }
 
