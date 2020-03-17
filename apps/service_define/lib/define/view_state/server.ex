@@ -17,7 +17,12 @@ defmodule ViewState.Server do
     {:reply, new_state, new_state}
   end
 
+  @impl true
+  def handle_call(:state, _from, state) do
+    {:reply, state, state}
+  end
+
   def default_state() do
-    %{ "greeting" => "" }
+    %{ "greeting" => "Hola Mundo!" }
   end
 end
