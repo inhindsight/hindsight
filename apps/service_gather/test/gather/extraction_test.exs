@@ -184,15 +184,9 @@ defmodule Gather.ExtractionTest do
     assert_down(pid)
   end
 
-  defp assert_down(pid) do
-    ref = Process.monitor(pid)
-    Process.exit(pid, :kill)
-    assert_receive {:DOWN, ^ref, _, _, _}
-  end
-
   test "cleans up downloaded file after extract complete" do
     Gather.WriterMock
-    |> expect(:start_link, 1, fn _ -> Agent.start_link(fn -> :dummy end) end)
+    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
 
     request_url = "http://example/download/path"
 
@@ -251,6 +245,12 @@ defmodule Gather.ExtractionTest do
     assert_async sleep: 1_000 do
       refute File.exists?(@download_file)
     end
+  end
+
+  defp assert_down(pid) do
+    ref = Process.monitor(pid)
+    Process.exit(pid, :kill)
+    assert_receive {:DOWN, ^ref, _, _, _}
   end
 
   defp write_temp_file(file_name) do
