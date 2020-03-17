@@ -13,7 +13,7 @@ defmodule Profile.Feed.Flow do
           subset_id: String.t(),
           from_specs: list(Supervisor.child_spec()),
           into_specs: list(Supervisor.child_spec()),
-          reducers: %{required(module) => term}
+          reducers: list(Profile.Reducer.t())
         ]
 
   @spec start_link(init_opts) :: GenServer.on_start()

@@ -16,7 +16,8 @@ defmodule Profile.Update do
             stats: %{}
 
   def on_new(update) do
-    Map.put(update, :updated, NaiveDateTime.utc_now() |> NaiveDateTime.to_iso8601())
+    Map.put(update, :updated, NaiveDateTime.utc_now()
+    |> NaiveDateTime.to_iso8601())
     |> Ok.ok()
   end
 end
