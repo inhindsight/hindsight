@@ -17,7 +17,7 @@ defmodule DefineWeb.Router do
   scope "/", DefineWeb do
     pipe_through :browser
 
-    live "/", EditDataDefinition
+    get "/", PageController, :index
   end
 
   # Other scopes may use custom stacks.

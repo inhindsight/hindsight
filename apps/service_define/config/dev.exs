@@ -13,11 +13,13 @@ config :service_define, DefineWeb.Endpoint,
   check_origin: false,
   watchers: [
     node: [
-      "node_modules/webpack/bin/webpack.js",
-      "--mode",
-      "development",
-      "--watch-stdin",
+      "node_modules/parcel-bundler/bin/cli.js",
+      "watch",
+      "src/index.html",
+      "--out-dir",
+      "../priv/static/",
       cd: Path.expand("../assets", __DIR__)
+
     ]
   ]
 

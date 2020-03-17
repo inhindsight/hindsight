@@ -1,25 +1,33 @@
 {
-  "repository": {},
-  "license": "MIT",
+  "private": true,
   "scripts": {
-    "deploy": "webpack --mode production",
-    "watch": "webpack --mode development --watch"
+    "start": "parcel src/index.html",
+    "build": "rm -rf dist/ && parcel build src/index.html",
+    "test": "npm run test:once --watch",
+    "test:once": "mocha --opts mocha.opts src/**/*.test.ts",
+    "lint": "tslint --project .",
+    "lint:fix": "tslint --fix --project .",
+    "compile": "tsc --noEmit",
+    "deploy": "parcel build index.html --out-dir ../priv/static/",
+    "watch": "parcel watch index.html --out-dir ../priv/static/"
   },
   "dependencies": {
-    "phoenix": "file:../../../deps/phoenix",
-    "phoenix_html": "file:../../../deps/phoenix_html",
-    "phoenix_live_view": "file:../../../deps/phoenix_live_view"
+    "@types/phoenix": "^1.4.3",
+    "phoenix": "1.4.16",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "babel-loader": "^8.0.0",
-    "copy-webpack-plugin": "^5.1.1",
-    "css-loader": "^3.4.2",
-    "mini-css-extract-plugin": "^0.9.0",
-    "optimize-css-assets-webpack-plugin": "^5.0.1",
-    "terser-webpack-plugin": "^2.3.2",
-    "webpack": "4.41.5",
-    "webpack-cli": "^3.3.2"
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@types/react": "^16.9.23",
+    "@types/react-dom": "^16.9.5",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.0",
+    "parcel-bundler": "^1.12.4",
+    "ts-node": "^8.6.2",
+    "tslint": "^6.1.0",
+    "tslint-immutable": "^6.0.1",
+    "typescript": "^3.8.3"
   }
 }

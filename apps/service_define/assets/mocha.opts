@@ -1,0 +1,4 @@
+--recursive
+--require ts-node/register
+--watch-extensions ts
+--reporter progress

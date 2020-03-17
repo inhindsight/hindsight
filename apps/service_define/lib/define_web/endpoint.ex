@@ -14,7 +14,7 @@ defmodule DefineWeb.Endpoint do
     websocket: true,
     longpoll: false
 
-  socket "/live", Phoenix.LiveView.Socket 
+  socket "/live", Phoenix.LiveView.Socket
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -23,8 +23,7 @@ defmodule DefineWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :service_define,
-    gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    gzip: true
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
