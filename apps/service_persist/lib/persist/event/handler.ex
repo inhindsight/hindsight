@@ -76,7 +76,7 @@ defmodule Persist.Event.Handler do
         Persist.Compact.Supervisor.terminate_child(load)
         Persist.Load.Supervisor.terminate_child(load)
         Persist.TableManager.delete(load.destination)
-        Elsa.delete_topic(endpoints(), load.source)
+        if Elsa.topic?(endpoints(), load.source), do: Elsa.delete_topic(endpoints(), load.source)
     end
 
     Persist.Load.Store.delete(delete.dataset_id, delete.subset_id)

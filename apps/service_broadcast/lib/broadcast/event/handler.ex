@@ -1,5 +1,6 @@
 defmodule Broadcast.Event.Handler do
   use Brook.Event.Handler
+  use Properties, otp_app: :service_broadcast
   require Logger
 
   import Events,
@@ -9,6 +10,8 @@ defmodule Broadcast.Event.Handler do
       transform_define: 0,
       definition_delete: 0
     ]
+
+  getter(:endpoints, required: true)
 
   def handle_event(%Brook.Event{type: load_broadcast_start(), data: %Load.Broadcast{} = load}) do
     Logger.debug(fn ->
@@ -51,9 +54,18 @@ defmodule Broadcast.Event.Handler do
 
       pid ->
         Broadcast.Stream.Supervisor.terminate_child(pid)
-        Broadcast.Stream.Store.delete(delete.dataset_id, delete.subset_id)
-        Broadcast.Transformations.delete(delete)
         :ok
     end
+
+    case Broadcast.Stream.Store.get!(delete.dataset_id, delete.subset_id) do
+      nil ->
+        nil
+
+      load ->
+        if Elsa.topic?(endpoints(), load.source), do: Elsa.delete_topic(endpoints(), load.source)
+    end
+
+    Broadcast.Stream.Store.delete(delete.dataset_id, delete.subset_id)
+    Broadcast.Transformations.delete(delete)
   end
 end
