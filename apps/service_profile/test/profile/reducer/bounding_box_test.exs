@@ -32,6 +32,7 @@ defmodule Profile.Reducer.BoundingBoxTest do
       stats = %{
         "bounding_box" => bbox
       }
+
       reducer = Profile.Reducer.init(reducer, stats)
 
       event = %{"long" => long, "lat" => lat}
@@ -55,11 +56,13 @@ defmodule Profile.Reducer.BoundingBoxTest do
       stats1 = %{
         "bounding_box" => bbox1
       }
+
       reducer1 = Profile.Reducer.init(reducer, stats1)
 
       stats2 = %{
         "bounding_box" => bbox2
       }
+
       reducer2 = Profile.Reducer.init(reducer, stats2)
 
       output = Profile.Reducer.merge(reducer1, reducer2)
