@@ -35,7 +35,8 @@ defmodule Profile.MixProject do
       {:properties, in_umbrella: true},
 
       # dev/testing deps
-      {:testing, in_umbrella: true, only: [:test]}
+      {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:testing, in_umbrella: true, only: [:dev, :test]}
     ]
   end
 

@@ -89,6 +89,7 @@ defmodule Profile.Reducer.TemporalRangeTest do
           "last" => ~N[2024-01-01 01:01:01] |> NaiveDateTime.to_iso8601()
         }
       }
+
       reducer2 = Profile.Reducer.init(reducer, stats2)
 
       output = Profile.Reducer.merge(reducer1, reducer2)
