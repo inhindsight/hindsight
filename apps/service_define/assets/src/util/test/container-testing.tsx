@@ -1,8 +1,8 @@
 import React, {PropsWithChildren} from "react"
 import ReactDOM from "react-dom"
 import {AppView} from "../../model/AppView"
-import {AppViewContext} from "../../component/connected/Connector"
 import {defaultState} from "../../default-state"
+import { AppViewContext } from "../connector"
 
 export const renderComponentWithState = (fragment: React.ReactFragment, state?: AppView) => {
     const {FakeStateProvider, pushedEvents} = makeFakeStateProvider(state)

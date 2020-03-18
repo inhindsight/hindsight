@@ -1,18 +1,12 @@
-import {AppView} from "../../model/AppView"
 import React, { FunctionComponent, PropsWithChildren } from "react"
-import {defaultState} from "../../default-state"
 import { Socket, Channel } from "phoenix"
+import {AppView} from "../model/AppView"
+import {defaultState} from "../default-state"
 
 export type PushEvent = (event: any) => void
 export type PropsMapper<T> = (state: AppView, pushEvent: PushEvent) => T
 
-export interface AppViewContextProps {
-    readonly state: AppView,
-    readonly pushEvent: PushEvent
-}
-
 export const AppViewContext = React.createContext<{ readonly state: AppView, readonly pushEvent: PushEvent}>({ state: defaultState, pushEvent: () => {}})
-
 
 export const connect = <T extends {}>(Component: FunctionComponent<T>, propsMapper: PropsMapper<T>) => {
     return class ConnectedComponent extends React.Component<{}, {}> {
@@ -45,7 +39,6 @@ export class StateProvider extends React.Component<PropsWithChildren<{}>, { read
         this.channel.on("view_state_update", (appView: AppView) => this.setState({ appView }))
         this.channel.join()
     }
-
 
     componentWillUnmount() {
         this.socket.disconnect()
