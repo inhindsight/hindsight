@@ -1,4 +1,4 @@
-import {queryByTestHandle, renderComponentWithState} from "../../util/test/container-testing"
+import {queryByTestHandle, renderComponentWithState} from "../../util/test/container"
 import {ConnectedMessage} from "./ConnectedMessage"
 import {trigger} from "dom-sim"
 import {expect} from "chai"

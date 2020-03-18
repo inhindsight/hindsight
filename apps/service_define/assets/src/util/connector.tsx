@@ -2,8 +2,9 @@ import React, { FunctionComponent, PropsWithChildren } from "react"
 import { Socket, Channel } from "phoenix"
 import {AppView} from "../model/AppView"
 import {defaultState} from "../default-state"
+import {Event} from "./event"
 
-export type PushEvent = (event: any) => void
+export type PushEvent = (event: Event) => void
 export type PropsMapper<T> = (state: AppView, pushEvent: PushEvent) => T
 
 export const AppViewContext = React.createContext<{ readonly state: AppView, readonly pushEvent: PushEvent}>({ state: defaultState, pushEvent: () => {}})
