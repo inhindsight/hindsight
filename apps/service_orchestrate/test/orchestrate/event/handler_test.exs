@@ -164,8 +164,8 @@ defmodule Orchestrate.Event.HandlerTest do
     Brook.Test.send(@instance, schedule_end(), "testing", schedule)
 
     assert_async do
-      assert nil ==
-               Orchestrate.Scheduler.find_job(:"#{schedule.dataset_id}__#{schedule.subset_id}")
+      stored_schedule = Orchestrate.Schedule.Store.get!(schedule.dataset_id, schedule.subset_id)
+      assert Orchestrate.Schedule.Store.done?(stored_schedule)
     end
   end
 
@@ -189,13 +189,12 @@ defmodule Orchestrate.Event.HandlerTest do
                Orchestrate.Scheduler.find_job(:"#{schedule.dataset_id}__#{schedule.subset_id}")
     end
 
-    # We should be testing this but are not due to JSR
-    # assert_async do
-    #   assert nil ==
-    #            Orchestrate.Scheduler.find_job(
-    #              :"#{schedule.dataset_id}__#{schedule.subset_id}_compaction"
-    #            )
-    # end
+    assert_async do
+      assert nil ==
+               Orchestrate.Scheduler.find_job(
+                 :"#{schedule.dataset_id}__#{schedule.subset_id}_compaction"
+               )
+    end
 
     assert_async do
       assert nil == Orchestrate.Schedule.Store.get!(schedule.dataset_id, schedule.subset_id)
