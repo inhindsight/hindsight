@@ -5,10 +5,10 @@ receive:
     type: LoadBalancer
 broadcast:
   service:
-    type: LoadBalancer
+    type: ClusterIP
 acquire:
   service:
-    type: LoadBalancer
+    type: ClusterIP
 resources:
   requests:
     cpu: 500m
@@ -39,6 +39,12 @@ strimzi:
 redis:
   enabled: false
   externalAddress: ""
+nginx-ingress:
+  controller:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
+      type: LoadBalancer
 presto:
   postgres:
     enable: false
