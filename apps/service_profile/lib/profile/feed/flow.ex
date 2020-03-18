@@ -1,6 +1,7 @@
 defmodule Profile.Feed.Flow do
   use Flow
   use Properties, otp_app: :service_profile
+  require Logger
 
   alias Profile.Feed.Flow.Storage
 
@@ -18,6 +19,7 @@ defmodule Profile.Feed.Flow do
 
   @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(opts) do
+    Logger.debug(fn -> "#{__MODULE__}(#{inspect(self())}): init with #{inspect(opts)}" end)
     flow_opts = Keyword.take(opts, [:name])
 
     dataset_id = Keyword.fetch!(opts, :dataset_id)
@@ -27,6 +29,7 @@ defmodule Profile.Feed.Flow do
     reducers = Keyword.fetch!(opts, :reducers)
 
     window = Flow.Window.periodic(window_limit(), window_unit())
+    IO.inspect(window, label: "WINDOW WINDOW WINDOW")
 
     {:ok, stats} = Profile.Feed.Store.get_stats(dataset_id, subset_id)
     reducers = Enum.map(reducers, &Profile.Reducer.init(&1, stats))
@@ -54,6 +57,7 @@ defmodule Profile.Feed.Flow do
   end
 
   defp reduce(event, accumulator) do
+    Logger.debug(fn -> "#{__MODULE__}: event #{inspect(event)}" end)
     accumulator
     |> Enum.map(fn reducer ->
       Profile.Reducer.reduce(reducer, event)

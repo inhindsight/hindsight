@@ -1,5 +1,11 @@
 use Mix.Config
 
+config :service_profile,
+  divo: [
+    {DivoKafka, [create_topics: "topic1:1:1"]}
+  ],
+  divo_wait: [dwell: 700, max_tries: 50]
+
 config :service_profile, Profile.Application,
   init?: false,
   brook: [

@@ -25,6 +25,7 @@ defmodule Profile.MixProject do
 
   defp deps do
     [
+      {:annotated_retry, in_umbrella: true},
       {:brook, "~> 0.5"},
       {:extractor, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
@@ -32,6 +33,7 @@ defmodule Profile.MixProject do
       {:elsa, "~> 0.12", override: true},
       {:flow, "~> 1.0"},
       {:gen_stage, "~> 1.0", override: true},
+      {:management, in_umbrella: true},
       {:properties, in_umbrella: true},
 
       # dev/testing deps

@@ -9,8 +9,10 @@ defmodule Profile.Application do
   def start(_type, _args) do
     children =
       [
+        Profile.Feed.Registry,
+        Profile.Feed.Supervisor,
         brook(),
-        init()
+        # init()
       ]
       |> List.flatten()
 
@@ -20,7 +22,7 @@ defmodule Profile.Application do
 
   defp init() do
     case get_config_value(:init?, default: true) do
-      true -> Gather.Init
+      true -> Profile.Init
       false -> []
     end
   end
