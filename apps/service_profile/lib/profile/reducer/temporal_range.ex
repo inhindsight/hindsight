@@ -37,7 +37,7 @@ defmodule Profile.Reducer.TemporalRange do
     end
 
     def to_event_fields(t) do
-      {"temporal_range", %{"first" => to_iso(t.first), "last" => to_iso(t.last)}}
+      [{"temporal_range", %{"first" => to_iso(t.first), "last" => to_iso(t.last)}}]
     end
 
     defp parse(nil), do: nil

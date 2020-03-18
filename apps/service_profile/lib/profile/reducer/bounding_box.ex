@@ -49,7 +49,7 @@ defmodule Profile.Reducer.BoundingBox do
     end
 
     def to_event_fields(t) do
-      {"bounding_box", [t.xmin, t.ymin, t.xmax, t.ymax]}
+      [{"bounding_box", [t.xmin, t.ymin, t.xmax, t.ymax]}]
     end
 
     defp safe_min(nil, nil), do: nil
