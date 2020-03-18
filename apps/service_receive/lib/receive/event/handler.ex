@@ -1,6 +1,6 @@
 defmodule Receive.Event.Handler do
   use Brook.Event.Handler
-  use Properties, otp_app: :service_persist
+  use Properties, otp_app: :service_receive
   require Logger
 
   alias Receive.SocketManager
@@ -23,8 +23,7 @@ defmodule Receive.Event.Handler do
     Logger.debug(fn -> "#{__MODULE__}: Received event #{accept_end()}: #{inspect(accept)}" end)
     Receive.Accept.Store.mark_done(dataset_id: id, subset_id: sid)
 
-    Receive.Accept.Registry.whereis(:"#{accept.destination}_manager")
-    |> Receive.Accept.Supervisor.terminate_child()
+    terminate_manager(accept)
 
     :ok
   end
@@ -40,8 +39,7 @@ defmodule Receive.Event.Handler do
         nil
 
       accept ->
-        Receive.Accept.Registry.whereis(:"#{accept.destination}_manager")
-        |> Receive.Accept.Supervisor.terminate_child()
+        terminate_manager(accept)
 
         if Elsa.topic?(endpoints(), accept.destination),
           do: Elsa.delete_topic(endpoints(), accept.destination)
@@ -51,5 +49,15 @@ defmodule Receive.Event.Handler do
 
     Receive.Accept.Store.delete(delete.dataset_id, delete.subset_id)
     :ok
+  end
+
+  defp terminate_manager(%Accept{} = accept) do
+    case Receive.Accept.Registry.whereis(:"#{accept.destination}_manager") do
+      :undefined ->
+        Logger.debug("No manager to delete for #{inspect(accept)}")
+
+      pid ->
+        Receive.Accept.Supervisor.terminate_child(pid)
+    end
   end
 end
