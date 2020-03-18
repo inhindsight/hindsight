@@ -44,7 +44,10 @@ defmodule Define.MixProject do
       {:phoenix_live_view, "~> 0.9.0"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+
+      # Dev/Test Dependencies
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

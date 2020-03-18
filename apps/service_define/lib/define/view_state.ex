@@ -16,7 +16,7 @@ defmodule Define.ViewState do
 
   def start_link(init_opts) do
     server_opts = Keyword.take(init_opts, [:name])
-    GenServer.start_link(__MODULE__, default_state(), [server_opts])
+    GenServer.start_link(__MODULE__, default_state(), server_opts)
   end
 
   @impl true
@@ -30,6 +30,7 @@ defmodule Define.ViewState do
     {:reply, state, state}
   end
 
+  @spec default_state :: map()
   def default_state() do
     %{ "greeting" => "Hola Mundo!" }
   end
