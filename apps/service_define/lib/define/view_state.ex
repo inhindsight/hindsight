@@ -32,7 +32,7 @@ defmodule Define.ViewState do
 
   @spec default_state :: map()
   def default_state() do
-    %{ "greeting" => "Hola Mundo!" }
+    %{"greeting" => "Hola Mundo!"}
   end
 
   defp update_state(state, "new_greeting", payload) do

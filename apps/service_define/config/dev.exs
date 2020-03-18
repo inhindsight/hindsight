@@ -19,7 +19,6 @@ config :service_define, DefineWeb.Endpoint,
       "--out-dir",
       "../priv/static/",
       cd: Path.expand("../assets", __DIR__)
-
     ]
   ]
 
