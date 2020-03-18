@@ -1,6 +1,6 @@
 import React from "react"
 
-interface MessageProps {
+export interface MessageProps {
     readonly message: string,
     readonly clicked: (number: number) => void
 }
