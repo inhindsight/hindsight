@@ -1,5 +1,4 @@
 defmodule DefineWeb do
-
   def controller do
     quote do
       use Phoenix.Controller, namespace: DefineWeb
@@ -22,7 +21,6 @@ defmodule DefineWeb do
 
       import DefineWeb.ErrorHelpers
       alias DefineWeb.Router.Helpers, as: Routes
-
     end
   end
 

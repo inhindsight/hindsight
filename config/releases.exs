@@ -296,7 +296,7 @@ config :service_define, DefineWeb.Endpoint,
   server: true,
   check_origin: false
 
-config :define_broadcast, Broadcast.Application,
+config :service_define, Define.Application,
   kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [

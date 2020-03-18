@@ -13,5 +13,4 @@ defmodule DefineWeb.Router do
 
     get "/", PageController, :index
   end
-
 end

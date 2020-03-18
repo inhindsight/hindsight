@@ -1,3 +1,2 @@
 defmodule Define do
-
 end

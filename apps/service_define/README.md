@@ -1,19 +1,29 @@
 # Define
 
-To start your Phoenix server:
+Present an administration UI for maintaining the platform.
+Contains a phoenix backend that maintains the presentation state and a React presentation layer. 
+Communication between layers is done via websockets.
 
-  * Install dependencies with `mix deps.get`
-  * Install Node.js dependencies with `cd assets && npm install`
-  * Start Phoenix endpoint with `mix phx.server`
+## Phoenix Development
+Run Tests
+`mix test`
+Run Server
+`mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## React Development
+*All commands must be run from assets/*
+Run Tests
+`npm run test:once`
+Run Tests w/ watch
+`npm run test`
+Compile
+`npm run compile`
+Lint
+`npm run lint`
+Lint w/ auto fix
+`npm run lint:fix` 
+Storybook
+`npm run storybook`
+Check everything before pushing code (runs compile, test, and lint)
+`npm run ci`
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
