@@ -167,13 +167,9 @@ defmodule Orchestrate.Event.HandlerTest do
       assert nil ==
                Orchestrate.Scheduler.find_job(:"#{schedule.dataset_id}__#{schedule.subset_id}")
     end
-
-    assert_async do
-      assert nil == Orchestrate.Schedule.Store.get!(schedule.dataset_id, schedule.subset_id)
-    end
   end
 
-  test "deletes job on definition:delete", %{schedule: schedule} do
+  test "deletes job and state on definition:delete", %{schedule: schedule} do
     Orchestrate.Scheduler.new_job()
     |> Job.set_name(:"#{schedule.dataset_id}__#{schedule.subset_id}")
     |> Job.set_schedule(Crontab.CronExpression.Parser.parse!("* * * * *"))

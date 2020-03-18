@@ -84,7 +84,7 @@ defmodule GatherTest do
     assert extract == Extraction.Store.get!(extract.dataset_id, extract.subset_id)
   end
 
-  test "removes stored extraction on #{extract_end()}" do
+  test "marks stored extraction done on #{extract_end()}" do
     extract =
       Extract.new!(
         id: "extract-45",
@@ -101,7 +101,7 @@ defmodule GatherTest do
     Brook.Test.send(@instance, extract_end(), "testing", extract)
 
     assert_async do
-      assert nil == Extraction.Store.get!(extract.dataset_id, extract.subset_id)
+      assert true == Extraction.Store.done?(extract)
     end
   end
 

@@ -16,12 +16,9 @@ defmodule Receive.Event.Handler do
     :ok
   end
 
-  def handle_event(%Brook.Event{
-        type: accept_end(),
-        data: %Accept{dataset_id: id, subset_id: sid} = accept
-      }) do
+  def handle_event(%Brook.Event{type: accept_end(), data: %Accept{} = accept}) do
     Logger.debug(fn -> "#{__MODULE__}: Received event #{accept_end()}: #{inspect(accept)}" end)
-    Receive.Accept.Store.mark_done(dataset_id: id, subset_id: sid)
+    Receive.Accept.Store.mark_done(accept)
 
     terminate_manager(accept)
 
