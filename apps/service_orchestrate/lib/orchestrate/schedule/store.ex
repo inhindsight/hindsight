@@ -26,6 +26,19 @@ defmodule Orchestrate.Schedule.Store do
     end
   end
 
+  @spec mark_done(Schedule.t()) :: :ok
+  def mark_done(%Schedule{} = schedule) do
+    Brook.ViewState.merge(@collection, identifier(schedule), %{done: true})
+  end
+
+  @spec done?(Schedule.t()) :: boolean
+  def done?(%Schedule{} = schedule) do
+    case Brook.get!(@instance, @collection, identifier(schedule)) do
+      nil -> false
+      map -> Map.get(map, :done, false)
+    end
+  end
+
   @spec delete(dataset_id :: String.t(), subset_id :: String.t()) :: :ok
   def delete(dataset_id, subset_id) do
     Brook.ViewState.delete(@collection, identifier(dataset_id, subset_id))

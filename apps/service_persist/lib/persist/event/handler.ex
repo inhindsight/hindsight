@@ -57,7 +57,7 @@ defmodule Persist.Event.Handler do
     Persist.Load.Store.clear_compaction(load)
 
     case Persist.Load.Store.done?(load) do
-      true -> Persist.Load.Store.delete(load.dataset_id, load.subset_id)
+      true -> :ok
       false -> Persist.Load.Supervisor.start_child(load)
     end
   end

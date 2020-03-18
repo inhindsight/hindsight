@@ -35,7 +35,7 @@ defmodule Orchestrate.Event.Handler do
 
   def handle_event(%Brook.Event{type: schedule_end(), data: %Schedule{} = schedule}) do
     Orchestrate.Scheduler.delete_job(:"#{identifier(schedule)}")
-    Orchestrate.Schedule.Store.delete(schedule.dataset_id, schedule.subset_id)
+    Orchestrate.Schedule.Store.mark_done(schedule)
   end
 
   def handle_event(%Brook.Event{type: definition_delete(), data: %Delete{} = delete}) do
