@@ -8,5 +8,4 @@ defmodule Profile.Event.Handler do
 
     :ok
   end
-
 end

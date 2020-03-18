@@ -10,7 +10,6 @@ defmodule Profile.Feed do
   def init(opts) do
     extract = Keyword.fetch!(opts, :extract)
 
-
     children = [
       {Profile.Feed.Flow,
        dataset_id: extract.dataset_id,
@@ -23,9 +22,9 @@ defmodule Profile.Feed do
        ],
        reducers: [
          Profile.Reducer.TemporalRange.new(path: [Access.key(:value), "ts"])
-       ]
-      }
+       ]}
     ]
+
     Supervisor.init(children, strategy: :one_for_one)
   end
 end

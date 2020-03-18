@@ -41,10 +41,11 @@ defmodule Profile.Feed.Producer do
   def handle_call({:events, events}, _from, %{queue: queue} = state) do
     Logger.debug(fn -> "#{__MODULE__}: receiving events #{inspect(events)}" end)
 
-    queue = Enum.reduce(events, queue, fn event, q ->
-      update_in(event, [Access.key(:value)], fn value -> Jason.decode!(value) end)
-      |> :queue.in(q)
-    end)
+    queue =
+      Enum.reduce(events, queue, fn event, q ->
+        update_in(event, [Access.key(:value)], fn value -> Jason.decode!(value) end)
+        |> :queue.in(q)
+      end)
 
     {new_state, events} = dispatch_events(%{state | queue: queue}, [])
     {:reply, :ok, events, new_state}
@@ -76,7 +77,9 @@ defmodule Profile.Feed.Producer do
         ]
       )
 
-    Logger.debug(fn -> "#{__MODULE__}(#{inspect(self())}): started elsa : #{inspect(elsa_sup)}" end)
+    Logger.debug(fn ->
+      "#{__MODULE__}(#{inspect(self())}): started elsa : #{inspect(elsa_sup)}"
+    end)
 
     {:noreply, [], %{state | elsa_sup: elsa_sup}}
   end
@@ -87,7 +90,10 @@ defmodule Profile.Feed.Producer do
   end
 
   def handle_info(message, state) do
-    Logger.debug(fn -> "#{__MODULE__}(#{inspect(self())}): Unknown message #{inspect(message)}" end)
+    Logger.debug(fn ->
+      "#{__MODULE__}(#{inspect(self())}): Unknown message #{inspect(message)}"
+    end)
+
     {:noreply, [], state}
   end
 
@@ -97,6 +103,7 @@ defmodule Profile.Feed.Producer do
 
   defp dispatch_events(%{queue: queue, demand: demand} = state, events) do
     Logger.debug(fn -> "#{__MODULE__}: current state = #{inspect(state)}" end)
+
     case :queue.out(queue) do
       {{:value, event}, queue} ->
         dispatch_events(%{state | queue: queue, demand: demand - 1}, [event | events])

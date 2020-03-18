@@ -13,5 +13,4 @@ defmodule Profile.Feed.Supervisor do
   def on_start_child(%Extract{} = extract, name) do
     {Profile.Feed, extract: extract, name: name}
   end
-
 end

@@ -10,6 +10,7 @@ defmodule Profile.Feed.Consumer do
 
   def init(opts) do
     Logger.debug(fn -> "#{__MODULE__}(#{inspect(self())}): init with #{inspect(opts)}" end)
+
     {:consumer,
      %{
        dataset_id: Keyword.fetch!(opts, :dataset_id),
@@ -19,6 +20,7 @@ defmodule Profile.Feed.Consumer do
 
   def handle_events(events, _from, state) do
     Logger.debug(fn -> "#{__MODULE__}(#{inspect(self())}): received events #{inspect(events)}" end)
+
     events
     |> Enum.map(fn event ->
       Profile.Update.new!(

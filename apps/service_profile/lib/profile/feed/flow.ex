@@ -58,6 +58,7 @@ defmodule Profile.Feed.Flow do
 
   defp reduce(event, accumulator) do
     Logger.debug(fn -> "#{__MODULE__}: event #{inspect(event)}" end)
+
     accumulator
     |> Enum.map(fn reducer ->
       Profile.Reducer.reduce(reducer, event)
