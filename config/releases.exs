@@ -139,24 +139,10 @@ config :service_broadcast, Broadcast.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_broadcast, Broadcast.Stream.Broadway,
-  app_name: "service_broadcast",
+config :service_broadcast, Broadcast.Stream.Broadway.Configuration,
+  endpoints: kafka_endpoints,
   broadway_config: [
     producer: [
-      module:
-        {OffBroadway.Kafka.Producer,
-         [
-           endpoints: kafka_endpoints,
-           create_topics: true,
-           group_consumer: [
-             config: [
-               begin_offset: :earliest,
-               offset_reset_policy: :reset_to_latest,
-               prefetch_count: 0,
-               prefetch_bytes: 2_097_152
-             ]
-           ]
-         ]},
       stages: 1
     ],
     processors: [
@@ -172,6 +158,8 @@ config :service_broadcast, Broadcast.Stream.Broadway,
       ]
     ]
   ]
+
+config :service_broadcast, Broadcast.Stream.Broadway, app_name: "service_broadcast"
 
 # SERVICE PERSIST
 bucket_region = [region: System.get_env("BUCKET_REGION", "local")]
@@ -218,24 +206,10 @@ config :service_persist, Persist.DataStorage.S3,
   s3_bucket: System.get_env("BUCKET_NAME", "kdp-cloud-storage"),
   s3_path: "hive-s3"
 
-config :service_persist, Persist.Load.Broadway,
-  app_name: "service_persist",
+config :service_persist, Persist.Load.Broadway.Configuration,
+  endpoints: kafka_endpoints,
   broadway_config: [
     producer: [
-      module:
-        {OffBroadway.Kafka.Producer,
-         [
-           endpoints: kafka_endpoints,
-           create_topics: true,
-           group_consumer: [
-             config: [
-               begin_offset: :earliest,
-               offset_reset_policy: :reset_to_earliest,
-               prefetch_count: 0,
-               prefetch_bytes: 2_097_152
-             ]
-           ]
-         ]},
       stages: 1
     ],
     processors: [
@@ -251,6 +225,8 @@ config :service_persist, Persist.Load.Broadway,
       ]
     ]
   ]
+
+config :service_persist, Persist.Load.Broadway, app_name: "service_persist"
 
 # SERVICE ORCHESTRATE
 config :service_orchestrate, Orchestrate.Application,

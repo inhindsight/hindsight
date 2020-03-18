@@ -1,6 +1,4 @@
-{{- if .Values.ingress.enabled -}}
 {{- $fullName := include "hindsight.fullname" . -}}
-{{- $svcPort := .Values.acquire.service.port -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- else -}}
@@ -11,10 +9,11 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "hindsight.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+{{ toYaml .Values.global.ingress.annotations | trim | indent 4 }}
+{{- if .Values.ingress.annotations }}
+{{ toYaml .Values.ingress.annotations | trim | indent 4 }}
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:
@@ -27,15 +26,12 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-        {{- range .paths }}
-          - path: {{ . }}
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-        {{- end }}
-  {{- end }}
-{{- end }}
+  - host: {{ .Values.ingress.host | required "ingress.host must be set" }}
+    http:
+      paths:
+    {{- range .Values.ingress.paths }}
+      - path: {{ .path | quote }}
+        backend:
+          serviceName: {{ $fullName }}-{{ .name }}
+          servicePort: {{ (index $.Values .name).service.port }}
+    {{- end }}

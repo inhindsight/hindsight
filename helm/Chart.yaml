@@ -12,3 +12,6 @@ dependencies:
     version: 10.5.3
     repository:  https://kubernetes-charts.storage.googleapis.com
     condition: redis.enabled
+  - name: nginx-ingress
+    version: 1.33.4
+    repository: https://kubernetes-charts.storage.googleapis.com

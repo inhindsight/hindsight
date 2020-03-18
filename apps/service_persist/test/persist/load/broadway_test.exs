@@ -13,6 +13,7 @@ defmodule Persist.Load.BroadwayTest do
       key: Persist.Load.Broadway,
       update: fn config ->
         Keyword.put(config, :dlq, Persist.DLQMock)
+        |> Keyword.put(:configuration, BroadwayConfigurator.Dummy)
       end
     }
   ])

@@ -10,7 +10,9 @@ defmodule Extract.V1 do
       subset_id: required_string(),
       destination: required_string(),
       steps: spec(is_list() and not_nil?()),
-      dictionary: of_struct(Dictionary.Impl)
+      dictionary: of_struct(Dictionary.Impl),
+      message_key: spec(is_list()),
+      config: spec(is_map())
     })
   end
 end

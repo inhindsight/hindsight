@@ -39,7 +39,13 @@ defmodule Platform.Runner.PerformanceTest do
         dataset_id: "perf-#{ds}",
         subset_id: "default",
         source: "perf-#{ds}-csv",
-        destination: "perf_#{ds}_persist"
+        destination: "perf_#{ds}_persist",
+        config: %{
+          "kafka" => %{
+            "partitions" => 4,
+            "partitioner" => "md5"
+          }
+        }
       )
 
     Gather.Application.instance()
@@ -110,7 +116,14 @@ defmodule Platform.Runner.PerformanceTest do
           Extract.Http.Get.new!(url: "http://localhost:#{Keyword.fetch!(opts, :port)}/file.csv"),
           Extract.Decode.Csv.new!(headers: headers)
         ],
-        dictionary: dictionary
+        dictionary: dictionary,
+        message_key: ["letter"],
+        config: %{
+          "kafka" => %{
+            "partitions" => 4,
+            "partitioner" => "md5"
+          }
+        }
       )
 
     Gather.Application.instance()

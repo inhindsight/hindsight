@@ -12,7 +12,9 @@ defmodule Broadcast.Stream.BroadwayTest do
       app: :service_broadcast,
       key: Broadcast.Stream.Broadway,
       update: fn config ->
-        Keyword.put(config, :dlq, Broadcast.DLQMock)
+        config
+        |> Keyword.put(:dlq, Broadcast.DLQMock)
+        |> Keyword.put(:configuration, BroadwayConfigurator.Dummy)
       end
     }
   ])
