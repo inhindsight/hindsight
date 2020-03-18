@@ -18,5 +18,6 @@ defmodule Acquire.Event.Handler do
     end)
 
     Acquire.Dictionaries.delete(delete)
+    Logger.debug("Deleted Dictionaries")
   end
 end

@@ -26,11 +26,14 @@ defmodule Gather.Event.Handler do
 
     case Extraction.Store.get!(delete.dataset_id, delete.subset_id) do
       nil ->
+        Logger.debug("No state to delete")
         nil
 
       extract ->
-        if Elsa.topic?(endpoints(), extract.source),
-          do: Elsa.delete_topic(endpoints(), extract.source)
+        if Elsa.topic?(endpoints(), extract.destination),
+          do: Elsa.delete_topic(endpoints(), extract.destination)
+
+        Logger.debug("Deleted Extract destination topic")
     end
 
     Extraction.Store.delete(delete.dataset_id, delete.subset_id)

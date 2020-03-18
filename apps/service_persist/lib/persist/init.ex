@@ -5,8 +5,8 @@ defmodule Persist.Init do
 
   def on_start(state) do
     Persist.Load.Store.get_all!()
-    |> Enum.reject(&Persist.Load.Store.done?/1)
     |> Enum.reject(&is_nil/1)
+    |> Enum.reject(&Persist.Load.Store.done?/1)
     |> Enum.map(fn load -> {load, Persist.Load.Store.is_being_compacted?(load)} end)
     |> Enum.each(&start/1)
 

@@ -50,19 +50,23 @@ defmodule Broadcast.Event.Handler do
 
     case Process.whereis(name) do
       nil ->
+        Logger.debug("No Stream to delete")
         :ok
 
       pid ->
+        Logger.debug("Deleting stream")
         Broadcast.Stream.Supervisor.terminate_child(pid)
         :ok
     end
 
     case Broadcast.Stream.Store.get!(delete.dataset_id, delete.subset_id) do
       nil ->
+        Logger.debug("No existing state to delete")
         nil
 
       load ->
         if Elsa.topic?(endpoints(), load.source), do: Elsa.delete_topic(endpoints(), load.source)
+        Logger.debug("Deleted kafka topic")
     end
 
     Broadcast.Stream.Store.delete(delete.dataset_id, delete.subset_id)

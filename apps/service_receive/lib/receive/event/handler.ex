@@ -36,6 +36,7 @@ defmodule Receive.Event.Handler do
 
     case Receive.Accept.Store.get!(delete.dataset_id, delete.subset_id) do
       nil ->
+        Logger.debug("No existing state to delete")
         nil
 
       accept ->
@@ -44,6 +45,8 @@ defmodule Receive.Event.Handler do
 
         if Elsa.topic?(endpoints(), accept.destination),
           do: Elsa.delete_topic(endpoints(), accept.destination)
+
+        Logger.debug("Deleted Supervisor and Topic")
     end
 
     Receive.Accept.Store.delete(delete.dataset_id, delete.subset_id)

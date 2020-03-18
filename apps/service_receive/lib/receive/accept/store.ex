@@ -22,14 +22,14 @@ defmodule Receive.Accept.Store do
 
   @spec mark_done(Accept.t()) :: :ok
   def mark_done(%Accept{} = accept) do
-    Brook.ViewState.merge(@collection, identifier(accept), %{done: true})
+    Brook.ViewState.merge(@collection, identifier(accept), %{"done" => true})
   end
 
   @spec done?(Accept.t()) :: boolean
   def done?(%Accept{} = accept) do
     case Brook.get!(@instance, @collection, identifier(accept)) do
       nil -> false
-      map -> Map.get(map, :done, false)
+      map -> Map.get(map, "done", false)
     end
   end
 

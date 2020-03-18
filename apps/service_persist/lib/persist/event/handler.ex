@@ -70,13 +70,16 @@ defmodule Persist.Event.Handler do
 
     case Persist.Load.Store.get!(delete.dataset_id, delete.subset_id) do
       nil ->
+        Logger.debug("No existing state to delete")
         nil
 
       load ->
         Persist.Compact.Supervisor.terminate_child(load)
         Persist.Load.Supervisor.terminate_child(load)
         Persist.TableManager.delete(load.destination)
+        Persist.TableManager.delete("#{load.destination}__staging")
         if Elsa.topic?(endpoints(), load.source), do: Elsa.delete_topic(endpoints(), load.source)
+        Logger.debug("Deleted existing state")
     end
 
     Persist.Load.Store.delete(delete.dataset_id, delete.subset_id)
