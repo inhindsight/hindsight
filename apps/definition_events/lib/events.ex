@@ -12,7 +12,7 @@ defmodule Events do
     {"load:persist:end", Load.Persist},
     {"schedule:start", Schedule},
     {"schedule:end", Schedule},
-    {"definition:delete", Delete},
+    {"dataset:delete", Delete},
     {"transform:define", Transform}
   ]
 

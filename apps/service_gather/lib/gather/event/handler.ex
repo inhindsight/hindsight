@@ -4,7 +4,7 @@ defmodule Gather.Event.Handler do
   require Logger
 
   alias Gather.Extraction
-  import Events, only: [extract_start: 0, extract_end: 0, definition_delete: 0]
+  import Events, only: [extract_start: 0, extract_end: 0, dataset_delete: 0]
 
   getter(:endpoints, required: true)
 
@@ -19,9 +19,9 @@ defmodule Gather.Event.Handler do
     Extraction.Store.mark_done(extract)
   end
 
-  def handle_event(%Brook.Event{type: definition_delete(), data: %Delete{} = delete}) do
+  def handle_event(%Brook.Event{type: dataset_delete(), data: %Delete{} = delete}) do
     Logger.debug(fn ->
-      "#{__MODULE__}: Received event #{definition_delete()}: #{inspect(delete)}"
+      "#{__MODULE__}: Received event #{dataset_delete()}: #{inspect(delete)}"
     end)
 
     case Extraction.Store.get!(delete.dataset_id, delete.subset_id) do

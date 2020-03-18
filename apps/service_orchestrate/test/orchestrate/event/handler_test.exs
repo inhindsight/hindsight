@@ -1,6 +1,6 @@
 defmodule Orchestrate.Event.HandlerTest do
   use ExUnit.Case
-  import Events, only: [schedule_start: 0, schedule_end: 0, definition_delete: 0]
+  import Events, only: [schedule_start: 0, schedule_end: 0, dataset_delete: 0]
   import AssertAsync
   import ExUnit.CaptureLog
 
@@ -186,7 +186,7 @@ defmodule Orchestrate.Event.HandlerTest do
 
     delete = %Delete{id: "123", dataset_id: schedule.dataset_id, subset_id: schedule.subset_id}
 
-    Brook.Test.send(@instance, definition_delete(), "testing", delete)
+    Brook.Test.send(@instance, dataset_delete(), "testing", delete)
 
     assert_async do
       assert nil ==

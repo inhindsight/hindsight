@@ -8,7 +8,7 @@ defmodule Broadcast.Event.Handler do
       load_broadcast_start: 0,
       load_broadcast_end: 0,
       transform_define: 0,
-      definition_delete: 0
+      dataset_delete: 0
     ]
 
   getter(:endpoints, required: true)
@@ -41,9 +41,9 @@ defmodule Broadcast.Event.Handler do
     Broadcast.Transformations.persist(transform)
   end
 
-  def handle_event(%Brook.Event{type: definition_delete(), data: %Delete{} = delete}) do
+  def handle_event(%Brook.Event{type: dataset_delete(), data: %Delete{} = delete}) do
     Logger.debug(fn ->
-      "#{__MODULE__}: Received event #{definition_delete()}: #{inspect(delete)}"
+      "#{__MODULE__}: Received event #{dataset_delete()}: #{inspect(delete)}"
     end)
 
     name = Broadcast.Stream.name(delete)
