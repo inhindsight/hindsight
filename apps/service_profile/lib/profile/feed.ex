@@ -1,6 +1,12 @@
 defmodule Profile.Feed do
   use Supervisor
 
+  @type init_opts :: [
+          name: GenServer.name(),
+          extract: Extract.t()
+        ]
+
+  @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(opts) do
     server_opts = Keyword.take(opts, [:name])
     Supervisor.start_link(__MODULE__, opts, server_opts)

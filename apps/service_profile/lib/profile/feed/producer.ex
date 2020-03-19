@@ -3,6 +3,10 @@ defmodule Profile.Feed.Producer do
   use Properties, otp_app: :service_profile
   require Logger
 
+  @type init_opts :: [
+          extract: Extract.t()
+        ]
+
   getter(:endpoints, required: true)
 
   defmodule Handler do
@@ -15,14 +19,17 @@ defmodule Profile.Feed.Producer do
     end
   end
 
+  @spec add_events(GenServer.name(), list(), integer()) :: term
   def add_events(server, events, timeout \\ 5_000) do
     GenStage.call(server, {:events, events}, timeout)
   end
 
+  @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(opts) do
     GenStage.start_link(__MODULE__, opts)
   end
 
+  @impl GenStage
   def init(opts) do
     Logger.debug(fn -> "#{__MODULE__}(#{inspect(self())}): init with #{inspect(opts)}" end)
     Process.flag(:trap_exit, true)
@@ -38,6 +45,7 @@ defmodule Profile.Feed.Producer do
      }}
   end
 
+  @impl GenStage
   def handle_call({:events, events}, _from, %{queue: queue} = state) do
     Logger.debug(fn -> "#{__MODULE__}: receiving events #{inspect(events)}" end)
 
@@ -51,11 +59,13 @@ defmodule Profile.Feed.Producer do
     {:reply, :ok, events, new_state}
   end
 
+  @impl GenStage
   def handle_demand(incoming_demand, %{demand: pending_demand} = state) do
     {new_state, events} = dispatch_events(%{state | demand: pending_demand + incoming_demand}, [])
     {:noreply, events, new_state}
   end
 
+  @impl GenStage
   def handle_info({:init, extract}, state) do
     ensure_topic(extract)
 
@@ -84,11 +94,13 @@ defmodule Profile.Feed.Producer do
     {:noreply, [], %{state | elsa_sup: elsa_sup}}
   end
 
+  @impl GenStage
   def handle_info({:EXIT, pid, reason} = message, %{elsa_sup: pid} = state) do
     Logger.debug(fn -> "#{__MODULE__}(#{inspect(self())}): received #{inspect(message)}" end)
     {:stop, reason, state}
   end
 
+  @impl GenStage
   def handle_info(message, state) do
     Logger.debug(fn ->
       "#{__MODULE__}(#{inspect(self())}): Unknown message #{inspect(message)}"
