@@ -6,6 +6,7 @@ defmodule Broadcast.Init do
   def on_start(state) do
     Broadcast.Stream.Store.get_all!()
     |> Enum.reject(&is_nil/1)
+    |> Enum.reject(&Broadcast.Stream.Store.done?(&1))
     |> Enum.each(fn load ->
       Broadcast.Stream.Supervisor.start_child({Broadcast.Stream, load: load})
     end)

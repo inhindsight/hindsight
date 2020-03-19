@@ -24,17 +24,7 @@ defmodule Broadcast.Event.Handler do
   end
 
   def handle_event(%Brook.Event{type: load_broadcast_end(), data: %Load.Broadcast{} = load}) do
-    name = Broadcast.Stream.name(load)
-
-    case Process.whereis(name) do
-      nil ->
-        :ok
-
-      pid ->
-        Broadcast.Stream.Supervisor.terminate_child(pid)
-        Broadcast.Stream.Store.delete(load.dataset_id, load.subset_id)
-        :ok
-    end
+    terminate_stream(load)
   end
 
   def handle_event(%Brook.Event{type: transform_define(), data: %Transform{} = transform}) do
@@ -46,7 +36,23 @@ defmodule Broadcast.Event.Handler do
       "#{__MODULE__}: Received event #{dataset_delete()}: #{inspect(delete)}"
     end)
 
-    name = Broadcast.Stream.name(delete)
+    case Broadcast.Stream.Store.get!(delete.dataset_id, delete.subset_id) do
+      nil ->
+        Logger.debug("No existing state to delete")
+        nil
+
+      load ->
+        terminate_stream(load)
+        if Elsa.topic?(endpoints(), load.source), do: Elsa.delete_topic(endpoints(), load.source)
+        Logger.debug("Deleted kafka topic")
+    end
+
+    Broadcast.Transformations.delete(delete)
+    Broadcast.Stream.Store.delete(delete.dataset_id, delete.subset_id)
+  end
+
+  defp terminate_stream(%Load.Broadcast{} = load) do
+    name = Broadcast.Stream.name(load)
 
     case Process.whereis(name) do
       nil ->
@@ -56,20 +62,8 @@ defmodule Broadcast.Event.Handler do
       pid ->
         Logger.debug("Deleting stream")
         Broadcast.Stream.Supervisor.terminate_child(pid)
+        Broadcast.Stream.Store.mark_done(load)
         :ok
     end
-
-    case Broadcast.Stream.Store.get!(delete.dataset_id, delete.subset_id) do
-      nil ->
-        Logger.debug("No existing state to delete")
-        nil
-
-      load ->
-        if Elsa.topic?(endpoints(), load.source), do: Elsa.delete_topic(endpoints(), load.source)
-        Logger.debug("Deleted kafka topic")
-    end
-
-    Broadcast.Stream.Store.delete(delete.dataset_id, delete.subset_id)
-    Broadcast.Transformations.delete(delete)
   end
 end

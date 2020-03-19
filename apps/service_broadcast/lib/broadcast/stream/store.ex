@@ -9,6 +9,19 @@ defmodule Broadcast.Stream.Store do
     Brook.ViewState.merge(@collection, identifier(load), %{"load" => load})
   end
 
+  @spec mark_done(Load.Broadcast.t()) :: :ok
+  def mark_done(%Load.Broadcast{} = load) do
+    Brook.ViewState.merge(@collection, identifier(load), %{"done" => true})
+  end
+
+  @spec done?(Load.Broadcast.t()) :: boolean
+  def done?(%Load.Broadcast{} = load) do
+    case Brook.get!(@instance, @collection, identifier(load)) do
+      nil -> false
+      map -> Map.get(map, "done", false)
+    end
+  end
+
   @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: Load.Broadcast.t()
   def get!(dataset_id, subset_id) do
     case Brook.get!(@instance, @collection, identifier(dataset_id, subset_id)) do
