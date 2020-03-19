@@ -8,8 +8,8 @@ function usage {
     echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] local [<key=value>, ...]"
     echo
     echo "EXAMPLE"
-    echo "    ./scripts/install foo bar local dev abc=123 x.y.z=42"
-    echo "    ./scripts/install abc default aws dev image.tag=latest"
+    echo "    ./scripts/install foo bar local dev image.tag=development abc=123 x.y.z=42"
+    echo "    ./scripts/install abc default aws dev image.tag=latest ingress.host=mydomain.com"
     echo
     exit 0
 }
@@ -29,8 +29,6 @@ function check_strimzi {
 }
 
 function deps {
-    local -r added_p=$(helm repo list | grep -s google)
-
     info "Installing Helm dependencies"
     helm repo add google https://kubernetes-charts.storage.googleapis.com
     (cd ./helm; helm dependency build)
