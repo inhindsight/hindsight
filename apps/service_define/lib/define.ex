@@ -1,2 +1,0 @@
-defmodule Define do
-end
