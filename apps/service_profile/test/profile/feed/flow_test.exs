@@ -16,7 +16,7 @@ defmodule Profile.Feed.FlowTest do
   ])
 
   setup do
-    Brook.Test.clear_view_state(@instance, "profile_stats")
+    Brook.Test.clear_view_state(@instance, "feeds")
 
     :ok
   end

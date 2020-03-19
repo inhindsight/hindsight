@@ -11,8 +11,8 @@ defmodule Profile.Application do
       [
         Profile.Feed.Registry,
         Profile.Feed.Supervisor,
-        brook()
-        # init()
+        brook(),
+        init()
       ]
       |> List.flatten()
 

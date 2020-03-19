@@ -33,11 +33,13 @@ defmodule Profile.MixProject do
       {:elsa, "~> 0.12", override: true},
       {:flow, "~> 1.0"},
       {:gen_stage, "~> 1.0", override: true},
+      {:initializer, in_umbrella: true},
       {:management, in_umbrella: true},
       {:properties, in_umbrella: true},
 
       # dev/testing deps
       {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:dev, :test]}
     ]
   end
