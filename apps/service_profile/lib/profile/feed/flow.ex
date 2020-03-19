@@ -29,7 +29,6 @@ defmodule Profile.Feed.Flow do
     reducers = Keyword.fetch!(opts, :reducers)
 
     window = Flow.Window.periodic(window_limit(), window_unit())
-    IO.inspect(window, label: "WINDOW WINDOW WINDOW")
 
     {:ok, stats} = Profile.Feed.Store.get_stats(dataset_id, subset_id)
     reducers = Enum.map(reducers, &Profile.Reducer.init(&1, stats))
@@ -54,6 +53,9 @@ defmodule Profile.Feed.Flow do
       end
     end)
     |> Flow.into_specs(into_specs, flow_opts)
+  catch
+    kind, reason ->
+      Logger.error(fn -> "#{__MODULE__}: error - #{kind} - #{inspect(reason)}" end)
   end
 
   defp reduce(event, accumulator) do

@@ -8,6 +8,8 @@ defmodule ProfileTest do
 
   @instance Profile.Application.instance()
 
+  @moduletag divo: true, integration: true
+
   Temp.Env.modify([
     %{
       app: :service_profile,
@@ -26,7 +28,7 @@ defmodule ProfileTest do
     }
   ])
 
-  @tag timeout: :infinity
+  @tag timeout: :infinity, capture_log: false
   test "will profile a dataset" do
     extract =
       Extract.new!(
@@ -37,7 +39,9 @@ defmodule ProfileTest do
         steps: [],
         dictionary: [
           Dictionary.Type.String.new!(name: "name"),
-          Dictionary.Type.Timestamp.new!(name: "ts", format: "%Y")
+          Dictionary.Type.Timestamp.new!(name: "ts", format: "%Y"),
+          Dictionary.Type.Longitude.new!(name: "longy"),
+          Dictionary.Type.Latitude.new!(name: "latty")
         ]
       )
 
@@ -47,16 +51,16 @@ defmodule ProfileTest do
 
     messages =
       [
-        %{"name" => "joe", "ts" => ~N[2010-01-01 05:06:07] |> NaiveDateTime.to_iso8601()},
-        %{"name" => "bob", "ts" => ~N[2012-01-01 07:08:09] |> NaiveDateTime.to_iso8601()},
-        %{"name" => "sally", "ts" => ~N[2012-02-02 11:10:09] |> NaiveDateTime.to_iso8601()}
+        %{"name" => "joe", "ts" => to_iso(~N[2010-01-01 05:06:07]), "longy" => 3.5, "latty" => 17.8},
+        %{"name" => "bob", "ts" => to_iso(~N[2012-01-01 07:08:09]), "longy" => 2.1, "latty" => 15.0},
+        %{"name" => "sally", "ts" => to_iso(~N[2012-02-02 11:10:09]), "longy" => 2.3, "latty" => 21.2}
       ]
       |> Enum.map(&Jason.encode!/1)
 
-    Elsa.produce([localhost: 9092], "topic-ds1", messages)
+    produce("topic-ds1", messages)
 
-    first = ~N[2010-01-01 05:06:07] |> NaiveDateTime.to_iso8601()
-    last = ~N[2012-02-02 11:10:09] |> NaiveDateTime.to_iso8601()
+    first = to_iso(~N[2010-01-01 05:06:07])
+    last = to_iso(~N[2012-02-02 11:10:09])
 
     assert_receive {:brook_event,
                     %Brook.Event{
@@ -68,7 +72,8 @@ defmodule ProfileTest do
                           "temporal_range" => %{
                             "first" => ^first,
                             "last" => ^last
-                          }
+                          },
+                          "bounding_box" => [2.1, 15.0, 3.5, 21.2]
                         }
                       }
                     }},
@@ -76,16 +81,16 @@ defmodule ProfileTest do
 
     messages =
       [
-        %{"name" => "joe", "ts" => ~N[2011-01-01 05:06:07] |> NaiveDateTime.to_iso8601()},
-        %{"name" => "bob", "ts" => ~N[2012-01-01 07:08:09] |> NaiveDateTime.to_iso8601()},
-        %{"name" => "sally", "ts" => ~N[2014-02-02 11:10:09] |> NaiveDateTime.to_iso8601()}
+        %{"name" => "joe", "ts" => to_iso(~N[2011-01-01 05:06:07]), "longy" => 7.1, "latty" => 17.0},
+        %{"name" => "bob", "ts" => to_iso(~N[2012-01-01 07:08:09]), "longy" => 2.3, "latty" => 18.0},
+        %{"name" => "sally", "ts" => to_iso(~N[2014-02-02 11:10:09]), "longy" => 5.0, "latty" => 13.0}
       ]
       |> Enum.map(&Jason.encode!/1)
 
-    Elsa.produce([localhost: 9092], "topic-ds1", messages)
+    produce("topic-ds1", messages)
 
-    first = ~N[2010-01-01 05:06:07] |> NaiveDateTime.to_iso8601()
-    last = ~N[2014-02-02 11:10:09] |> NaiveDateTime.to_iso8601()
+    first = to_iso(~N[2010-01-01 05:06:07])
+    last = to_iso(~N[2014-02-02 11:10:09])
 
     assert_receive {:brook_event,
                     %Brook.Event{
@@ -97,18 +102,29 @@ defmodule ProfileTest do
                           "temporal_range" => %{
                             "first" => ^first,
                             "last" => ^last
-                          }
+                          },
+                          "bounding_box" => [2.1, 13.0, 7.1, 21.2]
                         }
                       }
                     }},
                    20_000
   end
 
-  @retry with: constant_backoff(500) |> take(100)
+  @retry with: constant_backoff(1_000) |> take(20)
+  defp produce(topic, messages) do
+    Elsa.produce([localhost: 9092], topic, messages)
+  catch
+    _, reason ->
+      {:error, reason}
+  end
+
+  @retry with: constant_backoff(1_000) |> take(20)
   defp wait_for_topic(topic) do
     case Elsa.topic?([localhost: 9092], topic) do
       true -> {:ok, true}
       false -> {:error, false}
     end
   end
+
+  defp to_iso(date_time), do: NaiveDateTime.to_iso8601(date_time)
 end

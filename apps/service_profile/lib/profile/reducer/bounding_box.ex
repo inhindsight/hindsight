@@ -14,15 +14,19 @@ defmodule Profile.Reducer.BoundingBox do
 
   defimpl Profile.Reducer do
     def init(t, stats) do
-      [xmin, ymin, xmax, ymax] = get_in(stats, ["bounding_box"])
+      case get_in(stats, ["bounding_box"]) do
+        [xmin, ymin, xmax, ymax] ->
+          %{
+            t
+            | xmin: xmin,
+              ymin: ymin,
+              xmax: xmax,
+              ymax: ymax
+          }
 
-      %{
-        t
-        | xmin: xmin,
-          ymin: ymin,
-          xmax: xmax,
-          ymax: ymax
-      }
+        _ ->
+          t
+      end
     end
 
     def reduce(t, event) do
