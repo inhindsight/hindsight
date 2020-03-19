@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -xeo pipefail
 
 function usage {
-    echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] [aws|local] [<key=value>, ...]"
+    echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] [aws|local] [environmentName] [<key=value>, ...]"
     echo
     echo "EXAMPLE"
-    echo "    ./scripts/install foo bar local abc=123 x.y.z=42"
-    echo "    ./scripts/install abc default aws image.tag=latest"
+    echo "    ./scripts/install foo bar local dev abc=123 x.y.z=42"
+    echo "    ./scripts/install abc default aws dev image.tag=latest"
     echo
     exit 0
 }
@@ -52,10 +52,27 @@ function strimzi {
 }
 
 function hindsight {
+    local -r location="${3:?Location required.}"
+
+    if [[ "$location" == "aws" ]]; then
+        aws_deploy "${@}"
+    else
+        local_deploy "${@}"
+    fi
+}
+
+
+function aws_deploy {
     local -r release="${1:?Release name required.}"
     local -r ns="${2:?Namespace required.}"
     local -r location="${3:?Location required.}"
-    shift 3
+    local -r environment="${4:?Environment required.}"
+    shift 4
+
+    local -r username=$(aws secretsmanager get-secret-value --secret MetastoreInfo-${environment} | jq -rc .SecretString | jq .username | tr -d "\n\"")
+    local -r password=$(aws secretsmanager get-secret-value --secret MetastoreInfo-${environment} | jq -rc .SecretString | jq .password | tr -d "\n\"")
+    local -r endpointAddress=$(aws secretsmanager get-secret-value --secret MetastoreInfo-${environment} | jq -rc .SecretString | jq .endpoint | tr -d "\n\"")
+    local -r bucketName=$(aws secretsmanager get-secret-value --secret MetastoreInfo-${environment} | jq -rc .SecretString | jq .bucket | tr -d "\n\"")
 
     if [ $# -gt 0 ]; then
         local -r vals=$(IFS=, ; echo "$*")
@@ -69,7 +86,33 @@ function hindsight {
          --install \
          --namespace ${ns} \
          --values ./helm/presets/${location}.yaml \
+         --set presto.postgres.service.externalAddress=${endpointAddress} \
+         --set presto.postgres.db.username=${username} \
+         --set presto.postgres.db.password=${password} \
+         --set global.objectStore.bucketName=${bucketName} \
          ${set_values}
+}
+
+function local_deploy {
+    local -r release="${1:?Release name required.}"
+    local -r ns="${2:?Namespace required.}"
+    local -r location="${3:?Location required.}"
+    local -r environment="${4:?Environment required.}"
+    shift 4
+
+    if [ $# -gt 0 ]; then
+        local -r vals=$(IFS=, ; echo "$*")
+        local -r set_values="--set $vals"
+    fi
+
+    deps
+
+    info "Installing Hindsight"
+    helm upgrade ${release} ./helm \
+        --install \
+        --namespace ${ns} \
+        --values ./helm/presets/${location}.yaml \
+        ${set_values}
 }
 
 [[ "$1" == "-h" || "$1" == "--help" ]] && usage
