@@ -40,7 +40,7 @@ defmodule Persist.Load.Store do
     end
   end
 
-  @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: %Load.Persist{}
+  @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: %Load.Persist{} | nil
   def get!(dataset_id, subset_id) do
     case Brook.get!(@instance, @collection, identifier(dataset_id, subset_id)) do
       nil -> nil

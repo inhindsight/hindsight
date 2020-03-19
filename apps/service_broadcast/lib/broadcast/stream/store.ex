@@ -22,7 +22,7 @@ defmodule Broadcast.Stream.Store do
     end
   end
 
-  @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: Load.Broadcast.t()
+  @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: Load.Broadcast.t() | nil
   def get!(dataset_id, subset_id) do
     case Brook.get!(@instance, @collection, identifier(dataset_id, subset_id)) do
       nil -> nil

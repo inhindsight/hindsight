@@ -12,7 +12,7 @@ defmodule Receive.Accept.Store do
     Brook.ViewState.merge(@collection, identifier(accept), %{"accept" => accept})
   end
 
-  @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: Accept.t()
+  @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: Accept.t() | nil
   def get!(dataset_id, subset_id) do
     case Brook.get!(@instance, @collection, identifier(dataset_id, subset_id)) do
       nil -> nil

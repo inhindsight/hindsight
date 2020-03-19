@@ -13,7 +13,7 @@ defmodule Gather.Extraction.Store do
     Brook.ViewState.merge(@collection, identifier(extract), %{"extract" => extract})
   end
 
-  @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: Extract.t()
+  @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: Extract.t() | nil
   def get!(dataset_id, subset_id) do
     case Brook.get!(@instance, @collection, identifier(dataset_id, subset_id)) do
       nil -> nil
