@@ -286,7 +286,7 @@ config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user
 
 # SERVICE DEFINE
 config :service_define, DefineWeb.Endpoint,
-  http: [:inet6, port: String.to_integer(System.get_env("DEFINE_PORT") || "4005")],
+  http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4005")],
   secret_key_base: secret_key_base,
   live_view: [
     signing_salt: secret_key_base
