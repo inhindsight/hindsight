@@ -51,9 +51,24 @@ defmodule ProfileTest do
 
     messages =
       [
-        %{"name" => "joe", "ts" => to_iso(~N[2010-01-01 05:06:07]), "longy" => 3.5, "latty" => 17.8},
-        %{"name" => "bob", "ts" => to_iso(~N[2012-01-01 07:08:09]), "longy" => 2.1, "latty" => 15.0},
-        %{"name" => "sally", "ts" => to_iso(~N[2012-02-02 11:10:09]), "longy" => 2.3, "latty" => 21.2}
+        %{
+          "name" => "joe",
+          "ts" => to_iso(~N[2010-01-01 05:06:07]),
+          "longy" => 3.5,
+          "latty" => 17.8
+        },
+        %{
+          "name" => "bob",
+          "ts" => to_iso(~N[2012-01-01 07:08:09]),
+          "longy" => 2.1,
+          "latty" => 15.0
+        },
+        %{
+          "name" => "sally",
+          "ts" => to_iso(~N[2012-02-02 11:10:09]),
+          "longy" => 2.3,
+          "latty" => 21.2
+        }
       ]
       |> Enum.map(&Jason.encode!/1)
 
@@ -81,9 +96,24 @@ defmodule ProfileTest do
 
     messages =
       [
-        %{"name" => "joe", "ts" => to_iso(~N[2011-01-01 05:06:07]), "longy" => 7.1, "latty" => 17.0},
-        %{"name" => "bob", "ts" => to_iso(~N[2012-01-01 07:08:09]), "longy" => 2.3, "latty" => 18.0},
-        %{"name" => "sally", "ts" => to_iso(~N[2014-02-02 11:10:09]), "longy" => 5.0, "latty" => 13.0}
+        %{
+          "name" => "joe",
+          "ts" => to_iso(~N[2011-01-01 05:06:07]),
+          "longy" => 7.1,
+          "latty" => 17.0
+        },
+        %{
+          "name" => "bob",
+          "ts" => to_iso(~N[2012-01-01 07:08:09]),
+          "longy" => 2.3,
+          "latty" => 18.0
+        },
+        %{
+          "name" => "sally",
+          "ts" => to_iso(~N[2014-02-02 11:10:09]),
+          "longy" => 5.0,
+          "latty" => 13.0
+        }
       ]
       |> Enum.map(&Jason.encode!/1)
 

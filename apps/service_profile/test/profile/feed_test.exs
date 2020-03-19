@@ -47,16 +47,17 @@ defmodule Profile.FeedTest do
     end
 
     test "should add bounding box when latitude and longitude field found" do
-      dictionary = Dictionary.from_list([
-        Dictionary.Type.Longitude.new!(name: "long"),
-        Dictionary.Type.Latitude.new!(name: "lat")
-      ])
+      dictionary =
+        Dictionary.from_list([
+          Dictionary.Type.Longitude.new!(name: "long"),
+          Dictionary.Type.Latitude.new!(name: "lat")
+        ])
 
       reducers = Profile.Feed.determine_reducers(dictionary, [], [])
 
       assert reducers == [
-        Profile.Reducer.BoundingBox.new(longitude_path: ["long"], latitude_path: ["lat"])
-      ]
+               Profile.Reducer.BoundingBox.new(longitude_path: ["long"], latitude_path: ["lat"])
+             ]
     end
   end
 end
