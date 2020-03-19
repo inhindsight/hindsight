@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-set -xeo pipefail
+set -eo pipefail
 
 function usage {
-    echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] [aws|local] [environmentName] [<key=value>, ...]"
+    echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] aws [environmentName] [<key=value>, ...]"
+    echo
+    echo "USAGE: ./scripts/install [RELEASE_NAME] [NAMESPACE] local [<key=value>, ...]"
     echo
     echo "EXAMPLE"
     echo "    ./scripts/install foo bar local dev abc=123 x.y.z=42"
@@ -29,11 +31,9 @@ function check_strimzi {
 function deps {
     local -r added_p=$(helm repo list | grep -s google)
 
-    if [[ ! $added_p ]]; then
-        info "Installing Helm dependencies"
-        helm repo add google https://kubernetes-charts.storage.googleapis.com
-        (cd ./helm; helm dependency build)
-    fi
+    info "Installing Helm dependencies"
+    helm repo add google https://kubernetes-charts.storage.googleapis.com
+    (cd ./helm; helm dependency build)
 }
 
 function strimzi {
@@ -71,8 +71,9 @@ function aws_deploy {
 
     local -r username=$(aws secretsmanager get-secret-value --secret MetastoreInfo-${environment} | jq -rc .SecretString | jq .username | tr -d "\n\"")
     local -r password=$(aws secretsmanager get-secret-value --secret MetastoreInfo-${environment} | jq -rc .SecretString | jq .password | tr -d "\n\"")
-    local -r endpointAddress=$(aws secretsmanager get-secret-value --secret MetastoreInfo-${environment} | jq -rc .SecretString | jq .endpoint | tr -d "\n\"")
+    local -r postgresEndpointAddress=$(aws secretsmanager get-secret-value --secret MetastoreInfo-${environment} | jq -rc .SecretString | jq .endpoint | tr -d "\n\"")
     local -r bucketName=$(aws secretsmanager get-secret-value --secret MetastoreInfo-${environment} | jq -rc .SecretString | jq .bucket | tr -d "\n\"")
+    local -r redisEndpointAddress=$(aws secretsmanager get-secret-value --secret RedisInfo-${environment} | jq -rc .SecretString | jq .endpoint | tr -d "\n\"")
 
     if [ $# -gt 0 ]; then
         local -r vals=$(IFS=, ; echo "$*")
@@ -86,10 +87,11 @@ function aws_deploy {
          --install \
          --namespace ${ns} \
          --values ./helm/presets/${location}.yaml \
-         --set presto.postgres.service.externalAddress=${endpointAddress} \
-         --set presto.postgres.db.username=${username} \
+         --set presto.postgres.service.externalAddress=${postgresEndpointAddress} \
+         --set presto.postgres.db.user=${username} \
          --set presto.postgres.db.password=${password} \
          --set global.objectStore.bucketName=${bucketName} \
+         --set redis.externalAddress=${redisEndpointAddress} \
          ${set_values}
 }
 
@@ -97,8 +99,7 @@ function local_deploy {
     local -r release="${1:?Release name required.}"
     local -r ns="${2:?Namespace required.}"
     local -r location="${3:?Location required.}"
-    local -r environment="${4:?Environment required.}"
-    shift 4
+    shift 3
 
     if [ $# -gt 0 ]; then
         local -r vals=$(IFS=, ; echo "$*")
