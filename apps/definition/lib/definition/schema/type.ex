@@ -44,6 +44,24 @@ defmodule Definition.Schema.Type do
     end)
   end
 
+  @spec map() :: spec
+  def map() do
+    spec(fn
+      x when is_struct(x) -> false
+      x -> is_map(x)
+    end)
+  end
+
+  @spec list() :: spec
+  def list() do
+    spec(is_list())
+  end
+
+  @spec atom() :: spec
+  def atom() do
+    spec(is_atom())
+  end
+
   @spec access_path() :: spec
   def access_path do
     one_of([spec(is_binary()), coll_of(spec(is_binary()))])

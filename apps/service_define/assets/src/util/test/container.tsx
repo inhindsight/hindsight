@@ -1,6 +1,6 @@
 import React, {PropsWithChildren} from "react"
 import ReactDOM from "react-dom"
-import {AppView} from "../../model/AppView"
+import {AppView} from "../../model/view"
 import {defaultState} from "../../default-state"
 import { AppViewContext } from "../connector"
 

@@ -1,6 +1,6 @@
 import React, { FunctionComponent, PropsWithChildren } from "react"
 import { Socket, Channel } from "phoenix"
-import {AppView} from "../model/AppView"
+import {AppView} from "../model/view"
 import {defaultState} from "../default-state"
 import {Event} from "./event"
 

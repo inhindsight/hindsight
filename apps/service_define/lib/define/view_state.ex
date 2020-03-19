@@ -1,4 +1,5 @@
 defmodule Define.ViewState do
+  alias Define.{DataDefinition, DataDefinitionView, ExtractView, PersistView}
   use GenServer
 
   def event(pid, type, payload) do
@@ -31,7 +32,34 @@ defmodule Define.ViewState do
   end
 
   def default_state() do
-    %{ "greeting" => "Hola Mundo!" }
+    # Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/file.csv"),
+    # %{module_name: Extract.Http.Get, fields: [url: "http://localhost:#{bp.port}/file.csv"]}
+    %AppView{
+      greeting: => "Hola Mundo!",
+      data_definitions: => [
+        DataDefinitionView.new!(
+          dataset_id: "1111",
+          dictionary: [
+            DefinitionView.new!(module: "Dictionary.Type.String", fields: %{"name" => "letter"}
+          ],
+          extract: ExtractView.new!(
+            destination: "Hawaii",
+            steps: [
+              DefinitionView.new!(
+                module: "Extract.Http.Get",
+                fields: [
+                  FieldView.new!(name: "url", type: "string"),
+                  FieldView.new!(name: "headers", type: DefinitionView.new!(fields: [FieldView.new!(name: "content-length", type: "string")]))
+                  ]
+              )
+            ]
+          ),
+          persist: PersistView.new!(
+            source: "Ohio",
+            destination: "New York"
+          )
+        )
+      ])
   end
 
   defp update_state(state, "new_greeting", payload) do
