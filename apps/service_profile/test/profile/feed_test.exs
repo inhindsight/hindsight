@@ -2,7 +2,7 @@ defmodule Profile.FeedTest do
   use ExUnit.Case
 
   describe "determine_reducers/1" do
-    test "should init a temporal reduder for a timestamp field" do
+    test "should init a temporal reducer for a timestamp field" do
       dictionary =
         Dictionary.from_list([
           Dictionary.Type.String.new!(name: "name"),

@@ -30,7 +30,6 @@ defmodule Profile.MixProject do
       {:extractor, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
-      {:elsa, "~> 0.12", override: true},
       {:flow, "~> 1.0"},
       {:gen_stage, "~> 1.0", override: true},
       {:initializer, in_umbrella: true},

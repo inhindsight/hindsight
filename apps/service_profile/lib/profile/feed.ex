@@ -42,8 +42,9 @@ defmodule Profile.Feed do
 
   def determine_reducers(dictionary, reducers, path) do
     reducers =
-      find_temporal_range(reducers, dictionary, path)
-      |> find_bounding_box(dictionary, path)
+      [Profile.Reducer.TemporalRange, Profile.Reducer.BoundingBox]
+      |> Enum.reduce(reducers, &maybe_add_reducers(&2, &1, dictionary, path))
+      |> List.flatten()
 
     dictionaries =
       Enum.filter(dictionary, fn %type{} -> type == Dictionary.Type.Map end)
@@ -52,47 +53,42 @@ defmodule Profile.Feed do
     determine_reducers(dictionaries, reducers)
   end
 
-  defp find_bounding_box(reducers, dictionary, path) do
+  defp maybe_add_reducers(reducers, reducer, dictionary, path) do
+    unless includes_reducer?(reducers, reducer) do
+      reducers ++ create_reducers(reducer, dictionary, path)
+    else
+      reducers
+    end
+  end
+
+  defp create_reducers(Profile.Reducer.BoundingBox, dictionary, path) do
     longitude = Enum.find(dictionary, fn %type{} -> type == Dictionary.Type.Longitude end)
     latitude = Enum.find(dictionary, fn %type{} -> type == Dictionary.Type.Latitude end)
 
     case {longitude, latitude} do
       {long, lat} when long != nil and lat != nil ->
-        reducer =
-          Profile.Reducer.BoundingBox.new(
-            longitude_path: path ++ [long.name],
-            latitude_path: path ++ [lat.name]
-          )
-
-        add_to_reducers(reducers, reducer)
+        Profile.Reducer.BoundingBox.new(
+          longitude_path: path ++ [long.name],
+          latitude_path: path ++ [lat.name]
+        )
+        |> List.wrap()
 
       _ ->
-        reducers
+        []
     end
   end
 
-  defp find_temporal_range(reducers, dictionary, path) do
+  defp create_reducers(Profile.Reducer.TemporalRange, dictionary, path) do
     case Enum.find(dictionary, fn %type{} -> type == Dictionary.Type.Timestamp end) do
       nil ->
-        reducers
+        []
 
       field ->
-        reducer = Profile.Reducer.TemporalRange.new(path: path ++ [field.name])
-        add_to_reducers(reducers, reducer)
+        [Profile.Reducer.TemporalRange.new(path: path ++ [field.name])]
     end
   end
 
-  defp add_to_reducers(reducers, reducer) do
-    case find_reducer(reducers, reducer) do
-      nil -> reducers ++ [reducer]
-      _ -> reducers
-    end
-  end
-
-  defp find_reducer(reducers, %struct{}) do
-    Enum.find(reducers, fn
-      %^struct{} -> true
-      _ -> false
-    end)
+  defp includes_reducer?(reducers, reducer) do
+    Enum.any?(reducers, fn %struct{} -> struct == reducer end)
   end
 end

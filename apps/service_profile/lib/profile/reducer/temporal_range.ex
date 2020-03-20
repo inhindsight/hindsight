@@ -23,16 +23,16 @@ defmodule Profile.Reducer.TemporalRange do
 
       %{
         t
-        | first: first(t.first, value),
-          last: last(t.last, value)
+        | first: safe_first(t.first, value),
+          last: safe_last(t.last, value)
       }
     end
 
     def merge(t1, t2) do
       %{
         t1
-        | first: first(t1.first, t2.first),
-          last: last(t1.last, t2.last)
+        | first: safe_first(t1.first, t2.first),
+          last: safe_last(t1.last, t2.last)
       }
     end
 
@@ -43,22 +43,22 @@ defmodule Profile.Reducer.TemporalRange do
     defp parse(nil), do: nil
     defp parse(string), do: NaiveDateTime.from_iso8601!(string)
 
-    defp first(nil, nil), do: nil
-    defp first(a, nil), do: a
-    defp first(nil, b), do: b
+    defp safe_first(nil, nil), do: nil
+    defp safe_first(a, nil), do: a
+    defp safe_first(nil, b), do: b
 
-    defp first(a, b) do
+    defp safe_first(a, b) do
       case NaiveDateTime.diff(a, b) do
         x when x > 0 -> b
         _ -> a
       end
     end
 
-    defp last(nil, nil), do: nil
-    defp last(a, nil), do: a
-    defp last(nil, b), do: b
+    defp safe_last(nil, nil), do: nil
+    defp safe_last(a, nil), do: a
+    defp safe_last(nil, b), do: b
 
-    defp last(a, b) do
+    defp safe_last(a, b) do
       case NaiveDateTime.diff(a, b) do
         x when x >= 0 -> a
         _ -> b

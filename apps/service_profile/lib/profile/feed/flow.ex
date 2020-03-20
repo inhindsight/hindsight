@@ -3,7 +3,7 @@ defmodule Profile.Feed.Flow do
   use Properties, otp_app: :service_profile
   require Logger
 
-  alias Profile.Feed.Flow.Storage
+  alias Profile.Feed.Flow.State
 
   getter(:window_limit, default: 5)
   getter(:window_unit, default: :minute)
@@ -32,14 +32,14 @@ defmodule Profile.Feed.Flow do
 
     {:ok, stats} = Profile.Feed.Store.get_stats(dataset_id, subset_id)
     reducers = Enum.map(reducers, &Profile.Reducer.init(&1, stats))
-    {:ok, storage} = Storage.start_link(reducers: reducers)
+    {:ok, state} = State.start_link(reducers: reducers)
 
     from_specs
     |> Flow.from_specs()
     |> Flow.partition(window: window, stages: 1)
-    |> Flow.reduce(fn -> Storage.get(storage) end, &reduce/2)
+    |> Flow.reduce(fn -> State.get(state) end, &reduce/2)
     |> Flow.on_trigger(fn acc ->
-      case Storage.merge(storage, acc) do
+      case State.merge(state, acc) do
         [] ->
           {[], %{}}
 

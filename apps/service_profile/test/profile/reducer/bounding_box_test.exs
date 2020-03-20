@@ -52,7 +52,7 @@ defmodule Profile.Reducer.BoundingBoxTest do
   end
 
   describe "merge/2" do
-    data_test "something", %{reducer: reducer} do
+    data_test "will merge the bounding box from two reducers", %{reducer: reducer} do
       stats1 = %{
         "bounding_box" => bbox1
       }

@@ -1,4 +1,4 @@
-defmodule Profile.Feed.Flow.Storage do
+defmodule Profile.Feed.Flow.State do
   def start_link(opts) do
     reducers = Keyword.fetch!(opts, :reducers)
 

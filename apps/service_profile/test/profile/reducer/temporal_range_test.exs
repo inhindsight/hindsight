@@ -73,7 +73,7 @@ defmodule Profile.Reducer.TemporalRangeTest do
   end
 
   describe "merge/2" do
-    test "can merge to instances of the reducer", %{reducer: reducer} do
+    test "can merge two instances of the reducer", %{reducer: reducer} do
       stats1 = %{
         "temporal_range" => %{
           "first" => ~N[2010-01-01 01:01:01] |> NaiveDateTime.to_iso8601(),
