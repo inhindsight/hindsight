@@ -1,5 +1,6 @@
 defmodule Define.Store do
   require Logger
+  alias Define.{StepView, StepFieldView}
 
   @instance Define.Application.instance()
   @collection "definitions"
@@ -8,10 +9,32 @@ defmodule Define.Store do
     get(data.dataset_id)
     |> Map.put(:dataset_id, data.dataset_id)
     |> Map.put(:subset_id, data.subset_id)
-    |> Map.put(:extract_destination, data.destination)
-    |> Map.put(:extract_steps, data.steps)
+    |> put_in_better([:extract, :destination], data.destination)
+    |> put_in_better([:extract, :steps], Enum.map(data.steps, &serialize_step/1))
     |> Map.put(:dictionary, data.dictionary)
     |> persist()
+  end
+
+  def put_in_better(map, [hd], value) do
+    Map.put(map, hd, value)
+  end
+
+  # TODO Move to utilities
+  def put_in_better(map, [hd | tail], value) do
+    next_value = Map.get(map, hd)
+    Map.put(map, hd, put_in_better(next_value, tail, value))
+  end
+
+  # TODO Move out to a module and test by itself
+  defp serialize_step(step) do
+    {name, fields} = Map.pop(step, :__struct__)
+
+    new_fields = 
+      fields
+      |> Map.delete(:version) 
+      |> Enum.map(fn {k, v} -> %StepFieldView{key: to_string(k), type: "", value: v} end)
+
+    %StepView{struct_module_name: to_string(name), fields: new_fields}
   end
 
   def update_definition(%Transform{} = data) do
@@ -38,13 +61,8 @@ defmodule Define.Store do
 
   def get(dataset_id) do
     case Brook.get!(@instance, @collection, dataset_id) do
-      nil ->
-        %{}
-        |> Define.DataDefinition.create()
-        |> Ecto.Changeset.apply_changes()
-
-      map ->
-        map
+      nil -> %Define.DataDefinitionView{} |> IO.inspect(label: "The after times")
+      map -> map
     end
   end
 

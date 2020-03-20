@@ -23,7 +23,7 @@ defmodule Define.DictionaryFieldView.V1 do
       version: version(1),
       key: string(),
       # TODO: Find a way to call out the struct specifically (like of_struct())
-      type: spec(is_binary() or is_struct())
+      type: spec(is_binary() or is_map())
       })
   end
 end

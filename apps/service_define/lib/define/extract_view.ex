@@ -1,5 +1,4 @@
 defmodule Define.ExtractView do
-  alias Define.DefinitionView
   use Definition, schema: Define.ExtractView.V1
 
   @type t :: %__MODULE__{

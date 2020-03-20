@@ -14,7 +14,7 @@ defmodule Define.DataDefinitionView do
 
   @derive Jason.Encoder
   defstruct version: 1,
-    dataset_id: nil,
+    dataset_id: "",
     subset_id: "default",
     dictionary: [],
     extract: %ExtractView{},
