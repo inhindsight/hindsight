@@ -29,10 +29,14 @@ defmodule Define.MixProject do
 
   defp deps do
     [
+      {:brook, "~> 0.5.1"},
       {:definition, in_umbrella: true},
+      {:definition_dictionary, in_umbrella: true},
+      {:definition_events, in_umbrella: true},
       {:phoenix, "~> 1.4.15"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:properties, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
