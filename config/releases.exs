@@ -146,16 +146,16 @@ config :service_broadcast, Broadcast.Stream.Broadway.Configuration,
   endpoints: kafka_endpoints,
   broadway_config: [
     producer: [
-      stages: 1
+      concurrency: 1
     ],
     processors: [
       default: [
-        stages: 1
+        concurrency: 1
       ]
     ],
     batchers: [
       default: [
-        stages: 1,
+        concurrency: 1,
         batch_size: 1_000,
         batch_timeout: 1_000
       ]
@@ -215,16 +215,16 @@ config :service_persist, Persist.Load.Broadway.Configuration,
   endpoints: kafka_endpoints,
   broadway_config: [
     producer: [
-      stages: 1
+      concurrency: 1
     ],
     processors: [
       default: [
-        stages: 100
+        concurrency: 100
       ]
     ],
     batchers: [
       default: [
-        stages: 2,
+        concurrency: 2,
         batch_size: 1_000,
         batch_timeout: 2_000
       ]
@@ -325,3 +325,29 @@ config :service_define, Define.Application,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
+
+# SERVICE PROFILE
+config :service_profile, Profile.Application,
+  init?: true,
+  brook: [
+    driver: [
+      module: Brook.Driver.Kafka,
+      init_arg: [
+        endpoints: kafka_endpoints,
+        topic: "event-stream",
+        group: "profile-event-stream",
+        consumer_config: [
+          begin_offset: :earliest,
+          offset_reset_policy: :reset_to_earliest
+        ]
+      ]
+    ],
+    handlers: [Profile.Event.Handler],
+    storage: [
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: redix_args, namespace: "service:profile:view"]
+    ],
+    dispatcher: Brook.Dispatcher.Noop
+  ]
+
+config :service_profile, Profile.Feed.Producer, endpoints: kafka_endpoints

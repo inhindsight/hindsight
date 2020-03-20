@@ -8,7 +8,7 @@ defmodule BroadwayConfigurator.Dummy do
   def configure_producer(_, _) do
     [
       module: {Broadway.DummyProducer, []},
-      stages: 1
+      concurrency: 1
     ]
     |> Ok.ok()
   end
@@ -16,7 +16,7 @@ defmodule BroadwayConfigurator.Dummy do
   def configure_processors(_, _) do
     [
       default: [
-        stages: 1
+        concurrency: 1
       ]
     ]
     |> Ok.ok()
@@ -25,7 +25,7 @@ defmodule BroadwayConfigurator.Dummy do
   def configure_batchers(_, _) do
     [
       default: [
-        stages: 1,
+        concurrency: 1,
         batch_size: 100
       ]
     ]

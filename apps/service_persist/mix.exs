@@ -37,7 +37,7 @@ defmodule Persist.MixProject do
       {:initializer, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:management, in_umbrella: true},
-      {:off_broadway_kafka, "~> 0.5"},
+      {:off_broadway_kafka, "~> 1.0"},
       {:poison, "~> 4.0"},
       {:properties, in_umbrella: true},
       {:sweet_xml, "~> 0.6.6"},
