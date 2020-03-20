@@ -24,6 +24,7 @@ end
 
 defmodule Define.DataDefinitionView.V1 do
   use Definition.Schema
+  alias Define.{ExtractView, PersistView}
 
   @impl true
   def s do
@@ -32,9 +33,9 @@ defmodule Define.DataDefinitionView.V1 do
       dataset_id: string(),
       subset_id: string(),
       dictionary: list(),
-      extract: of_struct(Extract),
+      extract: of_struct(ExtractView),
       transform_steps: list(),
-      persist: of_struct(Persist),
+      persist: of_struct(PersistView),
     })
   end
 end

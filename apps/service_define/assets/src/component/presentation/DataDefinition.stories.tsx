@@ -6,8 +6,10 @@ import {DataDefinitionView} from "../../model/view"
 const props: DataDefinitionView = {
     dataset_id: "ABC123",
     subset_id: "XYZ789",
+    dictionary: [],
     extract: {
-        destination: "Hell"
+        destination: "Hell",
+        steps: [],
     },
     persist: {
         source: "Hell",

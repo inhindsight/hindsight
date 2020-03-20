@@ -1,10 +1,9 @@
 defmodule Define.StepView do
-  use Step, schema: Define.StepView.V1
-  alias Define.StepFieldView
+  use Definition, schema: Define.StepView.V1
 
   @type t :: %__MODULE__{
     version: integer,
-    struct_module_name: string,
+    struct_module_name: String.t(),
     fields: [StepFieldView.t()]
   }
 
@@ -15,7 +14,7 @@ defmodule Define.StepView do
 end
 
 defmodule Define.StepView.V1 do
-  use Step.Schema
+  use Definition.Schema
 
   @impl true
   def s do

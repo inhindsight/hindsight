@@ -1,10 +1,10 @@
 defmodule Define.DictionaryView do
-  use Dictionary, schema: Define.DictionaryView.V1
+  use Definition, schema: Define.DictionaryView.V1
   alias Define.DictionaryField
 
   @type t :: %__MODULE__{
     version: integer,
-    struct_module_name: string,
+    struct_module_name: String.t(),
     fields: [DictionaryField.t()]
   }
 
@@ -15,7 +15,7 @@ defmodule Define.DictionaryView do
 end
 
 defmodule Define.DictionaryView.V1 do
-  use Dictionary.Schema
+  use Definition.Schema
 
   @impl true
   def s do

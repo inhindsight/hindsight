@@ -1,12 +1,11 @@
 defmodule Define.StepFieldView do
   use Definition, schema: Define.StepFieldView.V1
-  alias Define.StepView
 
   @type t :: %__MODULE__{
     version: integer,
-    key: string,
-    type: string,
-    value: string | boolean | map
+    key: String.t(),
+    type: String.t(),
+    value: String.t() | boolean | map
   }
 
   @derive Jason.Encoder

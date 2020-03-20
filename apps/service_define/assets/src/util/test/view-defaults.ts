@@ -7,6 +7,7 @@ export const appViewDefaults: AppView = {
 
 export const extractViewDefaults: ExtractView = {
     destination: "",
+    steps: [],
 }
 
 export const persistViewDefaults: PersistView = {
@@ -17,6 +18,7 @@ export const persistViewDefaults: PersistView = {
 export const dataDefinitionDefaults: DataDefinitionView = {
     dataset_id: "",
     subset_id: "",
+    dictionary: [],
     extract: extractViewDefaults,
     persist: persistViewDefaults,
 }

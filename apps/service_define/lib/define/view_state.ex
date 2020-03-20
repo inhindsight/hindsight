@@ -1,5 +1,5 @@
 defmodule Define.ViewState do
-  alias Define.{AppView, DictionaryView, DictionaryFieldView, StepView, StepFieldView, ExtractView, PersistView}
+  alias Define.{AppView, DictionaryView, DictionaryFieldView, DataDefinitionView, StepView, StepFieldView, ExtractView, PersistView}
   use GenServer
 
   def event(pid, type, payload) do
@@ -42,7 +42,7 @@ defmodule Define.ViewState do
           dataset_id: "1111",
           dictionary: [
             DictionaryView.new!(
-              module: "Dictionary.Type.String",
+              struct_module_name: "Dictionary.Type.String",
               fields: [DictionaryFieldView.new!(key: "name", type: "string")]
             )
           ],
@@ -50,18 +50,15 @@ defmodule Define.ViewState do
             destination: "Hawaii",
             steps: [
               StepView.new!(
-                module: "Extract.Http.Get",
+                struct_module_name: "Extract.Http.Get",
                 fields: [
-                  StepFieldView.new!(key: "url", type: "string"),
+                  StepFieldView.new!(key: "url", type: "string", value: ""),
                   StepFieldView.new!(key: "headers", type: "map", value: %{})
                 ]
               )
             ]
           ),
-          persist: PersistView.new!(
-            source: "Ohio",
-            destination: "New York"
-          )
+          persist: Define.PersistView.new!( source: "Ohio", destination: "New York")
         )
       ]
     }

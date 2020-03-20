@@ -4,8 +4,8 @@ defmodule Define.DictionaryFieldView do
 
   @type t :: %__MODULE__{
     version: integer,
-    key: string,
-    type: string | DictionaryView.t()
+    key: String.t(),
+    type: String.t() | DictionaryView.t()
   }
 
   @derive Jason.Encoder

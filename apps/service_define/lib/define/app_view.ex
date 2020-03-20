@@ -1,5 +1,5 @@
 defmodule Define.AppView do
-  use Definition, schema: Define.DataDefinition.V1
+  use Definition, schema: Define.AppView.V1
   alias Define.DataDefinition
 
   @type t :: %__MODULE__{
