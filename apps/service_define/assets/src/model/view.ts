@@ -34,11 +34,11 @@ export interface DictionaryView {
 
 export interface DictionaryFieldView {
     readonly key: string
-    readonly type: DictionaryInputType | DictionaryView
+    readonly type: DictionaryFieldType | DictionaryView
 }
 
-export enum DictionaryInputType {
-    text = "text",
+export enum DictionaryFieldType {
+    string = "string",
     boolean = "boolean",
 }
 
@@ -52,16 +52,20 @@ export interface StepView {
 
 export interface StepFieldView {
     readonly key: string
-    readonly type: StepInputType
-    readonly value: any
+    readonly type: StepFieldType
+    readonly value: string | boolean | ObjectMap<any>
 }
 
-export enum StepInputType {
-    text = "text",
+export enum StepFieldType {
+    string = "string",
     boolean = "boolean",
     map = "map",
 }
 
+
+export interface ObjectMap<T> {
+    readonly [key: string]: T
+}
 
 
 

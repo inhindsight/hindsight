@@ -23,7 +23,7 @@ defmodule Define.ExtractView.V1 do
       version: version(1),
       destination: string(),
       # TODO: Add is_list that takes a type
-      steps: is_list()
+      steps: list()
     })
   end
 end

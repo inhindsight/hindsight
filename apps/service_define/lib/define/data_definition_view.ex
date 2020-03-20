@@ -1,6 +1,6 @@
 defmodule Define.DataDefinitionView do
-  use Definition, schema: Define.DataDefinition.V1
-  alias Define{ExtractView, PersistView, DefinitionView}
+  use Definition, schema: Define.DataDefinitionView.V1
+  alias Define.{ExtractView, PersistView, DefinitionView}
 
   @type t :: %__MODULE__{
     version: integer,
@@ -22,19 +22,19 @@ defmodule Define.DataDefinitionView do
     persist: %PersistView{}
 end
 
-defmodule Define.DataDefinition.V1 do
+defmodule Define.DataDefinitionView.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Define.DataDefinition {
+    schema(%Define.DataDefinitionView {
       version: version(1),
       dataset_id: string(),
       subset_id: string(),
       dictionary: list(),
-      extract: struct_of(Extract),
-      transform_steps: is_list(),
-      persist: struct_of(Persist),
+      extract: of_struct(Extract),
+      transform_steps: list(),
+      persist: of_struct(Persist),
     })
   end
 end

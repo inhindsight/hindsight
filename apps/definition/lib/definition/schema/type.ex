@@ -62,6 +62,11 @@ defmodule Definition.Schema.Type do
     spec(is_atom())
   end
 
+  @spec boolean() :: spec
+  def boolean() do
+    spec(is_boolean())
+  end
+
   @spec access_path() :: spec
   def access_path do
     one_of([spec(is_binary()), coll_of(spec(is_binary()))])

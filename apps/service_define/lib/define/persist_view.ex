@@ -1,5 +1,5 @@
 defmodule Define.PersistView do
-  use Definition, schema: Define.DataDefinition.V1
+  use Definition, schema: Define.PersistView.V1
 
   @type t :: %__MODULE__{
     version: integer,
@@ -13,12 +13,12 @@ defmodule Define.PersistView do
     destination: nil
 end
 
-defmodule Define.DataDefinition.V1 do
+defmodule Define.PersistView.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Define.DataDefinition {
+    schema(%Define.PersistView {
       version: version(1),
       source: string(),
       destination: string()

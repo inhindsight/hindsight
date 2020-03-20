@@ -1,27 +1,28 @@
-defmodule Define.DefinitionView do
-  use Definition, schema: Define.DefinitionView.V1
+defmodule Define.StepView do
+  use Step, schema: Define.StepView.V1
+  alias Define.StepFieldView
 
   @type t :: %__MODULE__{
     version: integer,
     struct_module_name: string,
-    fields: map
+    fields: [StepFieldView.t()]
   }
 
   @derive Jason.Encoder
   defstruct version: 1,
     struct_module_name: nil,
-    fields: %{}
+    fields: []
 end
 
-defmodule Define.DefinitionView.V1 do
-  use Definition.Schema
+defmodule Define.StepView.V1 do
+  use Step.Schema
 
   @impl true
   def s do
-    schema(%Define.DefinitionView {
+    schema(%Define.StepView {
       version: version(1),
       struct_module_name: string(),
-      fields: map()
+      fields: list()
       })
   end
 end
