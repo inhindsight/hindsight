@@ -15,7 +15,8 @@ defmodule Gather.Extraction do
   getter(:app_name, required: true)
 
   def start_link(args) do
-    GenServer.start_link(__MODULE__, args)
+    server_opts = Keyword.take(args, [:name])
+    GenServer.start_link(__MODULE__, args, server_opts)
   end
 
   @impl GenServer
@@ -73,6 +74,10 @@ defmodule Gather.Extraction do
         :ok
       end
     end)
+  catch
+    _, reason ->
+      Context.run_error_functions(context)
+      {:error, reason}
   end
 
   defp normalize(extract, messages) do

@@ -5,10 +5,12 @@ receive:
     type: NodePort
 broadcast:
   service:
-    type: NodePort
+    type: ClusterIP
 acquire:
   service:
-    type: NodePort
+    type: ClusterIP
+ingress:
+  host: chart-example.local
 strimzi:
   kafka:
     resources:
@@ -29,6 +31,21 @@ strimzi:
 redis:
   enabled: true
   externalAddress: ""
+nginx-ingress:
+  controller:
+    service:
+      type: LoadBalancer
+presto:
+  presto:
+    ingress:
+      enable: true
+      hosts:
+        - chart-example.local/ui
+  minio:
+    ingress:
+      enable: true
+      hosts:
+        - chart-example.local/minio.*
 global:
   objectStore:
     bucketName: hindsight-object-storage

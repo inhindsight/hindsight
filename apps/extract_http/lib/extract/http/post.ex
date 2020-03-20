@@ -17,6 +17,8 @@ defmodule Extract.Http.Post do
   defimpl Extract.Step, for: __MODULE__ do
     use Tesla
     import Extract.Context
+    require Logger
+
     alias Extract.Http.File.Downloader
 
     def execute(step, context) do
@@ -29,6 +31,12 @@ defmodule Extract.Http.Post do
              Downloader.download(url, headers: headers, method: "POST", body: body, to: temp_path) do
         context
         |> set_source(&stream_from_file(response, &1))
+        |> register_error_function(fn ->
+          File.rm(response.destination)
+          |> Ok.map_if_error(
+            &Logger.warn(fn -> "#{__MODULE__}: Failed to cleanup file #{inspect(&1)}" end)
+          )
+        end)
         |> Ok.ok()
       end
     end

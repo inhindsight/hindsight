@@ -139,39 +139,27 @@ config :service_broadcast, Broadcast.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_broadcast, Broadcast.Stream.Broadway,
-  app_name: "service_broadcast",
+config :service_broadcast, Broadcast.Stream.Broadway.Configuration,
+  endpoints: kafka_endpoints,
   broadway_config: [
     producer: [
-      module:
-        {OffBroadway.Kafka.Producer,
-         [
-           endpoints: kafka_endpoints,
-           create_topics: true,
-           group_consumer: [
-             config: [
-               begin_offset: :earliest,
-               offset_reset_policy: :reset_to_latest,
-               prefetch_count: 0,
-               prefetch_bytes: 2_097_152
-             ]
-           ]
-         ]},
-      stages: 1
+      concurrency: 1
     ],
     processors: [
       default: [
-        stages: 1
+        concurrency: 1
       ]
     ],
     batchers: [
       default: [
-        stages: 1,
+        concurrency: 1,
         batch_size: 1_000,
         batch_timeout: 1_000
       ]
     ]
   ]
+
+config :service_broadcast, Broadcast.Stream.Broadway, app_name: "service_broadcast"
 
 # SERVICE PERSIST
 bucket_region = [region: System.get_env("BUCKET_REGION", "local")]
@@ -218,39 +206,27 @@ config :service_persist, Persist.DataStorage.S3,
   s3_bucket: System.get_env("BUCKET_NAME", "kdp-cloud-storage"),
   s3_path: "hive-s3"
 
-config :service_persist, Persist.Load.Broadway,
-  app_name: "service_persist",
+config :service_persist, Persist.Load.Broadway.Configuration,
+  endpoints: kafka_endpoints,
   broadway_config: [
     producer: [
-      module:
-        {OffBroadway.Kafka.Producer,
-         [
-           endpoints: kafka_endpoints,
-           create_topics: true,
-           group_consumer: [
-             config: [
-               begin_offset: :earliest,
-               offset_reset_policy: :reset_to_earliest,
-               prefetch_count: 0,
-               prefetch_bytes: 2_097_152
-             ]
-           ]
-         ]},
-      stages: 1
+      concurrency: 1
     ],
     processors: [
       default: [
-        stages: 100
+        concurrency: 100
       ]
     ],
     batchers: [
       default: [
-        stages: 2,
+        concurrency: 2,
         batch_size: 1_000,
         batch_timeout: 2_000
       ]
     ]
   ]
+
+config :service_persist, Persist.Load.Broadway, app_name: "service_persist"
 
 # SERVICE ORCHESTRATE
 config :service_orchestrate, Orchestrate.Application,
@@ -310,17 +286,17 @@ config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user
 
 # SERVICE DEFINE
 config :service_define, DefineWeb.Endpoint,
-  http: [:inet6, port: String.to_integer(System.get_env("DEFINE_PORT") || "4005")],
+  http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4005")],
   secret_key_base: secret_key_base,
   live_view: [
-    signing_salt: secret_key_base,
+    signing_salt: secret_key_base
   ],
   render_errors: [view: DefineWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Define.PubSub, adapter: Phoenix.PubSub.PG2],
   server: true,
   check_origin: false
 
-config :define_broadcast, Broadcast.Application,
+config :service_define, Define.Application,
   kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [
@@ -342,3 +318,29 @@ config :define_broadcast, Broadcast.Application,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
+
+# SERVICE PROFILE
+config :service_profile, Profile.Application,
+  init?: true,
+  brook: [
+    driver: [
+      module: Brook.Driver.Kafka,
+      init_arg: [
+        endpoints: kafka_endpoints,
+        topic: "event-stream",
+        group: "profile-event-stream",
+        consumer_config: [
+          begin_offset: :earliest,
+          offset_reset_policy: :reset_to_earliest
+        ]
+      ]
+    ],
+    handlers: [Profile.Event.Handler],
+    storage: [
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: redix_args, namespace: "service:profile:view"]
+    ],
+    dispatcher: Brook.Dispatcher.Noop
+  ]
+
+config :service_profile, Profile.Feed.Producer, endpoints: kafka_endpoints

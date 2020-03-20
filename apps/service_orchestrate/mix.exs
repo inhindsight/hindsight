@@ -28,6 +28,7 @@ defmodule Orchestrate.MixProject do
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:elsa, "~> 0.12", override: true},
+      {:gen_stage, "~> 1.0", override: true},
       {:extractor, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:quantum, "~> 2.3"},

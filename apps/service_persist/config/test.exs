@@ -36,22 +36,3 @@ config :service_persist, Persist.Application,
   ]
 
 config :service_persist, Persist.Loader, max_retries: 3
-
-config :service_persist, Persist.Load.Broadway,
-  broadway_config: [
-    producer: [
-      module: {Broadway.DummyProducer, []},
-      stages: 1
-    ],
-    processors: [
-      default: [
-        stages: 1
-      ]
-    ],
-    batchers: [
-      default: [
-        stages: 1,
-        batch_size: 100
-      ]
-    ]
-  ]

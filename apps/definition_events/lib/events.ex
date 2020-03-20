@@ -12,7 +12,8 @@ defmodule Events do
     {"load:persist:end", Load.Persist},
     {"schedule:start", Schedule},
     {"schedule:end", Schedule},
-    {"transform:define", Transform}
+    {"transform:define", Transform},
+    {"profile:update", Profile.Update}
   ]
 
   Enum.map(@events, fn {type, struct_module} ->

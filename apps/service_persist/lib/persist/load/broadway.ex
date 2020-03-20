@@ -8,8 +8,8 @@ defmodule Persist.Load.Broadway do
 
   @app_name get_config_value(:app_name, required: true)
 
-  getter(:broadway_config, required: true)
   getter(:dlq, default: Persist.DLQ)
+  getter(:configuration, default: Persist.Load.Broadway.Configuration)
 
   @type init_opts :: [
           load: Load.Persist.t(),
@@ -19,15 +19,21 @@ defmodule Persist.Load.Broadway do
 
   @spec start_link(init_opts) :: GenServer.on_start()
   def start_link(init_arg) do
-    Logger.debug(fn -> "#{__MODULE__}: start_link is invoked" end)
+    Logger.debug(fn ->
+      "#{__MODULE__}: start_link is invoked with configuration #{configuration()}"
+    end)
+
     %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
     transform = Keyword.fetch!(init_arg, :transform)
     writer = Keyword.fetch!(init_arg, :writer)
 
-    with {:ok, transformer} = create_transformer(transform) do
-      config = setup_config(load, transformer, writer)
+    with {:ok, transformer} <- create_transformer(transform),
+         {:ok, config} <-
+           configuration().configure([], %{load: load, transformer: transformer, writer: writer}) do
+      Logger.debug(fn ->
+        "#{__MODULE__}: calling Broadway.start_link with config #{inspect(config, pretty: true)}"
+      end)
 
-      Logger.debug(fn -> "#{__MODULE__}: calling Broadway.start_link" end)
       Broadway.start_link(__MODULE__, config)
     end
   end
@@ -72,31 +78,5 @@ defmodule Persist.Load.Broadway do
 
   defp create_transformer(transform) do
     Transformer.create(transform.steps, transform.dictionary)
-  end
-
-  defp setup_config(load, transformer, writer) do
-    Keyword.put(broadway_config(), :name, :"persist_broadway_#{load.source}")
-    |> Keyword.update!(:producer, &update_producer(load, &1))
-    |> Keyword.put(:context, %{
-      load: load,
-      writer: writer,
-      transformer: transformer
-    })
-  end
-
-  defp update_producer(load, producer_config) do
-    producer_config
-    |> Keyword.update!(:module, fn {module, config} ->
-      config =
-        config
-        |> Keyword.put(:connection, :"persist_connection_#{load.source}")
-        |> Keyword.update(:group_consumer, [], fn group_consumer ->
-          group_consumer
-          |> Keyword.put(:group, "persist-#{load.source}")
-          |> Keyword.put(:topics, [load.source])
-        end)
-
-      {module, config}
-    end)
   end
 end

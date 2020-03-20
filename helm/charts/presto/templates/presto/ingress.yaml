@@ -4,12 +4,10 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-{{- if .Values.presto.ingress.annotations }}
   annotations:
-{{ toYaml .Values.presto.ingress.annotations | trim | indent 4 }}
-{{- if .Values.global.ingress.annotations }}
 {{ toYaml .Values.global.ingress.annotations | trim | indent 4 }}
-{{- end }}
+{{- if .Values.presto.ingress.annotations }}
+{{ toYaml .Values.presto.ingress.annotations | trim | indent 4 }}
 {{- end }}
   name: {{ template "presto.fullname" . }}
   labels:

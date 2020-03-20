@@ -8,7 +8,7 @@ defmodule Gather.Init do
   def on_start(state) do
     Extraction.Store.get_all!()
     |> Enum.each(fn extract ->
-      Extraction.Supervisor.start_child({Extraction, extract: extract})
+      Extraction.Supervisor.start_child(extract)
     end)
 
     {:ok, state}

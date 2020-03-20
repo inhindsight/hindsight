@@ -33,6 +33,7 @@ defmodule Gather.MixProject do
       {:elsa, "~> 0.12", override: true},
       {:extractor, in_umbrella: true},
       {:initializer, in_umbrella: true},
+      {:management, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:retry, "~> 0.13.0"},
       {:transformer, in_umbrella: true},
@@ -43,6 +44,7 @@ defmodule Gather.MixProject do
       # Dev/Test Dependencies
       {:bypass, "~> 1.0", only: [:test]},
       {:mox, "~> 0.5.1", only: [:test]},
+      {:placebo, "~> 2.0.0-rc2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}
     ]
   end

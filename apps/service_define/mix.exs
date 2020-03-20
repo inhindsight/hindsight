@@ -17,9 +17,6 @@ defmodule Define.MixProject do
     ]
   end
 
-  # Configuration for the OTP application.
-  #
-  # Type `mix help compile.app` for more information.
   def application do
     [
       mod: {Define.Application, []},
@@ -27,25 +24,19 @@ defmodule Define.MixProject do
     ]
   end
 
-  # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  # Specifies your project dependencies.
-  #
-  # Type `mix help deps` for examples and options.
   defp deps do
     [
       {:definition, in_umbrella: true},
       {:phoenix, "~> 1.4.15"},
-      {:phoenix_ecto, "~> 4.0"},
       {:phoenix_pubsub, "~> 1.1"},
-      {:phoenix_html, "~> 2.13"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.9.0"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end
