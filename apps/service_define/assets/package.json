@@ -1,0 +1,59 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "mocha --watch",
+    "test:once": "mocha",
+    "lint": "tslint --project .",
+    "lint:fix": "tslint --fix --project .",
+    "compile": "tsc --noEmit",
+    "ci": "npm run compile && npm run test:once && npm run lint",
+    "storybook": "start-storybook -s ./public",
+    "deploy": "parcel build src/index.html --out-dir ../priv/static/",
+    "watch": "parcel watch src/index.html --out-dir ../priv/static/"
+  },
+  "mocha": {
+    "extension": [
+      "ts",
+      "tsx"
+    ],
+    "reporter": "progress",
+    "spec": "./src/**/*.test.*",
+    "watch-files": [
+      "./src/**/*.ts",
+      "./src/**/*.tsx"
+    ],
+    "require": [
+      "ts-node/register",
+      "src/test-setup.ts"
+    ]
+  },
+  "dependencies": {
+    "phoenix": "1.4.16",
+    "ramda": "^0.27.0",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0"
+  },
+  "devDependencies": {
+    "@storybook/react": "^5.3.17",
+    "@types/chai": "^4.2.11",
+    "@types/jsdom": "^16.1.0",
+    "@types/lodash": "^4.14.149",
+    "@types/mocha": "^7.0.2",
+    "@types/phoenix": "^1.4.3",
+    "@types/ramda": "^0.26.44",
+    "@types/react": "^16.9.23",
+    "@types/react-dom": "^16.9.5",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.0.6",
+    "chai": "^4.2.0",
+    "dom-sim": "^1.0.0",
+    "jsdom": "^16.2.1",
+    "lodash": "^4.17.15",
+    "mocha": "^7.1.0",
+    "parcel-bundler": "^1.12.4",
+    "ts-node": "^8.6.2",
+    "tslint": "^6.1.0",
+    "tslint-immutable": "^6.0.1",
+    "typescript": "^3.8.3"
+  }
+}
