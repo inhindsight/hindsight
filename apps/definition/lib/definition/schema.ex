@@ -6,7 +6,7 @@ defmodule Definition.Schema do
   behaviour declaration and base imports.
   """
 
-  @callback s() :: %Norm.Schema{}
+  @callback s() :: %Norm.Core.Schema{}
 
   defmacro __using__(_) do
     quote do
