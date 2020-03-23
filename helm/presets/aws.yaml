@@ -45,6 +45,18 @@ nginx-ingress:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
       type: LoadBalancer
+prometheus-operator:
+  prometheus:
+    prometheusSpec:
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: gp2
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 100Gi
+          selector: {}
 presto:
   postgres:
     enable: false
