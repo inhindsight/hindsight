@@ -88,300 +88,129 @@ defmodule Define.StoreTest do
         subset_id: "default"
       }
 
-      assert expected == persisted
-                %StepFieldView{
-                  key: "url",
-                  type: "string",
-                  value: "http://localhost/file.csv"
-                }
-              ]
-            }
-          ]
-        },
-        dictionary: [
-          %DictionaryView{
-            struct_module_name: "Elixir.Dictionary.Type.String",
-            fields: [
-              %DictionaryFieldView{
-                key: "name",
-                type: "letter"
-              }
-            ]
-          }
-        ],
-        subset_id: "default"
-      }
+      #   Brook.Test.with_event(@instance, fn ->
+      #     event =
+      #       Transform.new!(
+      #         id: "transform-1",
+      #         dataset_id: id,
+      #         subset_id: "default",
+      #         dictionary: [],
+      #         steps: []
+      #       )
 
-      assert expected == persisted
-                %StepFieldView{
-                  key: "url",
-                  type: "string",
-                  value: "http://localhost/file.csv"
-                }
-              ]
-            }
-          ]
-        },
-        dictionary: [
-          %DictionaryView{
-            struct_module_name: "Elixir.Dictionary.Type.String",
-            fields: [
-              %DictionaryFieldView{
-                key: "name",
-                type: "letter"
-              }
-            ]
-          }
-        ],
-        subset_id: "default"
-      }
+      #     Define.Store.update_definition(event)
+      #   end)
 
-      assert expected == persisted
-                %StepFieldView{
-                  key: "url",
-                  type: "string",
-                  value: "http://localhost/file.csv"
-                }
-              ]
-            }
-          ]
-        },
-        dictionary: [
-          %DictionaryView{
-            struct_module_name: "Elixir.Dictionary.Type.String",
-            fields: [
-              %DictionaryFieldView{
-                key: "name",
-                type: "letter"
-              }
-            ]
-          }
-        ],
-        subset_id: "default"
-      }
+      #   persisted = Define.Store.get(id)
 
-      assert expected == persisted
-                %StepFieldView{
-                  key: "url",
-                  type: "string",
-                  value: "http://localhost/file.csv"
-                }
-              ]
-            }
-          ]
-        },
-        dictionary: [
-          %DictionaryView{
-            struct_module_name: "Elixir.Dictionary.Type.String",
-            fields: [
-              %DictionaryFieldView{
-                key: "name",
-                type: "letter"
-              }
-            ]
-          }
-        ],
-        subset_id: "default"
-      }
+      #   expected = %Define.DataDefinitionView{
+      #     dataset_id: id,
+      #     subset_id: "default",
+      #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
+      #     transform_steps: [],
+      #     version: 1
+      #   }
 
-      assert expected == persisted
-                %StepFieldView{
-                  key: "url",
-                  type: "string",
-                  value: "http://localhost/file.csv"
-                }
-              ]
-            }
-          ]
-        },
-        dictionary: [
-          %DictionaryView{
-            struct_module_name: "Elixir.Dictionary.Type.String",
-            fields: [
-              %DictionaryFieldView{
-                key: "name",
-                type: "letter"
-              }
-            ]
-          }
-        ],
-        subset_id: "default"
-      }
+      #   Brook.Test.with_event(@instance, fn ->
+      #     event =
+      #       Transform.new!(
+      #         id: "transform-1",
+      #         dataset_id: id,
+      #         subset_id: "default",
+      #         dictionary: [],
+      #         steps: []
+      #       )
 
-      assert expected == persisted
-                %StepFieldView{
-                  key: "url",
-                  type: "string",
-                  value: "http://localhost/file.csv"
-                }
-              ]
-            }
-          ]
-        },
-        dictionary: [
-          %DictionaryView{
-            struct_module_name: "Elixir.Dictionary.Type.String",
-            fields: [
-              %DictionaryFieldView{
-                key: "name",
-                type: "letter"
-              }
-            ]
-          }
-        ],
-        subset_id: "default"
-      }
+      #     Define.Store.update_definition(event)
+      #   end)
 
-      assert expected == persisted
-                %StepFieldView{
-                  key: "url",
-                  type: "string",
-                  value: "http://localhost/file.csv"
-                }
-              ]
-            }
-          ]
-        },
-        dictionary: [
-          %DictionaryView{
-            struct_module_name: "Elixir.Dictionary.Type.String",
-            fields: [
-              %DictionaryFieldView{
-                key: "name",
-                type: "letter"
-              }
-            ]
-          }
-        ],
-        subset_id: "default"
-      }
+      #   persisted = Define.Store.get(id)
 
-      assert expected == persisted
-                %StepFieldView{
-                  key: "url",
-                  type: "string",
-                  value: "http://localhost/file.csv"
-                }
-              ]
-            }
-          ]
-        },
-        dictionary: [
-          %DictionaryView{
-            struct_module_name: "Elixir.Dictionary.Type.String",
-            fields: [
-              %DictionaryFieldView{
-                key: "name",
-                type: "letter"
-              }
-            ]
-          }
-        ],
-        subset_id: "default"
-      }
+      #   expected = %Define.DataDefinitionView{
+      #     dataset_id: id,
+      #     subset_id: "default",
+      #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
+      #     transform_steps: [],
+      #     version: 1
+      #   }
 
-      assert expected == persisted
+      #   assert ^expected = persisted
+      # end
+
+      # test "persists a new persist" do
+      #   id = "bdataset"
+
+      #   Brook.Test.with_event(@instance, fn ->
+      #     event =
+      #       Load.Persist.new!(
+      #         id: "persist-1",
+      #         dataset_id: id,
+      #         subset_id: "default",
+      #         source: "akafkatopic",
+      #         destination: "storage__json"
+      #       )
+
+      #     Define.Store.update_definition(event)
+      #   end)
+
+      #   persisted = Define.Store.get(id)
+
+      #   expected = %Define.DataDefinitionView{
+      #     dataset_id: id,
+      #     persist_source: "akafkatopic",
+      #     persist_destination: "storage__json",
+      #     subset_id: "default",
+      #     version: 1
+      #   }
+
+      #   assert ^expected = persisted
+      # end
+
+      # test "persists updated fields when two events are posted" do
+      #   id = "cDataset"
+
+      #   Brook.Test.with_event(@instance, fn ->
+      #     event =
+      #       Extract.new!(
+      #         id: "extract-1",
+      #         dataset_id: id,
+      #         subset_id: "default",
+      #         destination: "success",
+      #         dictionary: [],
+      #         steps: []
+      #       )
+
+      #     Define.Store.update_definition(event)
+      #   end)
+
+      #   Brook.Test.with_event(@instance, fn ->
+      #     event =
+      #       Load.Persist.new!(
+      #         id: "persist-1",
+
+      #         subset_id: "default",
+      #         source: "akafkatopic",
+      #         destination: "storage__json"
+      #       )
+
+      #     Define.Store.update_definition(event)
+      #   end)
+
+      #   persisted = Define.Store.get(id)
+
+      #   expected = %Define.DataDefinitionView{
+      #     dataset_id: id,
+      #     extract_destination: "success",
+      #     extract_steps: [],
+      #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
+      #     persist_source: "akafkatopic",
+      #     persist_destination: "storage__json",
+      #     subset_id: "default",
+      #     version: 1
+      #   }
+
+      #   assert ^expected = persisted
+      # end
     end
-
-    #   Brook.Test.with_event(@instance, fn ->
-    #     event =
-    #       Transform.new!(
-    #         id: "transform-1",
-    #         dataset_id: id,
-    #         subset_id: "default",
-    #         dictionary: [],
-    #         steps: []
-    #       )
-
-    #     Define.Store.update_definition(event)
-    #   end)
-
-    #   persisted = Define.Store.get(id)
-
-    #   expected = %Define.DataDefinitionView{
-    #     dataset_id: id,
-    #     subset_id: "default",
-    #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
-    #     transform_steps: [],
-    #     version: 1
-    #   }
-
-    #   assert ^expected = persisted
-    # end
-
-    # test "persists a new persist" do
-    #   id = "bdataset"
-
-    #   Brook.Test.with_event(@instance, fn ->
-    #     event =
-    #       Load.Persist.new!(
-    #         id: "persist-1",
-    #         dataset_id: id,
-    #         subset_id: "default",
-    #         source: "akafkatopic",
-    #         destination: "storage__json"
-    #       )
-
-    #     Define.Store.update_definition(event)
-    #   end)
-
-    #   persisted = Define.Store.get(id)
-
-    #   expected = %Define.DataDefinitionView{
-    #     dataset_id: id,
-    #     persist_source: "akafkatopic",
-    #     persist_destination: "storage__json",
-    #     subset_id: "default",
-    #     version: 1
-    #   }
-
-    #   assert ^expected = persisted
-    # end
-
-    # test "persists updated fields when two events are posted" do
-    #   id = "cDataset"
-
-    #   Brook.Test.with_event(@instance, fn ->
-    #     event =
-    #       Extract.new!(
-    #         id: "extract-1",
-    #         dataset_id: id,
-    #         subset_id: "default",
-    #         destination: "success",
-    #         dictionary: [],
-    #         steps: []
-    #       )
-
-    #     Define.Store.update_definition(event)
-    #   end)
-
-    #   Brook.Test.with_event(@instance, fn ->
-    #     event =
-    #       Load.Persist.new!(
-    #         id: "persist-1",
-    #         dataset_id: id,
-    #         subset_id: "default",
-    #         source: "akafkatopic",
-    #         destination: "storage__json"
-    #       )
-
-    #     Define.Store.update_definition(event)
-    #   end)
-
-    #   persisted = Define.Store.get(id)
-
-    #   expected = %Define.DataDefinitionView{
-    #     dataset_id: id,
-    #     extract_destination: "success",
-    #     extract_steps: [],
-    #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
-    #     persist_source: "akafkatopic",
-    #     persist_destination: "storage__json",
-    #     subset_id: "default",
-    #     version: 1
-    #   }
-
-    #   assert ^expected = persisted
-    # end
   end
 end

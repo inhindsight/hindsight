@@ -1,6 +1,6 @@
 defmodule Define.Store do
   require Logger
-  alias Define.{StepView, StepFieldView, DictionaryView, DictionaryFieldView}
+  alias Define.{StepView, StepFieldView, DictionaryView, DictionaryFieldView, TypespecAnalysis}
 
   @instance Define.Application.instance()
   @collection "definitions"
@@ -38,16 +38,14 @@ defmodule Define.Store do
     Map.put(map, hd, put_in_better(next_value, tail, value))
   end
 
+
   # TODO Move out to a module and test by itself
   defp serialize_step(step) do
-    {name, fields} = Map.pop(step, :__struct__)
+    struct = step.__struct__
+    types = TypespecAnalysis.get_types(struct)
+    new_fields = Enum.map(types, fn {k, v} -> %StepFieldView{key: k, type: v, value: Map.get(step, k)} end)
 
-    new_fields =
-      fields
-      |> Map.delete(:version)
-      |> Enum.map(fn {k, v} -> %StepFieldView{key: to_string(k), type: v, value: v} end)
-
-    %StepView{struct_module_name: to_string(name), fields: new_fields}
+    %StepView{struct_module_name: to_string(struct), fields: new_fields}
   end
 
   def update_definition(%Transform{} = data) do

@@ -52,8 +52,9 @@ export interface StepView {
 
 export interface StepFieldView {
     readonly key: string
-    readonly type: StepFieldType
-    readonly value: string | boolean | ObjectMap<any>
+    readonly type: StepFieldType | StepListType
+    //TODO: Nail down this type more
+    readonly value: string | boolean | ObjectMap<any> | ReadonlyArray<any>
 }
 
 export enum StepFieldType {
@@ -61,6 +62,8 @@ export enum StepFieldType {
     boolean = "boolean",
     map = "map",
 }
+
+type StepListType = readonly [string, string]
 
 
 export interface ObjectMap<T> {
