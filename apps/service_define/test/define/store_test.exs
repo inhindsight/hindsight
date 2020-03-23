@@ -1,11 +1,12 @@
 defmodule Define.StoreTest do
   use ExUnit.Case
+
   alias Define.{
-    DataDefinitionView, 
-    ExtractView, 
-    DictionaryView, 
-    DictionaryFieldView, 
-    StepView, 
+    DataDefinitionView,
+    ExtractView,
+    DictionaryView,
+    DictionaryFieldView,
+    StepView,
     StepFieldView
   }
 
@@ -38,7 +39,10 @@ defmodule Define.StoreTest do
               Dictionary.Type.String.new!(name: "letter")
             ],
             steps: [
-              Extract.Http.Get.new!(url: "http://localhost/file.csv")
+              Extract.Http.Get.new!(
+                url: "http://localhost/file.csv",
+                headers: %{"content-length" => "5"}
+              )
             ]
           )
 
@@ -57,14 +61,14 @@ defmodule Define.StoreTest do
               struct_module_name: "Elixir.Extract.Http.Get",
               fields: [
                 %StepFieldView{
-                  key: "url",
-                  type: "string",
-                  value: "http://localhost/file.csv"
-                },
-                %StepFieldView{
                   key: "headers",
                   type: "map",
                   value: %{"content-length" => "5"}
+                },
+                %StepFieldView{
+                  key: "url",
+                  type: "string",
+                  value: "http://localhost/file.csv"
                 }
               ]
             }

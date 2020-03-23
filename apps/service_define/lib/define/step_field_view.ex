@@ -2,17 +2,17 @@ defmodule Define.StepFieldView do
   use Definition, schema: Define.StepFieldView.V1
 
   @type t :: %__MODULE__{
-    version: integer,
-    key: String.t(),
-    type: String.t(),
-    value: String.t() | boolean | map
-  }
+          version: integer,
+          key: String.t(),
+          type: String.t(),
+          value: String.t() | boolean | map
+        }
 
   @derive Jason.Encoder
   defstruct version: 1,
-    key: nil,
-    type: nil,
-    value: nil
+            key: nil,
+            type: nil,
+            value: nil
 end
 
 defmodule Define.StepFieldView.V1 do
@@ -20,12 +20,12 @@ defmodule Define.StepFieldView.V1 do
 
   @impl true
   def s do
-    schema(%Define.StepFieldView {
+    schema(%Define.StepFieldView{
       version: version(1),
       key: string(),
       type: string(),
       # TODO: This better
       value: spec(is_binary() or is_boolean() or is_map())
-      })
+    })
   end
 end

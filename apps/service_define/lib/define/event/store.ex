@@ -1,17 +1,30 @@
 defmodule Define.Store do
   require Logger
-  alias Define.{StepView, StepFieldView}
+  alias Define.{StepView, StepFieldView, DictionaryView, DictionaryFieldView}
 
   @instance Define.Application.instance()
   @collection "definitions"
 
   def update_definition(%Extract{} = data) do
+    new_dict =
+      Enum.map(data.dictionary.ordered, fn value ->
+        %DictionaryView{
+          struct_module_name: to_string(value.__struct__),
+          fields: [
+            %DictionaryFieldView{
+              key: "name",
+              type: value.name
+            }
+          ]
+        }
+      end)
+
     get(data.dataset_id)
     |> Map.put(:dataset_id, data.dataset_id)
     |> Map.put(:subset_id, data.subset_id)
     |> put_in_better([:extract, :destination], data.destination)
     |> put_in_better([:extract, :steps], Enum.map(data.steps, &serialize_step/1))
-    |> Map.put(:dictionary, data.dictionary)
+    |> Map.put(:dictionary, new_dict)
     |> persist()
   end
 
@@ -29,10 +42,10 @@ defmodule Define.Store do
   defp serialize_step(step) do
     {name, fields} = Map.pop(step, :__struct__)
 
-    new_fields = 
+    new_fields =
       fields
-      |> Map.delete(:version) 
-      |> Enum.map(fn {k, v} -> %StepFieldView{key: to_string(k), type: "", value: v} end)
+      |> Map.delete(:version)
+      |> Enum.map(fn {k, v} -> %StepFieldView{key: to_string(k), type: v, value: v} end)
 
     %StepView{struct_module_name: to_string(name), fields: new_fields}
   end

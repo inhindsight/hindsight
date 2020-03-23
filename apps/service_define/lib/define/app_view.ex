@@ -3,15 +3,15 @@ defmodule Define.AppView do
   alias Define.DataDefinition
 
   @type t :: %__MODULE__{
-    version: integer,
-    greeting: String.t(),
-    data_definitions: [DataDefinition.t()]
-  }
+          version: integer,
+          greeting: String.t(),
+          data_definitions: [DataDefinition.t()]
+        }
 
   @derive Jason.Encoder
   defstruct version: 1,
-    greeting: "Hello",
-    data_definitions: []
+            greeting: "Hello",
+            data_definitions: []
 end
 
 defmodule Define.AppView.V1 do
@@ -24,6 +24,6 @@ defmodule Define.AppView.V1 do
       version: version(1),
       greeting: string(),
       data_definitions: of_struct(DataDefinition)
-      })
+    })
   end
 end
