@@ -7,7 +7,7 @@ defmodule Gather.Writer do
   getter(:dlq, default: Gather.DLQ)
   getter(:kafka_endpoints, required: true)
 
-  alias Writer.DLQ.DeadLetter
+  alias Dlq.DeadLetter
   require Logger
 
   @impl Writer

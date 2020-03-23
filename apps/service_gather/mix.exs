@@ -30,6 +30,7 @@ defmodule Gather.MixProject do
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:definition_extract, in_umbrella: true},
+      {:dlq, in_umbrella: true},
       {:elsa, "~> 0.12", override: true},
       {:extractor, in_umbrella: true},
       {:initializer, in_umbrella: true},
@@ -38,7 +39,6 @@ defmodule Gather.MixProject do
       {:retry, "~> 0.13.0"},
       {:transformer, in_umbrella: true},
       {:writer, in_umbrella: true},
-      {:writer_dlq, in_umbrella: true},
       {:writer_kafka, in_umbrella: true},
 
       # Dev/Test Dependencies

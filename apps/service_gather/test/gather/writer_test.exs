@@ -4,7 +4,7 @@ defmodule Gather.WriterTest do
   import ExUnit.CaptureLog
   require Temp.Env
 
-  alias Writer.DLQ.DeadLetter
+  alias Dlq.DeadLetter
 
   Temp.Env.modify([
     %{
@@ -172,7 +172,7 @@ defmodule Gather.WriterTest do
         end)
 
       assert log =~
-               "Unable to send following messages to DLQ due to 'failure to dlq' :\n%Writer.DLQ.DeadLetter"
+               "Unable to send following messages to DLQ due to 'failure to dlq' :\n%Dlq.DeadLetter"
     end
   end
 
