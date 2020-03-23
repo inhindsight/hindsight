@@ -123,7 +123,6 @@ config :service_broadcast, BroadcastWeb.Endpoint,
   check_origin: false
 
 config :service_broadcast, Broadcast.Application,
-  kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [
       module: Brook.Driver.Kafka,
@@ -185,7 +184,6 @@ config :ex_aws, bucket_region
 config :ex_aws, :s3, object_storage
 
 config :service_persist, Persist.Application,
-  kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [
       module: Brook.Driver.Kafka,
