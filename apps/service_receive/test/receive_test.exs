@@ -70,14 +70,14 @@ defmodule ReceiveTest do
       assert accept == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
     end
 
-    test "removes stored receipt on #{accept_end()}", %{accept: accept} do
+    test "marks stored receipt done on #{accept_end()}", %{accept: accept} do
       Brook.Test.send(@instance, accept_start(), "testing", accept)
       Process.sleep(100)
 
       Brook.Test.send(@instance, accept_end(), "testing", accept)
 
       assert_async do
-        assert nil == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
+        assert true == Receive.Accept.Store.done?(accept)
       end
     end
   end

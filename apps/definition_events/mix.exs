@@ -26,6 +26,7 @@ defmodule DefinitionEvents.MixProject do
       {:brook, "~> 0.5"},
       {:elsa, "~> 0.12", override: true},
       {:definition_accept, in_umbrella: true},
+      {:definition_delete, in_umbrella: true},
       {:definition_extract, in_umbrella: true},
       {:definition_load_broadcast, in_umbrella: true},
       {:definition_load_persist, in_umbrella: true},

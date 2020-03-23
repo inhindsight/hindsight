@@ -1,6 +1,6 @@
 defmodule Orchestrate.Event.HandlerTest do
   use ExUnit.Case
-  import Events, only: [schedule_start: 0, schedule_end: 0]
+  import Events, only: [schedule_start: 0, schedule_end: 0, dataset_delete: 0]
   import AssertAsync
   import ExUnit.CaptureLog
 
@@ -164,8 +164,36 @@ defmodule Orchestrate.Event.HandlerTest do
     Brook.Test.send(@instance, schedule_end(), "testing", schedule)
 
     assert_async do
+      stored_schedule = Orchestrate.Schedule.Store.get!(schedule.dataset_id, schedule.subset_id)
+      assert Orchestrate.Schedule.Store.done?(stored_schedule)
+    end
+  end
+
+  test "deletes job and state on definition:delete", %{schedule: schedule} do
+    Orchestrate.Scheduler.new_job()
+    |> Job.set_name(:"#{schedule.dataset_id}__#{schedule.subset_id}")
+    |> Job.set_schedule(Crontab.CronExpression.Parser.parse!("* * * * *"))
+    |> Job.set_task({IO, :puts, ["hello"]})
+    |> Orchestrate.Scheduler.add_job()
+
+    Brook.Test.with_event(@instance, fn ->
+      Orchestrate.Schedule.Store.persist(schedule)
+    end)
+
+    delete = %Delete{id: "123", dataset_id: schedule.dataset_id, subset_id: schedule.subset_id}
+
+    Brook.Test.send(@instance, dataset_delete(), "testing", delete)
+
+    assert_async do
       assert nil ==
                Orchestrate.Scheduler.find_job(:"#{schedule.dataset_id}__#{schedule.subset_id}")
+    end
+
+    assert_async do
+      assert nil ==
+               Orchestrate.Scheduler.find_job(
+                 :"#{schedule.dataset_id}__#{schedule.subset_id}_compaction"
+               )
     end
 
     assert_async do

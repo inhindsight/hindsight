@@ -66,7 +66,7 @@ defmodule Broadcast.Stream.BroadwayTest do
       Load.Broadcast.new!(
         id: "load-1",
         dataset_id: "ds1",
-        subset_id: "fake-ds",
+        subset_id: "sb1",
         source: "topic-1",
         destination: "channel-2"
       )
@@ -207,7 +207,7 @@ defmodule Broadcast.Stream.BroadwayTest do
       Load.Broadcast.new!(
         id: "load-1",
         dataset_id: "ds1",
-        subset_id: "fake-ds",
+        subset_id: "sb1",
         source: "topic-1",
         destination: "channel-2"
       )

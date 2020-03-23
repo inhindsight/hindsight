@@ -21,7 +21,7 @@ defmodule Broadcast.Stream.Broadway do
     %Load.Broadcast{} = load = Keyword.fetch!(init_arg, :load)
     Logger.debug(fn -> "#{__MODULE__}: Starting for #{inspect(load)}" end)
 
-    with {:ok, transformer} <- create_transformer(load.dataset_id),
+    with {:ok, transformer} <- create_transformer(load.dataset_id, load.subset_id),
          {:ok, config} <-
            configuration().configure([], %{
              load: load,
@@ -73,8 +73,8 @@ defmodule Broadcast.Stream.Broadway do
     messages
   end
 
-  defp create_transformer(dataset_id) do
-    case Broadcast.Transformations.get(dataset_id) do
+  defp create_transformer(dataset_id, subset_id) do
+    case Broadcast.Transformations.get(dataset_id, subset_id) do
       {:ok, nil} ->
         fn x -> Ok.ok(x) end |> Ok.ok()
 
