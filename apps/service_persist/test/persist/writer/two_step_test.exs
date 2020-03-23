@@ -10,7 +10,7 @@ defmodule Persist.Writer.TwoStepTest do
       app: :service_persist,
       key: Persist.Writer.TwoStep,
       set: [
-        writer: WriterMock,
+        writer: Persist.WriterMock,
         staged_batches_count: 1
       ]
     },
@@ -58,7 +58,7 @@ defmodule Persist.Writer.TwoStepTest do
       {:ok, :result}
     end)
 
-    WriterMock
+    Persist.WriterMock
     |> stub(:start_link, fn opts ->
       send(test, {:writer_start_link, opts})
       {:ok, :writer_pid}

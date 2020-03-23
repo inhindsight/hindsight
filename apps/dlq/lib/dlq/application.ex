@@ -1,5 +1,8 @@
 defmodule Dlq.Application do
   use Application
+  use Properties, otp_app: :dlq
+
+  getter(:init?, default: true)
 
   def start(_type, _args) do
     opts = [strategy: :one_for_one, name: Dlq.Supervisor]
@@ -7,9 +10,9 @@ defmodule Dlq.Application do
   end
 
   defp server() do
-    case Application.get_env(:dlq, Dlq.Server) do
-      nil -> []
-      _ -> [Dlq.Server]
+    case {init?(), Application.get_env(:dlq, Dlq.Server)} do
+      {true, config} when config != nil -> [Dlq.Server]
+      _ -> []
     end
   end
 end

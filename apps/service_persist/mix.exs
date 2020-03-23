@@ -30,6 +30,7 @@ defmodule Persist.MixProject do
       {:broadway_configurator, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:dlq, in_umbrella: true},
       {:elsa, "~> 0.12", override: true},
       {:ex_aws_s3, "~> 2.0"},
       {:extractor, in_umbrella: true},
@@ -43,7 +44,6 @@ defmodule Persist.MixProject do
       {:sweet_xml, "~> 0.6.6"},
       {:timex, "~> 3.6"},
       {:transformer, in_umbrella: true},
-      {:writer_dlq, in_umbrella: true},
       {:writer_presto, in_umbrella: true},
 
       # Dev/Test Dependencies

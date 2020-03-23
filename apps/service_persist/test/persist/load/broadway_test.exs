@@ -4,7 +4,7 @@ defmodule Persist.Load.BroadwayTest do
   import Mox
   require Temp.Env
 
-  alias Writer.DLQ.DeadLetter
+  alias Dlq.DeadLetter
   @moduletag capture_log: true
 
   Temp.Env.modify([

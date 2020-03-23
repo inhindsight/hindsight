@@ -4,11 +4,11 @@ defmodule Persist.Load.Broadway do
   require Logger
 
   alias Broadway.Message
-  alias Writer.DLQ.DeadLetter
+  alias Dlq.DeadLetter
 
   @app_name get_config_value(:app_name, required: true)
 
-  getter(:dlq, default: Persist.DLQ)
+  getter(:dlq, default: Dlq)
   getter(:configuration, default: Persist.Load.Broadway.Configuration)
 
   @type init_opts :: [
