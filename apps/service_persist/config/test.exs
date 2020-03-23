@@ -15,8 +15,7 @@ config :ex_aws, :s3,
   },
   port: 9000
 
-config :dlq, Dlq.Application,
-  init?: false
+config :dlq, Dlq.Application, init?: false
 
 config :service_persist,
   divo: "docker-compose.yml",

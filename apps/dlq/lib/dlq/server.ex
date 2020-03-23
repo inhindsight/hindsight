@@ -12,6 +12,7 @@ defmodule Dlq.Server do
 
   def init(_opts) do
     Process.flag(:trap_exit, true)
+
     state = %{
       endpoints: endpoints(),
       connection: :elsa_dlq,

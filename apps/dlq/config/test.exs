@@ -1,4 +1,3 @@
 use Mix.Config
 
-config :dlq, Dlq.Application,
-  init?: false
+config :dlq, Dlq.Application, init?: false
