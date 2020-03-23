@@ -26,7 +26,7 @@ defmodule Kafka.Subscribe.MixProject do
       {:definition, in_umbrella: true},
       {:elsa, "~> 0.12", override: true},
       {:ok, in_umbrella: true},
-      {:extract_step, in_umbrella: true},
+      {:protocol_extract_step, in_umbrella: true},
       {:brook_serializer, "~> 2.2"},
       {:divo, "~> 1.1", only: [:dev, :test]},
       {:divo_kafka, "~> 0.1.6", only: [:test]},

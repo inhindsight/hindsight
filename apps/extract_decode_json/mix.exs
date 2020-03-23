@@ -23,7 +23,7 @@ defmodule ExtractDecodeJson.MixProject do
 
   defp deps do
     [
-      {:extract_step, in_umbrella: true},
+      {:protocol_extract_step, in_umbrella: true},
       {:definition, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:temp, "~> 0.4.7"},

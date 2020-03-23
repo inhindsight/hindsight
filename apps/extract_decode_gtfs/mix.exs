@@ -24,7 +24,7 @@ defmodule ExtractGtfs.MixProject do
   defp deps do
     [
       {:definition_extract, in_umbrella: true},
-      {:extract_step, in_umbrella: true},
+      {:protocol_extract_step, in_umbrella: true},
       {:protobuf, "~> 0.7.0"},
       {:brook_serializer, "~> 2.2"},
       {:temp, "~> 0.4.7", only: [:test]},
