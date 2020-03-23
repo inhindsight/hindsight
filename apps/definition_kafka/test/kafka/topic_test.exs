@@ -12,6 +12,8 @@ defmodule Kafka.TopicTest do
       where [
         [:field, :value],
         [:version, "1"],
+        [:pid, 123],
+        [:endpoints, "localhost:9092"],
         [:topic, nil],
         [:topic, 1],
         [:partitions, -1],
