@@ -36,6 +36,7 @@ nginx-ingress:
     service:
       type: LoadBalancer
 prometheus-operator:
+  enabled: true
   prometheusOperator:
     namespaces:
       releaseNamespace: true
