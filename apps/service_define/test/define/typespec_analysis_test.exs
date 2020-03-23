@@ -1,8 +1,8 @@
-defmodule Define.ProtocolFinderTest do
+defmodule Define.TypespecAnalysisTest do
   use ExUnit.Case
-  alias Define.{ProtocolFinder}
+  alias Define.{TypespecAnalysis}
 
-  test "It does what's expected of it" do
+  test "get_types() returns all types from the typespec" do
     expected = %{
       "integer_type" => "integer",
       "string_type" => "string",
@@ -13,6 +13,6 @@ defmodule Define.ProtocolFinderTest do
       "map_type" => "map"
     }
 
-    assert expected == ProtocolFinder.get_types(TestModule)
+    assert expected == TypespecAnalysis.get_types(TypespecAnalysisTestModule)
   end
 end

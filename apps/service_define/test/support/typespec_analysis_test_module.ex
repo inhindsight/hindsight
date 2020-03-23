@@ -1,4 +1,4 @@
-defmodule TestModule do
+defmodule TypespecAnalysisTestModule do
   defstruct integer_type: nil,
             string_type: nil,
             atom_type: nil,

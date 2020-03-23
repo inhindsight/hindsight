@@ -89,6 +89,198 @@ defmodule Define.StoreTest do
       }
 
       assert expected == persisted
+                %StepFieldView{
+                  key: "url",
+                  type: "string",
+                  value: "http://localhost/file.csv"
+                }
+              ]
+            }
+          ]
+        },
+        dictionary: [
+          %DictionaryView{
+            struct_module_name: "Elixir.Dictionary.Type.String",
+            fields: [
+              %DictionaryFieldView{
+                key: "name",
+                type: "letter"
+              }
+            ]
+          }
+        ],
+        subset_id: "default"
+      }
+
+      assert expected == persisted
+                %StepFieldView{
+                  key: "url",
+                  type: "string",
+                  value: "http://localhost/file.csv"
+                }
+              ]
+            }
+          ]
+        },
+        dictionary: [
+          %DictionaryView{
+            struct_module_name: "Elixir.Dictionary.Type.String",
+            fields: [
+              %DictionaryFieldView{
+                key: "name",
+                type: "letter"
+              }
+            ]
+          }
+        ],
+        subset_id: "default"
+      }
+
+      assert expected == persisted
+                %StepFieldView{
+                  key: "url",
+                  type: "string",
+                  value: "http://localhost/file.csv"
+                }
+              ]
+            }
+          ]
+        },
+        dictionary: [
+          %DictionaryView{
+            struct_module_name: "Elixir.Dictionary.Type.String",
+            fields: [
+              %DictionaryFieldView{
+                key: "name",
+                type: "letter"
+              }
+            ]
+          }
+        ],
+        subset_id: "default"
+      }
+
+      assert expected == persisted
+                %StepFieldView{
+                  key: "url",
+                  type: "string",
+                  value: "http://localhost/file.csv"
+                }
+              ]
+            }
+          ]
+        },
+        dictionary: [
+          %DictionaryView{
+            struct_module_name: "Elixir.Dictionary.Type.String",
+            fields: [
+              %DictionaryFieldView{
+                key: "name",
+                type: "letter"
+              }
+            ]
+          }
+        ],
+        subset_id: "default"
+      }
+
+      assert expected == persisted
+                %StepFieldView{
+                  key: "url",
+                  type: "string",
+                  value: "http://localhost/file.csv"
+                }
+              ]
+            }
+          ]
+        },
+        dictionary: [
+          %DictionaryView{
+            struct_module_name: "Elixir.Dictionary.Type.String",
+            fields: [
+              %DictionaryFieldView{
+                key: "name",
+                type: "letter"
+              }
+            ]
+          }
+        ],
+        subset_id: "default"
+      }
+
+      assert expected == persisted
+                %StepFieldView{
+                  key: "url",
+                  type: "string",
+                  value: "http://localhost/file.csv"
+                }
+              ]
+            }
+          ]
+        },
+        dictionary: [
+          %DictionaryView{
+            struct_module_name: "Elixir.Dictionary.Type.String",
+            fields: [
+              %DictionaryFieldView{
+                key: "name",
+                type: "letter"
+              }
+            ]
+          }
+        ],
+        subset_id: "default"
+      }
+
+      assert expected == persisted
+                %StepFieldView{
+                  key: "url",
+                  type: "string",
+                  value: "http://localhost/file.csv"
+                }
+              ]
+            }
+          ]
+        },
+        dictionary: [
+          %DictionaryView{
+            struct_module_name: "Elixir.Dictionary.Type.String",
+            fields: [
+              %DictionaryFieldView{
+                key: "name",
+                type: "letter"
+              }
+            ]
+          }
+        ],
+        subset_id: "default"
+      }
+
+      assert expected == persisted
+                %StepFieldView{
+                  key: "url",
+                  type: "string",
+                  value: "http://localhost/file.csv"
+                }
+              ]
+            }
+          ]
+        },
+        dictionary: [
+          %DictionaryView{
+            struct_module_name: "Elixir.Dictionary.Type.String",
+            fields: [
+              %DictionaryFieldView{
+                key: "name",
+                type: "letter"
+              }
+            ]
+          }
+        ],
+        subset_id: "default"
+      }
+
+      assert expected == persisted
     end
 
     #   Brook.Test.with_event(@instance, fn ->
