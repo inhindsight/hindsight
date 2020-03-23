@@ -10,14 +10,9 @@ defmodule Kafka.Topic do
             key_path: []
 
   defimpl Destination do
-
-    defdelegate start_link(t, dictionary), to: Kafka.Topic.Impl
-
-    def write(t,dictionary, messages) do
-    end
-
-    def delete(t) do
-    end
+    defdelegate start_link(t, dictionary), to: Kafka.Topic.Destination
+    defdelegate write(t, dictionary, messages), to: Kafka.Topic.Destination
+    defdelegate delete(t), to: Kafka.Topic.Destination
   end
 end
 
@@ -27,7 +22,7 @@ defmodule Kafka.Topic.V1 do
   def s do
     schema(%Kafka.Topic{
       version: version(1),
-      pid: spec(is_pid()),
+      pid: spec(is_pid() or is_nil()),
       endpoints: spec(is_list()),
       topic: required_string(),
       partitions: spec(pos_integer?()),
