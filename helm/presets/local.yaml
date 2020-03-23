@@ -10,7 +10,7 @@ acquire:
   service:
     type: ClusterIP
 ingress:
-  host: chart-example.local
+  host: hindsight.local
 strimzi:
   kafka:
     resources:
@@ -35,17 +35,34 @@ nginx-ingress:
   controller:
     service:
       type: LoadBalancer
+prometheus-operator:
+  prometheus:
+    ingress:
+      hosts: [prometheus.hindsight.local]
+    prometheusSpec:
+      retentionSize: 1GiB
+  alertmanager:
+    alertmanagerSpec:
+      retention: 30m
+    ingress:
+      hosts: [alertmanager.hindsight.local]
+  grafana:
+    adminPassword: hindsight
+    ingress:
+      hosts: [grafana.hindsight.local]
 presto:
   presto:
     ingress:
       enable: true
-      hosts:
-        - chart-example.local/ui
+      annotations:
+        nginx.ingress.kubernetes.io/use-regex: "true"
+      hosts: [storage.hindsight.local/ui]
   minio:
     ingress:
       enable: true
-      hosts:
-        - chart-example.local/minio.*
+      annotations:
+        nginx.ingress.kubernetes.io/use-regex: "true"
+      hosts: [storage.hindsight.local/minio.*]
 global:
   objectStore:
     bucketName: hindsight-object-storage

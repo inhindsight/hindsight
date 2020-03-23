@@ -35,6 +35,21 @@ nginx-ingress:
       enabled: true
     service:
       type: LoadBalancer
+prometheus-operator:
+  prometheusOperator:
+    namespaces:
+      releaseNamespace: true
+      additional:
+        - kube-system
+  prometheus:
+    ingress:
+      enabled: true
+  alertmanager:
+    ingress:
+      enabled: true
+  grafana:
+    ingress:
+      enabled: true
 
 image:
   repository: inhindsight/hindsight
@@ -44,9 +59,7 @@ image:
 global:
   objectStore:
     bucketName: ""
-  ingress:
-    annotations:
-      nginx.ingress.kubernetes.io/use-regex: "true"
+  ingress: {}
 
 imagePullSecrets: []
 nameOverride: ""
@@ -61,6 +74,8 @@ podSecurityContext: {}
 securityContext: {}
 
 ingress:
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
   host: ""
   paths:
     - name: acquire
