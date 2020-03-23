@@ -1,9 +1,9 @@
-defmodule TransformStep.MixProject do
+defmodule ProtocolTransformStep.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :transform_step,
+      app: :protocol_transform_step,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
