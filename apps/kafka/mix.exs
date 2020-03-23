@@ -23,7 +23,7 @@ defmodule Kafka.MixProject do
 
   defp deps do
     [
-      {:definition_destination, in_umbrella: true},
+      {:protocol_destination, in_umbrella: true},
       {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
