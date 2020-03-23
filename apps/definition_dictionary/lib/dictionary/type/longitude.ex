@@ -2,6 +2,12 @@ defmodule Dictionary.Type.Longitude do
   use Definition, schema: Dictionary.Type.Longitude.V1
   use Dictionary.JsonEncoder
 
+  @type t :: %__MODULE__{
+    version: integer,
+    name: String.t(),
+    description: String.t()
+  }
+
   defstruct version: 1, name: nil, description: ""
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do

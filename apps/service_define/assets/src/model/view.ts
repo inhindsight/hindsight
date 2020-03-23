@@ -1,3 +1,4 @@
+import { Dictionary } from "lodash";
 
 export interface AppView {
     readonly greeting: string
@@ -23,8 +24,6 @@ export interface PersistView {
     readonly source: string
     readonly destination: string
 }
-
-
 
 
 export interface DictionaryView {

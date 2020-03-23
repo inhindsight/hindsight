@@ -36,7 +36,25 @@ defmodule Define.StoreTest do
             subset_id: "default",
             destination: "success",
             dictionary: [
-              Dictionary.Type.String.new!(name: "letter")
+              Dictionary.Type.String.new!(name: "letter"),
+              Dictionary.Type.Map.new!(
+                name: "spouse",
+                dictionary: [
+                  %Dictionary.Type.String{name: "name"},
+                  %Dictionary.Type.Integer{name: "age"}
+                ]
+              ),
+              %Dictionary.Type.List{
+                name: "friends",
+                item_type:
+                  Dictionary.Type.Map.new!(
+                    name: "in_list",
+                    dictionary: [
+                      %Dictionary.Type.String{name: "name"},
+                      %Dictionary.Type.Integer{name: "age"}
+                    ]
+                  )
+              }
             ],
             steps: [
               Extract.Http.Get.new!(

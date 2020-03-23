@@ -2,6 +2,14 @@ defmodule Dictionary.Type.Timestamp do
   use Definition, schema: Dictionary.Type.Timestamp.V1
   use Dictionary.JsonEncoder
 
+  @type t :: %__MODULE__{
+    version: integer,
+    name: String.t(),
+    description: String.t(),
+    format: String.t(),
+    timezone: String.t()
+  }
+
   defstruct version: 1,
             name: nil,
             description: "",
