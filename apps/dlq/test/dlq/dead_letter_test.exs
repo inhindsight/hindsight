@@ -1,7 +1,7 @@
-defmodule DLQ.DeadLetterTest do
+defmodule Dlq.DeadLetterTest do
   use ExUnit.Case
 
-  alias DLQ.DeadLetter
+  alias Dlq.DeadLetter
 
   describe "reason" do
     test "is formatted for {:failed, reason}" do

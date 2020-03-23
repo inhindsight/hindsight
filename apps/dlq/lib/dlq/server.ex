@@ -1,12 +1,16 @@
 defmodule Dlq.Server do
   use GenServer
   use Annotated.Retry
+  use Properties, otp_app: :dlq
+
+  getter(:endpoints, required: true)
+  getter(:topic, required: true)
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
-  def init(opts) do
+  def init(_opts) do
     Process.flag(:trap_exit, true)
     state = %{
       endpoints: endpoints(),
@@ -49,13 +53,4 @@ defmodule Dlq.Server do
       ]
     )
   end
-
-  defp endpoints() do
-    Application.get_env(:dlq, :endpoints)
-  end
-
-  defp topic() do
-    Application.get_env(:dlq, :topic)
-  end
-
 end

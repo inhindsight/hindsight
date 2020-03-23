@@ -28,7 +28,8 @@ defmodule Dlq.MixProject do
       {:elsa, "~> 0.12"},
       {:jason, "~> 1.1"},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
-      {:testing, in_umbrella: true, only: [:dev, :test]}
+      {:properties, in_umbrella: true},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

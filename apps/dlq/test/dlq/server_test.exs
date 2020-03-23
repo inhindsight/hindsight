@@ -7,13 +7,11 @@ defmodule Dlq.ServerTest do
   Temp.Env.modify([
     %{
       app: :dlq,
-      key: :endpoints,
-      set: :endpoints
-    },
-    %{
-      app: :dlq,
-      key: :topic,
-      set: :topic
+      key: Dlq.Server,
+      set: [
+        endpoints: :endpoints,
+        topic: :topic
+      ]
     }
   ])
 
