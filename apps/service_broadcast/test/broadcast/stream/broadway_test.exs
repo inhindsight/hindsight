@@ -3,7 +3,7 @@ defmodule Broadcast.Stream.BroadwayTest do
   import Mox
   require Temp.Env
 
-  alias Writer.DLQ.DeadLetter
+  alias Dlq.DeadLetter
 
   @instance Broadcast.Application.instance()
 

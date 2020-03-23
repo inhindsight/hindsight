@@ -33,6 +33,7 @@ defmodule Broadcast.MixProject do
       {:brook, "~> 0.5"},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:dlq, in_umbrella: true},
       {:elsa, "~> 0.12", override: true},
       {:extractor, in_umbrella: true},
       {:gettext, "~> 0.11"},
@@ -45,7 +46,6 @@ defmodule Broadcast.MixProject do
       {:properties, in_umbrella: true},
       {:simple_registry, in_umbrella: true},
       {:transformer, in_umbrella: true},
-      {:writer_dlq, in_umbrella: true},
 
       # Dev/Test Dependencies
       {:checkov, "~> 1.0", only: [:dev, :test]},

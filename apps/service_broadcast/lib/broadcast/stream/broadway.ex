@@ -3,13 +3,13 @@ defmodule Broadcast.Stream.Broadway do
   use Properties, otp_app: :service_broadcast
   require Logger
 
-  alias Writer.DLQ.DeadLetter
+  alias Dlq.DeadLetter
   alias BroadcastWeb.Endpoint
   alias Broadway.Message
 
   @app_name get_config_value(:app_name, required: true)
 
-  getter(:dlq, default: Broadcast.DLQ)
+  getter(:dlq, default: Dlq)
   getter(:configuration, default: Broadcast.Stream.Broadway.Configuration)
 
   @type init_opts :: [
