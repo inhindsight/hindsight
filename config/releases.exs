@@ -49,6 +49,10 @@ kafka_endpoints =
 redix_args = [host: System.get_env("REDIS_HOST", "localhost")]
 config :redix, :args, redix_args
 
+config :dlq, Dlq.Server,
+  endpoints: kafka_endpoints,
+  topic: "dead-letter-queue"
+
 # SERVICE_RECEIVE
 config :service_receive, Receive.Application,
   kafka_endpoints: kafka_endpoints,
@@ -81,7 +85,6 @@ config :service_receive, Receive.Event.Handler, endpoints: kafka_endpoints
 
 # SERVICE_GATHER
 config :service_gather, Gather.Application,
-  kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [
       module: Brook.Driver.Kafka,
