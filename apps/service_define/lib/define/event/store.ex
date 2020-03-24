@@ -1,6 +1,6 @@
 defmodule Define.Store do
   require Logger
-  alias Define.{ModuleFunctionArgsView, ArgumentView, ModuleFunctionArgsView, ArgumentView, TypespecAnalysis, DefinitionSerialization}
+  alias Define.{DefinitionSerialization}
 
   @instance Define.Application.instance()
   @collection "definitions"
@@ -45,17 +45,6 @@ defmodule Define.Store do
   def put_in_better(map, [hd | tail], value) do
     next_value = Map.get(map, hd)
     Map.put(map, hd, put_in_better(next_value, tail, value))
-  end
-
-  # TODO Move out to a module and test by itself
-  defp serialize_step(step) do
-    struct = step.__struct__
-    types = TypespecAnalysis.get_types(struct)
-
-    new_args =
-      Enum.map(types, fn {k, v} -> %ArgumentView{key: k, type: v, value: Map.get(step, k)} end)
-
-    %ModuleFunctionArgsView{struct_module_name: to_string(struct), args: new_args}
   end
 
   def get(dataset_id) do

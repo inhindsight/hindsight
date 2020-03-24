@@ -1,69 +1,50 @@
 defmodule Define.DefinitionSerialization do
   alias Define.{ModuleFunctionArgsView, ArgumentView, TypespecAnalysis}
 
-  def serialize(steps) when is_list(steps) do
-    Enum.map(steps, fn field ->
-      %ModuleFunctionArgsView{
-        struct_module_name: to_string(field.__struct__),
-        args:
-          TypespecAnalysis.get_types(field.__struct__)
-          |> Map.delete(:version)
-          |> Enum.map(&(call_to_dictionary_field_view(&1, field)))
-      }
-    end)
+  def serialize(%Dictionary.Impl{ordered: ordered}) do
+    serialize(ordered)
   end
 
-  def serialize(dictionary) do
-    Enum.map(dictionary.ordered, fn field ->
-      %ModuleFunctionArgsView{
-        struct_module_name: to_string(field.__struct__),
-        args:
-          TypespecAnalysis.get_types(field.__struct__)
-          |> Map.delete(:version)
-          |> Enum.map(&(call_to_dictionary_field_view(&1, field)))
-      }
-    end)
+  def serialize(definitions) do
+    Enum.map(definitions, &to_module_function_args_view/1)
   end
 
-  defp call_to_dictionary_field_view({field_key, _field_value_type} = field_key_to_type, field) do
-    field_value = Map.get(field, String.to_atom(field_key))
-    to_dictionary_field_view(field_key_to_type, field_value)
-  end
+  defp to_module_function_args_view(definition) do
+    struct_name = definition.__struct__
 
-  defp to_dictionary_field_view({"dictionary", "dictionary"}, %Dictionary.Type.Map{} = field) do
-    value  = %ModuleFunctionArgsView{
-        struct_module_name: to_string(field.__struct__),
-        args:
-          TypespecAnalysis.get_types(field.__struct__)
-          |> Map.delete(:version)
-          |> Enum.map(&(call_to_dictionary_field_view(&1, field)))
+    %ModuleFunctionArgsView{
+      struct_module_name: to_string(struct_name),
+      args: to_list_of_argument_views(struct_name, definition)
     }
+  end
 
+  defp to_list_of_argument_views(struct_name, definition) do
+    field_value =
+      struct_name
+      |> TypespecAnalysis.get_types()
+      |> Map.delete(:version)
+      |> Enum.map(fn {arg_name, _} = arg_to_type ->
+        arg_value = Map.get(definition, String.to_atom(arg_name))
+        to_argument_view(arg_to_type, arg_value)
+      end)
+  end
+
+  defp to_argument_view({_, "dictionary"}, %Dictionary.Type.Map{} = map_definition) do
+    value = to_module_function_args_view(map_definition)
     %ArgumentView{key: "dictionary", type: "module", value: value}
   end
 
-  defp to_dictionary_field_view({"dictionary", "dictionary"}, field) do
-    value = Dictionary.from_list(field)
-    %ArgumentView{key: "dictionary", type: "module", value: serialize(value)}
+  defp to_argument_view({_, "dictionary"}, dictionary) do
+    value = dictionary |> Dictionary.from_list() |> serialize()
+    %ArgumentView{key: "dictionary", type: "module", value: value}
   end
 
-  defp to_dictionary_field_view({"item_type", _}, field) do
-    type = %ModuleFunctionArgsView{
-      struct_module_name: to_string(field.__struct__),
-      args:
-        TypespecAnalysis.get_types(field.__struct__)
-        # TODO Don't drop version, maybe? Think about this?
-        |> Map.delete(:version)
-        |> Enum.map(&(to_dictionary_field_view(&1, field)))
-    }
-
-    [value] = serialize(Dictionary.from_list([field]))
-
+  defp to_argument_view({_, "module"}, dictionary) do
+    [value] = [dictionary] |> Dictionary.from_list() |> serialize()
     %ArgumentView{key: "item_type", type: "module", value: value}
   end
 
-  defp to_dictionary_field_view({field_key, field_value_type}, value) do
-
+  defp to_argument_view({field_key, field_value_type}, value) do
     %ArgumentView{key: field_key, type: field_value_type, value: value}
   end
 end
