@@ -12,11 +12,16 @@ defmodule Kafka.Topic.Destination do
     :ok
   end
 
+  # TODO
+  def stop(_t) do
+    :ok
+  end
+
   def delete(dest) do
     with {:error, reason} <- Elsa.delete_topic(dest.endpoints, dest.topic),
          log_reason <- inspect(reason) do
       Logger.warn(fn -> "Topic '#{dest.topic}' failed to delete: #{log_reason}" end)
-      {:error, reason}
+      Ok.error(reason)
     end
   end
 end
