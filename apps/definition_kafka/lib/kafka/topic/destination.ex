@@ -6,13 +6,25 @@ defmodule Kafka.Topic.Destination do
           {:ok, Destination.t()} | {:error, term}
   def start_link(topic, opts) do
     GenServer.start_link(__MODULE__, {topic, opts})
-    |> Ok.map(& %{topic | pid: &1})
+    |> Ok.map(&%{topic | pid: &1})
   end
 
   # TODO telemetry
-  # TODO JSON encoding
   # TODO dlq
+  # TODO write with key
   @spec write(Destination.t(), [term]) :: :ok | {:error, term}
+  def write(topic, [%{} | _] = messages) do
+    encoded =
+      Enum.reduce(messages, %{ok: [], error: []}, fn msg, %{ok: ok, error: err} = acc ->
+        case Jason.encode(msg) do
+          {:ok, json} -> %{acc | ok: [json | ok]}
+          {:error, reason} -> %{acc | error: [{msg, reason} | err]}
+        end
+      end)
+
+    write(topic, Enum.reverse(encoded.ok))
+  end
+
   def write(topic, messages) do
     GenServer.call(topic.pid, {:write, topic, messages})
   end

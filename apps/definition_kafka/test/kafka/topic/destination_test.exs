@@ -44,7 +44,7 @@ defmodule Kafka.Topic.DestinationTest do
     end
   end
 
-  describe "write/3" do
+  describe "write/2" do
     test "produces messages to Kafka" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-me")
       {:ok, topic} = Destination.start_link(topic, [])
@@ -53,8 +53,38 @@ defmodule Kafka.Topic.DestinationTest do
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
-        {:ok, _count, messages} = Elsa.fetch(@endpoints, topic.name)
-        assert [{"", "one"}, {"", "two"}] == Enum.map(messages, &{&1.key, &1.value})
+        {:ok, _, messages} = Elsa.fetch(@endpoints, topic.name)
+        assert ["one", "two"] == Enum.map(messages, & &1.value)
+      end
+
+      assert_down(topic.pid)
+    end
+
+    test "encodes maps to JSON before producing to Kafka" do
+      topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-maps")
+      {:ok, topic} = Destination.start_link(topic, [])
+
+      assert :ok = Destination.write(topic, [%{one: 1}, %{two: 2}])
+
+      assert_async debug: true do
+        assert Elsa.topic?(@endpoints, topic.name)
+        {:ok, _, messages} = Elsa.fetch(@endpoints, topic.name)
+        assert [~s|{"one":1}|, ~s|{"two":2}|] == Enum.map(messages, & &1.value)
+      end
+
+      assert_down(topic.pid)
+    end
+
+    test "ignores error during JSON encoding" do
+      topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-errors")
+      {:ok, topic} = Destination.start_link(topic, [])
+
+      assert :ok = Destination.write(topic, [%{one: 1}, ~r/no/, %{two: 2}])
+
+      assert_async debug: true do
+        assert Elsa.topic?(@endpoints, topic.name)
+        {:ok, _, messages} = Elsa.fetch(@endpoints, topic.name)
+        assert [~s|{"one":1}|, ~s|{"two":2}|] == Enum.map(messages, & &1.value)
       end
 
       assert_down(topic.pid)
