@@ -4,7 +4,7 @@ defmodule Kafka.Topic do
   defstruct version: 1,
             pid: nil,
             endpoints: nil,
-            topic: nil,
+            name: nil,
             partitions: 1,
             partitioner: :default,
             key_path: []
@@ -47,7 +47,7 @@ defmodule Kafka.Topic.V1 do
       version: version(1),
       pid: spec(is_pid() or is_nil()),
       endpoints: spec(is_list()),
-      topic: required_string(),
+      name: required_string(),
       partitions: spec(pos_integer?()),
       partitioner: spec(fn x -> x in [:default, :random, :md5] end),
       key_path: access_path()
