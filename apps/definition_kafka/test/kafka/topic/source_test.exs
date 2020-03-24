@@ -46,7 +46,7 @@ defmodule Kafka.Topic.SourceTest do
       partitions: 2
     }
 
-    {:ok, _source} =
+    {:ok, source} =
       Source.start_link(source,
         dictionary: dictionary,
         handler: Handler,
@@ -61,15 +61,16 @@ defmodule Kafka.Topic.SourceTest do
 
     {:ok, topics} = Elsa.list_topics(@endpoints)
     assert Enum.any?(topics, fn x -> x == {"create-test", 2} end)
+
+    assert_down(source)
   end
 
   test "will decode messages and pass them to handler", %{
     source: source,
     dictionary: dictionary
   } do
-    {:ok, _source} =
+    {:ok, source} =
       Source.start_link(source,
-
         dictionary: dictionary,
         handler: Handler,
         app_name: "testing",
@@ -89,5 +90,49 @@ defmodule Kafka.Topic.SourceTest do
     assert :ok = Elsa.produce(@endpoints, @topic, Enum.map(messages, &Jason.encode!/1))
 
     assert_receive {:handle_batch, ^messages}, 5_000
+
+    assert_down(source)
+  end
+
+  test "stop/1 will stop the process", %{source: source, dictionary: dictionary} do
+    {:ok, source} =
+      Source.start_link(source,
+        dictionary: dictionary,
+        handler: Handler,
+        app_name: "testing",
+        dataset_id: "ds1",
+        subset_id: "sb1"
+      )
+
+    Source.stop(source)
+
+    assert_async sleep: 500 do
+      refute Process.alive?(source.pid)
+    end
+  end
+
+  test "delete/1 should remote topic from kafak" do
+    source = %Kafka.Topic{
+      topic: "topic-to-delete",
+      endpoints: @endpoints
+    }
+
+    Elsa.create_topic(@endpoints, "topic-to-delete")
+
+    assert_async do
+      assert Elsa.topic?(@endpoints, "topic-to-delete")
+    end
+
+    Source.delete(source)
+
+    assert_async do
+      refute Elsa.topic?(@endpoints, "topic-to-delete")
+    end
+  end
+
+  defp assert_down(t) do
+    ref = Process.monitor(t.pid)
+    Source.stop(t)
+    assert_receive {:DOWN, ^ref, _, _, _}, 5_000
   end
 end

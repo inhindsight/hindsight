@@ -1,5 +1,5 @@
 defmodule Kafka.Topic.Source do
-  use GenServer
+  use GenServer, shutdown: 30_000
   use Annotated.Retry
   require Logger
 
@@ -10,12 +10,13 @@ defmodule Kafka.Topic.Source do
     end
   end
 
-  def stop(_t) do
-    :ok
+  def stop(t) do
+    GenServer.call(t.pid, :stop, 30_000)
   end
 
-  def delete(_t) do
-    :ok
+  @retry with: constant_backoff(500) |> take(10)
+  def delete(t) do
+    Elsa.delete_topic(t.endpoints, t.topic)
   end
 
   @impl GenServer
@@ -46,7 +47,7 @@ defmodule Kafka.Topic.Source do
           group: "group-#{state.app_name}-#{state.t.topic}",
           topics: [state.t.topic],
           handler: Kafka.Topic.Source.Handler,
-          handler_init_args: state.source_handler,
+          handler_init_args: state,
           config: [
             begin_offset: :earliest,
             offset_reset_policy: :reset_to_earliest,
@@ -60,14 +61,31 @@ defmodule Kafka.Topic.Source do
   end
 
   @impl GenServer
-  def handle_info({:EXIT, _pid, reason}, state) do
+  def handle_call(:stop, _from, state) do
+    Logger.info(fn -> "#{__MODULE__}: Terminating by request" end)
+    {:stop, :normal, :ok, state}
+  end
+
+  @impl GenServer
+  def handle_info({:EXIT, pid, reason}, %{elsa_pid: pid} = state) do
+    Logger.error(fn -> "#{__MODULE__}: Elsa(#{inspect(pid)}) died : #{inspect(reason)}" end)
     {:stop, reason, state}
+  end
+
+  def handle_info(message, state) do
+    Logger.info(fn -> "#{__MODULE__}: received unknown message - #{inspect(message)}" end)
+    {:noreply, state}
   end
 
   @impl GenServer
   def terminate(reason, %{elsa_pid: pid}) do
     Process.exit(pid, reason)
-    reason
+
+    receive do
+      {:EXIT, ^pid, _} -> reason
+    after
+      20_000 -> reason
+    end
   end
 
   def terminate(reason, _) do
