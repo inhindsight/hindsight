@@ -30,6 +30,18 @@ defmodule Kafka.Topic.DestinationTest do
 
       assert_down(topic.pid)
     end
+
+    test "creates topic with configurable number of partitions" do
+      topic = Kafka.Topic.new!(endpoints: @endpoints, topic: "partitioned", partitions: 3)
+      {:ok, topic} = Destination.start_link(topic, Dictionary.from_list([]))
+
+      assert_async debug: true do
+        assert Elsa.topic?(@endpoints, topic.topic)
+        assert Elsa.Util.partition_count(@endpoints, topic.topic) == 3
+      end
+
+      assert_down(topic.pid)
+    end
   end
 
   describe "delete/1" do

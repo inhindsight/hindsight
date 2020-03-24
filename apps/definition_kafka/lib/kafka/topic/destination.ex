@@ -10,7 +10,8 @@ defmodule Kafka.Topic.Destination do
 
   @impl GenServer
   def init(dest) do
-    with :ok <- Elsa.create_topic(dest.endpoints, dest.topic) do
+    with opts <- Map.from_struct(dest) |> Enum.into([]),
+         :ok <- Elsa.create_topic(dest.endpoints, dest.topic, opts) do
       Ok.ok(dest)
     end
   end
