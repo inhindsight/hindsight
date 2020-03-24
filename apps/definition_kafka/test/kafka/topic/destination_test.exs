@@ -13,7 +13,7 @@ defmodule Kafka.Topic.DestinationTest do
   describe "start_link/2" do
     test "returns topic struct with pid" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "noop")
-      {:ok, topic} = Destination.start_link(topic, Dictionary.from_list([]))
+      {:ok, topic} = Destination.start_link(topic, [])
 
       assert is_pid(topic.pid)
 
@@ -22,7 +22,7 @@ defmodule Kafka.Topic.DestinationTest do
 
     test "creates topic in Kafka" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "create-me")
-      {:ok, topic} = Destination.start_link(topic, Dictionary.from_list([]))
+      {:ok, topic} = Destination.start_link(topic, [])
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
@@ -33,7 +33,7 @@ defmodule Kafka.Topic.DestinationTest do
 
     test "creates topic with configurable number of partitions" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "partitioned", partitions: 3)
-      {:ok, topic} = Destination.start_link(topic, Dictionary.from_list([]))
+      {:ok, topic} = Destination.start_link(topic, [])
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
@@ -47,9 +47,9 @@ defmodule Kafka.Topic.DestinationTest do
   describe "write/3" do
     test "produces messages to Kafka" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-me")
-      {:ok, topic} = Destination.start_link(topic, Dictionary.from_list([]))
+      {:ok, topic} = Destination.start_link(topic, [])
 
-      assert :ok = Destination.write(topic, Dictionary.from_list([]), ["one", "two"])
+      assert :ok = Destination.write(topic, ["one", "two"])
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)

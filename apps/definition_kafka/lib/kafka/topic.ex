@@ -32,8 +32,8 @@ defmodule Kafka.Topic do
   end
 
   defimpl Destination do
-    defdelegate start_link(t, dictionary), to: Kafka.Topic.Destination
-    defdelegate write(t, dictionary, messages), to: Kafka.Topic.Destination
+    defdelegate start_link(t, init_opts), to: Kafka.Topic.Destination
+    defdelegate write(t, messages), to: Kafka.Topic.Destination
     defdelegate stop(t), to: Kafka.Topic.Destination
     defdelegate delete(t), to: Kafka.Topic.Destination
   end

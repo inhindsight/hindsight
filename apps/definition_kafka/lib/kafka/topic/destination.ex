@@ -2,17 +2,18 @@ defmodule Kafka.Topic.Destination do
   use GenServer
   require Logger
 
-  @spec start_link(Destination.t(), Dictionary.t()) :: {:ok, Destination.t()} | {:error, term}
-  def start_link(topic, _dictionary) do
-    GenServer.start_link(__MODULE__, topic)
-    |> Ok.map(&Map.put(topic, :pid, &1))
+  @spec start_link(Destination.t(), Destination.init_opts()) ::
+          {:ok, Destination.t()} | {:error, term}
+  def start_link(topic, opts) do
+    GenServer.start_link(__MODULE__, {topic, opts})
+    |> Ok.map(& %{topic | pid: &1})
   end
 
   # TODO telemetry
   # TODO JSON encoding
   # TODO dlq
-  @spec write(Destination.t(), Dictionary.t(), [term]) :: :ok | {:error, term}
-  def write(topic, _dictionary, messages) do
+  @spec write(Destination.t(), [term]) :: :ok | {:error, term}
+  def write(topic, messages) do
     GenServer.call(topic.pid, {:write, topic, messages})
   end
 
@@ -31,9 +32,9 @@ defmodule Kafka.Topic.Destination do
   end
 
   @impl GenServer
-  def init(topic) do
+  def init({topic, opts}) do
     Process.flag(:trap_exit, true)
-    state = %{connection: connection_name()}
+    state = Map.new(opts) |> Map.put(:connection, connection_name())
     {:ok, state, {:continue, {:init, topic}}}
   end
 
