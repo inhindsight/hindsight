@@ -44,6 +44,23 @@ defmodule Kafka.Topic.DestinationTest do
     end
   end
 
+  describe "write/3" do
+    test "produces messages to Kafka" do
+      topic = Kafka.Topic.new!(endpoints: @endpoints, topic: "write-me")
+      {:ok, topic} = Destination.start_link(topic, Dictionary.from_list([]))
+
+      assert :ok = Destination.write(topic, Dictionary.from_list([]), ["one", "two"])
+
+      assert_async debug: true do
+        assert Elsa.topic?(@endpoints, topic.topic)
+        {:ok, _count, messages} = Elsa.fetch(@endpoints, topic.topic)
+        assert [{"", "one"}, {"", "two"}] == Enum.map(messages, &{&1.key, &1.value})
+      end
+
+      assert_down(topic.pid)
+    end
+  end
+
   describe "delete/1" do
     test "deletes topic from Kafka" do
       {:ok, topic} = Kafka.Topic.new(endpoints: @endpoints, topic: "delete-me")

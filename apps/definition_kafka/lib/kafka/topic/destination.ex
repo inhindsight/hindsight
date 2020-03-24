@@ -8,9 +8,9 @@ defmodule Kafka.Topic.Destination do
     |> Ok.map(&Map.put(dest, :pid, &1))
   end
 
-  # TODO
-  def write(_dest, _dictionary, _messages) do
-    :ok
+  @spec write(Destination.t(), Dictionary.t(), [term]) :: :ok | {:error, term}
+  def write(dest, _dictionary, messages) do
+    GenServer.call(dest.pid, {:write, messages})
   end
 
   # TODO
@@ -40,6 +40,17 @@ defmodule Kafka.Topic.Destination do
          :ok <- Elsa.create_topic(dest.endpoints, dest.topic, opts),
          {:ok, _} <- start_producer(state) do
       {:noreply, state}
+    end
+  end
+
+  @impl GenServer
+  def handle_call({:write, messages}, _from, %{destination: dest} = state) do
+    with opts <- Map.from_struct(dest) |> Enum.into([]),
+         :ok <- Elsa.produce(state.connection, dest.topic, messages, opts) do
+      {:reply, :ok, state}
+    else
+      error ->
+        {:reply, error, state}
     end
   end
 
