@@ -5,8 +5,19 @@ defmodule Kafka.Topic.DestinationTest do
 
   @endpoints [localhost: 9092]
 
+  describe "start_link/2" do
+    test "creates topic in Kafka" do
+      topic = Kafka.Topic.new!(endpoints: @endpoints, topic: "create-me")
+      {:ok, topic} = Destination.start_link(topic, Dictionary.from_list([]))
+
+      assert_async debug: true do
+        assert Elsa.topic?(@endpoints, topic.topic)
+      end
+    end
+  end
+
   describe "delete/1" do
-    test "topic can be deleted" do
+    test "deletes topic from Kafka" do
       {:ok, topic} = Kafka.Topic.new(endpoints: @endpoints, topic: "delete-me")
 
       Elsa.create_topic(@endpoints, topic.topic)

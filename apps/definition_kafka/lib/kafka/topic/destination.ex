@@ -4,7 +4,9 @@ defmodule Kafka.Topic.Destination do
 
   # TODO
   def start_link(dest, _dictionary) do
-    {:ok, dest}
+    with :ok <- Elsa.create_topic(dest.endpoints, dest.topic) do
+      Ok.ok(dest)
+    end
   end
 
   # TODO
