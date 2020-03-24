@@ -36,7 +36,7 @@ defmodule Define.DefinitionSerializationTest do
           %Define.ArgumentView{
             key: "item_type",
             version: 1,
-            type: "dictionary",
+            type: "module",
             value: %Define.ModuleFunctionArgsView{
               struct_module_name: "Elixir.Dictionary.Type.String",
               args: [
@@ -82,7 +82,7 @@ defmodule Define.DefinitionSerializationTest do
           %ArgumentView{key: "description", type: "string", value: ""},
           %ArgumentView{
             key: "dictionary",
-            type: "list",
+            type: "module",
             value: [
               %ModuleFunctionArgsView{
                 struct_module_name: "Elixir.Dictionary.Type.String",
@@ -107,4 +107,69 @@ defmodule Define.DefinitionSerializationTest do
 
     assert expected == DefinitionSerialization.serialize(dict)
   end
+
+  test "serializes lists of maps" do
+    dict =
+      Dictionary.from_list([
+        %Dictionary.Type.List{
+          name: "people",
+          item_type: Dictionary.Type.Map.new!(
+            name: "person",
+            dictionary: [
+              Dictionary.Type.String.new!(name: "first_name"),
+            ]
+          )
+        }
+      ])
+
+    expected = [
+      %Define.ModuleFunctionArgsView{
+        struct_module_name: "Elixir.Dictionary.Type.List",
+        version: 1,
+        args: [
+          %Define.ArgumentView{key: "description", type: "string", value: "", version: 1},
+          %Define.ArgumentView{
+            key: "item_type",
+            version: 1,
+            type: "module",
+            value: %Define.ModuleFunctionArgsView{
+              struct_module_name: "Elixir.Dictionary.Type.Map",
+              args: [
+                %Define.ArgumentView{
+                  key: "description",
+                  type: "string",
+                  version: 1,
+                  value: ""
+                },
+                %Define.ArgumentView{
+                  key: "dictionary",
+                  type: "module",
+                  version: 1,
+                  value: [
+                    %ModuleFunctionArgsView{
+                      struct_module_name: "Elixir.Dictionary.Type.String",
+                      args: [
+                        %ArgumentView{key: "description", type: "string", value: ""},
+                        %ArgumentView{key: "name", type: "string", value: "first_name"}
+                      ]
+                    },
+                  ]
+                },
+                %Define.ArgumentView{
+                  key: "name",
+                  type: "string",
+                  version: 1,
+                  value: "person"
+                },
+              ]
+            }
+          },
+          %Define.ArgumentView{key: "name", type: "string", value: "people", version: 1}
+        ]
+      }
+    ]
+
+    assert expected == DefinitionSerialization.serialize(dict)
+  end
+
 end

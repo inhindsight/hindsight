@@ -18,9 +18,21 @@ defmodule Define.DefinitionSerialization do
     to_dictionary_field_view(field_key_to_type, field_value)
   end
 
-  defp to_dictionary_field_view({"dictionary", _}, field) do
+  defp to_dictionary_field_view({"dictionary", "dictionary"}, %Dictionary.Type.Map{} = field) do
+    value  = %ModuleFunctionArgsView{
+        struct_module_name: to_string(field.__struct__),
+        args:
+          TypespecAnalysis.get_types(field.__struct__)
+          |> Map.delete(:version)
+          |> Enum.map(&(call_to_dictionary_field_view(&1, field)))
+    }
+
+    %ArgumentView{key: "dictionary", type: "module", value: value}
+  end
+
+  defp to_dictionary_field_view({"dictionary", "dictionary"}, field) do
     value = Dictionary.from_list(field)
-    %ArgumentView{key: "dictionary", type: "list", value: serialize(value)}
+    %ArgumentView{key: "dictionary", type: "module", value: serialize(value)}
   end
 
   defp to_dictionary_field_view({"item_type", _}, field) do
@@ -35,7 +47,7 @@ defmodule Define.DefinitionSerialization do
 
     [value] = serialize(Dictionary.from_list([field]))
 
-    %ArgumentView{key: "item_type", type: "dictionary", value: value}
+    %ArgumentView{key: "item_type", type: "module", value: value}
   end
 
   defp to_dictionary_field_view({field_key, field_value_type}, value) do
