@@ -1,12 +1,11 @@
-defmodule Define.DictionaryFieldView do
-  use Definition, schema: Define.DictionaryFieldView.V1
-  alias Define.DictionaryView
+defmodule Define.ArgumentView do
+  use Definition, schema: Define.ArgumentView.V1
 
   @type t :: %__MODULE__{
           version: integer,
           key: String.t(),
           type: String.t(),
-          value: DictionaryView.t() | String.t() | boolean | map
+          value: String.t() | boolean | map
         }
 
   @derive Jason.Encoder
@@ -16,15 +15,16 @@ defmodule Define.DictionaryFieldView do
             value: nil
 end
 
-defmodule Define.DictionaryFieldView.V1 do
+defmodule Define.ArgumentView.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Define.DictionaryFieldView{
+    schema(%Define.ArgumentView{
       version: version(1),
       key: string(),
-      # TODO call out DictionaryView
+      type: string(),
+      # TODO: This better
       value: spec(is_binary() or is_boolean() or is_map())
     })
   end

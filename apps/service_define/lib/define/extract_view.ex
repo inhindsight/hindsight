@@ -1,10 +1,11 @@
 defmodule Define.ExtractView do
   use Definition, schema: Define.ExtractView.V1
+  alias Define.{ModuleFunctionArgsView}
 
   @type t :: %__MODULE__{
           version: integer,
           destination: String.t(),
-          steps: [DefinitionView]
+          steps: [ModuleFunctionArgsView.t()]
         }
 
   @derive Jason.Encoder

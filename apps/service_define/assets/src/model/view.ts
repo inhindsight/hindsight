@@ -1,4 +1,3 @@
-import { Dictionary } from "lodash";
 
 export interface AppView {
     readonly greeting: string
@@ -10,14 +9,14 @@ export interface AppView {
 export interface DataDefinitionView {
     readonly dataset_id: string
     readonly subset_id: string
-    readonly dictionary: readonly DictionaryView[]
+    readonly dictionary: readonly ModuleFunctionArgsView[]
     readonly extract: ExtractView
     readonly persist: PersistView
 }
 
 export interface ExtractView {
     readonly destination: string
-    readonly steps: readonly StepView[]
+    readonly steps: readonly ModuleFunctionArgsView[]
 }
 
 export interface PersistView {
@@ -26,45 +25,31 @@ export interface PersistView {
 }
 
 
-export interface DictionaryView {
+export interface ModuleFunctionArgsView {
     readonly struct_module_name: string
-    readonly fields: readonly DictionaryFieldView[]
+    readonly args: readonly ArgumentView[]
 }
 
-export interface DictionaryFieldView {
+export interface ArgumentView {
     readonly key: string
-    readonly type: DictionaryFieldType
-    readonly value: string | boolean | ObjectMap<any> | ReadonlyArray<any>
+    readonly type: ArgumentType | ListArgumentType
+    readonly value: PrimitiveTypes | ObjectMap<PrimitiveTypes> | ReadonlyArray<PrimitiveTypes>
 }
 
-export enum DictionaryFieldType {
+export type PrimitiveTypes = string | number | boolean
+
+export enum ArgumentType {
     string = "string",
+    integer = "integer",
+    atom = "atom",
+    float = "float",
     boolean = "boolean",
-    list = "list"
-}
-
-
-
-export interface StepView {
-    readonly struct_module_name: string | null
-    readonly fields: readonly StepFieldView[]
-}
-
-export interface StepFieldView {
-    readonly key: string
-    readonly type: StepFieldType | StepListType
-    //TODO: Nail down this type more
-    readonly value: string | boolean | ObjectMap<any> | ReadonlyArray<any>
-}
-
-export enum StepFieldType {
-    string = "string",
-    boolean = "boolean",
+    list = "list",
     map = "map",
+    dictionary = "dictionary",
 }
 
-type StepListType = readonly [string, string]
-
+export type ListArgumentType = ["list", ArgumentType]
 
 export interface ObjectMap<T> {
     readonly [key: string]: T

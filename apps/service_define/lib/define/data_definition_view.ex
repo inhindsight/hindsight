@@ -1,12 +1,12 @@
 defmodule Define.DataDefinitionView do
   use Definition, schema: Define.DataDefinitionView.V1
-  alias Define.{ExtractView, PersistView, DefinitionView}
+  alias Define.{ExtractView, PersistView, ModuleFunctionArgsView}
 
   @type t :: %__MODULE__{
           version: integer,
           dataset_id: String.t(),
           subset_id: String.t(),
-          dictionary: [DefinitionView],
+          dictionary: [ModuleFunctionArgsView.t()],
           extract: ExtractView.t(),
           transform_steps: list,
           persist: PersistView.t()

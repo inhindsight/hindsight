@@ -1,21 +1,21 @@
-defmodule Define.DictionarySerializationTest do
+defmodule Define.DefinitionSerializationTest do
   use ExUnit.Case
-  alias Define.{DictionarySerialization, DictionaryView, DictionaryFieldView}
+  alias Define.{DefinitionSerialization, ModuleFunctionArgsView, ArgumentView}
 
   test "serializes non-hierarchical top level field" do
     dict = Dictionary.from_list([Dictionary.Type.String.new!(name: "letter")])
 
     expected = [
-      %DictionaryView{
+      %ModuleFunctionArgsView{
         struct_module_name: "Elixir.Dictionary.Type.String",
-        fields: [
-          %DictionaryFieldView{key: "description", type: "string", value: ""},
-          %DictionaryFieldView{key: "name", type: "string", value: "letter"}
+        args: [
+          %ArgumentView{key: "description", type: "string", value: ""},
+          %ArgumentView{key: "name", type: "string", value: "letter"}
         ]
       }
     ]
 
-    assert expected == DictionarySerialization.serialize(dict)
+    assert expected == DefinitionSerialization.serialize(dict)
   end
 
   test "serializes lists" do
@@ -28,25 +28,25 @@ defmodule Define.DictionarySerializationTest do
       ])
 
     expected = [
-      %Define.DictionaryView{
+      %Define.ModuleFunctionArgsView{
         struct_module_name: "Elixir.Dictionary.Type.List",
         version: 1,
-        fields: [
-          %Define.DictionaryFieldView{key: "description", type: "string", value: "", version: 1},
-          %Define.DictionaryFieldView{
+        args: [
+          %Define.ArgumentView{key: "description", type: "string", value: "", version: 1},
+          %Define.ArgumentView{
             key: "item_type",
             version: 1,
             type: "dictionary",
-            value: %Define.DictionaryView{
+            value: %Define.ModuleFunctionArgsView{
               struct_module_name: "Elixir.Dictionary.Type.String",
-              fields: [
-                %Define.DictionaryFieldView{
+              args: [
+                %Define.ArgumentView{
                   key: "description",
                   type: "string",
                   version: 1,
                   value: ""
                 },
-                %Define.DictionaryFieldView{
+                %Define.ArgumentView{
                   key: "name",
                   type: "string",
                   version: 1,
@@ -55,12 +55,12 @@ defmodule Define.DictionarySerializationTest do
               ]
             }
           },
-          %Define.DictionaryFieldView{key: "name", type: "string", value: "pets", version: 1}
+          %Define.ArgumentView{key: "name", type: "string", value: "pets", version: 1}
         ]
       }
     ]
 
-    assert expected == DictionarySerialization.serialize(dict)
+    assert expected == DefinitionSerialization.serialize(dict)
   end
 
   test "serializes maps" do
@@ -76,35 +76,35 @@ defmodule Define.DictionarySerializationTest do
       ])
 
     expected = [
-      %DictionaryView{
+      %ModuleFunctionArgsView{
         struct_module_name: "Elixir.Dictionary.Type.Map",
-        fields: [
-          %DictionaryFieldView{key: "description", type: "string", value: ""},
-          %DictionaryFieldView{
+        args: [
+          %ArgumentView{key: "description", type: "string", value: ""},
+          %ArgumentView{
             key: "dictionary",
             type: "list",
             value: [
-              %DictionaryView{
+              %ModuleFunctionArgsView{
                 struct_module_name: "Elixir.Dictionary.Type.String",
-                fields: [
-                  %DictionaryFieldView{key: "description", type: "string", value: ""},
-                  %DictionaryFieldView{key: "name", type: "string", value: "first_name"}
+                args: [
+                  %ArgumentView{key: "description", type: "string", value: ""},
+                  %ArgumentView{key: "name", type: "string", value: "first_name"}
                 ]
               },
-              %DictionaryView{
+              %ModuleFunctionArgsView{
                 struct_module_name: "Elixir.Dictionary.Type.Integer",
-                fields: [
-                  %DictionaryFieldView{key: "description", type: "string", value: ""},
-                  %DictionaryFieldView{key: "name", type: "string", value: "age"}
+                args: [
+                  %ArgumentView{key: "description", type: "string", value: ""},
+                  %ArgumentView{key: "name", type: "string", value: "age"}
                 ]
               }
             ]
           },
-          %DictionaryFieldView{key: "name", type: "string", value: "person"}
+          %ArgumentView{key: "name", type: "string", value: "person"}
         ]
       }
     ]
 
-    assert expected == DictionarySerialization.serialize(dict)
+    assert expected == DefinitionSerialization.serialize(dict)
   end
 end

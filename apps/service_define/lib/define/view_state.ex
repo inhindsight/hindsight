@@ -1,13 +1,10 @@
 defmodule Define.ViewState do
   alias Define.{
     AppView,
-    DictionaryView,
-    DictionaryFieldView,
+    ModuleFunctionArgsView,
+    ArgumentView,
     DataDefinitionView,
-    StepView,
-    StepFieldView,
-    ExtractView,
-    PersistView
+    ExtractView
   }
 
   use GenServer
@@ -51,20 +48,20 @@ defmodule Define.ViewState do
         DataDefinitionView.new!(
           dataset_id: "1111",
           dictionary: [
-            DictionaryView.new!(
+            ModuleFunctionArgsView.new!(
               struct_module_name: "Dictionary.Type.String",
-              fields: [DictionaryFieldView.new!(key: "name", type: "string")]
+              args: [ArgumentView.new!(key: "name", type: "string", value: "")]
             )
           ],
           extract:
             ExtractView.new!(
               destination: "Hawaii",
               steps: [
-                StepView.new!(
+                ModuleFunctionArgsView.new!(
                   struct_module_name: "Extract.Http.Get",
-                  fields: [
-                    StepFieldView.new!(key: "url", type: "string", value: ""),
-                    StepFieldView.new!(key: "headers", type: "map", value: %{})
+                  args: [
+                    ArgumentView.new!(key: "url", type: "string", value: ""),
+                    ArgumentView.new!(key: "headers", type: "map", value: %{})
                   ]
                 )
               ]

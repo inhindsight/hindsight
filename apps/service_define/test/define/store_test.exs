@@ -4,10 +4,8 @@ defmodule Define.StoreTest do
   alias Define.{
     DataDefinitionView,
     ExtractView,
-    DictionaryView,
-    DictionaryFieldView,
-    StepView,
-    StepFieldView
+    ModuleFunctionArgsView,
+    ArgumentView
   }
 
   @instance Define.Application.instance()
@@ -75,15 +73,15 @@ defmodule Define.StoreTest do
         extract: %ExtractView{
           destination: "success",
           steps: [
-            %StepView{
+            %ModuleFunctionArgsView{
               struct_module_name: "Elixir.Extract.Http.Get",
-              fields: [
-                %StepFieldView{
+              args: [
+                %ArgumentView{
                   key: "headers",
                   type: "map",
                   value: %{"content-length" => "5"}
                 },
-                %StepFieldView{
+                %ArgumentView{
                   key: "url",
                   type: "string",
                   value: "http://localhost/file.csv"
@@ -93,10 +91,10 @@ defmodule Define.StoreTest do
           ]
         },
         dictionary: [
-          %DictionaryView{
+          %ModuleFunctionArgsView{
             struct_module_name: "Elixir.Dictionary.Type.String",
-            fields: [
-              %DictionaryFieldView{
+            args: [
+              %ArgumentView{
                 key: "name",
                 type: "letter"
               }
@@ -184,7 +182,7 @@ defmodule Define.StoreTest do
       #   assert ^expected = persisted
       # end
 
-      # test "persists updated fields when two events are posted" do
+      # test "persists updated args when two events are posted" do
       #   id = "cDataset"
 
       #   Brook.Test.with_event(@instance, fn ->

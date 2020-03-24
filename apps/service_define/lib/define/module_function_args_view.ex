@@ -1,28 +1,27 @@
-defmodule Define.DictionaryView do
-  use Definition, schema: Define.DictionaryView.V1
-  alias Define.DictionaryField
+defmodule Define.ModuleFunctionArgsView do
+  use Definition, schema: Define.ModuleFunctionArgsView.V1
 
   @type t :: %__MODULE__{
           version: integer,
           struct_module_name: String.t(),
-          fields: [DictionaryField.t()]
+          args: [ArgumentView.t()]
         }
 
   @derive Jason.Encoder
   defstruct version: 1,
             struct_module_name: nil,
-            fields: []
+            args: []
 end
 
-defmodule Define.DictionaryView.V1 do
+defmodule Define.ModuleFunctionArgsView.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Define.DictionaryView{
+    schema(%Define.ModuleFunctionArgsView{
       version: version(1),
       struct_module_name: string(),
-      fields: list()
+      args: list()
     })
   end
 end
