@@ -19,17 +19,16 @@ spec:
       transaction.state.log.replication.factor: {{ .Values.strimzi.kafka.replicaCount }}
       transaction.state.log.min.isr: 2
     storage:
-      {{ if .Values.strimzi.kafka.storage.enabled }}
       type: persistent-claim
-      size: {{ .Values.kafka.storage.size }}
+      size: 100Gi
       deleteClaim: false
-      {{ else }}
-      type: ephemeral
-      {{ end }}
-    {{ if .Values.strimzi.kafka.storage.enabled }}
     resources:
-      {{ .Values.strimzi.kafka.resources }}
-    {{ end }}
+      requests:
+        cpu: 500m
+        memory: 1000M
+      limits:
+        cpu: 500m
+        memory: 1000M
   zookeeper:
     replicas: {{ .Values.strimzi.kafka.replicaCount }}
     {{- if .Values.strimzi.zookeeper.resources.jvm }}
@@ -42,11 +41,16 @@ spec:
       type: persistent-claim
       size: 1Gi
       deleteClaim: false
-      resources:
-        {{ .Values.strimzi.zookeeper.resources }}
       {{ else }}
       type: ephemeral
       {{ end }}
+    resources:
+      requests:
+        cpu: 10m
+        memory: 512Mi
+      limits:
+        cpu: 100m
+        memory: 512Mi
   entityOperator:
     topicOperator: {}
     userOperator: {}
