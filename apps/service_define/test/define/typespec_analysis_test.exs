@@ -10,7 +10,8 @@ defmodule Define.TypespecAnalysisTest do
       "float_type" => "float",
       "string_list_type" => {"list", "string"},
       "integer_list_type" => {"list", "integer"},
-      "map_type" => "map"
+      "map_type" => "map",
+      "dictionary_type" => "dictionary"
     }
 
     assert expected == TypespecAnalysis.get_types(TypespecAnalysisTestModule)

@@ -9,8 +9,8 @@ defmodule Define.DictionarySerializationTest do
       %DictionaryView{
         struct_module_name: "Elixir.Dictionary.Type.String",
         fields: [
-          %DictionaryFieldView{key: "description", type: "string"},
-          %DictionaryFieldView{key: "name", type: "string"}
+          %DictionaryFieldView{key: "description", type: "string", value: ""},
+          %DictionaryFieldView{key: "name", type: "string", value: "letter"}
         ]
       }
     ]
@@ -22,26 +22,85 @@ defmodule Define.DictionarySerializationTest do
     dict =
       Dictionary.from_list([
         %Dictionary.Type.List{
-          item_type: Dictionary.Type.String.new!(name: "in_list")
+          name: "pets",
+          item_type: Dictionary.Type.String.new!(name: "pet_name")
         }
       ])
 
     expected = [
-      %DictionaryView{
+      %Define.DictionaryView{
         struct_module_name: "Elixir.Dictionary.Type.List",
+        version: 1,
         fields: [
-          %DictionaryFieldView{key: "description", type: "string"},
-          %DictionaryFieldView{
+          %Define.DictionaryFieldView{key: "description", type: "string", value: "", version: 1},
+          %Define.DictionaryFieldView{
             key: "item_type",
-            type: %DictionaryView{
+            version: 1,
+            type: "dictionary",
+            value: %Define.DictionaryView{
               struct_module_name: "Elixir.Dictionary.Type.String",
               fields: [
-                %DictionaryFieldView{key: "description", type: "string"},
-                %DictionaryFieldView{key: "name", type: "string"}
+                %Define.DictionaryFieldView{
+                  key: "description",
+                  type: "string",
+                  version: 1,
+                  value: ""
+                },
+                %Define.DictionaryFieldView{
+                  key: "name",
+                  type: "string",
+                  version: 1,
+                  value: "pet_name"
+                }
               ]
             }
           },
-          %DictionaryFieldView{key: "name", type: "string"}
+          %Define.DictionaryFieldView{key: "name", type: "string", value: "pets", version: 1}
+        ]
+      }
+    ]
+
+    assert expected == DictionarySerialization.serialize(dict)
+  end
+
+  test "serializes maps" do
+    dict =
+      Dictionary.from_list([
+        Dictionary.Type.Map.new!(
+          name: "person",
+          dictionary: [
+            Dictionary.Type.String.new!(name: "first_name"),
+            Dictionary.Type.Integer.new!(name: "age")
+          ]
+        )
+      ])
+
+    expected = [
+      %DictionaryView{
+        struct_module_name: "Elixir.Dictionary.Type.Map",
+        fields: [
+          %DictionaryFieldView{key: "description", type: "string", value: ""},
+          %DictionaryFieldView{
+            key: "dictionary",
+            type: "list",
+            value: [
+              %DictionaryView{
+                struct_module_name: "Elixir.Dictionary.Type.String",
+                fields: [
+                  %DictionaryFieldView{key: "description", type: "string", value: ""},
+                  %DictionaryFieldView{key: "name", type: "string", value: "first_name"}
+                ]
+              },
+              %DictionaryView{
+                struct_module_name: "Elixir.Dictionary.Type.Integer",
+                fields: [
+                  %DictionaryFieldView{key: "description", type: "string", value: ""},
+                  %DictionaryFieldView{key: "name", type: "string", value: "age"}
+                ]
+              }
+            ]
+          },
+          %DictionaryFieldView{key: "name", type: "string", value: "person"}
         ]
       }
     ]

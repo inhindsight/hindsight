@@ -33,14 +33,15 @@ export interface DictionaryView {
 
 export interface DictionaryFieldView {
     readonly key: string
-    readonly type: DictionaryFieldType | DictionaryView
+    readonly type: DictionaryFieldType
+    readonly value: string | boolean | ObjectMap<any> | ReadonlyArray<any>
 }
 
 export enum DictionaryFieldType {
     string = "string",
     boolean = "boolean",
+    list = "list"
 }
-
 
 
 

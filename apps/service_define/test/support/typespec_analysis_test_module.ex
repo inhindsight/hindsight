@@ -5,7 +5,8 @@ defmodule TypespecAnalysisTestModule do
             float_type: nil,
             string_list_type: nil,
             integer_list_type: nil,
-            map_type: nil
+            map_type: nil,
+            dictionary_type: nil
 
   @type t :: %__MODULE__{
           integer_type: integer(),
@@ -14,6 +15,7 @@ defmodule TypespecAnalysisTestModule do
           float_type: float(),
           string_list_type: list(String.t()),
           integer_list_type: list(integer()),
-          map_type: map()
+          map_type: map(),
+          dictionary_type: Dictionary.t()
         }
 end

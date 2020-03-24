@@ -5,13 +5,15 @@ defmodule Define.DictionaryFieldView do
   @type t :: %__MODULE__{
           version: integer,
           key: String.t(),
-          type: String.t() | DictionaryView.t() | DictionaryFieldView.t()
+          type: String.t(),
+          value: DictionaryView.t() | String.t() | boolean | map
         }
 
   @derive Jason.Encoder
   defstruct version: 1,
             key: nil,
-            type: nil
+            type: nil,
+            value: nil
 end
 
 defmodule Define.DictionaryFieldView.V1 do
@@ -22,8 +24,8 @@ defmodule Define.DictionaryFieldView.V1 do
     schema(%Define.DictionaryFieldView{
       version: version(1),
       key: string(),
-      # TODO: Find a way to call out the struct specifically (like of_struct())
-      type: spec(is_binary() or is_map())
+      # TODO call out DictionaryView
+      value: spec(is_binary() or is_boolean() or is_map())
     })
   end
 end

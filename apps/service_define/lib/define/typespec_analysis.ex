@@ -38,6 +38,7 @@ defmodule Define.TypespecAnalysis do
   defp to_simple_type({name, typespec, _}) do
     type = case typespec do
       [{_, _, String}, _, _] -> "string"
+      [{_, _, Dictionary}, _, _] -> "dictionary"
       _ -> typespec
     end
 
