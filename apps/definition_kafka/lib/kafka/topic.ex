@@ -6,7 +6,7 @@ defmodule Kafka.Topic do
             endpoints: nil,
             topic: nil,
             partitions: 1,
-            partitioner: "default",
+            partitioner: :default,
             key_path: []
 
   def on_new(struct) do
@@ -49,7 +49,7 @@ defmodule Kafka.Topic.V1 do
       endpoints: spec(is_list()),
       topic: required_string(),
       partitions: spec(pos_integer?()),
-      partitioner: spec(fn x -> x in ["default", "random", "md5"] end),
+      partitioner: spec(fn x -> x in [:default, :random, :md5] end),
       key_path: access_path()
     })
   end
