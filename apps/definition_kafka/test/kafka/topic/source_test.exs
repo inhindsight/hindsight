@@ -6,6 +6,8 @@ defmodule Kafka.Topic.SourceTest do
   @endpoints [localhost: 9092]
   @topic "source-test"
 
+  @moduletag integration: true, divo: true
+
   defmodule Handler do
     use Source.Handler
 
