@@ -29,17 +29,13 @@ defmodule Load.PersistTest do
           id: "load1",
           dataset_id: "ds1",
           subset_id: "joe",
-          source: "topic",
-          destination: "table",
-          schema: [
-            %Dictionary.Type.String{name: "name"},
-            %Dictionary.Type.Integer{name: "age"}
-          ]
+          source: %Source.Fake{},
+          destination: "table"
         )
 
-      json = Jason.encode!(persist)
+      {:ok, serialized} = Brook.Serializer.serialize(persist)
 
-      assert persist == Load.Persist.from_json(json) |> elem(1)
+      assert {:ok, persist} == Brook.Deserializer.deserialize(serialized)
     end
   end
 end

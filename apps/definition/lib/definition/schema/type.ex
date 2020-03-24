@@ -48,4 +48,14 @@ defmodule Definition.Schema.Type do
   def access_path do
     one_of([spec(is_binary()), coll_of(spec(is_binary()))])
   end
+
+  @spec impl_of(module) :: spec
+  def impl_of(protocol) do
+    spec(fn value ->
+      case protocol.impl_for(value) do
+        nil -> false
+        _ -> true
+      end
+    end)
+  end
 end

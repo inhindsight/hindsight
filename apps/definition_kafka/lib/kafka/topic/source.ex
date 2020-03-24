@@ -25,11 +25,14 @@ defmodule Kafka.Topic.Source do
 
     state = %{
       t: t,
-      dictionary: Keyword.fetch!(init_opts, :dictionary),
-      source_handler: Keyword.fetch!(init_opts, :handler),
-      app_name: Keyword.fetch!(init_opts, :app_name),
-      dataset_id: Keyword.fetch!(init_opts, :dataset_id),
-      subset_id: Keyword.fetch!(init_opts, :subset_id)
+      context: %Source.Context{
+        dictionary: Keyword.fetch!(init_opts, :dictionary),
+        handler: Keyword.fetch!(init_opts, :handler),
+        app_name: Keyword.fetch!(init_opts, :app_name),
+        dataset_id: Keyword.fetch!(init_opts, :dataset_id),
+        subset_id: Keyword.fetch!(init_opts, :subset_id),
+        assigns: Keyword.fetch!(init_opts, :assigns)
+      }
     }
 
     {:ok, state, {:continue, :init}}
@@ -42,12 +45,12 @@ defmodule Kafka.Topic.Source do
     {:ok, elsa_pid} =
       Elsa.Supervisor.start_link(
         endpoints: state.t.endpoints,
-        connection: :"connection_#{state.app_name}_#{state.t.topic}",
+        connection: :"connection_#{state.context.app_name}_#{state.t.topic}",
         group_consumer: [
-          group: "group-#{state.app_name}-#{state.t.topic}",
+          group: "group-#{state.context.app_name}-#{state.t.topic}",
           topics: [state.t.topic],
           handler: Kafka.Topic.Source.Handler,
-          handler_init_args: state,
+          handler_init_args: state.context,
           config: [
             begin_offset: :earliest,
             offset_reset_policy: :reset_to_earliest,

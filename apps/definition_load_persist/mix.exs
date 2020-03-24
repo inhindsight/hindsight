@@ -24,7 +24,9 @@ defmodule DefinitionLoadPersist.MixProject do
   defp deps do
     [
       {:definition_dictionary, in_umbrella: true},
-      {:checkov, "~> 1.0", only: [:dev, :test]}
+      {:protocol_source, in_umbrella: true},
+      {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

@@ -22,8 +22,8 @@ defmodule Kafka.Topic do
   def fix_endpoint([host, port]) when is_binary(host) and is_integer(port) do
     {String.to_atom(host), port}
   end
-  def fix_endpoint(endpoint), do: endpoint
 
+  def fix_endpoint(endpoint), do: endpoint
 
   defimpl Source do
     defdelegate start_link(t, init_opts), to: Kafka.Topic.Source

@@ -45,7 +45,7 @@ defmodule Persist.LoaderTest do
         id: "load-1",
         dataset_id: "ds1",
         subset_id: "fake-name",
-        source: "topic-a",
+        source: Source.Fake.new()
         destination: "table-a"
       )
 

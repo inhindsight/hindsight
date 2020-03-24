@@ -8,7 +8,7 @@ defmodule Load.Persist do
           id: uuid,
           dataset_id: String.t(),
           subset_id: String.t(),
-          source: String.t(),
+          source: Source.t(),
           destination: String.t(),
           config: map
         }
@@ -33,7 +33,7 @@ defmodule Load.Persist.V1 do
       id: id(),
       dataset_id: required_string(),
       subset_id: required_string(),
-      source: required_string(),
+      source: impl_of(Source),
       destination: required_string(),
       config: spec(is_map())
     })

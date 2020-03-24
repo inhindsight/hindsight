@@ -11,21 +11,17 @@ defmodule Kafka.Topic.SourceTest do
   defmodule Handler do
     use Source.Handler
 
-    def handle_batch(messages) do
-      test = Agent.get(Kafka.Topic.SourceTest, fn s -> s end)
-      send(test, {:handle_batch, messages})
+    def handle_batch(messages, context) do
+      send(context.assigns.test, {:handle_batch, messages})
       :ok
+    end
+
+    def send_to_dlq(dead_letters, context) do
+      send(context.assigns.test, {:dlq, dead_letters})
     end
   end
 
   setup do
-    test = self()
-
-    start_supervised(%{
-      id: :agent_0,
-      start: {Agent, :start_link, [fn -> test end, [name: __MODULE__]]}
-    })
-
     source = %Kafka.Topic{
       endpoints: @endpoints,
       topic: @topic
@@ -54,7 +50,8 @@ defmodule Kafka.Topic.SourceTest do
         handler: Handler,
         app_name: "testing",
         dataset_id: "ds1",
-        subset_id: "sb1"
+        subset_id: "sb1",
+        assigns: %{test: self()}
       )
 
     assert_async do
@@ -77,7 +74,8 @@ defmodule Kafka.Topic.SourceTest do
         handler: Handler,
         app_name: "testing",
         dataset_id: "ds1",
-        subset_id: "sb1"
+        subset_id: "sb1",
+        assigns: %{test: self()}
       )
 
     assert_async do
@@ -103,7 +101,8 @@ defmodule Kafka.Topic.SourceTest do
         handler: Handler,
         app_name: "testing",
         dataset_id: "ds1",
-        subset_id: "sb1"
+        subset_id: "sb1",
+        assigns: %{test: self()}
       )
 
     Source.stop(source)

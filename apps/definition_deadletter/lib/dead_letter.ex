@@ -1,4 +1,4 @@
-defmodule Dlq.DeadLetter do
+defmodule DeadLetter do
   @type t :: %__MODULE__{
           version: integer,
           dataset_id: String.t(),
