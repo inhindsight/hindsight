@@ -27,9 +27,9 @@ function check_strimzi {
 }
 
 function deps {
-        info "Installing Helm dependencies"
-        helm repo add google https://kubernetes-charts.storage.googleapis.com
-        (cd ./helm; helm dependency build)
+    info "Installing Helm dependencies"
+    helm repo add google https://kubernetes-charts.storage.googleapis.com
+    (cd ./helm; helm dependency build)
 }
 
 function strimzi {
