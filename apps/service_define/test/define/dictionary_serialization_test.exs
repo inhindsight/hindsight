@@ -31,7 +31,6 @@ defmodule Define.DictionarySerializationTest do
         struct_module_name: "Elixir.Dictionary.Type.List",
         fields: [
           %DictionaryFieldView{key: "description", type: "string"},
-          %DictionaryFieldView{key: "name", type: "string"},
           %DictionaryFieldView{
             key: "item_type",
             type: %DictionaryView{
@@ -41,7 +40,8 @@ defmodule Define.DictionarySerializationTest do
                 %DictionaryFieldView{key: "name", type: "string"}
               ]
             }
-          }
+          },
+          %DictionaryFieldView{key: "name", type: "string"}
         ]
       }
     ]
