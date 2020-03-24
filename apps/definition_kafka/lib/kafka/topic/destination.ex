@@ -10,7 +10,7 @@ defmodule Kafka.Topic.Destination do
 
   @spec write(Destination.t(), Dictionary.t(), [term]) :: :ok | {:error, term}
   def write(dest, _dictionary, messages) do
-    GenServer.call(dest.pid, {:write, messages})
+    GenServer.call(dest.pid, {:write, dest, messages})
   end
 
   # TODO
@@ -30,21 +30,21 @@ defmodule Kafka.Topic.Destination do
   @impl GenServer
   def init(dest) do
     Process.flag(:trap_exit, true)
-    state = %{destination: dest, connection: connection_name()}
-    {:ok, state, {:continue, :init}}
+    state = %{connection: connection_name()}
+    {:ok, state, {:continue, {:init, dest}}}
   end
 
   @impl GenServer
-  def handle_continue(:init, %{destination: dest} = state) do
+  def handle_continue({:init, dest}, state) do
     with opts <- Map.from_struct(dest) |> Enum.into([]),
          :ok <- Elsa.create_topic(dest.endpoints, dest.topic, opts),
-         {:ok, _} <- start_producer(state) do
+         {:ok, _} <- start_producer(dest, state.connection) do
       {:noreply, state}
     end
   end
 
   @impl GenServer
-  def handle_call({:write, messages}, _from, %{destination: dest} = state) do
+  def handle_call({:write, dest, messages}, _from, state) do
     with opts <- Map.from_struct(dest) |> Enum.into([]),
          :ok <- Elsa.produce(state.connection, dest.topic, messages, opts) do
       {:reply, :ok, state}
@@ -54,7 +54,7 @@ defmodule Kafka.Topic.Destination do
     end
   end
 
-  defp start_producer(%{connection: conn, destination: dest}) do
+  defp start_producer(dest, conn) do
     Elsa.Supervisor.start_link(
       connection: conn,
       endpoints: dest.endpoints,
