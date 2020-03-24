@@ -23,7 +23,8 @@ defmodule ProtocolSource.MixProject do
 
   defp deps do
     [
-      {:definition_dictionary, in_umbrella: true}
+      {:definition_dictionary, in_umbrella: true},
+      {:ok, in_umbrella: true}
     ]
   end
 end

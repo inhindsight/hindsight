@@ -20,7 +20,7 @@ defmodule Dlq.DeadLetter do
             reason: nil,
             timestamp: nil
 
-  @spec new(keyword | map) :: t
+  @spec new(keyword) :: t
   def new(values) do
     reason = Keyword.get(values, :reason, nil)
     stacktrace = Keyword.get(values, :stacktrace, [])

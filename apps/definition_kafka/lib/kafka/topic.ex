@@ -9,6 +9,12 @@ defmodule Kafka.Topic do
             partitioner: "default",
             key_path: []
 
+  defimpl Source do
+    defdelegate start_link(t, init_opts), to: Kafka.Topic.Source
+    defdelegate stop(t), to: Kafka.Topic.Source
+    defdelegate delete(t), to: Kafka.Topic.Source
+  end
+
   defimpl Destination do
     defdelegate start_link(t, dictionary), to: Kafka.Topic.Destination
     defdelegate write(t, dictionary, messages), to: Kafka.Topic.Destination
