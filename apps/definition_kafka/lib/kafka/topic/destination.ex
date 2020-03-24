@@ -2,8 +2,14 @@ defmodule Kafka.Topic.Destination do
   use GenServer
   require Logger
 
-  # TODO
+  @spec start_link(Destination.t(), Dictionary.t()) :: {:ok, Destination.t()} | {:error, term}
   def start_link(dest, _dictionary) do
+    GenServer.start_link(__MODULE__, dest)
+    |> Ok.map(&Map.put(dest, :pid, &1))
+  end
+
+  @impl GenServer
+  def init(dest) do
     with :ok <- Elsa.create_topic(dest.endpoints, dest.topic) do
       Ok.ok(dest)
     end
