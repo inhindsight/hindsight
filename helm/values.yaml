@@ -36,22 +36,12 @@ nginx-ingress:
     service:
       type: LoadBalancer
 prometheus-operator:
-  enabled: true
+  enabled: false
   prometheusOperator:
     namespaces:
       releaseNamespace: true
       additional:
         - kube-system
-  prometheus:
-    ingress:
-      enabled: true
-  alertmanager:
-    ingress:
-      enabled: true
-  grafana:
-    ingress:
-      enabled: true
-
 image:
   repository: inhindsight/hindsight
   tag: ""

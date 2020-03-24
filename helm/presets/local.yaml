@@ -35,21 +35,6 @@ nginx-ingress:
   controller:
     service:
       type: LoadBalancer
-prometheus-operator:
-  prometheus:
-    ingress:
-      hosts: [prometheus.hindsight.local]
-    prometheusSpec:
-      retentionSize: 1GiB
-  alertmanager:
-    alertmanagerSpec:
-      retention: 30m
-    ingress:
-      hosts: [alertmanager.hindsight.local]
-  grafana:
-    adminPassword: hindsight
-    ingress:
-      hosts: [grafana.hindsight.local]
 presto:
   presto:
     ingress:
