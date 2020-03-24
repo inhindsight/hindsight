@@ -1,6 +1,9 @@
 defmodule Kafka.Topic.Destination do
   use GenServer
+  use Properties, otp_app: :definition_kafka
   require Logger
+
+  getter(:dlq, default: Dlq)
 
   @spec start_link(Destination.t(), Destination.init_opts()) ::
           {:ok, Destination.t()} | {:error, term}
@@ -10,7 +13,6 @@ defmodule Kafka.Topic.Destination do
   end
 
   # TODO telemetry
-  # TODO dlq
   # TODO write with key
   @spec write(Destination.t(), [term]) :: :ok | {:error, term}
   def write(topic, [%{} | _] = messages) do
@@ -22,7 +24,10 @@ defmodule Kafka.Topic.Destination do
         end
       end)
 
-    write(topic, Enum.reverse(encoded.ok))
+    with :ok <- write(topic, Enum.reverse(encoded.ok)) do
+      GenServer.cast(topic.pid, {:dlq, Enum.reverse(encoded.error)})
+      :ok
+    end
   end
 
   def write(topic, messages) do
@@ -68,6 +73,24 @@ defmodule Kafka.Topic.Destination do
       error ->
         {:reply, error, state}
     end
+  end
+
+  @impl GenServer
+  def handle_cast({:dlq, []}, state) do
+    {:noreply, state}
+  end
+
+  def handle_cast({:dlq, messages}, state) do
+    opts = Enum.into(state, [])
+
+    dead_letters =
+      Enum.map(messages, fn {og, reason} ->
+        Keyword.merge(opts, [reason: reason, original_message: og])
+        |> Dlq.DeadLetter.new()
+      end)
+
+    dlq().write(dead_letters)
+    {:noreply, state}
   end
 
   defp start_producer(topic, conn) do

@@ -1,9 +1,23 @@
 defmodule Kafka.Topic.DestinationTest do
   use ExUnit.Case
   use Divo
+
+  require Temp.Env
   import AssertAsync
+  import Mox
 
   @endpoints [localhost: 9092]
+
+  Temp.Env.modify([
+    %{
+      app: :definition_kafka,
+      key: Kafka.Topic.Destination,
+      set: [dlq: DlqMock]
+    }
+  ])
+
+  setup :set_mox_global
+  setup :verify_on_exit!
 
   setup do
     Process.flag(:trap_exit, true)
@@ -75,9 +89,12 @@ defmodule Kafka.Topic.DestinationTest do
       assert_down(topic.pid)
     end
 
-    test "ignores error during JSON encoding" do
+    test "writes errors to DLQ" do
+      expect(DlqMock, :write, fn _ -> :ok end)
+
+      opts = [app_name: "foo", dataset_id: "bar", subset_id: "baz"]
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-errors")
-      {:ok, topic} = Destination.start_link(topic, [])
+      {:ok, topic} = Destination.start_link(topic, opts)
 
       assert :ok = Destination.write(topic, [%{one: 1}, ~r/no/, %{two: 2}])
 
