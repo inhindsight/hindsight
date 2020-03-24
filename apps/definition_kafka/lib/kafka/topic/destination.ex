@@ -29,14 +29,32 @@ defmodule Kafka.Topic.Destination do
 
   @impl GenServer
   def init(dest) do
-    {:ok, dest, {:continue, :init}}
+    Process.flag(:trap_exit, true)
+    state = %{destination: dest, connection: connection_name()}
+    {:ok, state, {:continue, :init}}
   end
 
   @impl GenServer
-  def handle_continue(:init, dest) do
+  def handle_continue(:init, %{destination: dest} = state) do
     with opts <- Map.from_struct(dest) |> Enum.into([]),
-         :ok <- Elsa.create_topic(dest.endpoints, dest.topic, opts) do
-      {:noreply, dest}
+         :ok <- Elsa.create_topic(dest.endpoints, dest.topic, opts),
+         {:ok, _} <- start_producer(state) do
+      {:noreply, state}
     end
+  end
+
+  defp start_producer(%{connection: conn, destination: dest}) do
+    Elsa.Supervisor.start_link(
+      connection: conn,
+      endpoints: dest.endpoints,
+      producer: [
+        topic: dest.topic
+      ]
+    )
+    |> Ok.map(fn _ -> Elsa.Producer.ready?(conn) end)
+  end
+
+  defp connection_name do
+    :"#{__MODULE__}_#{inspect(self())}"
   end
 end
