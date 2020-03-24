@@ -10,7 +10,7 @@ defmodule Define.Store do
     |> Map.put(:dataset_id, data.dataset_id)
     |> Map.put(:subset_id, data.subset_id)
     |> put_in_better([:extract, :destination], data.destination)
-    |> put_in_better([:extract, :steps], Enum.map(data.steps, &serialize_step/1))
+    |> put_in_better([:extract, :steps], DefinitionSerialization.serialize(data.steps))
     |> Map.put(:dictionary, DefinitionSerialization.serialize(data.dictionary))
     |> persist()
   end
@@ -60,7 +60,7 @@ defmodule Define.Store do
 
   def get(dataset_id) do
     case Brook.get!(@instance, @collection, dataset_id) do
-      nil -> %Define.DataDefinitionView{} |> IO.inspect(label: "The after times")
+      nil -> %Define.DataDefinitionView{}
       map -> map
     end
   end

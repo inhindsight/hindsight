@@ -113,12 +113,13 @@ defmodule Define.DefinitionSerializationTest do
       Dictionary.from_list([
         %Dictionary.Type.List{
           name: "people",
-          item_type: Dictionary.Type.Map.new!(
-            name: "person",
-            dictionary: [
-              Dictionary.Type.String.new!(name: "first_name"),
-            ]
-          )
+          item_type:
+            Dictionary.Type.Map.new!(
+              name: "person",
+              dictionary: [
+                Dictionary.Type.String.new!(name: "first_name")
+              ]
+            )
         }
       ])
 
@@ -152,7 +153,7 @@ defmodule Define.DefinitionSerializationTest do
                         %ArgumentView{key: "description", type: "string", value: ""},
                         %ArgumentView{key: "name", type: "string", value: "first_name"}
                       ]
-                    },
+                    }
                   ]
                 },
                 %Define.ArgumentView{
@@ -160,7 +161,7 @@ defmodule Define.DefinitionSerializationTest do
                   type: "string",
                   version: 1,
                   value: "person"
-                },
+                }
               ]
             }
           },
@@ -172,4 +173,32 @@ defmodule Define.DefinitionSerializationTest do
     assert expected == DefinitionSerialization.serialize(dict)
   end
 
+  test "serializes steps" do
+    steps = [
+      Extract.Http.Get.new!(
+        url: "http://localhost/file.csv",
+        headers: %{"content-length" => "5"}
+      )
+    ]
+
+    expected = [
+      %ModuleFunctionArgsView{
+        struct_module_name: "Elixir.Extract.Http.Get",
+        args: [
+          %ArgumentView{
+            key: "headers",
+            type: "map",
+            value: %{"content-length" => "5"}
+          },
+          %ArgumentView{
+            key: "url",
+            type: "string",
+            value: "http://localhost/file.csv"
+          }
+        ]
+      }
+    ]
+
+    assert expected == DefinitionSerialization.serialize(steps)
+  end
 end

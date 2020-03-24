@@ -1,6 +1,18 @@
 defmodule Define.DefinitionSerialization do
   alias Define.{ModuleFunctionArgsView, ArgumentView, TypespecAnalysis}
 
+  def serialize(steps) when is_list(steps) do
+    Enum.map(steps, fn field ->
+      %ModuleFunctionArgsView{
+        struct_module_name: to_string(field.__struct__),
+        args:
+          TypespecAnalysis.get_types(field.__struct__)
+          |> Map.delete(:version)
+          |> Enum.map(&(call_to_dictionary_field_view(&1, field)))
+      }
+    end)
+  end
+
   def serialize(dictionary) do
     Enum.map(dictionary.ordered, fn field ->
       %ModuleFunctionArgsView{
