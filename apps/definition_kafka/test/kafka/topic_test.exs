@@ -13,11 +13,10 @@ defmodule Kafka.TopicTest do
         [:field, :value],
         [:version, "1"],
         [:pid, 123],
-        [:topic, nil],
-        [:topic, 1],
+        [:name, nil],
+        [:name, 1],
         [:partitions, -1],
         [:partitions, "1"],
-        [:partitioner, "jerks"],
         [:key_path, nil]
       ]
     end
@@ -26,7 +25,7 @@ defmodule Kafka.TopicTest do
   test "can be serialized and deserialized by brook" do
     source =
       Kafka.Topic.new!(
-        topic: "topic",
+        name: "topic",
         endpoints: [localhost: 9092]
       )
 

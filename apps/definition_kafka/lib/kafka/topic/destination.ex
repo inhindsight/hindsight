@@ -86,7 +86,7 @@ defmodule Kafka.Topic.Destination do
     dead_letters =
       Enum.map(messages, fn {og, reason} ->
         Keyword.merge(opts, [reason: reason, original_message: og])
-        |> Dlq.DeadLetter.new()
+        |> DeadLetter.new()
       end)
 
     dlq().write(dead_letters)

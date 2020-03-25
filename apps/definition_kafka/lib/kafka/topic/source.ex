@@ -16,7 +16,7 @@ defmodule Kafka.Topic.Source do
 
   @retry with: constant_backoff(500) |> take(10)
   def delete(t) do
-    Elsa.delete_topic(t.endpoints, t.topic)
+    Elsa.delete_topic(t.endpoints, t.name)
   end
 
   @impl GenServer
@@ -45,10 +45,10 @@ defmodule Kafka.Topic.Source do
     {:ok, elsa_pid} =
       Elsa.Supervisor.start_link(
         endpoints: state.t.endpoints,
-        connection: :"connection_#{state.context.app_name}_#{state.t.topic}",
+        connection: :"connection_#{state.context.app_name}_#{state.t.name}",
         group_consumer: [
-          group: "group-#{state.context.app_name}-#{state.t.topic}",
-          topics: [state.t.topic],
+          group: "group-#{state.context.app_name}-#{state.t.name}",
+          topics: [state.t.name],
           handler: Kafka.Topic.Source.Handler,
           handler_init_args: state.context,
           config: [
@@ -97,8 +97,8 @@ defmodule Kafka.Topic.Source do
 
   @retry with: constant_backoff(500) |> take(10)
   defp ensure_topic(t) do
-    unless Elsa.topic?(t.endpoints, t.topic) do
-      Elsa.create_topic(t.endpoints, t.topic, partitions: t.partitions)
+    unless Elsa.topic?(t.endpoints, t.name) do
+      Elsa.create_topic(t.endpoints, t.name, partitions: t.partitions)
     end
   end
 end

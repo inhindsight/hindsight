@@ -15,15 +15,23 @@ defmodule Kafka.Topic do
       |> List.wrap()
       |> Enum.map(&fix_endpoint/1)
 
-    %{struct | endpoints: endpoints}
+    struct
+    |> Map.put(:endpoints, endpoints)
+    |> Map.update!(:partitioner, &fix_partitioner/1)
     |> Ok.ok()
   end
 
-  def fix_endpoint([host, port]) when is_binary(host) and is_integer(port) do
+  defp fix_partitioner(partitioner) when is_binary(partitioner) do
+    String.to_atom(partitioner)
+  end
+
+  defp fix_partitioner(partitioner), do: partitioner
+
+  defp fix_endpoint([host, port]) when is_binary(host) and is_integer(port) do
     {String.to_atom(host), port}
   end
 
-  def fix_endpoint(endpoint), do: endpoint
+  defp fix_endpoint(endpoint), do: endpoint
 
   defimpl Source do
     defdelegate start_link(t, init_opts), to: Kafka.Topic.Source

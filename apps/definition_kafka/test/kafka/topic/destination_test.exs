@@ -7,6 +7,7 @@ defmodule Kafka.Topic.DestinationTest do
   import Mox
 
   @endpoints [localhost: 9092]
+  @moduletag integration: true, divo: true
 
   Temp.Env.modify([
     %{

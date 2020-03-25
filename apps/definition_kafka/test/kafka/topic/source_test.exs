@@ -24,7 +24,7 @@ defmodule Kafka.Topic.SourceTest do
   setup do
     source = %Kafka.Topic{
       endpoints: @endpoints,
-      topic: @topic
+      name: @topic
     }
 
     dictionary =
@@ -40,7 +40,7 @@ defmodule Kafka.Topic.SourceTest do
   } do
     source = %Kafka.Topic{
       endpoints: @endpoints,
-      topic: "create-test",
+      name: "create-test",
       partitions: 2
     }
 
@@ -114,7 +114,7 @@ defmodule Kafka.Topic.SourceTest do
 
   test "delete/1 should remote topic from kafak" do
     source = %Kafka.Topic{
-      topic: "topic-to-delete",
+      name: "topic-to-delete",
       endpoints: @endpoints
     }
 
