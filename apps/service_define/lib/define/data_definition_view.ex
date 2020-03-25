@@ -1,12 +1,11 @@
 defmodule Define.DataDefinitionView do
   use Definition, schema: Define.DataDefinitionView.V1
-  alias Define.{ExtractView, PersistView, ModuleFunctionArgsView}
+  alias Define.{ExtractView, PersistView}
 
   @type t :: %__MODULE__{
           version: integer,
           dataset_id: String.t(),
           subset_id: String.t(),
-          dictionary: [ModuleFunctionArgsView.t()],
           extract: ExtractView.t(),
           transform_steps: list,
           persist: PersistView.t()
@@ -16,7 +15,6 @@ defmodule Define.DataDefinitionView do
   defstruct version: 1,
             dataset_id: "",
             subset_id: "default",
-            dictionary: [],
             extract: %ExtractView{},
             transform_steps: [],
             persist: %PersistView{}
@@ -32,7 +30,6 @@ defmodule Define.DataDefinitionView.V1 do
       version: version(1),
       dataset_id: string(),
       subset_id: string(),
-      dictionary: list(),
       extract: of_struct(ExtractView),
       transform_steps: list(),
       persist: of_struct(PersistView)

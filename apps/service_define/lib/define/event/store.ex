@@ -11,7 +11,7 @@ defmodule Define.Store do
     |> Map.put(:subset_id, data.subset_id)
     |> put_in_better([:extract, :destination], data.destination)
     |> put_in_better([:extract, :steps], DefinitionSerialization.serialize(data.steps))
-    |> Map.put(:dictionary, DefinitionSerialization.serialize(data.dictionary))
+    |> put_in_better([:extract, :dictionary], DefinitionSerialization.serialize(data.dictionary))
     |> persist()
   end
 
@@ -32,16 +32,16 @@ defmodule Define.Store do
     |> persist()
   end
 
+  def update_definition(data) do
+    Logger.error("Got unexpected data definition update: #{inspect(data)}")
+  end
+
   @spec to_persist_view(atom | %{destination: any, source: any}) :: Define.PersistView.t()
   def to_persist_view(persist_event) do
     %PersistView{
       source: persist_event.source,
       destination: persist_event.destination
     }
-  end
-
-  def update_definition(data) do
-    Logger.error("Got unexpected data definition update: #{inspect(data)}")
   end
 
   def put_in_better(map, [hd], value) do

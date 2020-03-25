@@ -55,6 +55,23 @@ defmodule Define.StoreTest do
         dataset_id: id,
         extract: %ExtractView{
           destination: "success",
+          dictionary: [
+            %ModuleFunctionArgsView{
+              struct_module_name: "Elixir.Dictionary.Type.String",
+              args: [
+                %ArgumentView{
+                  key: "description",
+                  type: "string",
+                  value: ""
+                },
+                %ArgumentView{
+                  key: "name",
+                  type: "string",
+                  value: "letter"
+                }
+              ]
+            }
+          ],
           steps: [
             %ModuleFunctionArgsView{
               struct_module_name: "Elixir.Extract.Http.Get",
@@ -73,23 +90,6 @@ defmodule Define.StoreTest do
             }
           ]
         },
-        dictionary: [
-          %ModuleFunctionArgsView{
-            struct_module_name: "Elixir.Dictionary.Type.String",
-            args: [
-              %ArgumentView{
-                key: "description",
-                type: "string",
-                value: ""
-              },
-              %ArgumentView{
-                key: "name",
-                type: "string",
-                value: "letter"
-              }
-            ]
-          }
-        ],
         subset_id: "default"
       }
 
@@ -163,29 +163,29 @@ defmodule Define.StoreTest do
         subset_id: "default",
         extract: %ExtractView{
           destination: "success",
+          dictionary: [
+            %ModuleFunctionArgsView{
+              struct_module_name: "Elixir.Dictionary.Type.String",
+              args: [
+                %ArgumentView{
+                  key: "description",
+                  type: "string",
+                  value: ""
+                },
+                %ArgumentView{
+                  key: "name",
+                  type: "string",
+                  value: "person"
+                }
+              ]
+            }
+          ],
           steps: []
         },
         persist: %PersistView{
           source: "akafkatopic",
           destination: "storage__json"
         },
-        dictionary: [
-          %ModuleFunctionArgsView{
-            struct_module_name: "Elixir.Dictionary.Type.String",
-            args: [
-              %ArgumentView{
-                key: "description",
-                type: "string",
-                value: ""
-              },
-              %ArgumentView{
-                key: "name",
-                type: "string",
-                value: "person"
-              }
-            ]
-          }
-        ],
         version: 1
       }
 

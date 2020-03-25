@@ -5,12 +5,14 @@ defmodule Define.ExtractView do
   @type t :: %__MODULE__{
           version: integer,
           destination: String.t(),
+          dictionary: [ModuleFunctionArgsView.t()],
           steps: [ModuleFunctionArgsView.t()]
         }
 
   @derive Jason.Encoder
   defstruct version: 1,
             destination: nil,
+            dictionary: [],
             steps: []
 end
 
@@ -22,6 +24,7 @@ defmodule Define.ExtractView.V1 do
     schema(%Define.ExtractView{
       version: version(1),
       destination: string(),
+      dictionary: list(),
       # TODO: Add is_list that takes a type
       steps: list()
     })
