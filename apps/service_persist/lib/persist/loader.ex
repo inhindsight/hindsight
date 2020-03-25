@@ -9,7 +9,6 @@ defmodule Persist.Loader do
   alias Persist.Transformations
 
   getter(:writer, default: Persist.Writer.TwoStep)
-  getter(:broadway, default: Persist.Load.Broadway)
 
   @type init_opts :: [
           load: %Load.Persist{}
@@ -34,8 +33,8 @@ defmodule Persist.Loader do
          writer_function <- fn msgs ->
            writer().write(writer_pid, msgs, dictionary: dictionary)
          end,
-         {:ok, broadway_pid} <- start_broadway(load, transform, writer_function) do
-      {:ok, %{writer_pid: writer_pid, broadway_pid: broadway_pid}}
+         {:ok, source} <- start_source(load, dictionary, transform, writer_function) do
+      {:ok, %{writer_pid: writer_pid, source: source}}
     else
       {:ok, nil} ->
         Logger.warn(fn ->
@@ -58,7 +57,7 @@ defmodule Persist.Loader do
       }"
     end)
 
-    stop(state.broadway_pid, reason)
+    Source.stop(state.source)
     stop(state.writer_pid, reason)
     {:stop, reason, state}
   end
@@ -73,8 +72,27 @@ defmodule Persist.Loader do
   end
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
-  defp start_broadway(load, transform, writer) do
-    broadway().start_link(load: load, transform: transform, writer: writer)
+  defp start_source(load, dictionary, transform, writer) do
+    with {:ok, transformer} <- create_transformer(transform) do
+      context =
+        Source.Context.new!(
+          dictionary: dictionary,
+          handler: Persist.Load.SourceHandler,
+          app_name: :service_persist,
+          dataset_id: load.dataset_id,
+          subset_id: load.subset_id,
+          assigns: %{
+            transformer: transformer,
+            writer: writer
+          }
+        )
+
+      Source.start_link(load.source, context)
+    end
+  end
+
+  defp create_transformer(transform) do
+    Transformer.create(transform.steps, transform.dictionary)
   end
 
   defp stop(nil, _), do: :ok

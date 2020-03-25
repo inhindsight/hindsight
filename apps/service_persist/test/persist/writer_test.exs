@@ -29,9 +29,8 @@ defmodule Persist.WriterTest do
           id: "persist-1",
           dataset_id: "ds1",
           subset_id: "bobby",
-          source: "topic-1",
-          destination: "table_bobby",
-          schema: []
+          source: Source.Fake.new(),
+          destination: "table_bobby"
         )
 
       dictionary =

@@ -5,19 +5,12 @@ defmodule PersistTest do
   import Events
   require Temp.Env
 
+  import Definition, only: [identifier: 1]
+
   @instance Persist.Application.instance()
   @moduletag capture_log: true
 
   Temp.Env.modify([
-    %{
-      app: :service_persist,
-      key: Persist.Load.Broadway,
-      update: fn config ->
-        config
-        |> Keyword.put(:dlq, Persist.DLQMock)
-        |> Keyword.put(:configuration, BroadwayConfigurator.Dummy)
-      end
-    },
     %{
       app: :service_persist,
       key: Persist.Loader,
@@ -68,7 +61,7 @@ defmodule PersistTest do
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "example",
-        source: "topic-example",
+        source: Source.Fake.new(),
         destination: "ds1_example"
       )
 
@@ -82,25 +75,21 @@ defmodule PersistTest do
     Brook.Test.send(@instance, load_persist_start(), "testing", load)
 
     assert_async max_tries: 20 do
-      assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
+      assert :undefined != Persist.Load.Registry.whereis(:"#{identifier(load)}")
     end
 
-    broadway = Process.whereis(:broadway_dummy)
-
     messages = [
-      %{value: %{"name" => "bob", "age" => 12} |> Jason.encode!()}
+      %{"name" => "bob", "age" => 12}
     ]
 
-    ref = Broadway.test_messages(broadway, messages)
+    Source.Fake.inject_messages(load.source, messages)
 
     assert_receive {:write, [%{"fullname" => "bob", "age" => 12}], [dictionary: ^dictionary]}
-    assert_receive {:ack, ^ref, success, failed}
-    assert 1 == length(success)
 
     assert load == Persist.Load.Store.get!(load.dataset_id, load.subset_id)
   end
 
-  test "load:persist:end stops broadway and marks load as done" do
+  test "load:persist:end stops source and marks load as done" do
     test = self()
 
     transform =
@@ -124,9 +113,8 @@ defmodule PersistTest do
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "example",
-        source: "topic-example",
-        destination: "ds1_example",
-        schema: []
+        source: Source.Fake.new(),
+        destination: "ds1_example"
       )
 
     Writer.PrestoMock
@@ -139,13 +127,13 @@ defmodule PersistTest do
     Brook.Test.send(@instance, load_persist_start(), "testing", load)
 
     assert_async max_tries: 40, debug: true do
-      assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
+      assert :undefined != Persist.Load.Registry.whereis(:"#{identifier(load)}")
     end
 
     Brook.Test.send(@instance, load_persist_end(), "testing", load)
 
     assert_async max_tries: 20 do
-      assert :undefined == Persist.Load.Registry.whereis(:"#{load.source}")
+      assert :undefined == Persist.Load.Registry.whereis(:"#{identifier(load)}")
     end
 
     assert true == Persist.Load.Store.done?(load)
@@ -159,12 +147,8 @@ defmodule PersistTest do
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "example",
-        source: "topic-example",
-        destination: "ds1_example",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
+        source: Source.Fake.new(),
+        destination: "ds1_example"
       )
 
     Brook.Test.send(@instance, load_persist_end(), "testing", load)

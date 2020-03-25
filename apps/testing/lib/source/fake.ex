@@ -1,43 +1,54 @@
 defmodule Source.Fake do
   @derive Jason.Encoder
-  defstruct [:pid, :agent]
+  defstruct [:id]
 
   def new() do
-    {:ok, agent} = Agent.start_link(fn -> %{} end)
+    case :ets.whereis(__MODULE__) do
+      :undefined -> :ets.new(__MODULE__, [:named_table, :public])
+      _ -> :ok
+    end
+
+    id = id()
+    :ets.insert(__MODULE__, {id, self(), nil})
 
     %__MODULE__{
-      pid: self(),
-      agent: agent
+      id: id
     }
   end
 
   def inject_messages(t, messages) do
-    state = Agent.get(t.agent, & &1)
+    context = :ets.lookup_element(__MODULE__, t.id, 3)
 
-    Enum.reduce(messages, [], fn msg, acc ->
-      case state.handler.handle_message(msg) do
-        {:ok, new_msg} -> [new_msg | acc]
-        {:error, _reason} -> acc
-      end
+    messages
+    |> Enum.map(fn msg ->
+      encoded = Jason.encode!(msg)
+      %Source.Message{original: encoded, value: encoded}
     end)
-    |> Enum.reverse()
-    |> state.handler.handle_batch()
+    |> Source.Handler.inject_messages(context)
+  end
+
+  defp id() do
+    Integer.to_string(:rand.uniform(4_294_967_296), 32) <>
+      Integer.to_string(:rand.uniform(4_294_967_296), 32)
   end
 
   defimpl Source do
-    def start_link(t, opts) do
-      Agent.update(t.agent, fn s -> Map.new(opts) end)
-      send(t.pid, {:source_start_link, t, opts})
+    def start_link(t, context) do
+      :ets.update_element(Source.Fake, t.id, {3, context})
+      pid = :ets.lookup_element(Source.Fake, t.id, 2)
+      send(pid, {:source_start_link, t, context})
       {:ok, t}
     end
 
     def stop(t) do
-      send(t.pid, {:source_stop, t})
+      pid = :ets.lookup_element(Source.Fake, t.id, 2)
+      send(pid, {:source_stop, t})
       :ok
     end
 
     def delete(t) do
-      send(t.pid, {:source_delete, t})
+      pid = :ets.lookup_element(Source.Fake, t.id, 2)
+      send(pid, {:source_delete, t})
       :ok
     end
   end

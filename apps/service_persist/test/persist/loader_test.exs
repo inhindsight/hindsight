@@ -11,8 +11,7 @@ defmodule Persist.LoaderTest do
       app: :service_persist,
       key: Persist.Loader,
       set: [
-        writer: Persist.WriterMock,
-        broadway: BroadwayMock
+        writer: Persist.WriterMock
       ]
     }
   ])
@@ -45,7 +44,7 @@ defmodule Persist.LoaderTest do
         id: "load-1",
         dataset_id: "ds1",
         subset_id: "fake-name",
-        source: Source.Fake.new()
+        source: Source.Fake.new(),
         destination: "table-a"
       )
 
@@ -57,13 +56,6 @@ defmodule Persist.LoaderTest do
   end
 
   describe "start writer" do
-    setup do
-      BroadwayMock
-      |> stub(:start_link, fn _ -> {:ok, :broadway_pid} end)
-
-      :ok
-    end
-
     test "will start persist writer", %{load: load, transform: transform} do
       test = self()
 
@@ -73,18 +65,20 @@ defmodule Persist.LoaderTest do
         {:ok, :writer_pid}
       end)
 
-      {:ok, pid} = Persist.Loader.start_link(load: load)
+      start_supervised({Persist.Loader, load: load})
 
       assert_receive {:start_link, init_arg}
       assert load == Keyword.get(init_arg, :load)
       assert transform.dictionary == Keyword.get(init_arg, :dictionary)
-
-      assert_down(pid)
     end
 
     test "will retry starting writer if it fails to start", %{load: load} do
       test = self()
-      {:ok, agent} = Agent.start_link(fn -> 2 end, name: :test_agent)
+
+      start_supervised(%{
+        id: :test_agent,
+        start: {Agent, :start_link, [fn -> 2 end, [name: :test_agent]]}
+      })
 
       Persist.WriterMock
       |> expect(:start_link, 3, fn init_arg ->
@@ -96,12 +90,9 @@ defmodule Persist.LoaderTest do
         end
       end)
 
-      {:ok, pid} = Persist.Loader.start_link(load: load)
+      start_supervised({Persist.Loader, load: load})
 
       Enum.each(1..3, fn _ -> assert_receive {:start_link, _} end)
-
-      assert_down(pid)
-      assert_down(agent)
     end
 
     test "will die if fails to start writer", %{load: load} do
@@ -112,7 +103,7 @@ defmodule Persist.LoaderTest do
     end
   end
 
-  describe "broadway" do
+  describe "source" do
     setup do
       test = self()
 
@@ -126,52 +117,15 @@ defmodule Persist.LoaderTest do
       :ok
     end
 
-    test "will start broadway", %{load: load, transform: %{dictionary: dictionary} = transform} do
-      test = self()
+    test "will start source", %{load: load, transform: %{dictionary: dictionary}} do
+      start_supervised({Persist.Loader, load: load})
 
-      BroadwayMock
-      |> expect(:start_link, fn init_arg ->
-        send(test, {:start_link, init_arg})
-        {:ok, :broadway_pid}
-      end)
-
-      {:ok, pid} = Persist.Loader.start_link(load: load)
-      assert_receive {:start_link, init_arg}
-      assert load == Keyword.get(init_arg, :load)
-      assert transform == Keyword.get(init_arg, :transform)
-      write_function = Keyword.get(init_arg, :writer)
-      write_function.([:ok])
+      assert_receive {:source_start_link, source, context}
+      assert context.dataset_id == load.dataset_id
+      assert context.subset_id == load.subset_id
+      context.assigns.writer.([:ok])
 
       assert_receive {:write, [:ok], [dictionary: ^dictionary]}
-      assert_down(pid)
     end
-
-    test "will retry starting broadway", %{load: load} do
-      test = self()
-      {:ok, agent} = Agent.start_link(fn -> 3 end, name: :test_agent)
-
-      BroadwayMock
-      |> stub(:start_link, fn init_arg ->
-        send(test, {:start_link, init_arg})
-
-        case Agent.get_and_update(:test_agent, fn s -> {s, s - 1} end) do
-          0 -> {:ok, :broadway_pid}
-          n -> {:error, "remaining, #{n}"}
-        end
-      end)
-
-      assert {:ok, pid} = Persist.Loader.start_link(load: load)
-
-      Enum.each(1..4, fn _ -> assert_receive {:start_link, _} end)
-
-      assert_down(pid)
-      assert_down(agent)
-    end
-  end
-
-  defp assert_down(pid) do
-    ref = Process.monitor(pid)
-    Process.exit(pid, :kill)
-    assert_receive {:DOWN, ^ref, _, _, _}
   end
 end
