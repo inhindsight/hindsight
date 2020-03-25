@@ -84,7 +84,28 @@ defmodule Kafka.Topic.DestinationTest do
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
         {:ok, _, messages} = Elsa.fetch(@endpoints, topic.name)
-        assert [~s|{"one":1}|, ~s|{"two":2}|] == Enum.map(messages, & &1.value)
+
+        assert [{"", ~s|{"one":1}|}, {"", ~s|{"two":2}|}] ==
+                 Enum.map(messages, &{&1.key, &1.value})
+      end
+
+      assert_down(topic.pid)
+    end
+
+    test "keys message off topic's key_path field" do
+      topic = Kafka.Topic.new!(endpoints: @endpoints, name: "key-me", key_path: ["a", "b"])
+      {:ok, topic} = Destination.start_link(topic, [])
+
+      input = [%{"a" => %{"b" => "1"}}, %{"a" => %{"b" => "2"}}]
+      assert :ok = Destination.write(topic, input)
+
+      assert_async debug: true do
+        assert Elsa.topic?(@endpoints, topic.name)
+        {:ok, _, messages} = Elsa.fetch(@endpoints, topic.name)
+
+        # TODO keys can only be binary?
+        assert [{"1", ~s|{"a":{"b":"1"}}|}, {"2", ~s|{"a":{"b":"2"}}|}] =
+                 Enum.map(messages, &{&1.key, &1.value})
       end
 
       assert_down(topic.pid)

@@ -13,13 +13,13 @@ defmodule Kafka.Topic.Destination do
   end
 
   # TODO telemetry
-  # TODO write with key
+  # TODO handling exits
   @spec write(Destination.t(), [term]) :: :ok | {:error, term}
   def write(topic, [%{} | _] = messages) do
     encoded =
       Enum.reduce(messages, %{ok: [], error: []}, fn msg, %{ok: ok, error: err} = acc ->
         case Jason.encode(msg) do
-          {:ok, json} -> %{acc | ok: [json | ok]}
+          {:ok, json} -> %{acc | ok: [{key(topic, msg), json} | ok]}
           {:error, reason} -> %{acc | error: [{msg, reason} | err]}
         end
       end)
@@ -106,5 +106,11 @@ defmodule Kafka.Topic.Destination do
 
   defp connection_name do
     :"#{__MODULE__}_#{inspect(self())}"
+  end
+
+  defp key(%{key_path: []}, _), do: ""
+
+  defp key(%{key_path: path}, message) do
+    get_in(message, path) || ""
   end
 end
