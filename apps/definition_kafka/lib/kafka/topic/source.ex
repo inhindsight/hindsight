@@ -3,8 +3,8 @@ defmodule Kafka.Topic.Source do
   use Annotated.Retry
   require Logger
 
-  def start_link(t, init_opts) do
-    with {:ok, pid} <- GenServer.start_link(__MODULE__, {t, init_opts}) do
+  def start_link(t, %Source.Context{} = context) do
+    with {:ok, pid} <- GenServer.start_link(__MODULE__, {t, context}) do
       %{t | pid: pid}
       |> Ok.ok()
     end
@@ -20,19 +20,12 @@ defmodule Kafka.Topic.Source do
   end
 
   @impl GenServer
-  def init({t, init_opts}) do
+  def init({t, context}) do
     Process.flag(:trap_exit, true)
 
     state = %{
       t: t,
-      context: %Source.Context{
-        dictionary: Keyword.fetch!(init_opts, :dictionary),
-        handler: Keyword.fetch!(init_opts, :handler),
-        app_name: Keyword.fetch!(init_opts, :app_name),
-        dataset_id: Keyword.fetch!(init_opts, :dataset_id),
-        subset_id: Keyword.fetch!(init_opts, :subset_id),
-        assigns: Keyword.fetch!(init_opts, :assigns)
-      }
+      context: context
     }
 
     {:ok, state, {:continue, :init}}

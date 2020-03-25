@@ -45,13 +45,16 @@ defmodule Kafka.Topic.SourceTest do
     }
 
     {:ok, source} =
-      Source.start_link(source,
-        dictionary: dictionary,
-        handler: Handler,
-        app_name: "testing",
-        dataset_id: "ds1",
-        subset_id: "sb1",
-        assigns: %{test: self()}
+      Source.start_link(
+        source,
+        Source.Context.new!(
+          dictionary: dictionary,
+          handler: Handler,
+          app_name: "testing",
+          dataset_id: "ds1",
+          subset_id: "sb1",
+          assigns: %{test: self()}
+        )
       )
 
     assert_async do
@@ -69,13 +72,16 @@ defmodule Kafka.Topic.SourceTest do
     dictionary: dictionary
   } do
     {:ok, source} =
-      Source.start_link(source,
-        dictionary: dictionary,
-        handler: Handler,
-        app_name: "testing",
-        dataset_id: "ds1",
-        subset_id: "sb1",
-        assigns: %{test: self()}
+      Source.start_link(
+        source,
+        Source.Context.new!(
+          dictionary: dictionary,
+          handler: Handler,
+          app_name: "testing",
+          dataset_id: "ds1",
+          subset_id: "sb1",
+          assigns: %{test: self()}
+        )
       )
 
     assert_async do
@@ -96,13 +102,16 @@ defmodule Kafka.Topic.SourceTest do
 
   test "stop/1 will stop the process", %{source: source, dictionary: dictionary} do
     {:ok, source} =
-      Source.start_link(source,
-        dictionary: dictionary,
-        handler: Handler,
-        app_name: "testing",
-        dataset_id: "ds1",
-        subset_id: "sb1",
-        assigns: %{test: self()}
+      Source.start_link(
+        source,
+        Source.Context.new!(
+          dictionary: dictionary,
+          handler: Handler,
+          app_name: "testing",
+          dataset_id: "ds1",
+          subset_id: "sb1",
+          assigns: %{test: self()}
+        )
       )
 
     Source.stop(source)

@@ -34,7 +34,7 @@ defmodule Kafka.Topic do
   defp fix_endpoint(endpoint), do: endpoint
 
   defimpl Source do
-    defdelegate start_link(t, init_opts), to: Kafka.Topic.Source
+    defdelegate start_link(t, context), to: Kafka.Topic.Source
     defdelegate stop(t), to: Kafka.Topic.Source
     defdelegate delete(t), to: Kafka.Topic.Source
   end

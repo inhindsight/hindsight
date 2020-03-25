@@ -1,8 +1,3 @@
-defmodule Source.Context do
-  @type t :: %__MODULE__{}
-  defstruct [:dictionary, :handler, :app_name, :dataset_id, :subset_id, :assigns]
-end
-
 defmodule Source.Message do
   @type t :: %__MODULE__{}
   defstruct [:original, :value, :error, :stacktrace]
