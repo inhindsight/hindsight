@@ -79,6 +79,7 @@ defmodule Kafka.Topic.Destination do
   end
 
   def handle_call(:stop, _from, state) do
+    Logger.info(fn -> "#{__MODULE__}: Terminating by request" end)
     {:stop, :normal, :ok, state}
   end
 
@@ -88,6 +89,8 @@ defmodule Kafka.Topic.Destination do
   end
 
   def handle_cast({:dlq, messages}, state) do
+    Logger.debug(fn -> "#{__MODULE__}: Writing #{Enum.count(messages)} messages to DLQ" end)
+
     opts = Enum.into(state, [])
 
     dead_letters =
@@ -97,6 +100,17 @@ defmodule Kafka.Topic.Destination do
       end)
 
     dlq().write(dead_letters)
+    {:noreply, state}
+  end
+
+  @impl GenServer
+  def handle_info({:EXIT, pid, reason}, %{elsa_pid: pid} = state) do
+    Logger.error(fn -> "#{__MODULE__}: Elsa(#{inspect(pid)}) died : #{inspect(reason)}" end)
+    {:stop, reason, state}
+  end
+
+  def handle_info(message, state) do
+    Logger.info(fn -> "#{__MODULE__}: received unknown message - #{inspect(message)}" end)
     {:noreply, state}
   end
 
