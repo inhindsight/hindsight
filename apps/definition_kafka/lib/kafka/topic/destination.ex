@@ -1,5 +1,5 @@
 defmodule Kafka.Topic.Destination do
-  use GenServer
+  use GenServer, shutdown: 30_000
   use Properties, otp_app: :definition_kafka
   require Logger
 
@@ -37,10 +37,9 @@ defmodule Kafka.Topic.Destination do
     end
   end
 
-  # TODO
-  # TODO handling exits
-  def stop(_t) do
-    :ok
+  @spec stop(Destination.t()) :: :ok
+  def stop(topic) do
+    GenServer.call(topic.pid, :stop)
   end
 
   @spec delete(Destination.t()) :: :ok | {:error, term}
@@ -63,8 +62,8 @@ defmodule Kafka.Topic.Destination do
   def handle_continue({:init, topic}, state) do
     with opts <- Map.from_struct(topic) |> Enum.into([]),
          :ok <- Elsa.create_topic(topic.endpoints, topic.name, opts),
-         {:ok, _} <- start_producer(topic, state.connection) do
-      {:noreply, state}
+         {:ok, pid} <- start_producer(topic, state.connection) do
+      {:noreply, Map.put(state, :elsa_pid, pid)}
     end
   end
 
@@ -77,6 +76,10 @@ defmodule Kafka.Topic.Destination do
       error ->
         {:reply, error, state}
     end
+  end
+
+  def handle_call(:stop, _from, state) do
+    {:stop, :normal, :ok, state}
   end
 
   @impl GenServer
@@ -97,15 +100,33 @@ defmodule Kafka.Topic.Destination do
     {:noreply, state}
   end
 
+  @impl GenServer
+  def terminate(reason, %{elsa_pid: pid}) do
+    Process.exit(pid, reason)
+
+    receive do
+      {:EXIT, ^pid, _} -> reason
+    after
+      20_000 -> reason
+    end
+  end
+
+  def terminate(reason, _) do
+    reason
+  end
+
   defp start_producer(topic, conn) do
-    Elsa.Supervisor.start_link(
-      connection: conn,
-      endpoints: topic.endpoints,
-      producer: [
-        topic: topic.name
-      ]
-    )
-    |> Ok.map(fn _ -> Elsa.Producer.ready?(conn) end)
+    with {:ok, pid} <-
+           Elsa.Supervisor.start_link(
+             connection: conn,
+             endpoints: topic.endpoints,
+             producer: [
+               topic: topic.name
+             ]
+           ),
+         true <- Elsa.Producer.ready?(conn) do
+      Ok.ok(pid)
+    end
   end
 
   defp connection_name do

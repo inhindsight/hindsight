@@ -140,6 +140,21 @@ defmodule Kafka.Topic.DestinationTest do
     end
   end
 
+  describe "stop/1" do
+    test "stops the destination topic process" do
+      topic = Kafka.Topic.new!(endpoints: @endpoints, name: "stop-me")
+      {:ok, topic} = Destination.start_link(topic, [])
+
+      assert_async debug: true do
+        assert Elsa.topic?(@endpoints, topic.name)
+      end
+
+      assert :ok = Destination.stop(topic)
+
+      refute Process.alive?(topic.pid)
+    end
+  end
+
   describe "delete/1" do
     test "deletes topic from Kafka" do
       {:ok, topic} = Kafka.Topic.new(endpoints: @endpoints, name: "delete-me")
