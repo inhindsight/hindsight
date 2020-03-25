@@ -1,6 +1,6 @@
 defmodule Define.Store do
   require Logger
-  alias Define.{DefinitionSerialization, PersistView}
+  alias Define.{DefinitionSerialization, ExtractView, PersistView, TransformView}
 
   @instance Define.Application.instance()
   @collection "definitions"
@@ -9,9 +9,7 @@ defmodule Define.Store do
     get(data.dataset_id)
     |> Map.put(:dataset_id, data.dataset_id)
     |> Map.put(:subset_id, data.subset_id)
-    |> put_in_better([:extract, :destination], data.destination)
-    |> put_in_better([:extract, :steps], DefinitionSerialization.serialize(data.steps))
-    |> put_in_better([:extract, :dictionary], DefinitionSerialization.serialize(data.dictionary))
+    |> Map.put(:extract, to_extract_view(data))
     |> persist()
   end
 
@@ -19,8 +17,7 @@ defmodule Define.Store do
     get(data.dataset_id)
     |> Map.put(:dataset_id, data.dataset_id)
     |> Map.put(:subset_id, data.subset_id)
-    |> Map.put(:dictionary, data.dictionary)
-    |> Map.put(:transform_steps, data.steps)
+    |> Map.put(:transform, to_transform_view(data))
     |> persist()
   end
 
@@ -36,23 +33,28 @@ defmodule Define.Store do
     Logger.error("Got unexpected data definition update: #{inspect(data)}")
   end
 
-  @spec to_persist_view(atom | %{destination: any, source: any}) :: Define.PersistView.t()
-  def to_persist_view(persist_event) do
-    %PersistView{
-      source: persist_event.source,
-      destination: persist_event.destination
+  defp to_extract_view(event) do
+    %ExtractView{
+      destination: event.destination,
+      dictionary: DefinitionSerialization.serialize(event.dictionary),
+      steps: DefinitionSerialization.serialize(event.steps)
     }
   end
 
-  def put_in_better(map, [hd], value) do
-    Map.put(map, hd, value)
+  defp to_transform_view(event) do
+    %TransformView{
+      dictionary: DefinitionSerialization.serialize(event.dictionary),
+      steps: DefinitionSerialization.serialize(event.steps)
+    }
   end
 
-  # TODO Move to utilities
-  def put_in_better(map, [hd | tail], value) do
-    next_value = Map.get(map, hd)
-    Map.put(map, hd, put_in_better(next_value, tail, value))
+  defp to_persist_view(event) do
+    %PersistView{
+      source: event.source,
+      destination: event.destination
+    }
   end
+
 
   def get(dataset_id) do
     case Brook.get!(@instance, @collection, dataset_id) do

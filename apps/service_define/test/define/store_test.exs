@@ -6,17 +6,11 @@ defmodule Define.StoreTest do
     ExtractView,
     ModuleFunctionArgsView,
     ArgumentView,
-    PersistView
+    PersistView,
+    TransformView
   }
 
   @instance Define.Application.instance()
-
-  test "put_in_better works" do
-    initial = %{a: %{b: %{c: "A"}}}
-    expected = %{a: %{b: %{c: "Z"}}}
-
-    assert Define.Store.put_in_better(initial, [:a, :b, :c], "Z") == expected
-  end
 
   describe "update_definition/1" do
     setup do
@@ -124,6 +118,82 @@ defmodule Define.StoreTest do
       assert id == persisted.dataset_id
       assert "default" == persisted.subset_id
       assert expected == persisted.persist
+    end
+
+    test "persists a new transform" do
+      id = "tdataset"
+
+      Brook.Test.with_event(@instance, fn ->
+        event =
+          Transform.new!(
+            id: "transform-1",
+            dataset_id: id,
+            subset_id: "default",
+            dictionary: [
+              Dictionary.Type.String.new!(name: "letter")
+            ],
+            steps: [
+              Transform.Wkt.Point.new!(
+                longitude: "long",
+                latitude: "lat",
+                to: "point"
+              )
+            ]
+          )
+
+        Define.Store.update_definition(event)
+      end)
+
+      persisted = Define.Store.get(id)
+
+      expected = %DataDefinitionView{
+        version: 1,
+        dataset_id: id,
+        transform: %TransformView{
+          dictionary: [
+            %ModuleFunctionArgsView{
+              struct_module_name: "Elixir.Dictionary.Type.String",
+              args: [
+                %ArgumentView{
+                  key: "description",
+                  type: "string",
+                  value: ""
+                },
+                %ArgumentView{
+                  key: "name",
+                  type: "string",
+                  value: "letter"
+                }
+              ]
+            }
+          ],
+          steps: [
+            %ModuleFunctionArgsView{
+              struct_module_name: "Elixir.Transform.Wkt.Point",
+              args: [
+                %ArgumentView{
+                  key: "latitude",
+                  type: "string",
+                  value: "lat"
+                },
+                %ArgumentView{
+                  key: "longitude",
+                  type: "string",
+                  value: "long"
+                },
+                %ArgumentView{
+                  key: "to",
+                  type: "string",
+                  value: "point"
+                }
+              ]
+            }
+          ]
+        },
+        subset_id: "default"
+      }
+
+      assert expected == persisted
     end
 
     test "persists updated args when two events are posted" do

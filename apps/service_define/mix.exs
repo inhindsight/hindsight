@@ -34,14 +34,16 @@ defmodule Define.MixProject do
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:extractor, in_umbrella: true},
-      {:phoenix, "~> 1.4.15"},
-      {:phoenix_pubsub, "~> 1.1"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:properties, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
+      {:phoenix, "~> 1.4.15"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_pubsub, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
-      {:testing, in_umbrella: true, only: [:test]}
+      {:properties, in_umbrella: true},
+      {:testing, in_umbrella: true, only: [:test]},
+      # This should eventually be transformer once that has been created (like extractor)
+      {:transform_wkt, in_umbrella: true}
     ]
   end
 end

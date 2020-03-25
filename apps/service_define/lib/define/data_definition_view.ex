@@ -1,13 +1,13 @@
 defmodule Define.DataDefinitionView do
   use Definition, schema: Define.DataDefinitionView.V1
-  alias Define.{ExtractView, PersistView}
+  alias Define.{ExtractView, PersistView, TransformView}
 
   @type t :: %__MODULE__{
           version: integer,
           dataset_id: String.t(),
           subset_id: String.t(),
           extract: ExtractView.t(),
-          transform_steps: list,
+          transform: TransformView.t(),
           persist: PersistView.t()
         }
 
@@ -16,7 +16,7 @@ defmodule Define.DataDefinitionView do
             dataset_id: "",
             subset_id: "default",
             extract: %ExtractView{},
-            transform_steps: [],
+            transform: %TransformView{},
             persist: %PersistView{}
 end
 
@@ -31,7 +31,7 @@ defmodule Define.DataDefinitionView.V1 do
       dataset_id: string(),
       subset_id: string(),
       extract: of_struct(ExtractView),
-      transform_steps: list(),
+      transform: of_struct(TransformView),
       persist: of_struct(PersistView)
     })
   end
