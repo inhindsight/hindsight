@@ -19,14 +19,13 @@ defmodule Define.DefinitionSerialization do
   end
 
   defp to_list_of_argument_views(struct_name, definition) do
-    field_value =
-      struct_name
-      |> TypespecAnalysis.get_types()
-      |> Map.delete(:version)
-      |> Enum.map(fn {arg_name, _} = arg_to_type ->
-        arg_value = Map.get(definition, String.to_atom(arg_name))
-        to_argument_view(arg_to_type, arg_value)
-      end)
+    struct_name
+    |> TypespecAnalysis.get_types()
+    |> Map.delete(:version)
+    |> Enum.map(fn {arg_name, _} = arg_to_type ->
+      arg_value = Map.get(definition, String.to_atom(arg_name))
+      to_argument_view(arg_to_type, arg_value)
+    end)
   end
 
   defp to_argument_view({_, "dictionary"}, %Dictionary.Type.Map{} = map_definition) do

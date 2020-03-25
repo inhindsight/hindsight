@@ -31,16 +31,23 @@ defmodule Define.TypespecAnalysis do
   end
 
   defp extract_field_type({:type, _, _, [{_, _, name}, {_, _, type}]}), do: {name, type, nil}
-  defp extract_field_type({:type, _, _, [{_, _, name}, {_, _, type, sub_typespec}]}), do: {name, type, sub_typespec}
 
-  defp to_simple_type({name, :list, [{_, _, [{_, _, String}, _, _]}]}), do: {to_string(name), {"list", "string"}}
-  defp to_simple_type({name, :list, [{_, _, type, _}]}), do: {to_string(name), {"list", to_string(type)}}
+  defp extract_field_type({:type, _, _, [{_, _, name}, {_, _, type, sub_typespec}]}),
+    do: {name, type, sub_typespec}
+
+  defp to_simple_type({name, :list, [{_, _, [{_, _, String}, _, _]}]}),
+    do: {to_string(name), {"list", "string"}}
+
+  defp to_simple_type({name, :list, [{_, _, type, _}]}),
+    do: {to_string(name), {"list", to_string(type)}}
+
   defp to_simple_type({name, typespec, _}) do
-    type = case typespec do
-      [{_, _, String}, _, _] -> "string"
-      [{_, _, Dictionary}, _, _] -> "dictionary"
-      _ -> typespec
-    end
+    type =
+      case typespec do
+        [{_, _, String}, _, _] -> "string"
+        [{_, _, Dictionary}, _, _] -> "dictionary"
+        _ -> typespec
+      end
 
     {to_string(name), to_string(type)}
   end

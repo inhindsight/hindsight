@@ -34,25 +34,7 @@ defmodule Define.StoreTest do
             subset_id: "default",
             destination: "success",
             dictionary: [
-              Dictionary.Type.String.new!(name: "letter"),
-              Dictionary.Type.Map.new!(
-                name: "spouse",
-                dictionary: [
-                  %Dictionary.Type.String{name: "name"},
-                  %Dictionary.Type.Integer{name: "age"}
-                ]
-              ),
-              %Dictionary.Type.List{
-                name: "friends",
-                item_type:
-                  Dictionary.Type.Map.new!(
-                    name: "in_list",
-                    dictionary: [
-                      %Dictionary.Type.String{name: "name"},
-                      %Dictionary.Type.Integer{name: "age"}
-                    ]
-                  )
-              }
+              Dictionary.Type.String.new!(name: "letter")
             ],
             steps: [
               Extract.Http.Get.new!(
@@ -95,8 +77,14 @@ defmodule Define.StoreTest do
             struct_module_name: "Elixir.Dictionary.Type.String",
             args: [
               %ArgumentView{
+                key: "description",
+                type: "string",
+                value: ""
+              },
+              %ArgumentView{
                 key: "name",
-                type: "letter"
+                type: "string",
+                value: "letter"
               }
             ]
           }
@@ -104,129 +92,131 @@ defmodule Define.StoreTest do
         subset_id: "default"
       }
 
-      #   Brook.Test.with_event(@instance, fn ->
-      #     event =
-      #       Transform.new!(
-      #         id: "transform-1",
-      #         dataset_id: id,
-      #         subset_id: "default",
-      #         dictionary: [],
-      #         steps: []
-      #       )
-
-      #     Define.Store.update_definition(event)
-      #   end)
-
-      #   persisted = Define.Store.get(id)
-
-      #   expected = %Define.DataDefinitionView{
-      #     dataset_id: id,
-      #     subset_id: "default",
-      #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
-      #     transform_steps: [],
-      #     version: 1
-      #   }
-
-      #   Brook.Test.with_event(@instance, fn ->
-      #     event =
-      #       Transform.new!(
-      #         id: "transform-1",
-      #         dataset_id: id,
-      #         subset_id: "default",
-      #         dictionary: [],
-      #         steps: []
-      #       )
-
-      #     Define.Store.update_definition(event)
-      #   end)
-
-      #   persisted = Define.Store.get(id)
-
-      #   expected = %Define.DataDefinitionView{
-      #     dataset_id: id,
-      #     subset_id: "default",
-      #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
-      #     transform_steps: [],
-      #     version: 1
-      #   }
-
-      #   assert ^expected = persisted
-      # end
-
-      # test "persists a new persist" do
-      #   id = "bdataset"
-
-      #   Brook.Test.with_event(@instance, fn ->
-      #     event =
-      #       Load.Persist.new!(
-      #         id: "persist-1",
-      #         dataset_id: id,
-      #         subset_id: "default",
-      #         source: "akafkatopic",
-      #         destination: "storage__json"
-      #       )
-
-      #     Define.Store.update_definition(event)
-      #   end)
-
-      #   persisted = Define.Store.get(id)
-
-      #   expected = %Define.DataDefinitionView{
-      #     dataset_id: id,
-      #     persist_source: "akafkatopic",
-      #     persist_destination: "storage__json",
-      #     subset_id: "default",
-      #     version: 1
-      #   }
-
-      #   assert ^expected = persisted
-      # end
-
-      # test "persists updated args when two events are posted" do
-      #   id = "cDataset"
-
-      #   Brook.Test.with_event(@instance, fn ->
-      #     event =
-      #       Extract.new!(
-      #         id: "extract-1",
-      #         dataset_id: id,
-      #         subset_id: "default",
-      #         destination: "success",
-      #         dictionary: [],
-      #         steps: []
-      #       )
-
-      #     Define.Store.update_definition(event)
-      #   end)
-
-      #   Brook.Test.with_event(@instance, fn ->
-      #     event =
-      #       Load.Persist.new!(
-      #         id: "persist-1",
-
-      #         subset_id: "default",
-      #         source: "akafkatopic",
-      #         destination: "storage__json"
-      #       )
-
-      #     Define.Store.update_definition(event)
-      #   end)
-
-      #   persisted = Define.Store.get(id)
-
-      #   expected = %Define.DataDefinitionView{
-      #     dataset_id: id,
-      #     extract_destination: "success",
-      #     extract_steps: [],
-      #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
-      #     persist_source: "akafkatopic",
-      #     persist_destination: "storage__json",
-      #     subset_id: "default",
-      #     version: 1
-      #   }
-
-      #   assert ^expected = persisted
-      # end
+      assert expected == persisted
     end
+
+    #   Brook.Test.with_event(@instance, fn ->
+    #     event =
+    #       Transform.new!(
+    #         id: "transform-1",
+    #         dataset_id: id,
+    #         subset_id: "default",
+    #         dictionary: [],
+    #         steps: []
+    #       )
+
+    #     Define.Store.update_definition(event)
+    #   end)
+
+    #   persisted = Define.Store.get(id)
+
+    #   expected = %Define.DataDefinitionView{
+    #     dataset_id: id,
+    #     subset_id: "default",
+    #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
+    #     transform_steps: [],
+    #     version: 1
+    #   }
+
+    #   Brook.Test.with_event(@instance, fn ->
+    #     event =
+    #       Transform.new!(
+    #         id: "transform-1",
+    #         dataset_id: id,
+    #         subset_id: "default",
+    #         dictionary: [],
+    #         steps: []
+    #       )
+
+    #     Define.Store.update_definition(event)
+    #   end)
+
+    #   persisted = Define.Store.get(id)
+
+    #   expected = %Define.DataDefinitionView{
+    #     dataset_id: id,
+    #     subset_id: "default",
+    #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
+    #     transform_steps: [],
+    #     version: 1
+    #   }
+
+    #   assert ^expected = persisted
+    # end
+
+    # test "persists a new persist" do
+    #   id = "bdataset"
+
+    #   Brook.Test.with_event(@instance, fn ->
+    #     event =
+    #       Load.Persist.new!(
+    #         id: "persist-1",
+    #         dataset_id: id,
+    #         subset_id: "default",
+    #         source: "akafkatopic",
+    #         destination: "storage__json"
+    #       )
+
+    #     Define.Store.update_definition(event)
+    #   end)
+
+    #   persisted = Define.Store.get(id)
+
+    #   expected = %Define.DataDefinitionView{
+    #     dataset_id: id,
+    #     persist_source: "akafkatopic",
+    #     persist_destination: "storage__json",
+    #     subset_id: "default",
+    #     version: 1
+    #   }
+
+    #   assert ^expected = persisted
+    # end
+
+    # test "persists updated args when two events are posted" do
+    #   id = "cDataset"
+
+    #   Brook.Test.with_event(@instance, fn ->
+    #     event =
+    #       Extract.new!(
+    #         id: "extract-1",
+    #         dataset_id: id,
+    #         subset_id: "default",
+    #         destination: "success",
+    #         dictionary: [],
+    #         steps: []
+    #       )
+
+    #     Define.Store.update_definition(event)
+    #   end)
+
+    #   Brook.Test.with_event(@instance, fn ->
+    #     event =
+    #       Load.Persist.new!(
+    #         id: "persist-1",
+
+    #         subset_id: "default",
+    #         source: "akafkatopic",
+    #         destination: "storage__json"
+    #       )
+
+    #     Define.Store.update_definition(event)
+    #   end)
+
+    #   persisted = Define.Store.get(id)
+
+    #   expected = %Define.DataDefinitionView{
+    #     dataset_id: id,
+    #     extract_destination: "success",
+    #     extract_steps: [],
+    #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
+    #     persist_source: "akafkatopic",
+    #     persist_destination: "storage__json",
+    #     subset_id: "default",
+    #     version: 1
+    #   }
+
+    #   assert ^expected = persisted
+    # end
   end
 end

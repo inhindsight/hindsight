@@ -44,12 +44,10 @@ export enum ArgumentType {
     atom = "atom",
     float = "float",
     boolean = "boolean",
-    list = "list",
-    map = "map",
-    dictionary = "dictionary",
+    module = "module",
 }
 
-export type ListArgumentType = ["list", ArgumentType]
+export type ListArgumentType = readonly ["list", ArgumentType]
 
 export interface ObjectMap<T> {
     readonly [key: string]: T
