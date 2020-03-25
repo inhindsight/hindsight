@@ -5,7 +5,8 @@ defmodule Define.StoreTest do
     DataDefinitionView,
     ExtractView,
     ModuleFunctionArgsView,
-    ArgumentView
+    ArgumentView,
+    PersistView
   }
 
   @instance Define.Application.instance()
@@ -95,128 +96,100 @@ defmodule Define.StoreTest do
       assert expected == persisted
     end
 
-    #   Brook.Test.with_event(@instance, fn ->
-    #     event =
-    #       Transform.new!(
-    #         id: "transform-1",
-    #         dataset_id: id,
-    #         subset_id: "default",
-    #         dictionary: [],
-    #         steps: []
-    #       )
+    test "persists a new persist" do
+      id = "bdataset"
 
-    #     Define.Store.update_definition(event)
-    #   end)
+      Brook.Test.with_event(@instance, fn ->
+        event =
+          Load.Persist.new!(
+            id: "persist-1",
+            dataset_id: id,
+            subset_id: "default",
+            source: "akafkatopic",
+            destination: "storage__json"
+          )
 
-    #   persisted = Define.Store.get(id)
+        Define.Store.update_definition(event)
+      end)
 
-    #   expected = %Define.DataDefinitionView{
-    #     dataset_id: id,
-    #     subset_id: "default",
-    #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
-    #     transform_steps: [],
-    #     version: 1
-    #   }
+      persisted = Define.Store.get(id)
 
-    #   Brook.Test.with_event(@instance, fn ->
-    #     event =
-    #       Transform.new!(
-    #         id: "transform-1",
-    #         dataset_id: id,
-    #         subset_id: "default",
-    #         dictionary: [],
-    #         steps: []
-    #       )
+      expected =
+        PersistView.new!(
+          source: "akafkatopic",
+          destination: "storage__json",
+          version: 1
+        )
 
-    #     Define.Store.update_definition(event)
-    #   end)
+      assert id == persisted.dataset_id
+      assert "default" == persisted.subset_id
+      assert expected == persisted.persist
+    end
 
-    #   persisted = Define.Store.get(id)
+    test "persists updated args when two events are posted" do
+      id = "cDataset"
 
-    #   expected = %Define.DataDefinitionView{
-    #     dataset_id: id,
-    #     subset_id: "default",
-    #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
-    #     transform_steps: [],
-    #     version: 1
-    #   }
+      Brook.Test.with_event(@instance, fn ->
+        event =
+          Extract.new!(
+            id: "extract-1",
+            dataset_id: id,
+            subset_id: "default",
+            destination: "success",
+            dictionary: [Dictionary.Type.String.new!(name: "person")],
+            steps: []
+          )
 
-    #   assert ^expected = persisted
-    # end
+        Define.Store.update_definition(event)
+      end)
 
-    # test "persists a new persist" do
-    #   id = "bdataset"
+      Brook.Test.with_event(@instance, fn ->
+        event =
+          Load.Persist.new!(
+            id: "persist-1",
+            dataset_id: id,
+            subset_id: "default",
+            source: "akafkatopic",
+            destination: "storage__json"
+          )
 
-    #   Brook.Test.with_event(@instance, fn ->
-    #     event =
-    #       Load.Persist.new!(
-    #         id: "persist-1",
-    #         dataset_id: id,
-    #         subset_id: "default",
-    #         source: "akafkatopic",
-    #         destination: "storage__json"
-    #       )
+        Define.Store.update_definition(event)
+      end)
 
-    #     Define.Store.update_definition(event)
-    #   end)
+      persisted = Define.Store.get(id)
 
-    #   persisted = Define.Store.get(id)
+      expected = %DataDefinitionView{
+        dataset_id: id,
+        subset_id: "default",
+        extract: %ExtractView{
+          destination: "success",
+          steps: []
+        },
+        persist: %PersistView{
+          source: "akafkatopic",
+          destination: "storage__json"
+        },
+        dictionary: [
+          %ModuleFunctionArgsView{
+            struct_module_name: "Elixir.Dictionary.Type.String",
+            args: [
+              %ArgumentView{
+                key: "description",
+                type: "string",
+                value: ""
+              },
+              %ArgumentView{
+                key: "name",
+                type: "string",
+                value: "person"
+              }
+            ]
+          }
+        ],
+        version: 1
+      }
 
-    #   expected = %Define.DataDefinitionView{
-    #     dataset_id: id,
-    #     persist_source: "akafkatopic",
-    #     persist_destination: "storage__json",
-    #     subset_id: "default",
-    #     version: 1
-    #   }
-
-    #   assert ^expected = persisted
-    # end
-
-    # test "persists updated args when two events are posted" do
-    #   id = "cDataset"
-
-    #   Brook.Test.with_event(@instance, fn ->
-    #     event =
-    #       Extract.new!(
-    #         id: "extract-1",
-    #         dataset_id: id,
-    #         subset_id: "default",
-    #         destination: "success",
-    #         dictionary: [],
-    #         steps: []
-    #       )
-
-    #     Define.Store.update_definition(event)
-    #   end)
-
-    #   Brook.Test.with_event(@instance, fn ->
-    #     event =
-    #       Load.Persist.new!(
-    #         id: "persist-1",
-
-    #         subset_id: "default",
-    #         source: "akafkatopic",
-    #         destination: "storage__json"
-    #       )
-
-    #     Define.Store.update_definition(event)
-    #   end)
-
-    #   persisted = Define.Store.get(id)
-
-    #   expected = %Define.DataDefinitionView{
-    #     dataset_id: id,
-    #     extract_destination: "success",
-    #     extract_steps: [],
-    #     dictionary: %Dictionary.Impl{by_name: %{}, by_type: %{}, ordered: [], size: 0},
-    #     persist_source: "akafkatopic",
-    #     persist_destination: "storage__json",
-    #     subset_id: "default",
-    #     version: 1
-    #   }
-
-    #   assert ^expected = persisted
-    # end
+      assert expected == persisted
+    end
   end
 end

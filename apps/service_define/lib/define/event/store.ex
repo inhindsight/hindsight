@@ -1,6 +1,6 @@
 defmodule Define.Store do
   require Logger
-  alias Define.{DefinitionSerialization}
+  alias Define.{DefinitionSerialization, PersistView}
 
   @instance Define.Application.instance()
   @collection "definitions"
@@ -28,9 +28,16 @@ defmodule Define.Store do
     get(data.dataset_id)
     |> Map.put(:dataset_id, data.dataset_id)
     |> Map.put(:subset_id, data.subset_id)
-    |> Map.put(:persist_source, data.source)
-    |> Map.put(:persist_destination, data.destination)
+    |> Map.put(:persist, to_persist_view(data))
     |> persist()
+  end
+
+  @spec to_persist_view(atom | %{destination: any, source: any}) :: Define.PersistView.t()
+  def to_persist_view(persist_event) do
+    %PersistView{
+      source: persist_event.source,
+      destination: persist_event.destination
+    }
   end
 
   def update_definition(data) do
