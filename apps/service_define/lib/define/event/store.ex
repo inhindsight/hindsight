@@ -6,7 +6,7 @@ defmodule Define.Store do
   @collection "definitions"
 
   def update_definition(%Extract{} = data) do
-    get(data.dataset_id)
+    get_or_create(data.dataset_id)
     |> Map.put(:dataset_id, data.dataset_id)
     |> Map.put(:subset_id, data.subset_id)
     |> Map.put(:extract, to_extract_view(data))
@@ -14,7 +14,7 @@ defmodule Define.Store do
   end
 
   def update_definition(%Transform{} = data) do
-    get(data.dataset_id)
+    get_or_create(data.dataset_id)
     |> Map.put(:dataset_id, data.dataset_id)
     |> Map.put(:subset_id, data.subset_id)
     |> Map.put(:transform, to_transform_view(data))
@@ -22,7 +22,7 @@ defmodule Define.Store do
   end
 
   def update_definition(%Load.Persist{} = data) do
-    get(data.dataset_id)
+    get_or_create(data.dataset_id)
     |> Map.put(:dataset_id, data.dataset_id)
     |> Map.put(:subset_id, data.subset_id)
     |> Map.put(:persist, to_persist_view(data))
@@ -31,6 +31,18 @@ defmodule Define.Store do
 
   def update_definition(data) do
     Logger.error("Got unexpected data definition update: #{inspect(data)}")
+  end
+
+  def get(dataset_id) do
+    Brook.get!(@instance, @collection, dataset_id)
+  end
+
+  def get_all() do
+    Brook.get_all_values!(@instance, @collection)
+  end
+
+  def delete_all_definitions() do
+    Brook.Test.clear_view_state(@instance, @collection)
   end
 
   defp to_extract_view(event) do
@@ -55,16 +67,11 @@ defmodule Define.Store do
     }
   end
 
-
-  def get(dataset_id) do
-    case Brook.get!(@instance, @collection, dataset_id) do
+  defp get_or_create(id) do
+    case get(id) do
       nil -> %Define.DataDefinitionView{}
       map -> map
     end
-  end
-
-  def delete_all_definitions() do
-    Brook.Test.clear_view_state(@instance, @collection)
   end
 
   defp persist(data) do

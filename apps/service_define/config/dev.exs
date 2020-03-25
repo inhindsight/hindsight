@@ -1,5 +1,20 @@
 use Mix.Config
 
+config :service_define, Define.Application,
+  kafka_endpoints: nil,
+  brook: [
+    driver: [
+      module: Brook.Driver.Default,
+      init_arg: []
+    ],
+    handlers: [Define.Event.Handler],
+    storage: [
+      module: Brook.Storage.Ets,
+      init_arg: []
+    ],
+    dispatcher: Brook.Dispatcher.Noop
+  ]
+
 config :service_define, DefineWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
@@ -14,9 +29,7 @@ config :service_define, DefineWeb.Endpoint,
       "../priv/static/",
       cd: Path.expand("../assets", __DIR__)
     ]
-  ]
-
-config :service_define, DefineWeb.Endpoint,
+  ],
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",

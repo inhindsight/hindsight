@@ -19,14 +19,14 @@ export interface TransformView {
 }
 
 export interface ExtractView {
-    readonly destination: string
+    readonly destination: string | null
     readonly dictionary: readonly ModuleFunctionArgsView[]
     readonly steps: readonly ModuleFunctionArgsView[]
 }
 
 export interface PersistView {
-    readonly source: string
-    readonly destination: string
+    readonly source: string | null
+    readonly destination: string | null
 }
 
 
@@ -38,7 +38,7 @@ export interface ModuleFunctionArgsView {
 export interface ArgumentView {
     readonly key: string
     readonly type: ArgumentType | ListArgumentType
-    readonly value: PrimitiveTypes | ObjectMap<PrimitiveTypes> | ReadonlyArray<PrimitiveTypes>
+    readonly value: PrimitiveTypes | ObjectMap<PrimitiveTypes | ModuleFunctionArgsView> | ReadonlyArray<PrimitiveTypes | ModuleFunctionArgsView>
 }
 
 export type PrimitiveTypes = string | number | boolean

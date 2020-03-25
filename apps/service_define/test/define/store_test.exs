@@ -1,7 +1,8 @@
-defmodule Define.StoreTest do
+defmodule StoreTest do
   use ExUnit.Case
 
   alias Define.{
+    Store,
     DataDefinitionView,
     ExtractView,
     ModuleFunctionArgsView,
@@ -14,7 +15,7 @@ defmodule Define.StoreTest do
 
   describe "update_definition/1" do
     setup do
-      on_exit(fn -> Define.Store.delete_all_definitions() end)
+      on_exit(fn -> Store.delete_all_definitions() end)
       :ok
     end
 
@@ -39,10 +40,10 @@ defmodule Define.StoreTest do
             ]
           )
 
-        Define.Store.update_definition(event)
+        Store.update_definition(event)
       end)
 
-      persisted = Define.Store.get(id)
+      persisted = Store.get(id)
 
       expected = %DataDefinitionView{
         version: 1,
@@ -103,10 +104,10 @@ defmodule Define.StoreTest do
             destination: "storage__json"
           )
 
-        Define.Store.update_definition(event)
+        Store.update_definition(event)
       end)
 
-      persisted = Define.Store.get(id)
+      persisted = Store.get(id)
 
       expected =
         PersistView.new!(
@@ -141,10 +142,10 @@ defmodule Define.StoreTest do
             ]
           )
 
-        Define.Store.update_definition(event)
+        Store.update_definition(event)
       end)
 
-      persisted = Define.Store.get(id)
+      persisted = Store.get(id)
 
       expected = %DataDefinitionView{
         version: 1,
@@ -210,7 +211,7 @@ defmodule Define.StoreTest do
             steps: []
           )
 
-        Define.Store.update_definition(event)
+        Store.update_definition(event)
       end)
 
       Brook.Test.with_event(@instance, fn ->
@@ -223,10 +224,10 @@ defmodule Define.StoreTest do
             destination: "storage__json"
           )
 
-        Define.Store.update_definition(event)
+        Store.update_definition(event)
       end)
 
-      persisted = Define.Store.get(id)
+      persisted = Store.get(id)
 
       expected = %DataDefinitionView{
         dataset_id: id,
@@ -260,6 +261,76 @@ defmodule Define.StoreTest do
       }
 
       assert expected == persisted
+    end
+  end
+
+  describe "get/1" do
+    test "returns DataDefinitionView" do
+      id = "my-id"
+
+      Brook.Test.with_event(@instance, fn ->
+        event =
+          Extract.new!(
+            id: "extract-1",
+            dataset_id: id,
+            subset_id: "default",
+            destination: "success",
+            dictionary: [Dictionary.Type.String.new!(name: "person")],
+            steps: []
+          )
+
+        Store.update_definition(event)
+      end)
+
+      expected = %DataDefinitionView{
+        dataset_id: id,
+        subset_id: "default",
+        extract: %ExtractView{
+          destination: "success",
+          dictionary: [
+            %ModuleFunctionArgsView{
+              struct_module_name: "Elixir.Dictionary.Type.String",
+              args: [
+                %ArgumentView{
+                  key: "description",
+                  type: "string",
+                  value: ""
+                },
+                %ArgumentView{
+                  key: "name",
+                  type: "string",
+                  value: "person"
+                }
+              ]
+            }
+          ],
+          steps: []
+        },
+        version: 1
+      }
+
+      assert expected == Store.get(id)
+    end
+
+    test "when id does not exist returns nil" do
+      assert nil == Store.get("non-existant-id")
+    end
+  end
+
+  describe "get_all/0" do
+    test "returns all DataDefinitionViews" do
+      Enum.each(1..3, fn index ->
+        Brook.Test.with_event(@instance, fn ->
+          event = %Extract{
+              id: "extract-#{index}",
+              dataset_id: "id-#{index}"
+        }
+
+          Store.update_definition(event)
+        end)
+      end)
+
+      assert 3 == length(Store.get_all())
     end
   end
 end

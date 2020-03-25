@@ -4,7 +4,8 @@ defmodule Define.ViewState do
     ModuleFunctionArgsView,
     ArgumentView,
     DataDefinitionView,
-    ExtractView
+    ExtractView,
+    Store
   }
 
   use GenServer
@@ -40,35 +41,9 @@ defmodule Define.ViewState do
 
   @spec default_state :: map()
   def default_state() do
-    # Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/file.csv"),
-    # %{module_name: Extract.Http.Get, fields: [url: "http://localhost:#{bp.port}/file.csv"]}
     %AppView{
       greeting: "Hola Mundo!",
-      data_definitions: [
-        DataDefinitionView.new!(
-          dataset_id: "1111",
-          dictionary: [
-            ModuleFunctionArgsView.new!(
-              struct_module_name: "Dictionary.Type.String",
-              args: [ArgumentView.new!(key: "name", type: "string", value: "")]
-            )
-          ],
-          extract:
-            ExtractView.new!(
-              destination: "Hawaii",
-              steps: [
-                ModuleFunctionArgsView.new!(
-                  struct_module_name: "Extract.Http.Get",
-                  args: [
-                    ArgumentView.new!(key: "url", type: "string", value: ""),
-                    ArgumentView.new!(key: "headers", type: "map", value: %{})
-                  ]
-                )
-              ]
-            ),
-          persist: Define.PersistView.new!(source: "Ohio", destination: "New York")
-        )
-      ]
+      data_definitions: Store.get_all()
     }
   end
 

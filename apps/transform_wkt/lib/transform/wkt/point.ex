@@ -1,6 +1,12 @@
 defmodule Transform.Wkt.Point do
   use Definition, schema: Transform.Wkt.Point.V1
 
+  @type t :: %__MODULE__{
+          longitude: String.t(),
+          latitude: String.t(),
+          to: String.t()
+        }
+
   defstruct [:longitude, :latitude, :to]
 
   defimpl Transform.Step, for: __MODULE__ do

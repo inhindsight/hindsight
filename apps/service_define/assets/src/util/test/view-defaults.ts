@@ -1,4 +1,4 @@
-import { AppView, ExtractView, PersistView, DataDefinitionView} from './../../model/view'
+import {AppView, ExtractView, PersistView, DataDefinitionView, TransformView} from './../../model/view'
 
 export const appViewDefaults: AppView = {
     greeting: "",
@@ -7,6 +7,12 @@ export const appViewDefaults: AppView = {
 
 export const extractViewDefaults: ExtractView = {
     destination: "",
+    dictionary: [],
+    steps: [],
+}
+
+export const transformViewDefaults: TransformView = {
+    dictionary: [],
     steps: [],
 }
 
@@ -15,10 +21,11 @@ export const persistViewDefaults: PersistView = {
     destination: "",
 }
 
+
 export const dataDefinitionDefaults: DataDefinitionView = {
     dataset_id: "",
     subset_id: "",
-    dictionary: [],
     extract: extractViewDefaults,
+    transform: transformViewDefaults,
     persist: persistViewDefaults,
 }
