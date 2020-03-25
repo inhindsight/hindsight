@@ -12,8 +12,7 @@ defmodule Kafka.Topic.Destination do
     |> Ok.map(&%{topic | pid: &1})
   end
 
-  # TODO telemetry
-  # TODO handling exits
+  # TODO logging
   @spec write(Destination.t(), [term]) :: :ok | {:error, term}
   def write(topic, [%{} | _] = messages) do
     encoded =
@@ -31,10 +30,15 @@ defmodule Kafka.Topic.Destination do
   end
 
   def write(topic, messages) do
-    GenServer.call(topic.pid, {:write, topic, messages})
+    with :ok <- GenServer.call(topic.pid, {:write, topic, messages}),
+         count = Enum.count(messages),
+         metadata = Map.from_struct(topic) do
+      :telemetry.execute([:destination, :kafka, :write], %{count: count}, metadata)
+    end
   end
 
   # TODO
+  # TODO handling exits
   def stop(_t) do
     :ok
   end
@@ -85,7 +89,7 @@ defmodule Kafka.Topic.Destination do
 
     dead_letters =
       Enum.map(messages, fn {og, reason} ->
-        Keyword.merge(opts, [reason: reason, original_message: og])
+        Keyword.merge(opts, reason: reason, original_message: og)
         |> DeadLetter.new()
       end)
 

@@ -21,6 +21,15 @@ defmodule Kafka.Topic.DestinationTest do
   setup :verify_on_exit!
 
   setup do
+    test = self()
+
+    handler = fn event, measurements, metadata, config ->
+      send(test, {:telemetry_event, event, measurements, metadata, config})
+    end
+
+    :telemetry.attach(__MODULE__, [:destination, :kafka, :write], handler, %{})
+    on_exit(fn -> :telemetry.detach(__MODULE__) end)
+
     Process.flag(:trap_exit, true)
     :ok
   end
@@ -64,12 +73,12 @@ defmodule Kafka.Topic.DestinationTest do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-me")
       {:ok, topic} = Destination.start_link(topic, [])
 
-      assert :ok = Destination.write(topic, ["one", "two"])
+      assert :ok = Destination.write(topic, ["one", "two", "three"])
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
         {:ok, _, messages} = Elsa.fetch(@endpoints, topic.name)
-        assert ["one", "two"] == Enum.map(messages, & &1.value)
+        assert ["one", "two", "three"] == Enum.map(messages, & &1.value)
       end
 
       assert_down(topic.pid)
@@ -112,7 +121,7 @@ defmodule Kafka.Topic.DestinationTest do
     end
 
     test "writes errors to DLQ" do
-      expect(DlqMock, :write, fn _ -> :ok end)
+      expect(DlqMock, :write, fn %{app_name: "foo"} -> :ok end)
 
       opts = [app_name: "foo", dataset_id: "bar", subset_id: "baz"]
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-errors")
@@ -126,6 +135,7 @@ defmodule Kafka.Topic.DestinationTest do
         assert [~s|{"one":1}|, ~s|{"two":2}|] == Enum.map(messages, & &1.value)
       end
 
+      assert_receive {:telemetry_event, [:destination, :kafka, :write], %{count: 2}, _, _}, 5_000
       assert_down(topic.pid)
     end
   end
