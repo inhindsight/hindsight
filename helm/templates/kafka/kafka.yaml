@@ -19,16 +19,15 @@ spec:
       transaction.state.log.replication.factor: {{ .Values.strimzi.kafka.replicaCount }}
       transaction.state.log.min.isr: 2
     storage:
+      {{ if .Values.strimzi.kafka.storage.enabled }}
       type: persistent-claim
-      size: 100Gi
+      size: {{ .Values.strimzi.kafka.storage.size }}
       deleteClaim: false
+      {{ else }}
+      type: ephemeral
+      {{ end }}
     resources:
-      requests:
-        cpu: 500m
-        memory: 1000M
-      limits:
-        cpu: 500m
-        memory: 1000M
+{{ toYaml .Values.strimzi.kafka.resources | indent 6 }}
   zookeeper:
     replicas: {{ .Values.strimzi.kafka.replicaCount }}
     {{- if .Values.strimzi.zookeeper.resources.jvm }}
@@ -37,20 +36,15 @@ spec:
       "-Xmx": {{ .Values.strimzi.zookeeper.resources.jvm.xmx }}
     {{- end }}
     storage:
-      {{ if .Values.strimzi.kafka.storage.enabled }}
+      {{ if .Values.strimzi.zookeeper.storage.enabled }}
       type: persistent-claim
-      size: 1Gi
+      size: {{ .Values.strimzi.zookeeper.storage.size }}
       deleteClaim: false
       {{ else }}
       type: ephemeral
       {{ end }}
     resources:
-      requests:
-        cpu: 10m
-        memory: 512Mi
-      limits:
-        cpu: 100m
-        memory: 512Mi
+{{ toYaml .Values.strimzi.zookeeper.resources | indent 6 }}
   entityOperator:
     topicOperator: {}
     userOperator: {}

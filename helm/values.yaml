@@ -23,8 +23,12 @@ strimzi:
   kafka:
     replicaCount: 3
     storage:
-      enabled: true
-      size: 100Gi
+      enabled: false
+      size: ""
+  zookeeper:
+    storage:
+      enabled: false
+      size: ""
 redis:
   usePassword: false
   cluster:
