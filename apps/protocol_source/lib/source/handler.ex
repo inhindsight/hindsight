@@ -8,7 +8,7 @@ defmodule Source.Handler do
 
   @callback handle_message(map, Source.Context.t()) :: {:ok, map} | {:error, term}
   @callback handle_batch(list(map), Source.Context.t()) :: :ok
-  @callback send_to_dlq(list(Dlq.DeadLetter.t()), Source.Context.t()) :: :ok
+  @callback send_to_dlq(list(DeadLetter.t()), Source.Context.t()) :: :ok
 
   defmacro __using__(_opts) do
     quote do

@@ -4,8 +4,6 @@ defmodule Gather.WriterTest do
   import ExUnit.CaptureLog
   require Temp.Env
 
-  alias Dlq.DeadLetter
-
   Temp.Env.modify([
     %{
       app: :service_gather,
@@ -172,7 +170,7 @@ defmodule Gather.WriterTest do
         end)
 
       assert log =~
-               "Unable to send following messages to DLQ due to 'failure to dlq' :\n%Dlq.DeadLetter"
+               "Unable to send following messages to DLQ due to 'failure to dlq' :\n%DeadLetter"
     end
   end
 

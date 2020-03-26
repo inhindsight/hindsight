@@ -12,8 +12,6 @@ defmodule Gather.ExtractionTest do
   @moduletag capture_log: true
   @download_file "./test.csv"
 
-  alias Dlq.DeadLetter
-
   Temp.Env.modify([
     %{
       app: :service_gather,

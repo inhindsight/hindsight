@@ -6,7 +6,6 @@ defmodule Gather.Extraction do
   use Annotated.Retry
 
   alias Extract.Context
-  alias Dlq.DeadLetter
 
   @max_tries get_config_value(:max_tries, default: 10)
   @initial_delay get_config_value(:initial_delay, default: 500)

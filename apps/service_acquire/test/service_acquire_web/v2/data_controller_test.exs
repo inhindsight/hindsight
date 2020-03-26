@@ -41,7 +41,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
             id: "persist-1",
             dataset_id: path_variables["dataset_id"],
             subset_id: path_variables["subset_id"] || "default",
-            source: "topic-a",
+            source: Source.Fake.new(),
             destination: "table_destination"
           )
         )
@@ -114,7 +114,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
             id: "persist-1",
             dataset_id: "dataset_id_1",
             subset_id: "subset_id_1",
-            source: "topic-a",
+            source: Source.Fake.new(),
             destination: "table_destination"
           )
         )

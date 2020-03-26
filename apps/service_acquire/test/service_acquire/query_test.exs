@@ -38,7 +38,7 @@ defmodule Acquire.QueryTest do
             id: "persist-1",
             dataset_id: "a",
             subset_id: "default",
-            source: "s",
+            source: Source.Fake.new(),
             destination: "table_name"
           )
         )
