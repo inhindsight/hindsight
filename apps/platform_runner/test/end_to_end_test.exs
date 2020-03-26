@@ -57,14 +57,20 @@ defmodule PlatformRunner.EndToEndTest do
             id: "e2e-csv-broadcast-1",
             dataset_id: "e2e-csv-ds",
             subset_id: "csv-subset",
-            source: "e2e-csv-gather",
+            source: Kafka.Topic.new!(
+              endpoints: [localhost: 9092],
+              name: "e2e-csv-gather"
+            ),
             destination: "e2e_csv_broadcast"
           ),
           Load.Persist.new!(
             id: "e2e-csv-persist-1",
             dataset_id: "e2e-csv-ds",
             subset_id: "csv-subset",
-            source: "e2e-csv-gather",
+            source: Kafka.Topic.new!(
+              endpoints: [localhost: 9092],
+              name: "e2e-csv-gather"
+            ),
             destination: "e2e__csv"
           )
         ]
@@ -216,7 +222,10 @@ defmodule PlatformRunner.EndToEndTest do
           id: "e2e-json-broadcast-1",
           dataset_id: "e2e-json-ds",
           subset_id: "json-subset",
-          source: "e2e-json-gather",
+          source: Kafka.Topic.new!(
+            endpoints: [localhost: 9092],
+            name: "e2e-json-gather"
+          ),
           destination: "e2e_json_broadcast"
         )
 
@@ -242,7 +251,10 @@ defmodule PlatformRunner.EndToEndTest do
           id: "e2e-json-persist-1",
           dataset_id: "e2e-json-ds",
           subset_id: "json-subset",
-          source: "e2e-json-gather",
+          source: Kafka.Topic.new!(
+            endpoints: [localhost: 9092],
+            name: "e2e-json-gather"
+          ),
           destination: "e2e__json"
         )
 
@@ -405,7 +417,10 @@ defmodule PlatformRunner.EndToEndTest do
           id: "e2e-push-persist-1",
           dataset_id: "e2e-push-ds",
           subset_id: "e2e-push-ss",
-          source: "e2e-push-gather",
+          source: Kafka.Topic.new!(
+            endpoints: [localhost: 9092],
+            name: "e2e-push-gather"
+          ),
           destination: "e2e_push_ds"
         )
 
