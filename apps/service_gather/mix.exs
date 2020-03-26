@@ -27,6 +27,7 @@ defmodule Gather.MixProject do
     [
       {:annotated_retry, in_umbrella: true},
       {:brook, "~> 0.5"},
+      {:definition_deadletter, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:definition_extract, in_umbrella: true},

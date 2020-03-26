@@ -9,16 +9,6 @@ defmodule Gather.InitTest do
 
   @instance Gather.Application.instance()
 
-  Temp.Env.modify([
-    %{
-      app: :service_gather,
-      key: Gather.Extraction,
-      update: fn config ->
-        Keyword.put(config, :writer, Gather.WriterMock)
-      end
-    }
-  ])
-
   setup :set_mox_global
   setup :verify_on_exit!
 
@@ -29,8 +19,6 @@ defmodule Gather.InitTest do
   end
 
   test "should start any existing extractions" do
-    test = self()
-
     steps = [
       %Fake.Step{values: [%{"one" => "1"}]}
     ]
@@ -41,14 +29,14 @@ defmodule Gather.InitTest do
         dataset_id: "init_ds1",
         subset_id: "n1",
         steps: steps,
-        destination: "topic1"
+        destination: Destination.Fake.new!()
       ),
       Extract.new!(
         id: "ex2",
         dataset_id: "init_ds2",
         subset_id: "n2",
         steps: steps,
-        destination: "topic2"
+        destination: Destination.Fake.new!()
       )
     ]
 
@@ -56,18 +44,13 @@ defmodule Gather.InitTest do
       Enum.each(extracts, &Extraction.Store.persist/1)
     end)
 
-    Gather.WriterMock
-    |> stub(:start_link, fn args ->
-      send(test, {:start_link, args})
-      Agent.start_link(fn -> :dummy end)
-    end)
-    |> stub(:write, fn _, _, _ -> :ok end)
-
     {:ok, _pid} = start_supervised({Gather.Init, name: :init_test})
 
-    Enum.each(extracts, fn extract ->
-      assert_receive {:start_link, [extract: ^extract]}, 5_000
-    end)
+
+    assert_receive {:start_link, id1}, 5_000
+    assert_receive {:start_link, id2}, 5_000
+
+    refute id1 == id2
 
     Gather.Extraction.Supervisor.kill_all_children()
   end

@@ -17,8 +17,7 @@ defmodule Gather.ExtractionTest do
       app: :service_gather,
       key: Gather.Extraction,
       update: fn config ->
-        Keyword.put(config, :writer, Gather.WriterMock)
-        |> Keyword.put(:dlq, DlqMock)
+        Keyword.put(config, :dlq, DlqMock)
         |> Keyword.put(:chunk_size, 10)
       end
     }
@@ -39,21 +38,12 @@ defmodule Gather.ExtractionTest do
   end
 
   test "normalizes chunks of data to writer and then dies" do
-    test = self()
-
-    Gather.WriterMock
-    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
-    |> stub(:write, fn server, messages, opts ->
-      send(test, {:write, server, messages, opts})
-      :ok
-    end)
-
     extract =
       Extract.new!(
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "happy-path",
-        destination: "topic1",
+        destination: Destination.Fake.new!(),
         steps: [
           %Fake.Step{
             pid: self(),
@@ -70,23 +60,13 @@ defmodule Gather.ExtractionTest do
 
     assert_receive {:EXIT, ^pid, :normal}, 2_000
     expected = Enum.map(1..10, fn _ -> %{"one" => 1} end)
-    Enum.each(1..10, fn _ -> assert_receive {:write, _, ^expected, _} end)
-
-    originals = Enum.map(1..10, fn _ -> Extract.Message.new(data: %{"one" => "1"}) end)
-    Enum.each(1..10, fn _ -> assert_receive {:after, ^originals} end)
+    Enum.each(1..10, fn _ -> assert_receive ^expected end)
 
     assert_down(pid)
   end
 
   test "any messages failing normalization will be written to dlq" do
     test = self()
-
-    Gather.WriterMock
-    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
-    |> stub(:write, fn server, messages, opts ->
-      send(test, {:write, server, messages, opts})
-      :ok
-    end)
 
     DlqMock
     |> stub(:write, fn messages ->
@@ -98,7 +78,7 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "happy-path",
-        destination: "topic1",
+        destination: Destination.Fake.new!(),
         steps: [
           %Fake.Step{pid: self(), values: [%{"one" => "2"}, %{"one" => "abc"}]}
         ],
@@ -110,7 +90,7 @@ defmodule Gather.ExtractionTest do
     {:ok, pid} = Extraction.start_link(extract: extract)
     assert_receive {:EXIT, ^pid, :normal}, 2_000
 
-    assert_receive {:write, _, [%{"one" => 2}], _}
+    assert_receive [%{"one" => 2}]
 
     expected_dead_letter =
       DeadLetter.new(
@@ -118,7 +98,9 @@ defmodule Gather.ExtractionTest do
         subset_id: "happy-path",
         original_message: %{"one" => "abc"},
         app_name: "service_gather",
-        reason: %{"one" => :invalid_integer}
+        reason: %{"one" => :invalid_integer},
+        stacktrace: nil,
+        timestamp: nil
       )
       |> Map.merge(%{stacktrace: nil, timestamp: nil})
 
@@ -129,16 +111,12 @@ defmodule Gather.ExtractionTest do
   end
 
   test "when child write return error tuple it retries and then dies" do
-    Gather.WriterMock
-    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
-    |> expect(:write, 4, fn _server, _messages, _opts -> {:error, "failure to write"} end)
-
     extract =
       Extract.new!(
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "test-extract",
-        destination: "topic1",
+        destination: Destination.Fake.new!(write: "bad write"),
         steps: [
           %Fake.Step{
             values: [
@@ -151,21 +129,18 @@ defmodule Gather.ExtractionTest do
 
     {:ok, pid} = Extraction.start_link(extract: extract)
 
-    assert_receive {:EXIT, ^pid, "failure to write"}, 10_000
+    assert_receive {:EXIT, ^pid, "bad write"}, 10_000
 
     assert_down(pid)
   end
 
   test "when child writer fails to start extraction is retried" do
-    Gather.WriterMock
-    |> expect(:start_link, 4, fn _ -> {:error, "bad process"} end)
-
     extract =
       Extract.new!(
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "test-extract",
-        destination: "topic1",
+        destination: Destination.Fake.new!(start_link: "bad start"),
         steps: [
           %Fake.Step{
             values: [
@@ -178,14 +153,11 @@ defmodule Gather.ExtractionTest do
 
     {:ok, pid} = Extraction.start_link(extract: extract)
 
-    assert_receive {:EXIT, ^pid, "bad process"}, 10_000
+    assert_receive {:EXIT, ^pid, "bad start"}, 10_000
     assert_down(pid)
   end
 
   test "cleans up downloaded file after extract complete" do
-    Gather.WriterMock
-    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
-
     request_url = "http://example/download/path"
 
     allow Downloader.download(request_url, to: @download_file, headers: []),
@@ -198,7 +170,7 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "happy-path",
-        destination: "topic1",
+        destination: Destination.Fake.new!(),
         steps: [
           Extract.Http.Get.new!(url: request_url),
           Extract.Decode.Json.new!([])
@@ -216,9 +188,6 @@ defmodule Gather.ExtractionTest do
   end
 
   test "cleans up downloaded file after an extraction stream failure" do
-    Gather.WriterMock
-    |> stub(:start_link, fn _ -> Agent.start_link(fn -> :dummy end) end)
-
     request_url = "http://example/download/path"
 
     allow Downloader.download(request_url, to: @download_file, headers: []),
@@ -231,7 +200,7 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "failure",
-        destination: "topic1",
+        destination: Destination.Fake.new!(),
         steps: [
           Extract.Http.Get.new!(url: request_url),
           Extract.Blowup.new!([])

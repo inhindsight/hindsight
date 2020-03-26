@@ -10,16 +10,6 @@ defmodule GatherTest do
 
   alias Gather.Extraction
 
-  Temp.Env.modify([
-    %{
-      app: :service_gather,
-      key: Gather.Extraction,
-      update: fn config ->
-        Keyword.put(config, :writer, Gather.WriterMock)
-      end
-    }
-  ])
-
   setup :set_mox_global
   setup :verify_on_exit!
 
@@ -37,21 +27,8 @@ defmodule GatherTest do
   end
 
   test "extract csv file", %{bypass: bypass} do
-    test = self()
-    {:ok, dummy_process} = Agent.start_link(fn -> :dummy_process end)
-
     Bypass.expect(bypass, "GET", "/file.csv", fn conn ->
       Plug.Conn.resp(conn, 200, "one,two,three\nfour,five,six")
-    end)
-
-    Gather.WriterMock
-    |> stub(:start_link, fn args ->
-      send(test, {:start_link, args})
-      {:ok, dummy_process}
-    end)
-    |> stub(:write, fn server, messages, opts ->
-      send(test, {:write, server, messages, opts})
-      :ok
     end)
 
     extract =
@@ -60,7 +37,7 @@ defmodule GatherTest do
         id: "extract-id-1",
         dataset_id: "test-ds1",
         subset_id: "Johnny",
-        destination: "topic-1",
+        destination: Destination.Fake.new!(),
         steps: [
           Extract.Http.Get.new!(url: "http://localhost:#{bypass.port}/file.csv"),
           Extract.Decode.Csv.new!(headers: ["A", "B", "C"])
@@ -74,7 +51,8 @@ defmodule GatherTest do
 
     Brook.Test.send(@instance, extract_start(), "testing", extract)
 
-    assert_receive {:write, ^dummy_process, messages, [extract: ^extract]}, 5_000
+    assert_receive {:start_link, _}, 5_000
+    assert_receive messages, 5_000
 
     assert messages == [
              %{"a" => "one", "b" => "two", "c" => "three"},
@@ -90,7 +68,7 @@ defmodule GatherTest do
         id: "extract-45",
         dataset_id: "ds45",
         subset_id: "get_some_data",
-        destination: "topic1",
+        destination: Destination.Fake.new!(),
         steps: []
       )
 
@@ -106,23 +84,14 @@ defmodule GatherTest do
   end
 
   test "sends extract_end on extract completion" do
-    test = self()
-    {:ok, dummy_process} = Agent.start_link(fn -> :dummy_process end)
-
     extract =
       Extract.new!(
         id: "extract-45",
         dataset_id: "ds45",
         subset_id: "get_some_data",
-        destination: "topic1",
+        destination: Destination.Fake.new!(),
         steps: []
       )
-
-    Gather.WriterMock
-    |> expect(:start_link, fn args ->
-      send(test, {:start_link, args})
-      {:ok, dummy_process}
-    end)
 
     Brook.Test.send(@instance, extract_start(), "testing", extract)
 
