@@ -1,16 +1,11 @@
 defmodule Gather.InitTest do
   use Gather.Case
-  import Mox
-  require Temp.Env
 
   alias Gather.Extraction
 
   @moduletag capture_log: true
 
   @instance Gather.Application.instance()
-
-  setup :set_mox_global
-  setup :verify_on_exit!
 
   setup do
     Process.flag(:trap_exit, true)

@@ -23,8 +23,11 @@ defmodule Destination.Fake do
 
   defimpl Destination do
     def start_link(%{start_link: "ok", id: id} = t, _) do
+      Process.sleep(10)
+
       pid = :ets.lookup_element(Destination.Fake, id, 2)
       send(pid, {:start_link, id})
+
       {:ok, t}
     end
 

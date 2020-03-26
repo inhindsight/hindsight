@@ -1,6 +1,5 @@
 defmodule GatherTest do
   use Gather.Case
-  import Mox
   import Events, only: [extract_start: 0, extract_end: 0]
   import AssertAsync
   require Temp.Env
@@ -9,9 +8,6 @@ defmodule GatherTest do
   @moduletag capture_log: true
 
   alias Gather.Extraction
-
-  setup :set_mox_global
-  setup :verify_on_exit!
 
   setup do
     on_exit(fn ->
