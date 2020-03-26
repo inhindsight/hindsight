@@ -30,8 +30,7 @@ defmodule Define.ViewState do
 
   @impl true
   def handle_call({:event, type, payload}, _from, state) do
-    new_state = update_state(state, type, payload)
-    {:reply, new_state, new_state}
+    {:reply, state, state}
   end
 
   @impl true
@@ -42,12 +41,7 @@ defmodule Define.ViewState do
   @spec default_state :: map()
   def default_state() do
     %AppView{
-      greeting: "Hola Mundo!",
       data_definitions: Store.get_all()
     }
-  end
-
-  defp update_state(state, "new_greeting", payload) do
-    Map.put(state, "greeting", Map.get(payload, "greeting"))
   end
 end

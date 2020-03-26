@@ -4,13 +4,11 @@ defmodule Define.AppView do
 
   @type t :: %__MODULE__{
           version: integer,
-          greeting: String.t(),
           data_definitions: [DataDefinition.t()]
         }
 
   @derive Jason.Encoder
   defstruct version: 1,
-            greeting: "Hello",
             data_definitions: []
 end
 
@@ -22,7 +20,6 @@ defmodule Define.AppView.V1 do
   def s do
     schema(%Define.AppView{
       version: version(1),
-      greeting: string(),
       data_definitions: of_struct(DataDefinition)
     })
   end
