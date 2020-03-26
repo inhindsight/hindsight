@@ -1,6 +1,6 @@
 defmodule Define.Model.TransformView do
   use Definition, schema: Define.Model.TransformView.V1
-  alias Define.{ModuleFunctionArgsView}
+  alias Define.Model.ModuleFunctionArgsView
 
   @type t :: %__MODULE__{
           version: integer,
