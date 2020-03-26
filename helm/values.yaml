@@ -25,6 +25,10 @@ strimzi:
     storage:
       enabled: false
       size: ""
+  zookeeper:
+    storage:
+      enabled: false
+      size: ""
 redis:
   usePassword: false
   cluster:

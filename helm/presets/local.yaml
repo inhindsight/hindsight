@@ -16,10 +16,10 @@ strimzi:
     resources:
       requests:
         cpu: 500m
-        memory: 1000M
+        memory: 512Mi
       limits:
         cpu: 500m
-        memory: 1000M
+        memory: 512Mi
   zookeeper:
     resources:
       requests:

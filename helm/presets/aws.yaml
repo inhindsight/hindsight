@@ -18,6 +18,9 @@ resources:
     memory: 512Mi
 strimzi:
   kafka:
+    storage:
+      enabled: true
+      size: 100Gi
     resources:
       jvm:
         xms: 4g
@@ -29,6 +32,9 @@ strimzi:
         cpu: 1000m
         memory: 8Gi
   zookeeper:
+    storage:
+      enabled: true
+      size: 1Gi
     resources:
       requests:
         cpu: 100m

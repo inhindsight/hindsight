@@ -21,15 +21,13 @@ spec:
     storage:
       {{ if .Values.strimzi.kafka.storage.enabled }}
       type: persistent-claim
-      size: {{ .Values.kafka.storage.size }}
+      size: {{ .Values.strimzi.kafka.storage.size }}
       deleteClaim: false
       {{ else }}
       type: ephemeral
       {{ end }}
-    {{ if .Values.strimzi.kafka.storage.enabled }}
     resources:
-      {{ .Values.strimzi.kafka.resources }}
-    {{ end }}
+{{ toYaml .Values.strimzi.kafka.resources | indent 6 }}
   zookeeper:
     replicas: {{ .Values.strimzi.kafka.replicaCount }}
     {{- if .Values.strimzi.zookeeper.resources.jvm }}
@@ -38,15 +36,15 @@ spec:
       "-Xmx": {{ .Values.strimzi.zookeeper.resources.jvm.xmx }}
     {{- end }}
     storage:
-      {{ if .Values.strimzi.kafka.storage.enabled }}
+      {{ if .Values.strimzi.zookeeper.storage.enabled }}
       type: persistent-claim
-      size: 1Gi
+      size: {{ .Values.strimzi.zookeeper.storage.size }}
       deleteClaim: false
-      resources:
-        {{ .Values.strimzi.zookeeper.resources }}
       {{ else }}
       type: ephemeral
       {{ end }}
+    resources:
+{{ toYaml .Values.strimzi.zookeeper.resources | indent 6 }}
   entityOperator:
     topicOperator: {}
     userOperator: {}
