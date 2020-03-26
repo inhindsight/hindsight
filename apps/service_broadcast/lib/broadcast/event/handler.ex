@@ -18,7 +18,7 @@ defmodule Broadcast.Event.Handler do
       "#{__MODULE__}: Received event #{load_broadcast_start()}: #{inspect(load)}"
     end)
 
-    Broadcast.Stream.Supervisor.start_child({Broadcast.Stream, load: load})
+    Broadcast.Stream.Supervisor.start_child(load)
     Broadcast.Stream.Store.persist(load)
     :ok
   end
@@ -52,18 +52,7 @@ defmodule Broadcast.Event.Handler do
   end
 
   defp terminate_stream(%Load.Broadcast{} = load) do
-    name = Broadcast.Stream.name(load)
-
-    case Process.whereis(name) do
-      nil ->
-        Logger.debug("No Stream to delete")
-        :ok
-
-      pid ->
-        Logger.debug("Deleting stream")
-        Broadcast.Stream.Supervisor.terminate_child(pid)
-        Broadcast.Stream.Store.mark_done(load)
-        :ok
-    end
+    Broadcast.Stream.Supervisor.terminate_child(load)
+    Broadcast.Stream.Store.mark_done(load)
   end
 end

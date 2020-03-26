@@ -1,18 +1,8 @@
 defmodule Broadcast.InitTest do
   use ExUnit.Case
-  require Temp.Env
+  use Placebo
 
   @instance Broadcast.Application.instance()
-
-  Temp.Env.modify([
-    %{
-      app: :service_broadcast,
-      key: Broadcast.Stream.Broadway,
-      set: [
-        configuration: BroadwayConfigurator.Dummy
-      ]
-    }
-  ])
 
   setup do
     Process.flag(:trap_exit, true)
@@ -21,19 +11,21 @@ defmodule Broadcast.InitTest do
   end
 
   test "will start all streams in store" do
+    allow(Broadcast.Stream.Supervisor.start_child(any()), return: {:ok, :pid})
+
     loads = [
       Load.Broadcast.new!(
         id: "load1",
         dataset_id: "ds1",
         subset_id: "one",
-        source: "s1",
+        source: Source.Fake.new(),
         destination: "d1"
       ),
       Load.Broadcast.new!(
         id: "load2",
         dataset_id: "ds2",
         subset_id: "two",
-        source: "s2",
+        source: Source.Fake.new(),
         destination: "d2"
       )
     ]
@@ -43,6 +35,7 @@ defmodule Broadcast.InitTest do
     end)
 
     start_supervised(Broadcast.Init)
-    Broadcast.Stream.Supervisor.kill_all_children()
+    assert_called(Broadcast.Stream.Supervisor.start_child(Enum.at(loads, 0)))
+    assert_called(Broadcast.Stream.Supervisor.start_child(Enum.at(loads, 1)))
   end
 end

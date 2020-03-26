@@ -144,29 +144,7 @@ config :service_broadcast, Broadcast.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_broadcast, Broadcast.Stream.Broadway.Configuration,
-  endpoints: kafka_endpoints,
-  broadway_config: [
-    producer: [
-      concurrency: 1
-    ],
-    processors: [
-      default: [
-        concurrency: 1
-      ]
-    ],
-    batchers: [
-      default: [
-        concurrency: 1,
-        batch_size: 1_000,
-        batch_timeout: 1_000
-      ]
-    ]
-  ]
-
 config :service_broadcast, Broadcast.Event.Handler, endpoints: kafka_endpoints
-
-config :service_broadcast, Broadcast.Stream.Broadway, app_name: "service_broadcast"
 
 # SERVICE PERSIST
 bucket_region = [region: System.get_env("BUCKET_REGION", "local")]
@@ -211,28 +189,6 @@ config :service_persist, Persist.TableManager.Presto, Keyword.put(presto_db, :us
 config :service_persist, Persist.DataStorage.S3,
   s3_bucket: System.get_env("BUCKET_NAME", "kdp-cloud-storage"),
   s3_path: "hive-s3"
-
-config :service_persist, Persist.Load.Broadway.Configuration,
-  endpoints: kafka_endpoints,
-  broadway_config: [
-    producer: [
-      concurrency: 1
-    ],
-    processors: [
-      default: [
-        concurrency: 100
-      ]
-    ],
-    batchers: [
-      default: [
-        concurrency: 2,
-        batch_size: 1_000,
-        batch_timeout: 2_000
-      ]
-    ]
-  ]
-
-config :service_persist, Persist.Load.Broadway, app_name: "service_persist"
 
 config :service_persist, Persist.Event.Handler, endpoints: kafka_endpoints
 

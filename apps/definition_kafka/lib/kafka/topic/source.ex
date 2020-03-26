@@ -35,6 +35,8 @@ defmodule Kafka.Topic.Source do
   def handle_continue(:init, state) do
     ensure_topic(state.t)
 
+    offset_reset_policy = get_in(state.context.assigns, [:kafka, :offset_reset_policy])
+
     {:ok, elsa_pid} =
       Elsa.Supervisor.start_link(
         endpoints: state.t.endpoints,
@@ -46,7 +48,7 @@ defmodule Kafka.Topic.Source do
           handler_init_args: state.context,
           config: [
             begin_offset: :earliest,
-            offset_reset_policy: :reset_to_earliest,
+            offset_reset_policy: offset_reset_policy || :reset_to_earliest,
             prefetch_count: 0,
             prefetch_bytes: 2_097_152
           ]
