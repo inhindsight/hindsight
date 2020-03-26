@@ -1,4 +1,5 @@
-import {AppView, ExtractView, PersistView, DataDefinitionView, TransformView} from './../../model/view'
+import {AppView} from "../../model/view/AppView"
+import {DataDefinitionView, ExtractView, PersistView, TransformView} from "../../model/view/DataDefinitionView"
 
 export const appViewDefaults: AppView = {
     greeting: "",

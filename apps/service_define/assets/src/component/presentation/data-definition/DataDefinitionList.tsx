@@ -1,6 +1,6 @@
 import React from "react"
 import { DataDefinition } from "./DataDefinition"
-import {DataDefinitionView} from "../../../model/view"
+import {DataDefinitionView} from "../../../model/view/DataDefinitionView"
 
 export interface DataDefinitionListProps {
     readonly definitions: readonly DataDefinitionView[]

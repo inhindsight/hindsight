@@ -1,6 +1,6 @@
 import React from "react"
-import {ExtractView} from "../../../model/view"
 import {ModuleFunctionArgs} from "./module-function-args/ModuleFunctionArgs"
+import {ExtractView} from "../../../model/view/DataDefinitionView"
 
 export const Extract = (extract: ExtractView) => <>
     <div className="form-group">

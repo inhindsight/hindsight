@@ -1,5 +1,5 @@
 import React from "react"
-import {PersistView} from "../../../model/view"
+import {PersistView} from "../../../model/view/DataDefinitionView"
 
 
 export const Persist = (persist: PersistView) =>

@@ -1,7 +1,7 @@
 import {storiesOf} from "@storybook/react"
 import React from "react"
 import {Persist} from "./Persist"
-import {PersistView} from "../../../model/view"
+import {PersistView} from "../../../model/view/DataDefinitionView"
 
 const props: PersistView = {
     source: "bus-route-source",

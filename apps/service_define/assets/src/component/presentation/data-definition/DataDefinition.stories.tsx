@@ -1,7 +1,7 @@
 import {storiesOf} from "@storybook/react"
 import React from "react"
 import {DataDefinition} from "./DataDefinition"
-import {DataDefinitionView} from "../../../model/view"
+import {DataDefinitionView} from "../../../model/view/DataDefinitionView"
 
 const props: DataDefinitionView = {
     dataset_id: "ABC123",

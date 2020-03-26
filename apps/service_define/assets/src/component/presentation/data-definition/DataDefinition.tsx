@@ -1,7 +1,7 @@
 import React from "react"
 import {Persist} from "./Persist"
 import {Extract} from "./Extract"
-import {DataDefinitionView} from "../../../model/view"
+import {DataDefinitionView} from "../../../model/view/DataDefinitionView"
 
 export const DataDefinition = ({dataset_id, subset_id, extract, persist}: DataDefinitionView) =>
     <>

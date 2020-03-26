@@ -1,22 +1,17 @@
 import React from "react"
-import {ArgumentView, ModuleFunctionArgsView} from "../../../../model/view"
-import {ModuleFunctionArgs} from "./ModuleFunctionArgs"
-import {isArray} from "lodash"
+import {componentForType} from "./componentForType"
+import {ArgumentView} from "../../../../model/view/ModuleFunctionArgsView"
 
 export interface ArgumentProps {
     readonly argument: ArgumentView
 }
 
-export const Argument = ({ argument: {key, value, type}}: ArgumentProps) =>
-    <p>
+export const Argument = ({ argument: {key, value, type}}: ArgumentProps) => {
+    const ComponentForType = componentForType(type)
+
+    return <p>
       Key: {key}<br/>
       Type: {type}<br/>
-      Value: {
-        isModuleFunctionArgsView(value) ? value.map(value => <ModuleFunctionArgs {...value} />) : value
-    }
+      Value: <ComponentForType value={value}/>
     </p>
-
-
-const isModuleFunctionArgsView = (value: any): value is ModuleFunctionArgsView[] => {
-    return isArray(value)
 }

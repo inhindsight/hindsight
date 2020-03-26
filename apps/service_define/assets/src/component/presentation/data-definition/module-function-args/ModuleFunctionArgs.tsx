@@ -1,6 +1,6 @@
 import React from "react"
-import {ModuleFunctionArgsView} from "../../../../model/view"
 import {Argument} from "./Argument"
+import {ModuleFunctionArgsView} from "../../../../model/view/ModuleFunctionArgsView"
 
 export const ModuleFunctionArgs = (moduleFunctionArgs: ModuleFunctionArgsView) =>
     <>
