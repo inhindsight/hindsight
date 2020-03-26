@@ -23,6 +23,7 @@ export enum PrimitiveArgumentType {
     float = "float",
     boolean = "boolean",
     module = "module",
+    map = "map",
 }
 
 export type ListArgumentType = readonly ["list", ArgumentType]

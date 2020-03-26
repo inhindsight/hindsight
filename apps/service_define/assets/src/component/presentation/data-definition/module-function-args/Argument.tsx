@@ -8,10 +8,10 @@ export interface ArgumentProps {
 
 export const Argument = ({ argument: {key, value, type}}: ArgumentProps) => {
     const ComponentForType = componentForType(type)
+    return <ul className="list-group list-group-flush">
+        <li className="list-group-item">
+            <span className="text-muted">{key}:</span> <ComponentForType value={value}/>
+        </li>
+    </ul>
 
-    return <p>
-      Key: {key}<br/>
-      Type: {type}<br/>
-      Value: <ComponentForType value={value}/>
-    </p>
 }

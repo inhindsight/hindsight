@@ -8,5 +8,5 @@ export interface DataDefinitionListProps {
 
 export const DataDefinitionList = ({definitions}: DataDefinitionListProps) =>
     <>
-        {definitions.map(definition => <DataDefinition {...definition}/>)}
+        {definitions.map((definition, index) => <span key={index}><DataDefinition {...definition}/><br/></span>)}
     </>

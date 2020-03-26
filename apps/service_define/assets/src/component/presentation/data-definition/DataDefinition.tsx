@@ -1,21 +1,22 @@
 import React from "react"
 import {Persist} from "./Persist"
 import {Extract} from "./Extract"
+import {Transform} from "./Transform"
 import {DataDefinitionView} from "../../../model/view/DataDefinitionView"
 
-export const DataDefinition = ({dataset_id, subset_id, extract, persist}: DataDefinitionView) =>
-    <>
-        <h2> Data Definition</h2>
-        <div className="form-group">
-            <label>Dataset ID</label>
-            <input type="text" className="form-control" value={dataset_id} />
-            <label>Subset ID</label>
-            <input type="text" className="form-control" value={subset_id} />
+export const DataDefinition = ({dataset_id, subset_id, extract, persist, transform}: DataDefinitionView) =>
+    <div className="card border-secondary">
+        <div className="card-header bg-secondary text-white"><strong>Dataset</strong></div>
+        <div className="card-body">
+            <p>
+                <span className="text-muted">id:</span> {dataset_id}<br/>
+                <span className="text-muted">subset id:</span> {subset_id}
+            </p>
+
+            <Extract {...extract}/>
+            <br/>
+            <Transform {...transform}/>
+            <br/>
+            <Persist {...persist}/>
         </div>
-
-        <h4>Extract</h4>
-        <Extract {...extract}/>
-
-        <h4>Persist</h4>
-        <Persist {...persist}/>
-    </>
+    </div>

@@ -6,18 +6,33 @@ import {
     ModuleFunctionArgsView,
     PrimitiveArgumentType
 } from "../../../../model/view/ModuleFunctionArgsView"
+import {Map} from "./Map"
+import {List} from "./List"
+import { ObjectMap } from "../../../../model/ObjectMap"
 
-export type ValueComponent = (props: { readonly value: any }) => any
+export type ValueComponent<T> = (props: { readonly value: T }) => JSX.Element
 
-export const componentForType = (type: ArgumentType): ValueComponent => {
+export const componentForType = (type: ArgumentType): ValueComponent<any> => {
     if(isListArgumentType(type)) {
-        const [, genericType] = type
-        return ListWrapper(componentForType(genericType))
+        return ListWrapper
     } else {
-        return type === PrimitiveArgumentType.module ? ModuleFunctionArgsWrapper : StringWrapper
+        switch (type) {
+            case PrimitiveArgumentType.module: return ModuleFunctionArgsWrapper
+            case PrimitiveArgumentType.map: return MapWrapper
+            case PrimitiveArgumentType.map: return MapWrapper
+            default: return StringWrapper
+        }
     }
 }
 
-export const StringWrapper = ({value}: {readonly value: string}) => <>{value.toString()}</>
-export const ModuleFunctionArgsWrapper = ({value}: { readonly value: readonly ModuleFunctionArgsView[]}) => value.map(value => <ModuleFunctionArgs {...value}/>)
-export const ListWrapper = (Component: ValueComponent) => ({value}: { readonly value: readonly any[]}) => value.map(value => <Component {...value}/>)
+const StringWrapper: ValueComponent<string> =
+    ({value}) => <>{value.toString()}</>
+
+const ModuleFunctionArgsWrapper: ValueComponent<readonly ModuleFunctionArgsView[]> =
+    ({value}) => <>{value.map((value, index) => <span key={index}><ModuleFunctionArgs{...value}/><br/></span>)}</>
+
+const MapWrapper: ValueComponent<ObjectMap<string>> =
+    ({value}) => <Map object={value}/>
+
+const ListWrapper: ValueComponent<readonly string[]> =
+    ({value}) => <List list={value}/>

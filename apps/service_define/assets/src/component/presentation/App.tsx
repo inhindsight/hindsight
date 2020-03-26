@@ -1,11 +1,15 @@
 import React from "react"
-import {ConnectedMessage} from "../connected/ConnectedMessage"
 import {StateProvider} from "../../util/connector"
 import {ConnectedDataDefinitionList} from "../connected/ConnectedDataDefinitionList"
 
 
 export const App = () => <StateProvider>
-    <ConnectedMessage/>
-    <ConnectedDataDefinitionList/>
+    <div className="container">
+        <div className="col">
+            <h1>Data Definitions</h1>
+            <br/>
+            <ConnectedDataDefinitionList/>
+        </div>
+    </div>
 </StateProvider>
 
