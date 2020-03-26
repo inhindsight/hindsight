@@ -8,6 +8,7 @@ defmodule Persist.TableManager do
   @callback create_from(table :: String.t(), from :: String.t(), Persist.DataFile.format()) ::
               {:ok, term} | {:error, term}
   @callback copy(from_table :: String.t(), to_table :: String.t()) :: {:ok, term} | {:error, term}
+  @callback delete(table :: String.t()) :: {:ok, term} | {:error, term}
 
   getter(:impl, default: Persist.TableManager.Presto)
 
@@ -21,6 +22,10 @@ defmodule Persist.TableManager do
 
   def copy(from_table, to_table) do
     impl().copy(from_table, to_table)
+  end
+
+  def delete(table) do
+    impl().delete(table)
   end
 end
 
@@ -63,6 +68,11 @@ defmodule Persist.TableManager.Presto do
   @impl Persist.TableManager
   def copy(from_table, to_table) do
     Prestige.execute(new_session(), "INSERT INTO #{to_table} SELECT * FROM #{from_table}")
+  end
+
+  @impl Persist.TableManager
+  def delete(table) do
+    Prestige.execute(new_session(), "DROP TABLE #{table}")
   end
 
   defp new_session() do

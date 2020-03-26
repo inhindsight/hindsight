@@ -10,16 +10,16 @@ acquire:
   service:
     type: ClusterIP
 ingress:
-  host: chart-example.local
+  host: hindsight.local
 strimzi:
   kafka:
     resources:
       requests:
         cpu: 500m
-        memory: 1000M
+        memory: 512Mi
       limits:
         cpu: 500m
-        memory: 1000M
+        memory: 512Mi
   zookeeper:
     resources:
       requests:
@@ -39,13 +39,15 @@ presto:
   presto:
     ingress:
       enable: true
-      hosts:
-        - chart-example.local/ui
+      annotations:
+        nginx.ingress.kubernetes.io/use-regex: "true"
+      hosts: [storage.hindsight.local/ui]
   minio:
     ingress:
       enable: true
-      hosts:
-        - chart-example.local/minio.*
+      annotations:
+        nginx.ingress.kubernetes.io/use-regex: "true"
+      hosts: [storage.hindsight.local/minio.*]
 global:
   objectStore:
     bucketName: hindsight-object-storage

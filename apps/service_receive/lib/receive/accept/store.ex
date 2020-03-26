@@ -12,11 +12,24 @@ defmodule Receive.Accept.Store do
     Brook.ViewState.merge(@collection, identifier(accept), %{"accept" => accept})
   end
 
-  @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: Accept.t()
+  @spec get!(dataset_id :: String.t(), subset_id :: String.t()) :: Accept.t() | nil
   def get!(dataset_id, subset_id) do
     case Brook.get!(@instance, @collection, identifier(dataset_id, subset_id)) do
       nil -> nil
       map -> Map.get(map, "accept")
+    end
+  end
+
+  @spec mark_done(Accept.t()) :: :ok
+  def mark_done(%Accept{} = accept) do
+    Brook.ViewState.merge(@collection, identifier(accept), %{"done" => true})
+  end
+
+  @spec done?(Accept.t()) :: boolean
+  def done?(%Accept{} = accept) do
+    case Brook.get!(@instance, @collection, identifier(accept)) do
+      nil -> false
+      map -> Map.get(map, "done", false)
     end
   end
 

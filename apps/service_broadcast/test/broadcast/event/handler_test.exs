@@ -23,7 +23,7 @@ defmodule Broadcast.Event.HandlerTest do
 
       Brook.Test.send(@instance, transform_define(), "testing", transform)
 
-      assert {:ok, transform} == Broadcast.Transformations.get("dataset-1")
+      assert {:ok, transform} == Broadcast.Transformations.get("dataset-1", "sb1")
     end
   end
 end

@@ -18,6 +18,9 @@ resources:
     memory: 512Mi
 strimzi:
   kafka:
+    storage:
+      enabled: true
+      size: 100Gi
     resources:
       jvm:
         xms: 4g
@@ -29,6 +32,9 @@ strimzi:
         cpu: 1000m
         memory: 8Gi
   zookeeper:
+    storage:
+      enabled: true
+      size: 1Gi
     resources:
       requests:
         cpu: 100m
@@ -45,6 +51,27 @@ nginx-ingress:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
       type: LoadBalancer
+prometheus-operator:
+  enabled: true
+  prometheus:
+    ingress:
+      enabled: true
+    prometheusSpec:
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: gp2
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 100Gi
+          selector: {}
+  alertmanager:
+    ingress:
+      enabled: true
+  grafana:
+    ingress:
+      enabled: true
 presto:
   postgres:
     enable: false

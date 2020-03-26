@@ -77,6 +77,8 @@ config :service_receive, Receive.Writer,
   app_name: "service_receive",
   kafka_endpoints: kafka_endpoints
 
+config :service_receive, Receive.Event.Handler, endpoints: kafka_endpoints
+
 # SERVICE_GATHER
 config :service_gather, Gather.Application,
   kafka_endpoints: kafka_endpoints,
@@ -101,6 +103,7 @@ config :service_gather, Gather.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
+config :service_gather, Gather.Event.Handler, endpoints: kafka_endpoints
 config :service_gather, Gather.Extraction, app_name: "service_gather"
 
 config :service_gather, Gather.Writer,
@@ -158,6 +161,8 @@ config :service_broadcast, Broadcast.Stream.Broadway.Configuration,
       ]
     ]
   ]
+
+config :service_broadcast, Broadcast.Event.Handler, endpoints: kafka_endpoints
 
 config :service_broadcast, Broadcast.Stream.Broadway, app_name: "service_broadcast"
 
@@ -227,6 +232,8 @@ config :service_persist, Persist.Load.Broadway.Configuration,
   ]
 
 config :service_persist, Persist.Load.Broadway, app_name: "service_persist"
+
+config :service_persist, Persist.Event.Handler, endpoints: kafka_endpoints
 
 # SERVICE ORCHESTRATE
 config :service_orchestrate, Orchestrate.Application,

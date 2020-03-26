@@ -27,13 +27,9 @@ function check_strimzi {
 }
 
 function deps {
-    local -r added_p=$(helm repo list | grep -s google)
-
-    if [[ ! $added_p ]]; then
-        info "Installing Helm dependencies"
-        helm repo add google https://kubernetes-charts.storage.googleapis.com
-        (cd ./helm; helm dependency build)
-    fi
+    info "Installing Helm dependencies"
+    helm repo add google https://kubernetes-charts.storage.googleapis.com
+    (cd ./helm; helm dependency build)
 }
 
 function strimzi {

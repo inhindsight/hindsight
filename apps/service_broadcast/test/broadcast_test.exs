@@ -59,7 +59,7 @@ defmodule BroadcastTest do
       assert Process.alive?(broadway_pid) == false
     end
 
-    assert nil == Broadcast.Stream.Store.get!(load.dataset_id, load.subset_id)
+    Broadcast.Stream.Store.done?(load)
 
     leave(socket)
   end

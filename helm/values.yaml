@@ -25,6 +25,10 @@ strimzi:
     storage:
       enabled: false
       size: ""
+  zookeeper:
+    storage:
+      enabled: false
+      size: ""
 redis:
   usePassword: false
   cluster:
@@ -35,7 +39,13 @@ nginx-ingress:
       enabled: true
     service:
       type: LoadBalancer
-
+prometheus-operator:
+  enabled: false
+  prometheusOperator:
+    namespaces:
+      releaseNamespace: true
+      additional:
+        - kube-system
 image:
   repository: inhindsight/hindsight
   tag: ""
@@ -44,9 +54,7 @@ image:
 global:
   objectStore:
     bucketName: ""
-  ingress:
-    annotations:
-      nginx.ingress.kubernetes.io/use-regex: "true"
+  ingress: {}
 
 imagePullSecrets: []
 nameOverride: ""
@@ -61,6 +69,8 @@ podSecurityContext: {}
 securityContext: {}
 
 ingress:
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
   host: ""
   paths:
     - name: acquire

@@ -6,6 +6,7 @@ defmodule Orchestrate.Event.Handler do
     only: [
       schedule_start: 0,
       schedule_end: 0,
+      dataset_delete: 0,
       send_transform_define: 3
     ]
 
@@ -34,7 +35,17 @@ defmodule Orchestrate.Event.Handler do
 
   def handle_event(%Brook.Event{type: schedule_end(), data: %Schedule{} = schedule}) do
     Orchestrate.Scheduler.delete_job(:"#{identifier(schedule)}")
-    Orchestrate.Schedule.Store.delete(schedule.dataset_id, schedule.subset_id)
+    Orchestrate.Schedule.Store.mark_done(schedule)
+  end
+
+  def handle_event(%Brook.Event{type: dataset_delete(), data: %Delete{} = delete}) do
+    Logger.debug(fn ->
+      "#{__MODULE__}: Received event #{dataset_delete()}: #{inspect(delete)}"
+    end)
+
+    Orchestrate.Scheduler.delete_job(:"#{identifier(delete)}")
+    Orchestrate.Scheduler.delete_job(:"#{identifier(delete)}_compaction")
+    Orchestrate.Schedule.Store.delete(delete.dataset_id, delete.subset_id)
   end
 
   defp parse_cron(cron) do

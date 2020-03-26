@@ -9,10 +9,14 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "hindsight.labels" . | nindent 4 }}
+{{- if or .Values.ingress.annotations .Values.global.ingress.annotations }}
   annotations:
-{{ toYaml .Values.global.ingress.annotations | trim | indent 4 }}
 {{- if .Values.ingress.annotations }}
 {{ toYaml .Values.ingress.annotations | trim | indent 4 }}
+{{- end }}
+{{- if .Values.global.ingress.annotations }}
+{{ toYaml .Values.global.ingress.annotations | trim | indent 4 }}
+{{- end }}
 {{- end }}
 spec:
 {{- if .Values.ingress.tls }}
