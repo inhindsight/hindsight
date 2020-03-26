@@ -18,6 +18,10 @@ acquire:
   replicaCount: 1
   service:
     port: 80
+define:
+  replicaCount: 1
+  service:
+    port: 80
 strimzi:
   enabled: true
   kafka:

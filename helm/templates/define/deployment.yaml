@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hindsight.fullname" . }}-define
+  labels:
+    {{- include "hindsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.define.replicaCount }}
+  selector:
+    matchLabels:
+      app: hindsight-define
+      {{- include "hindsight.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: hindsight-define
+        {{- include "hindsight.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "hindsight.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-define
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ template "hindsight.image" . }}
+          command:
+            - define/bin/define
+            - start
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: KAFKA_ENDPOINTS
+              value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "hindsight.fullname" . }}-define-key-base
+                  key: secret_key_base
+            - name: REDIS_HOST
+              value: {{ template "redis.host" . }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

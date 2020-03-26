@@ -12,6 +12,7 @@ RUN mix release orchestrate \
   && mix release gather \
   && mix release broadcast \
   && mix release persist \
+  && mix release define \
   && mix release acquire
 
 FROM bitwalker/alpine-erlang:22.2.3
