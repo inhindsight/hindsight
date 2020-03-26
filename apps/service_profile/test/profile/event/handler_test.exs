@@ -21,7 +21,7 @@ defmodule Profile.Event.HandlerTest do
           subset_id: "sb1",
           steps: [],
           dictionary: [],
-          destination: "topic"
+          destination: Destination.Fake.new!()
         )
 
       [extract: extract]

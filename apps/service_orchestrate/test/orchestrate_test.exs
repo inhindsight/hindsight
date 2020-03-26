@@ -20,7 +20,7 @@ defmodule OrchestrateTest do
             id: "extract-1",
             dataset_id: "ds1",
             subset_id: "kpi",
-            destination: "topic-1",
+            destination: Destination.Fake.new!(),
             steps: [],
             dictionary: []
           ),

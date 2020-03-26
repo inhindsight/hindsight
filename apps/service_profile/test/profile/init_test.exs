@@ -19,7 +19,7 @@ defmodule Profile.InitTest do
         subset_id: "sb1",
         steps: [],
         dictioanry: [],
-        destination: "topic1"
+        destination: Destination.Fake.new!()
       )
 
     extract2 =
@@ -29,7 +29,7 @@ defmodule Profile.InitTest do
         subset_id: "sb2",
         steps: [],
         dictioanry: [],
-        destination: "topic2"
+        destination: Destination.Fake.new!()
       )
 
     extract3 =
@@ -39,7 +39,7 @@ defmodule Profile.InitTest do
         subset_id: "sb3",
         steps: [],
         dictioanry: [],
-        destination: "topic3"
+        destination: Destination.Fake.new!()
       )
 
     Brook.Test.with_event(@instance, fn ->
