@@ -1,8 +1,7 @@
 defmodule StoreTest do
   use ExUnit.Case
 
-  alias Define.{
-    Store,
+  alias Define.Model.{
     DataDefinitionView,
     ExtractView,
     ModuleFunctionArgsView,
@@ -10,6 +9,8 @@ defmodule StoreTest do
     PersistView,
     TransformView
   }
+
+  alias Define.Event.Store
 
   @instance Define.Application.instance()
 
@@ -322,9 +323,9 @@ defmodule StoreTest do
       Enum.each(1..3, fn index ->
         Brook.Test.with_event(@instance, fn ->
           event = %Extract{
-              id: "extract-#{index}",
-              dataset_id: "id-#{index}"
-        }
+            id: "extract-#{index}",
+            dataset_id: "id-#{index}"
+          }
 
           Store.update_definition(event)
         end)

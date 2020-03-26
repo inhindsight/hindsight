@@ -1,5 +1,5 @@
-defmodule Define.PersistView do
-  use Definition, schema: Define.PersistView.V1
+defmodule Define.Model.PersistView do
+  use Definition, schema: Define.Model.PersistView.V1
 
   @type t :: %__MODULE__{
           version: integer,
@@ -13,12 +13,12 @@ defmodule Define.PersistView do
             destination: nil
 end
 
-defmodule Define.PersistView.V1 do
+defmodule Define.Model.PersistView.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Define.PersistView{
+    schema(%Define.Model.PersistView{
       version: version(1),
       source: string(),
       destination: string()

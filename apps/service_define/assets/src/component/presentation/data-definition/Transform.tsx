@@ -1,6 +1,6 @@
 import React from "react"
 import {TransformView} from "../../../model/view/DataDefinitionView"
-import { ModuleFunctionArgs } from "./module-function-args/ModuleFunctionArgs"
+import { ModuleFunctionArgs } from "./common/ModuleFunctionArgs"
 
 export const Transform = (transform: TransformView) =>
 <div className="card" >

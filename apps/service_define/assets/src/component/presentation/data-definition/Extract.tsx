@@ -1,5 +1,5 @@
 import React from "react"
-import {ModuleFunctionArgs} from "./module-function-args/ModuleFunctionArgs"
+import {ModuleFunctionArgs} from "./common/ModuleFunctionArgs"
 import {ExtractView} from "../../../model/view/DataDefinitionView"
 
 export const Extract = (extract: ExtractView) =>

@@ -1,6 +1,7 @@
-defmodule Define.Store do
+defmodule Define.Event.Store do
   require Logger
-  alias Define.{DefinitionSerialization, ExtractView, PersistView, TransformView}
+  alias Define.DefinitionSerialization
+  alias Define.Model.{DataDefinitionView, ExtractView, PersistView, TransformView}
 
   @instance Define.Application.instance()
   @collection "definitions"
@@ -69,7 +70,7 @@ defmodule Define.Store do
 
   defp get_or_create(id) do
     case get(id) do
-      nil -> %Define.DataDefinitionView{}
+      nil -> %DataDefinitionView{}
       map -> map
     end
   end

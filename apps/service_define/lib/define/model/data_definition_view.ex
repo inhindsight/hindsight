@@ -1,6 +1,6 @@
-defmodule Define.DataDefinitionView do
+defmodule Define.Model.DataDefinitionView do
   use Definition, schema: Define.DataDefinitionView.V1
-  alias Define.{ExtractView, PersistView, TransformView}
+  alias Define.Model.{ExtractView, PersistView, TransformView}
 
   @type t :: %__MODULE__{
           version: integer,
@@ -26,7 +26,7 @@ defmodule Define.DataDefinitionView.V1 do
 
   @impl true
   def s do
-    schema(%Define.DataDefinitionView{
+    schema(%Define.Model.DataDefinitionView{
       version: version(1),
       dataset_id: string(),
       subset_id: string(),

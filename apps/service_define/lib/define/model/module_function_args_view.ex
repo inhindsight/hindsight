@@ -1,5 +1,6 @@
-defmodule Define.ModuleFunctionArgsView do
-  use Definition, schema: Define.ModuleFunctionArgsView.V1
+defmodule Define.Model.ModuleFunctionArgsView do
+  use Definition, schema: Define.Model.ModuleFunctionArgsView.V1
+  alias Define.ArgumentView
 
   @type t :: %__MODULE__{
           version: integer,
@@ -13,12 +14,12 @@ defmodule Define.ModuleFunctionArgsView do
             args: []
 end
 
-defmodule Define.ModuleFunctionArgsView.V1 do
+defmodule Define.Model.ModuleFunctionArgsView.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Define.ModuleFunctionArgsView{
+    schema(%Define.Model.ModuleFunctionArgsView{
       version: version(1),
       struct_module_name: string(),
       args: list()

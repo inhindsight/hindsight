@@ -1,6 +1,7 @@
 defmodule Define.DefinitionSerializationTest do
   use ExUnit.Case
-  alias Define.{DefinitionSerialization, ModuleFunctionArgsView, ArgumentView}
+  alias Define.Model.{ModuleFunctionArgsView, ArgumentView}
+  alias Define.DefinitionSerialization
 
   test "serializes non-hierarchical top level field" do
     dict = Dictionary.from_list([Dictionary.Type.String.new!(name: "letter")])
@@ -28,25 +29,25 @@ defmodule Define.DefinitionSerializationTest do
       ])
 
     expected = [
-      %Define.ModuleFunctionArgsView{
+      %ModuleFunctionArgsView{
         struct_module_name: "Elixir.Dictionary.Type.List",
         version: 1,
         args: [
-          %Define.ArgumentView{key: "description", type: "string", value: "", version: 1},
-          %Define.ArgumentView{
+          %ArgumentView{key: "description", type: "string", value: "", version: 1},
+          %ArgumentView{
             key: "item_type",
             version: 1,
             type: "module",
-            value: %Define.ModuleFunctionArgsView{
+            value: %ModuleFunctionArgsView{
               struct_module_name: "Elixir.Dictionary.Type.String",
               args: [
-                %Define.ArgumentView{
+                %ArgumentView{
                   key: "description",
                   type: "string",
                   version: 1,
                   value: ""
                 },
-                %Define.ArgumentView{
+                %ArgumentView{
                   key: "name",
                   type: "string",
                   version: 1,
@@ -55,7 +56,7 @@ defmodule Define.DefinitionSerializationTest do
               ]
             }
           },
-          %Define.ArgumentView{key: "name", type: "string", value: "pets", version: 1}
+          %ArgumentView{key: "name", type: "string", value: "pets", version: 1}
         ]
       }
     ]
@@ -124,25 +125,25 @@ defmodule Define.DefinitionSerializationTest do
       ])
 
     expected = [
-      %Define.ModuleFunctionArgsView{
+      %ModuleFunctionArgsView{
         struct_module_name: "Elixir.Dictionary.Type.List",
         version: 1,
         args: [
-          %Define.ArgumentView{key: "description", type: "string", value: "", version: 1},
-          %Define.ArgumentView{
+          %ArgumentView{key: "description", type: "string", value: "", version: 1},
+          %ArgumentView{
             key: "item_type",
             version: 1,
             type: "module",
-            value: %Define.ModuleFunctionArgsView{
+            value: %ModuleFunctionArgsView{
               struct_module_name: "Elixir.Dictionary.Type.Map",
               args: [
-                %Define.ArgumentView{
+                %ArgumentView{
                   key: "description",
                   type: "string",
                   version: 1,
                   value: ""
                 },
-                %Define.ArgumentView{
+                %ArgumentView{
                   key: "dictionary",
                   type: "module",
                   version: 1,
@@ -156,7 +157,7 @@ defmodule Define.DefinitionSerializationTest do
                     }
                   ]
                 },
-                %Define.ArgumentView{
+                %ArgumentView{
                   key: "name",
                   type: "string",
                   version: 1,
@@ -165,7 +166,7 @@ defmodule Define.DefinitionSerializationTest do
               ]
             }
           },
-          %Define.ArgumentView{key: "name", type: "string", value: "people", version: 1}
+          %ArgumentView{key: "name", type: "string", value: "people", version: 1}
         ]
       }
     ]

@@ -1,12 +1,6 @@
 defmodule Define.ViewState do
-  alias Define.{
-    AppView,
-    ModuleFunctionArgsView,
-    ArgumentView,
-    DataDefinitionView,
-    ExtractView,
-    Store
-  }
+  alias Define.Model.AppView
+  alias Define.Event.Store
 
   use GenServer
 
@@ -29,7 +23,7 @@ defmodule Define.ViewState do
   end
 
   @impl true
-  def handle_call({:event, type, payload}, _from, state) do
+  def handle_call({:event, _type, _payload}, _from, state) do
     {:reply, state, state}
   end
 

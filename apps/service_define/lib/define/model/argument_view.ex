@@ -1,11 +1,11 @@
-defmodule Define.ArgumentView do
-  use Definition, schema: Define.ArgumentView.V1
+defmodule Define.Model.ArgumentView do
+  use Definition, schema: Define.Model.ArgumentView.V1
 
   @type t :: %__MODULE__{
           version: integer,
           key: String.t(),
           type: String.t(),
-          value: String.t() | boolean | map
+          value: any()
         }
 
   @derive Jason.Encoder
@@ -15,17 +15,15 @@ defmodule Define.ArgumentView do
             value: nil
 end
 
-defmodule Define.ArgumentView.V1 do
+defmodule Define.Model.ArgumentView.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Define.ArgumentView{
+    schema(%Define.Model.ArgumentView{
       version: version(1),
       key: string(),
-      type: string(),
-      # TODO: This better
-      value: spec(is_binary() or is_boolean() or is_map())
+      type: string()
     })
   end
 end

@@ -1,6 +1,6 @@
-defmodule Define.ExtractView do
-  use Definition, schema: Define.ExtractView.V1
-  alias Define.{ModuleFunctionArgsView}
+defmodule Define.Model.ExtractView do
+  use Definition, schema: Define.Model.ExtractView.V1
+  alias Define.Model.{ModuleFunctionArgsView}
 
   @type t :: %__MODULE__{
           version: integer,
@@ -16,16 +16,15 @@ defmodule Define.ExtractView do
             steps: []
 end
 
-defmodule Define.ExtractView.V1 do
+defmodule Define.Model.ExtractView.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Define.ExtractView{
+    schema(%Define.Model.ExtractView{
       version: version(1),
       destination: string(),
       dictionary: list(),
-      # TODO: Add is_list that takes a type
       steps: list()
     })
   end
