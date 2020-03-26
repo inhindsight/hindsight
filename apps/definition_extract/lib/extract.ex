@@ -8,7 +8,7 @@ defmodule Extract do
           id: uuid,
           dataset_id: String.t(),
           subset_id: String.t(),
-          destination: String.t(),
+          destination: Destination.t(),
           steps: [Extract.Step.t()],
           dictionary: Dictionary.t(),
           message_key: list,

@@ -7,7 +7,7 @@ defprotocol Destination do
         ]
 
   @spec start_link(t, init_opts) :: {:ok, t} | {:error, term}
-  def start_link(t, dictionary)
+  def start_link(t, opts)
 
   @spec write(t, messages :: list(map)) :: :ok | {:error, term}
   def write(t, messages)
