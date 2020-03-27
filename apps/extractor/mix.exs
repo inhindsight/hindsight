@@ -27,9 +27,9 @@ defmodule Extract.Steps.MixProject do
     [
       {:elsa, "~> 0.12", override: true},
       {:protocol_extract_step, in_umbrella: true},
-      {:extract_decode_csv, in_umbrella: true},
-      {:extract_decode_gtfs, in_umbrella: true},
-      {:extract_decode_json, in_umbrella: true},
+      {:decoder_csv, in_umbrella: true},
+      {:decoder_gtfs, in_umbrella: true},
+      {:decoder_json, in_umbrella: true},
       {:extract_http, in_umbrella: true},
       {:extract_kafka, in_umbrella: true},
       {:ok, in_umbrella: true},
