@@ -1,6 +1,7 @@
 defmodule Kafka.Topic.Destination do
   use GenServer, shutdown: 30_000
   use Properties, otp_app: :definition_kafka
+  use Annotated.Retry
   require Logger
 
   getter(:dlq, default: Dlq)
@@ -29,7 +30,7 @@ defmodule Kafka.Topic.Destination do
   end
 
   def write(topic, messages) do
-    with :ok <- GenServer.call(topic.pid, {:write, topic, messages}) do
+    with {:ok, _} <- do_write(topic, messages) do
       count = Enum.count(messages)
       :telemetry.execute([:destination, :kafka, :write], %{count: count}, topic)
     end
@@ -61,21 +62,12 @@ defmodule Kafka.Topic.Destination do
     with opts <- Map.from_struct(topic) |> Enum.into([]),
          :ok <- Elsa.create_topic(topic.endpoints, topic.name, opts),
          {:ok, pid} <- start_producer(topic, state.connection) do
+      store_connection(topic, state.connection)
       {:noreply, Map.put(state, :elsa_pid, pid)}
     end
   end
 
   @impl GenServer
-  def handle_call({:write, topic, messages}, _from, state) do
-    with opts <- [partitioner: topic.partitioner],
-         :ok <- Elsa.produce(state.connection, topic.name, messages, opts) do
-      {:reply, :ok, state}
-    else
-      error ->
-        {:reply, error, state}
-    end
-  end
-
   def handle_call(:stop, _from, state) do
     Logger.info(fn -> "#{__MODULE__}: Terminating by request" end)
     {:stop, :normal, :ok, state}
@@ -139,6 +131,36 @@ defmodule Kafka.Topic.Destination do
          true <- Elsa.Producer.ready?(conn) do
       Ok.ok(pid)
     end
+  end
+
+  defp do_write(topic, messages) do
+    connection(topic)
+    |> Ok.map(&Elsa.produce(&1, topic.name, messages, [partitioner: topic.partitioner]))
+  end
+
+  @retry with: constant_backoff(100) |> take(10)
+  defp connection(topic) do
+    table_name(topic)
+    |> :ets.lookup_element(topic.pid, 2)
+    |> Ok.ok()
+  catch
+    _, reason ->
+      Ok.error(reason)
+  end
+
+  defp store_connection(topic, connection) do
+    table = table_name(topic)
+
+    case :ets.whereis(table) do
+      :undefined -> :ets.new(table, [:named_table, :protected])
+      _ -> :ok
+    end
+
+    :ets.insert(table, {self(), connection})
+  end
+
+  defp table_name(topic) do
+    :"destination_kafka_#{topic.name}"
   end
 
   defp connection_name do
