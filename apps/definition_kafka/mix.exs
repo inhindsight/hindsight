@@ -32,7 +32,6 @@ defmodule DefinitionKafka.MixProject do
       {:protocol_destination, in_umbrella: true},
       {:protocol_source, in_umbrella: true},
       {:telemetry, "~> 0.4.1"},
-      {:checkov, "~> 1.0", only: [:dev, :test]},
       {:divo, "~> 1.1", only: [:dev, :test]},
       {:divo_kafka, "~> 0.1.6", only: [:test]},
       {:mox, "~> 0.5.1", only: [:test]},

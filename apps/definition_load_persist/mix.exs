@@ -25,7 +25,6 @@ defmodule DefinitionLoadPersist.MixProject do
     [
       {:definition_dictionary, in_umbrella: true},
       {:protocol_source, in_umbrella: true},
-      {:checkov, "~> 1.0", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}
     ]
   end

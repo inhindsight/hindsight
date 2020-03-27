@@ -25,7 +25,6 @@ defmodule DefinitionLoadBroadcast.MixProject do
     [
       {:definition, in_umbrella: true},
       {:protocol_source, in_umbrella: true},
-      {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
 end

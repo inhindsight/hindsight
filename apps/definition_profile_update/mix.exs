@@ -25,7 +25,6 @@ defmodule DefinitionProfileUpdate.MixProject do
     [
       {:definition, in_umbrella: true},
       {:ok, in_umbrella: true},
-      {:checkov, "~> 1.0", only: [:dev, :test]}
     ]
   end
 end
