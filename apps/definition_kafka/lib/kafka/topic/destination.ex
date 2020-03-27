@@ -6,10 +6,10 @@ defmodule Kafka.Topic.Destination do
 
   getter(:dlq, default: Dlq)
 
-  @spec start_link(Destination.t(), Destination.init_opts()) ::
+  @spec start_link(Destination.t(), Destination.Context.t()) ::
           {:ok, Destination.t()} | {:error, term}
-  def start_link(topic, opts) do
-    GenServer.start_link(__MODULE__, {topic, opts})
+  def start_link(topic, %Destination.Context{} = context) do
+    GenServer.start_link(__MODULE__, {topic, context})
     |> Ok.map(&%{topic | pid: &1})
   end
 
@@ -51,16 +51,15 @@ defmodule Kafka.Topic.Destination do
   end
 
   @impl GenServer
-  def init({topic, opts}) do
+  def init({topic, context}) do
     Process.flag(:trap_exit, true)
-    state = Map.new(opts) |> Map.put(:connection, connection_name())
+    state = Map.from_struct(context) |> Map.put(:connection, connection_name())
     {:ok, state, {:continue, {:init, topic}}}
   end
 
   @impl GenServer
   def handle_continue({:init, topic}, state) do
-    with opts <- Map.from_struct(topic) |> Enum.into([]),
-         :ok <- Elsa.create_topic(topic.endpoints, topic.name, opts),
+    with :ok <- Elsa.create_topic(topic.endpoints, topic.name, partitions: topic.partitions),
          {:ok, pid} <- start_producer(topic, state.connection) do
       store_connection(topic, state.connection)
       {:noreply, Map.put(state, :elsa_pid, pid)}
@@ -135,7 +134,7 @@ defmodule Kafka.Topic.Destination do
 
   defp do_write(topic, messages) do
     connection(topic)
-    |> Ok.map(&Elsa.produce(&1, topic.name, messages, [partitioner: topic.partitioner]))
+    |> Ok.map(&Elsa.produce(&1, topic.name, messages, partitioner: topic.partitioner))
   end
 
   @retry with: constant_backoff(100) |> take(10)

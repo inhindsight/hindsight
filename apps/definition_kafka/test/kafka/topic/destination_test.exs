@@ -37,7 +37,7 @@ defmodule Kafka.Topic.DestinationTest do
   describe "start_link/2" do
     test "returns topic struct with pid" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "noop")
-      {:ok, topic} = Destination.start_link(topic, [])
+      {:ok, topic} = Destination.start_link(topic, context([]))
 
       assert is_pid(topic.pid)
 
@@ -46,7 +46,7 @@ defmodule Kafka.Topic.DestinationTest do
 
     test "creates topic in Kafka" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "create-me")
-      {:ok, topic} = Destination.start_link(topic, [])
+      {:ok, topic} = Destination.start_link(topic, context([]))
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
@@ -57,7 +57,7 @@ defmodule Kafka.Topic.DestinationTest do
 
     test "creates topic with configurable number of partitions" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "partitioned", partitions: 3)
-      {:ok, topic} = Destination.start_link(topic, [])
+      {:ok, topic} = Destination.start_link(topic, context([]))
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
@@ -71,7 +71,7 @@ defmodule Kafka.Topic.DestinationTest do
   describe "write/2" do
     test "produces messages to Kafka" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-me")
-      {:ok, topic} = Destination.start_link(topic, [])
+      {:ok, topic} = Destination.start_link(topic, context([]))
 
       assert :ok = Destination.write(topic, ["one", "two", "three"])
 
@@ -86,7 +86,7 @@ defmodule Kafka.Topic.DestinationTest do
 
     test "encodes maps to JSON before producing to Kafka" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-maps")
-      {:ok, topic} = Destination.start_link(topic, [])
+      {:ok, topic} = Destination.start_link(topic, context([]))
 
       assert :ok = Destination.write(topic, [%{one: 1}, %{two: 2}])
 
@@ -103,7 +103,7 @@ defmodule Kafka.Topic.DestinationTest do
 
     test "keys message off topic's key_path field" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "key-me", key_path: ["a", "b"])
-      {:ok, topic} = Destination.start_link(topic, [])
+      {:ok, topic} = Destination.start_link(topic, context([]))
 
       input = [%{"a" => %{"b" => "1"}}, %{"a" => %{"b" => "2"}}]
       assert :ok = Destination.write(topic, input)
@@ -121,11 +121,11 @@ defmodule Kafka.Topic.DestinationTest do
     end
 
     test "writes errors to DLQ" do
-      expect(DlqMock, :write, fn %{app_name: "foo"} -> :ok end)
+      expect(DlqMock, :write, fn %{app_name: "some-app"} -> :ok end)
 
-      opts = [app_name: "foo", dataset_id: "bar", subset_id: "baz"]
+      context = context(app_name: "some-app")
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-errors")
-      {:ok, topic} = Destination.start_link(topic, opts)
+      {:ok, topic} = Destination.start_link(topic, context)
 
       assert :ok = Destination.write(topic, [%{one: 1}, ~r/no/, %{two: 2}])
 
@@ -143,7 +143,7 @@ defmodule Kafka.Topic.DestinationTest do
   describe "stop/1" do
     test "stops the destination topic process" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "stop-me")
-      {:ok, topic} = Destination.start_link(topic, [])
+      {:ok, topic} = Destination.start_link(topic, context([]))
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
@@ -182,5 +182,11 @@ defmodule Kafka.Topic.DestinationTest do
     ref = Process.monitor(pid)
     Process.exit(pid, :kill)
     assert_receive {:DOWN, ^ref, _, _, _}
+  end
+
+  defp context(overrides) do
+    [dictionary: Dictionary.from_list([]), dataset_id: "foo", subset_id: "bar"]
+    |> Keyword.merge(overrides)
+    |> Destination.Context.new!()
   end
 end
