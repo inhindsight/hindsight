@@ -11,12 +11,14 @@ defmodule ExtractTest do
         [:version, "1"],
         [:id, ""],
         [:dataset_id, 2001],
-        [:steps, 1],
-        [:steps, nil],
         [:dictionary, 1],
         [:dictionary, nil],
         [:subset_id, nil],
         [:subset_id, ""],
+        [:source, nil],
+        [:source, ""],
+        [:decoder, nil],
+        [:decoder, ""],
         [:destination, nil],
         [:destination, ""]
       ]

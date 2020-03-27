@@ -8,22 +8,20 @@ defmodule Extract do
           id: uuid,
           dataset_id: String.t(),
           subset_id: String.t(),
+          source: Source.t(),
+          decoder: Decoder.t(),
           destination: Destination.t(),
-          steps: [Extract.Step.t()],
-          dictionary: Dictionary.t(),
-          message_key: list,
-          config: map
+          dictionary: Dictionary.t()
         }
 
   defstruct version: 1,
             id: nil,
             dataset_id: nil,
             subset_id: nil,
+            source: nil,
+            decoder: nil,
             destination: nil,
-            steps: [],
-            dictionary: Dictionary.from_list([]),
-            message_key: [],
-            config: %{}
+            dictionary: Dictionary.from_list([])
 
   @impl Definition
   def on_new(%{dictionary: list} = extract) when is_list(list) do
