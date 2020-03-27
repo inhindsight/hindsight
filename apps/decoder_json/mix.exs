@@ -1,9 +1,9 @@
-defmodule ExtractDecodeJson.MixProject do
+defmodule DecoderJson.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :extract_decode_json,
+      app: :decoder_json,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -23,7 +23,7 @@ defmodule ExtractDecodeJson.MixProject do
 
   defp deps do
     [
-      {:protocol_extract_step, in_umbrella: true},
+      {:protocol_decoder, in_umbrella: true},
       {:definition, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:temp, "~> 0.4.7"},
