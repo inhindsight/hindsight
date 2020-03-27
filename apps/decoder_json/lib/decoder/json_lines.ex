@@ -6,6 +6,8 @@ defmodule Decoder.JsonLines do
 
   defimpl Decoder do
 
+    def lines_or_bytes(_t), do: :line
+
     def decode(_t, stream) do
       stream
       |> Stream.map(&decode_chunk/1)

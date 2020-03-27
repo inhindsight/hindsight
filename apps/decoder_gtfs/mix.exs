@@ -1,9 +1,9 @@
-defmodule ExtractGtfs.MixProject do
+defmodule DecoderGtfs.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :extract_decode_gtfs,
+      app: :decoder_gtfs,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -23,8 +23,8 @@ defmodule ExtractGtfs.MixProject do
 
   defp deps do
     [
-      {:definition_extract, in_umbrella: true},
-      {:protocol_extract_step, in_umbrella: true},
+      {:definition, in_umbrella: true},
+      {:protocol_decoder, in_umbrella: true},
       {:protobuf, "~> 0.7.0"},
       {:brook_serializer, "~> 2.2"},
       {:temp, "~> 0.4.7", only: [:test]},

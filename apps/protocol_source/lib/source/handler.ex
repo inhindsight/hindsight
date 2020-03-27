@@ -31,12 +31,14 @@ defmodule Source.Handler do
     |> Enum.each(&do_batch(&1, context))
   end
 
-  defp decode(%{value: value} = msg) do
+  defp decode(%{value: value} = msg) when is_binary(value) do
     case Jason.decode(value) do
       {:ok, decoded_value} -> %{msg | value: decoded_value}
       {:error, reason} -> %{msg | error: reason}
     end
   end
+
+  defp decode(msg), do: msg
 
   defp do_message(%{error: nil, value: value} = msg, context) do
     case context.handler.handle_message(value, context) do

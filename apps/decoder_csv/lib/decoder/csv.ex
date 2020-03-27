@@ -15,6 +15,9 @@ defmodule Decoder.Csv do
             skip_first_line: false
 
   defimpl Decoder, for: __MODULE__ do
+
+    def lines_or_bytes(_t), do: :line
+
     def decode(t, stream) do
       stream
       |> Stream.transform(%{skip: t.skip_first_line}, fn chunk, %{skip: skip} = acc ->
