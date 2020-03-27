@@ -1,7 +1,7 @@
-NimbleCSV.define(Extract.Decode.Csv.Parser, [])
+NimbleCSV.define(Decoder.Csv.Parser, [])
 
-defmodule Extract.Decode.Csv do
-  use Definition, schema: Extract.Decode.Csv.V1
+defmodule Decoder.Csv do
+  use Definition, schema: Decoder.Csv.V1
 
   @type t :: %__MODULE__{
           version: integer,
@@ -14,28 +14,20 @@ defmodule Extract.Decode.Csv do
             headers: nil,
             skip_first_line: false
 
-  defimpl Extract.Step, for: __MODULE__ do
-    import Extract.Context
-
-    def execute(step, context) do
-      source = fn opts ->
-        get_stream(context, opts)
-        |> Stream.transform(%{skip: step.skip_first_line}, fn chunk, %{skip: skip} = acc ->
-          parsed_chunk = parse_chunk(chunk, step.headers, skip)
-          {[parsed_chunk], %{acc | skip: false}}
-        end)
-      end
-
-      context
-      |> set_source(source)
-      |> Ok.ok()
+  defimpl Decoder, for: __MODULE__ do
+    def decode(t, stream) do
+      stream
+      |> Stream.transform(%{skip: t.skip_first_line}, fn chunk, %{skip: skip} = acc ->
+        parsed_chunk = parse_chunk(chunk, t.headers, skip)
+        {[parsed_chunk], %{acc | skip: false}}
+      end)
     end
 
     defp parse_chunk(chunk, headers, skip) do
       {buffer, _} =
         Enum.reduce(chunk, {[], skip}, fn
           message, {buffer, false} ->
-            {[Extract.Message.update_data(message, &parse(&1, headers)) | buffer], false}
+            {[parse(message, headers) | buffer], false}
 
           _message, {buffer, true} ->
             {buffer, false}
@@ -45,7 +37,7 @@ defmodule Extract.Decode.Csv do
     end
 
     defp parse(data, headers) do
-      Extract.Decode.Csv.Parser.parse_string(data, skip_headers: false)
+      Decoder.Csv.Parser.parse_string(data, skip_headers: false)
       |> List.flatten()
       |> zip(headers)
       |> Map.new()
@@ -57,12 +49,12 @@ defmodule Extract.Decode.Csv do
   end
 end
 
-defmodule Extract.Decode.Csv.V1 do
+defmodule Decoder.Csv.V1 do
   use Definition.Schema
 
   @impl true
   def s do
-    schema(%Extract.Decode.Csv{
+    schema(%Decoder.Csv{
       version: version(1),
       headers: spec(is_list() and not_nil?()),
       skip_first_line: spec(is_boolean() and not_nil?())
