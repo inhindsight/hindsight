@@ -1,4 +1,4 @@
-defmodule ProtocolDefinition.MixProject do
+defmodule ProtocolDestination.MixProject do
   use Mix.Project
 
   def project do
