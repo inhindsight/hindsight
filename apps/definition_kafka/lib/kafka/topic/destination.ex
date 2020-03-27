@@ -12,7 +12,6 @@ defmodule Kafka.Topic.Destination do
     |> Ok.map(&%{topic | pid: &1})
   end
 
-  # TODO logging
   @spec write(Destination.t(), [term]) :: :ok | {:error, term}
   def write(topic, [%{} | _] = messages) do
     encoded =
@@ -30,10 +29,9 @@ defmodule Kafka.Topic.Destination do
   end
 
   def write(topic, messages) do
-    with :ok <- GenServer.call(topic.pid, {:write, topic, messages}),
-         count = Enum.count(messages),
-         metadata = Map.from_struct(topic) do
-      :telemetry.execute([:destination, :kafka, :write], %{count: count}, metadata)
+    with :ok <- GenServer.call(topic.pid, {:write, topic, messages}) do
+      count = Enum.count(messages)
+      :telemetry.execute([:destination, :kafka, :write], %{count: count}, topic)
     end
   end
 
@@ -69,7 +67,7 @@ defmodule Kafka.Topic.Destination do
 
   @impl GenServer
   def handle_call({:write, topic, messages}, _from, state) do
-    with opts <- Map.from_struct(topic) |> Enum.into([]),
+    with opts <- [partitioner: topic.partitioner],
          :ok <- Elsa.produce(state.connection, topic.name, messages, opts) do
       {:reply, :ok, state}
     else
