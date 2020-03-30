@@ -44,7 +44,7 @@ defmodule Kafka.Topic.SourceTest do
       partitions: 2
     }
 
-    {:ok, source} =
+    {:ok, pid} =
       Source.start_link(
         source,
         Source.Context.new!(
@@ -64,14 +64,14 @@ defmodule Kafka.Topic.SourceTest do
     {:ok, topics} = Elsa.list_topics(@endpoints)
     assert Enum.any?(topics, fn x -> x == {"create-test", 2} end)
 
-    assert_down(source)
+    assert_down(source, pid)
   end
 
   test "will decode messages and pass them to handler", %{
     source: source,
     dictionary: dictionary
   } do
-    {:ok, source} =
+    {:ok, pid} =
       Source.start_link(
         source,
         Source.Context.new!(
@@ -97,11 +97,11 @@ defmodule Kafka.Topic.SourceTest do
 
     assert_receive {:handle_batch, ^messages}, 5_000
 
-    assert_down(source)
+    assert_down(source, pid)
   end
 
   test "stop/1 will stop the process", %{source: source, dictionary: dictionary} do
-    {:ok, source} =
+    {:ok, pid} =
       Source.start_link(
         source,
         Source.Context.new!(
@@ -114,10 +114,10 @@ defmodule Kafka.Topic.SourceTest do
         )
       )
 
-    Source.stop(source)
+    Source.stop(source, pid)
 
     assert_async sleep: 500 do
-      refute Process.alive?(source.pid)
+      refute Process.alive?(pid)
     end
   end
 
@@ -140,9 +140,9 @@ defmodule Kafka.Topic.SourceTest do
     end
   end
 
-  defp assert_down(t) do
-    ref = Process.monitor(t.pid)
-    Source.stop(t)
+  defp assert_down(t, pid) do
+    ref = Process.monitor(pid)
+    Source.stop(t, pid)
     assert_receive {:DOWN, ^ref, _, _, _}, 5_000
   end
 end

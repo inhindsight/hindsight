@@ -26,7 +26,7 @@ defmodule Profile.Feed do
        into_specs: [
          {Profile.Feed.Consumer, dataset_id: extract.dataset_id, subset_id: extract.subset_id}
        ],
-       reducers: determine_reducers(extract.dictionary, [], [Access.key(:value)])}
+       reducers: determine_reducers(extract.dictionary, [], [])}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

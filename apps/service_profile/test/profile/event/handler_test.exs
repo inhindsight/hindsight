@@ -21,7 +21,10 @@ defmodule Profile.Event.HandlerTest do
           subset_id: "sb1",
           source: Source.Fake.new!(),
           decoder: Decoder.Noop.new(),
-          destination: Destination.Fake.new!(),
+          destination: Kafka.Topic.new!(
+            endpoints: [localhost: 9092],
+            name: "topic-1"
+          ),
           dictionary: []
         )
 

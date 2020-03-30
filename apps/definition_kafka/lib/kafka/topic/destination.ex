@@ -59,8 +59,8 @@ defmodule Kafka.Topic.Destination do
 
   @impl GenServer
   def handle_continue({:init, topic}, state) do
-    with :ok <- Elsa.create_topic(topic.endpoints, topic.name, partitions: topic.partitions),
-         {:ok, pid} <- start_producer(topic, state.connection),
+    ensure_topic(topic)
+    with {:ok, pid} <- start_producer(topic, state.connection),
          table <- table_name(topic) do
       :ets.new(table, [:named_table, :protected])
       :ets.insert(table, {self(), state.connection})
@@ -148,6 +148,13 @@ defmodule Kafka.Topic.Destination do
   catch
     _, reason ->
       Ok.error(reason)
+  end
+
+  @retry with: constant_backoff(500) |> take(10)
+  defp ensure_topic(topic) do
+    unless Elsa.topic?(topic.endpoints, topic.name) do
+      Elsa.create_topic(topic.endpoints, topic.name, partitions: topic.partitions)
+    end
   end
 
   defp table_name(topic) do

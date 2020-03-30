@@ -27,10 +27,9 @@ defmodule Gather.Extraction do
     Logger.debug(fn -> "#{__MODULE__}: Started extraction: #{inspect(extract)}" end)
 
     case extract(extract) do
-      {:ok, topic} ->
+      {:ok, _topic} ->
         Logger.debug(fn -> "#{__MODULE__}: Extraction Completed: #{inspect(extract)}" end)
         Brook.Event.send(Gather.Application.instance(), extract_end(), "gather", extract)
-        Destination.stop(topic)
         {:stop, :normal, state}
 
       {:error, reason} ->
@@ -48,11 +47,14 @@ defmodule Gather.Extraction do
   end
 
   defp start_destination(extract) do
-    Destination.start_link(extract.destination,
-      app_name: app_name(),
-      dataset_id: extract.dataset_id,
-      subset_id: extract.subset_id,
-      dictionary: extract.dictionary
+    Destination.start_link(
+      extract.destination,
+      Destination.Context.new!(
+        app_name: app_name(),
+        dataset_id: extract.dataset_id,
+        subset_id: extract.subset_id,
+        dictionary: extract.dictionary
+      )
     )
   end
 

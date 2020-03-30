@@ -7,15 +7,19 @@ defmodule Profile.Feed.Producer do
           extract: Extract.t()
         ]
 
-  getter(:endpoints, required: true)
+  getter(:dlq, default: Dlq)
 
   defmodule Handler do
-    use Elsa.Consumer.MessageHandler
+    use Source.Handler
 
-    def handle_messages(messages, %{producer: producer} = state) do
-      Logger.debug(fn -> "#{__MODULE__}(#{inspect(self())}): received #{inspect(messages)}" end)
-      Profile.Feed.Producer.add_events(producer, messages)
-      {:ack, state}
+    def handle_batch(batch, context) do
+      Logger.debug(fn -> "#{__MODULE__}(#{inspect(self())}): received #{inspect(batch)}" end)
+      Profile.Feed.Producer.add_events(context.assigns.producer, batch)
+      :ok
+    end
+
+    def send_to_dlq(dead_letters, context) do
+      context.assigns.dlq.write(dead_letters)
     end
   end
 
@@ -39,7 +43,7 @@ defmodule Profile.Feed.Producer do
 
     {:producer,
      %{
-       elsa_sup: nil,
+       source_pid: nil,
        queue: :queue.new(),
        demand: 0
      }}
@@ -51,8 +55,7 @@ defmodule Profile.Feed.Producer do
 
     queue =
       Enum.reduce(events, queue, fn event, q ->
-        update_in(event, [Access.key(:value)], fn value -> Jason.decode!(value) end)
-        |> :queue.in(q)
+        :queue.in(event, q)
       end)
 
     {new_state, events} = dispatch_events(%{state | queue: queue}, [])
@@ -67,31 +70,25 @@ defmodule Profile.Feed.Producer do
 
   @impl GenStage
   def handle_info({:init, extract}, state) do
-    ensure_topic(extract)
+    context = Source.Context.new!(
+      dataset_id: extract.dataset_id,
+      subset_id: extract.subset_id,
+      app_name: :service_profile,
+      dictionary: extract.dictionary,
+      handler: Handler,
+      assigns: %{
+        producer: self(),
+        dlq: dlq()
+      }
+    )
 
-    {:ok, elsa_sup} =
-      Elsa.Supervisor.start_link(
-        endpoints: endpoints(),
-        connection: :"feed_#{extract.destination}",
-        group_consumer: [
-          group: "profile-#{extract.destination}",
-          topics: [extract.destination],
-          handler: Handler,
-          handler_init_args: %{producer: self()},
-          config: [
-            begin_offset: :earliest,
-            offset_reset_policy: :earliest,
-            prefetch_count: 0,
-            prefetch_bytes: 2_097_152
-          ]
-        ]
-      )
+    {:ok, source_pid} = Source.start_link(extract.destination, context)
 
     Logger.debug(fn ->
-      "#{__MODULE__}(#{inspect(self())}): started elsa : #{inspect(elsa_sup)}"
+      "#{__MODULE__}(#{inspect(self())}): started source : #{inspect(source_pid)}"
     end)
 
-    {:noreply, [], %{state | elsa_sup: elsa_sup}}
+    {:noreply, [], %{state | source_pid: source_pid}}
   end
 
   @impl GenStage
@@ -122,19 +119,6 @@ defmodule Profile.Feed.Producer do
 
       {:empty, _queue} ->
         {state, Enum.reverse(events)}
-    end
-  end
-
-  defp ensure_topic(extract) do
-    unless Elsa.topic?(endpoints(), extract.destination) do
-      Elsa.create_topic(endpoints(), extract.destination, create_opts(extract.config))
-    end
-  end
-
-  defp create_opts(config) do
-    case get_in(config, ["kafka", "partitions"]) do
-      nil -> []
-      partitions -> [partitions: partitions]
     end
   end
 end
