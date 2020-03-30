@@ -35,6 +35,7 @@ defmodule MetricsReporter do
         Supervisor.init(children, strategy: :one_for_one)
       end
 
+      @impl true
       def metrics() do
         [
           last_value("vm.memory.total", unit: :byte),
