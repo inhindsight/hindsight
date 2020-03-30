@@ -30,7 +30,7 @@ defmodule MetricsReporter do
       @impl Supervisor
       def init(_args) do
         children = [
-          {Telemetry.Metrics.ConsoleReporter, metrics: metrics()}
+          {TelemetryMetricsPrometheus, metrics: metrics()}
         ]
 
         Supervisor.init(children, strategy: :one_for_one)
