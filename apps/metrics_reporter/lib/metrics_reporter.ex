@@ -7,13 +7,12 @@ defmodule MetricsReporter do
   """
 
   @callback metrics() :: [
-              (String.t() | [atom], keyword ->
-                 Telemetry.Metrics.Counter.t()
-                 | Telemetry.Metrics.Distribution.t()
-                 | Telemetry.Metrics.LastValue.t()
-                 | Telemetry.Metrics.Sum.t()
-                 | Telemetry.Metrics.Summary.t())
-  ]
+              Telemetry.Metrics.Counter.t()
+              | Telemetry.Metrics.Distribution.t()
+              | Telemetry.Metrics.LastValue.t()
+              | Telemetry.Metrics.Sum.t()
+              | Telemetry.Metrics.Summary.t()
+            ]
 
   defmacro __using__(opts) do
     name = Keyword.fetch!(opts, :name)
