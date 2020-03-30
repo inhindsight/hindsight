@@ -83,7 +83,7 @@ defmodule Persist.WriterIntTest do
         id: "load-persist-1",
         dataset_id: "ds1",
         subset_id: "testing",
-        source: Source.Fake.new(),
+        source: Source.Fake.new!(),
         destination: "table2",
         schema: []
       )

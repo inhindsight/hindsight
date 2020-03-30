@@ -35,7 +35,7 @@ defmodule Kafka.Topic do
 
   defimpl Source do
     defdelegate start_link(t, context), to: Kafka.Topic.Source
-    defdelegate stop(t), to: Kafka.Topic.Source
+    defdelegate stop(t, server), to: Kafka.Topic.Source
     defdelegate delete(t), to: Kafka.Topic.Source
   end
 

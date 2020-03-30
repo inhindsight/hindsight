@@ -39,11 +39,11 @@ defmodule Broadcast.Stream do
            Transformer.transform_dictionary(transform.steps, transform.dictionary),
          {:ok, transformer} <- Transformer.create(transform.steps, transform.dictionary),
          {:ok, cache_pid} <- start_cache(state.load),
-         {:ok, source} <- start_source(state.load, dictionary, transformer) do
+         {:ok, source_pid} <- start_source(state.load, dictionary, transformer) do
       new_state =
         state
         |> Map.put(:cache_pid, cache_pid)
-        |> Map.put(:source, source)
+        |> Map.put(:source_pid, source_pid)
 
       {:noreply, new_state}
     else
@@ -94,7 +94,8 @@ defmodule Broadcast.Stream do
     end
 
     if Map.has_key?(state, :source) do
-      Map.get(state, :source) |> Source.stop()
+      pid = Map.get(state, :source_pid)
+      Source.stop(state.load.source, pid)
     end
 
     reason

@@ -61,7 +61,7 @@ defmodule PersistTest do
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "example",
-        source: Source.Fake.new(),
+        source: Source.Fake.new!(),
         destination: "ds1_example"
       )
 
@@ -113,7 +113,7 @@ defmodule PersistTest do
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "example",
-        source: Source.Fake.new(),
+        source: Source.Fake.new!(),
         destination: "ds1_example"
       )
 
@@ -147,7 +147,7 @@ defmodule PersistTest do
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "example",
-        source: Source.Fake.new(),
+        source: Source.Fake.new!(),
         destination: "ds1_example"
       )
 

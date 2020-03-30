@@ -12,7 +12,7 @@ defmodule Persist.InitTest do
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "sb1",
-        source: Source.Fake.new(),
+        source: Source.Fake.new!(),
         destination: "table_a"
       )
 

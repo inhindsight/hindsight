@@ -3,6 +3,19 @@ defmodule GatherTest do
   import Events, only: [extract_start: 0, extract_end: 0]
   import AssertAsync
   require Temp.Env
+  import Mox
+
+  setup :set_mox_global
+
+  Temp.Env.modify([
+    %{
+      app: :service_gather,
+      key: Gather.Extraction.SourceStream.SourceHandler,
+      set: [
+        dlq: DlqMock
+      ]
+    }
+  ])
 
   @instance Gather.Application.instance()
   @moduletag capture_log: true
@@ -10,6 +23,13 @@ defmodule GatherTest do
   alias Gather.Extraction
 
   setup do
+    test = self()
+    DlqMock
+    |> stub(:write, fn messages ->
+      send(test, {:dlq, messages})
+      :ok
+    end)
+
     on_exit(fn ->
       Gather.Extraction.Supervisor.kill_all_children()
     end)
@@ -33,11 +53,13 @@ defmodule GatherTest do
         id: "extract-id-1",
         dataset_id: "test-ds1",
         subset_id: "Johnny",
+        source: Extractor.new!(
+          steps: [
+            Extract.Http.Get.new!(url: "http://localhost:#{bypass.port}/file.csv")
+          ]
+        ),
+        decoder: Decoder.Csv.new!(headers: ["A", "B", "C"]),
         destination: Destination.Fake.new!(),
-        steps: [
-          Extract.Http.Get.new!(url: "http://localhost:#{bypass.port}/file.csv"),
-          Extract.Decode.Csv.new!(headers: ["A", "B", "C"])
-        ],
         dictionary: [
           Dictionary.Type.String.new!(name: "A"),
           Dictionary.Type.String.new!(name: "b"),
@@ -47,8 +69,8 @@ defmodule GatherTest do
 
     Brook.Test.send(@instance, extract_start(), "testing", extract)
 
-    assert_receive {:start_link, _}, 5_000
-    assert_receive messages, 5_000
+    assert_receive {:destination_start_link, _}, 5_000
+    assert_receive {:destination_write, messages}, 5_000
 
     assert messages == [
              %{"a" => "one", "b" => "two", "c" => "three"},
@@ -56,6 +78,8 @@ defmodule GatherTest do
            ]
 
     assert extract == Extraction.Store.get!(extract.dataset_id, extract.subset_id)
+
+    Process.sleep(5_000)
   end
 
   test "marks stored extraction done on #{extract_end()}" do
@@ -64,8 +88,9 @@ defmodule GatherTest do
         id: "extract-45",
         dataset_id: "ds45",
         subset_id: "get_some_data",
-        destination: Destination.Fake.new!(),
-        steps: []
+        source: Source.Fake.new!(),
+        decoder: Decoder.Json.new!([]),
+        destination: Destination.Fake.new!()
       )
 
     Brook.Test.with_event(@instance, fn ->
@@ -80,16 +105,23 @@ defmodule GatherTest do
   end
 
   test "sends extract_end on extract completion" do
+    source = Source.Fake.new!()
+
     extract =
       Extract.new!(
         id: "extract-45",
         dataset_id: "ds45",
         subset_id: "get_some_data",
-        destination: Destination.Fake.new!(),
-        steps: []
+        source: source,
+        decoder: %Decoder.Noop{},
+        destination: Destination.Fake.new!()
       )
 
     Brook.Test.send(@instance, extract_start(), "testing", extract)
+
+    assert_receive {:source_start_link, _, _}, 2_000
+
+    Source.Fake.stop(source)
 
     assert_receive {:brook_event, %{type: extract_end(), data: ^extract}}, 5_000
   end

@@ -26,7 +26,7 @@ defmodule Destination.Fake do
       Process.sleep(10)
 
       pid = :ets.lookup_element(Destination.Fake, id, 2)
-      send(pid, {:start_link, id})
+      send(pid, {:destination_start_link, id})
 
       {:ok, t}
     end
@@ -37,14 +37,14 @@ defmodule Destination.Fake do
 
     def write(%{write: "ok", id: id}, messages) do
       pid = :ets.lookup_element(Destination.Fake, id, 2)
-      send(pid, messages)
+      send(pid, {:destination_write, messages})
 
       :ok
     end
 
     def write(%{write: error, id: id}, _) do
       pid = :ets.lookup_element(Destination.Fake, id, 2)
-      send(pid, error)
+      send(pid, {:destination_write, error})
       Ok.error(error)
     end
 

@@ -18,14 +18,14 @@ defmodule Broadcast.InitTest do
         id: "load1",
         dataset_id: "ds1",
         subset_id: "one",
-        source: Source.Fake.new(),
+        source: Source.Fake.new!(),
         destination: "d1"
       ),
       Load.Broadcast.new!(
         id: "load2",
         dataset_id: "ds2",
         subset_id: "two",
-        source: Source.Fake.new(),
+        source: Source.Fake.new!(),
         destination: "d2"
       )
     ]

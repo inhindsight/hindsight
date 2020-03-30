@@ -33,8 +33,8 @@ defmodule Persist.Loader do
          writer_function <- fn msgs ->
            writer().write(writer_pid, msgs, dictionary: dictionary)
          end,
-         {:ok, source} <- start_source(load, dictionary, transform, writer_function) do
-      {:ok, %{writer_pid: writer_pid, source: source}}
+         {:ok, source_pid} <- start_source(load, dictionary, transform, writer_function) do
+      {:ok, %{load: load, writer_pid: writer_pid, source_pid: source_pid}}
     else
       {:ok, nil} ->
         Logger.warn(fn ->
@@ -57,7 +57,7 @@ defmodule Persist.Loader do
       }"
     end)
 
-    Source.stop(state.source)
+    Source.stop(state.load.source, state.source_pid)
     stop(state.writer_pid, reason)
     {:stop, reason, state}
   end

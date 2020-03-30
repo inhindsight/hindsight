@@ -42,7 +42,7 @@ defmodule Persist.Writer.DirectUploadIntTest do
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "default",
-        source: Source.Fake.new(),
+        source: Source.Fake.new!(),
         destination: "table1"
       )
 

@@ -1,5 +1,5 @@
 defmodule Dlq.Behaviour do
-  @callback write([DLQ.DeadLetter.t()]) :: :ok
+  @callback write([DeadLetter.t()]) :: :ok
 end
 
 defmodule Dlq do

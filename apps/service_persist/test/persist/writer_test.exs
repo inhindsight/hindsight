@@ -29,7 +29,7 @@ defmodule Persist.WriterTest do
           id: "persist-1",
           dataset_id: "ds1",
           subset_id: "bobby",
-          source: Source.Fake.new(),
+          source: Source.Fake.new!(),
           destination: "table_bobby"
         )
 

@@ -43,14 +43,9 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "happy-path",
+        source: Source.Fake.new!(),
+        decoder: Decoder.JsonLines.new!([]),
         destination: Destination.Fake.new!(),
-        steps: [
-          %Fake.Step{
-            pid: self(),
-            chunk_size: 10,
-            values: Stream.cycle([%{"one" => "1"}]) |> Stream.take(100)
-          }
-        ],
         dictionary: [
           Dictionary.Type.Integer.new!(name: "one")
         ]
@@ -58,9 +53,19 @@ defmodule Gather.ExtractionTest do
 
     {:ok, pid} = Extraction.start_link(extract: extract)
 
-    assert_receive {:EXIT, ^pid, :normal}, 2_000
+    assert_receive {:source_start_link, _, _}, 1_000
+
+    messages = Stream.cycle([%{"one" => "1"}]) |> Stream.take(10) |> Enum.to_list()
+
+    Enum.each(1..10, fn _ ->
+      Source.Fake.inject_messages(extract.source, messages)
+    end)
+
     expected = Enum.map(1..10, fn _ -> %{"one" => 1} end)
-    Enum.each(1..10, fn _ -> assert_receive ^expected end)
+    Enum.each(1..10, fn _ -> assert_receive {:destination_write, ^expected} end)
+
+    Source.Fake.stop(extract.source)
+    assert_receive {:EXIT, ^pid, :normal}, 2_000
 
     assert_down(pid)
   end
@@ -78,19 +83,17 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "happy-path",
+        source: Source.Fake.new!(messages: [%{"one" => "2"}, %{"one" => "abc"}]),
+        decoder: Decoder.JsonLines.new!([]),
         destination: Destination.Fake.new!(),
-        steps: [
-          %Fake.Step{pid: self(), values: [%{"one" => "2"}, %{"one" => "abc"}]}
-        ],
         dictionary: [
           Dictionary.Type.Integer.new!(name: "one")
         ]
       )
 
     {:ok, pid} = Extraction.start_link(extract: extract)
-    assert_receive {:EXIT, ^pid, :normal}, 2_000
 
-    assert_receive [%{"one" => 2}]
+    assert_receive {:destination_write, [%{"one" => 2}]}
 
     expected_dead_letter =
       DeadLetter.new(
@@ -108,23 +111,28 @@ defmodule Gather.ExtractionTest do
 
     assert expected_dead_letter ==
              actual_dead_letter |> Map.merge(%{stacktrace: nil, timestamp: nil})
+
+    Source.Fake.stop(extract.source)
+    assert_receive {:EXIT, ^pid, _}
   end
 
   test "when child write return error tuple it retries and then dies" do
+    source =
+      Source.Fake.new!(
+        messages: [
+          %{"name" => "joe", "age" => 21},
+          %{"name" => "pete", "age" => 28}
+        ]
+      )
+
     extract =
       Extract.new!(
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "test-extract",
-        destination: Destination.Fake.new!(write: "bad write"),
-        steps: [
-          %Fake.Step{
-            values: [
-              %{"name" => "joe", "age" => 21},
-              %{"name" => "pete", "age" => 28}
-            ]
-          }
-        ]
+        source: source,
+        decoder: Decoder.JsonLines.new!([]),
+        destination: Destination.Fake.new!(write: "bad write")
       )
 
     {:ok, pid} = Extraction.start_link(extract: extract)
@@ -140,15 +148,15 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "test-extract",
-        destination: Destination.Fake.new!(start_link: "bad start"),
-        steps: [
-          %Fake.Step{
-            values: [
+        source:
+          Source.Fake.new!(
+            messages: [
               %{"name" => "joe", "age" => 21},
               %{"name" => "pete", "age" => 28}
             ]
-          }
-        ]
+          ),
+        decoder: Decoder.JsonLines.new!([]),
+        destination: Destination.Fake.new!(start_link: "bad start")
       )
 
     {:ok, pid} = Extraction.start_link(extract: extract)
@@ -170,11 +178,14 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "happy-path",
+        source:
+          Extractor.new!(
+            steps: [
+              Extract.Http.Get.new!(url: request_url)
+            ]
+          ),
+        decoder: Decoder.Json.new!([]),
         destination: Destination.Fake.new!(),
-        steps: [
-          Extract.Http.Get.new!(url: request_url),
-          Extract.Decode.Json.new!([])
-        ],
         dictionary: [
           Dictionary.Type.Integer.new!(name: "one")
         ]
@@ -200,14 +211,18 @@ defmodule Gather.ExtractionTest do
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "failure",
-        destination: Destination.Fake.new!(),
-        steps: [
-          Extract.Http.Get.new!(url: request_url),
-          Extract.Blowup.new!([])
-        ]
+        source:
+          Extractor.new!(
+            steps: [
+              Extract.Http.Get.new!(url: request_url),
+              Extract.Blowup.new!([])
+            ]
+          ),
+        decoder: Decoder.Noop.new(),
+        destination: Destination.Fake.new!()
       )
 
-    start_supervised({Extraction, [extract: extract]})
+    {:ok, _pid} = Extraction.start_link(extract: extract)
 
     assert_async sleep: 1_000 do
       refute File.exists?(@download_file)

@@ -22,7 +22,7 @@ defmodule Source.Handler do
   @spec inject_messages(list(Source.Message.t()), Source.Context.t()) :: :ok
   def inject_messages(messages, context) do
     messages
-    |> Enum.map(&decode/1)
+    |> Enum.map(&decode(&1, context))
     |> Enum.map(&do_message(&1, context))
     |> Enum.group_by(fn
       %{error: nil} -> :ok
@@ -31,14 +31,14 @@ defmodule Source.Handler do
     |> Enum.each(&do_batch(&1, context))
   end
 
-  defp decode(%{value: value} = msg) when is_binary(value) do
+  defp decode(%{value: value} = msg, %{decode_json: true}) when is_binary(value) do
     case Jason.decode(value) do
       {:ok, decoded_value} -> %{msg | value: decoded_value}
       {:error, reason} -> %{msg | error: reason}
     end
   end
 
-  defp decode(msg), do: msg
+  defp decode(msg, _), do: msg
 
   defp do_message(%{error: nil, value: value} = msg, context) do
     case context.handler.handle_message(value, context) do

@@ -14,23 +14,21 @@ defmodule Gather.InitTest do
   end
 
   test "should start any existing extractions" do
-    steps = [
-      %Fake.Step{values: [%{"one" => "1"}]}
-    ]
-
     extracts = [
       Extract.new!(
         id: "ex1",
         dataset_id: "init_ds1",
         subset_id: "n1",
-        steps: steps,
+        source: Source.Fake.new!(),
+        decoder: Decoder.JsonLines.new!([]),
         destination: Destination.Fake.new!()
       ),
       Extract.new!(
         id: "ex2",
         dataset_id: "init_ds2",
         subset_id: "n2",
-        steps: steps,
+        source: Source.Fake.new!(),
+        decoder: Decoder.JsonLines.new!([]),
         destination: Destination.Fake.new!()
       )
     ]
@@ -41,9 +39,8 @@ defmodule Gather.InitTest do
 
     {:ok, _pid} = start_supervised({Gather.Init, name: :init_test})
 
-
-    assert_receive {:start_link, id1}, 5_000
-    assert_receive {:start_link, id2}, 5_000
+    assert_receive {:destination_start_link, id1}, 5_000
+    assert_receive {:destination_start_link, id2}, 5_000
 
     refute id1 == id2
 

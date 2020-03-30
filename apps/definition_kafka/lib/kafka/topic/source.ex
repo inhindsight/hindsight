@@ -3,28 +3,25 @@ defmodule Kafka.Topic.Source do
   use Annotated.Retry
   require Logger
 
-  def start_link(t, %Source.Context{} = context) do
-    with {:ok, pid} <- GenServer.start_link(__MODULE__, {t, context}) do
-      %{t | pid: pid}
-      |> Ok.ok()
-    end
+  def start_link(topic, %Source.Context{} = context) do
+    GenServer.start_link(__MODULE__, {topic, context})
   end
 
-  def stop(t) do
-    GenServer.call(t.pid, :stop, 30_000)
+  def stop(_topic, server) do
+    GenServer.call(server, :stop, 30_000)
   end
 
   @retry with: constant_backoff(500) |> take(10)
-  def delete(t) do
-    Elsa.delete_topic(t.endpoints, t.name)
+  def delete(topic) do
+    Elsa.delete_topic(topic.endpoints, topic.name)
   end
 
   @impl GenServer
-  def init({t, context}) do
+  def init({topic, context}) do
     Process.flag(:trap_exit, true)
 
     state = %{
-      t: t,
+      topic: topic,
       context: context
     }
 
@@ -33,17 +30,17 @@ defmodule Kafka.Topic.Source do
 
   @impl GenServer
   def handle_continue(:init, state) do
-    ensure_topic(state.t)
+    ensure_topic(state.topic)
 
     offset_reset_policy = get_in(state.context.assigns, [:kafka, :offset_reset_policy])
 
     {:ok, elsa_pid} =
       Elsa.Supervisor.start_link(
-        endpoints: state.t.endpoints,
-        connection: :"connection_#{state.context.app_name}_#{state.t.name}",
+        endpoints: state.topic.endpoints,
+        connection: :"connection_#{state.context.app_name}_#{state.topic.name}",
         group_consumer: [
-          group: "group-#{state.context.app_name}-#{state.t.name}",
-          topics: [state.t.name],
+          group: "group-#{state.context.app_name}-#{state.topic.name}",
+          topics: [state.topic.name],
           handler: Kafka.Topic.Source.Handler,
           handler_init_args: state.context,
           config: [
@@ -91,9 +88,9 @@ defmodule Kafka.Topic.Source do
   end
 
   @retry with: constant_backoff(500) |> take(10)
-  defp ensure_topic(t) do
-    unless Elsa.topic?(t.endpoints, t.name) do
-      Elsa.create_topic(t.endpoints, t.name, partitions: t.partitions)
+  defp ensure_topic(topic) do
+    unless Elsa.topic?(topic.endpoints, topic.name) do
+      Elsa.create_topic(topic.endpoints, topic.name, partitions: topic.partitions)
     end
   end
 end

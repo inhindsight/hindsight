@@ -5,8 +5,6 @@ defmodule Gather.Extraction do
   use Properties, otp_app: :service_gather
   use Annotated.Retry
 
-  alias Extract.Context
-
   @max_tries get_config_value(:max_tries, default: 10)
   @initial_delay get_config_value(:initial_delay, default: 500)
   getter(:dlq, default: Dlq)
@@ -59,31 +57,21 @@ defmodule Gather.Extraction do
   end
 
   defp do_extract(topic, extract) do
-    Extractor.execute(extract.steps)
-    |> Ok.map(&write(topic, extract, &1))
-    |> Ok.map_if_error(&warn_extract_failure(extract, &1))
-  rescue
-    e -> {:error, e}
-  after
-    Destination.stop(topic)
-  end
-
-  defp write(topic, extract, context) do
-    Context.get_stream(context)
+    Gather.Extraction.SourceStream.stream(extract)
+    |> decode(extract)
     |> Ok.each(fn chunk ->
       messages =
-        Enum.map(chunk, &Map.get(&1, :data))
-        |> Enum.map(&lowercase_fields/1)
+        Enum.map(chunk, &lowercase_fields/1)
         |> normalize(extract)
 
-      with :ok <- Destination.write(topic, messages) do
-        Context.run_after_functions(context, chunk)
-      end
+      Destination.write(topic, messages)
     end)
-  catch
-    _, reason ->
-      Context.run_error_functions(context)
-      {:error, reason}
+  rescue
+    e ->
+      warn_extract_failure(extract, e)
+      {:error, e}
+  after
+    Destination.stop(topic)
   end
 
   defp normalize(messages, extract) do
@@ -104,6 +92,10 @@ defmodule Gather.Extraction do
     end
 
     Enum.reverse(good)
+  end
+
+  defp decode(stream, extract) do
+    Decoder.decode(extract.decoder, stream)
   end
 
   defp to_dead_letter(extract, og, reason) do

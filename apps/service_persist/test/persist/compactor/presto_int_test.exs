@@ -36,7 +36,7 @@ defmodule Persist.Compactor.PrestoIntTest do
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "sb1",
-        source: Source.Fake.new(),
+        source: Source.Fake.new!(),
         destination: "table_temp_table_167"
       )
 

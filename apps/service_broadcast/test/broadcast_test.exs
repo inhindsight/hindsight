@@ -32,7 +32,7 @@ defmodule BroadcastTest do
         id: "load-1",
         dataset_id: "ds1",
         subset_id: "intersections",
-        source: Source.Fake.new(),
+        source: Source.Fake.new!(),
         destination: "ds1_intersections",
         cache: 200
       )

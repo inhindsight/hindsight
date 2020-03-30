@@ -42,7 +42,7 @@ defmodule Orchestrate.Event.HandlerTest do
             id: "persist-1",
             dataset_id: "ds1",
             subset_id: "kpi",
-            source: Source.Fake.new(),
+            source: Source.Fake.new!(),
             destination: "table-1",
             schema: []
           ),
@@ -50,7 +50,7 @@ defmodule Orchestrate.Event.HandlerTest do
             id: "broadcast-1",
             dataset_id: "ds1",
             subset_id: "kpi",
-            source: Source.Fake.new(),
+            source: Source.Fake.new!(),
             destination: "ds1"
           )
         ]

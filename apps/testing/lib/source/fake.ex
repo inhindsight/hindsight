@@ -2,14 +2,15 @@ defmodule Source.Fake do
   @derive Jason.Encoder
   defstruct [:id]
 
-  def new() do
+  def new!(opts \\ []) do
     case :ets.whereis(__MODULE__) do
       :undefined -> :ets.new(__MODULE__, [:named_table, :public])
       _ -> :ok
     end
 
     id = id()
-    :ets.insert(__MODULE__, {id, self(), nil})
+    {:ok, agent} = Agent.start(fn -> Map.new(opts) end)
+    :ets.insert(__MODULE__, {id, self(), nil, agent})
 
     %__MODULE__{
       id: id
@@ -27,6 +28,11 @@ defmodule Source.Fake do
     |> Source.Handler.inject_messages(context)
   end
 
+  def stop(t, reason \\ :shutdown) do
+    agent = :ets.lookup_element(Source.Fake, t.id, 4)
+    Agent.stop(agent, reason)
+  end
+
   defp id() do
     Integer.to_string(:rand.uniform(4_294_967_296), 32) <>
       Integer.to_string(:rand.uniform(4_294_967_296), 32)
@@ -37,12 +43,17 @@ defmodule Source.Fake do
       :ets.update_element(Source.Fake, t.id, {3, context})
       pid = :ets.lookup_element(Source.Fake, t.id, 2)
       send(pid, {:source_start_link, t, context})
-      {:ok, t}
+
+      agent = :ets.lookup_element(Source.Fake, t.id, 4)
+      send_messages_from_agent(t, agent)
+      Process.link(agent)
+      {:ok, agent}
     end
 
-    def stop(t) do
+    def stop(t, server) do
       pid = :ets.lookup_element(Source.Fake, t.id, 2)
       send(pid, {:source_stop, t})
+      Process.exit(server, :shutdown)
       :ok
     end
 
@@ -50,6 +61,13 @@ defmodule Source.Fake do
       pid = :ets.lookup_element(Source.Fake, t.id, 2)
       send(pid, {:source_delete, t})
       :ok
+    end
+
+    defp send_messages_from_agent(source, agent) do
+      case Agent.get(agent, fn s -> Map.get(s, :messages, []) end) do
+        [] -> :ok
+        messages -> Source.Fake.inject_messages(source, messages)
+      end
     end
   end
 end
