@@ -5,7 +5,6 @@ defmodule Decoder.Json do
   defstruct chunk_size: 1000
 
   defimpl Decoder do
-
     def lines_or_bytes(_t), do: :line
 
     def decode(t, stream) do

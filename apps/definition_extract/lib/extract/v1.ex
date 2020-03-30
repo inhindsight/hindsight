@@ -11,7 +11,7 @@ defmodule Extract.V1 do
       source: impl_of(Source),
       decoder: impl_of(Decoder),
       destination: impl_of(Destination),
-      dictionary: of_struct(Dictionary.Impl),
+      dictionary: of_struct(Dictionary.Impl)
     })
   end
 end

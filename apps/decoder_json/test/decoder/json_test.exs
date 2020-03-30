@@ -35,11 +35,11 @@ defmodule Decoder.JsonTest do
 
     test "decodes a non-list stream to json" do
       input = [
-          [
-            ~s({"name": "Jay",),
-            ~s("age": 42})
-          ]
+        [
+          ~s({"name": "Jay",),
+          ~s("age": 42})
         ]
+      ]
 
       output = Decoder.decode(Decoder.Json.new!([]), input)
 

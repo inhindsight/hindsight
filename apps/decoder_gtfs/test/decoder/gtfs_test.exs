@@ -17,7 +17,8 @@ defmodule Decoder.GtfsTest do
 
   describe "Decoder" do
     test "decodes gtfs into stream" do
-      input = File.stream!("VehiclePositions.pb", [], 2048)
+      input =
+        File.stream!("VehiclePositions.pb", [], 2048)
         |> Stream.chunk_every(10)
 
       output = Decoder.decode(Decoder.Gtfs.new!(chunk_size: 2), input)

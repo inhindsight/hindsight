@@ -24,7 +24,7 @@ defmodule DefinitionProfileUpdate.MixProject do
   defp deps do
     [
       {:definition, in_umbrella: true},
-      {:ok, in_umbrella: true},
+      {:ok, in_umbrella: true}
     ]
   end
 end

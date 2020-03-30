@@ -70,17 +70,18 @@ defmodule Profile.Feed.Producer do
 
   @impl GenStage
   def handle_info({:init, extract}, state) do
-    context = Source.Context.new!(
-      dataset_id: extract.dataset_id,
-      subset_id: extract.subset_id,
-      app_name: :service_profile,
-      dictionary: extract.dictionary,
-      handler: Handler,
-      assigns: %{
-        producer: self(),
-        dlq: dlq()
-      }
-    )
+    context =
+      Source.Context.new!(
+        dataset_id: extract.dataset_id,
+        subset_id: extract.subset_id,
+        app_name: :service_profile,
+        dictionary: extract.dictionary,
+        handler: Handler,
+        assigns: %{
+          producer: self(),
+          dlq: dlq()
+        }
+      )
 
     {:ok, source_pid} = Source.start_link(extract.destination, context)
 

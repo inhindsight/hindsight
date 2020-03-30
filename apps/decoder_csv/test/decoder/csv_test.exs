@@ -34,10 +34,11 @@ defmodule Decoder.CsvTest do
 
   describe "Decoder" do
     test "parses context stream into csv" do
-      decoder = Decoder.Csv.new!(
-        headers: ["name", "age"],
-        skip_first_line: false
-      )
+      decoder =
+        Decoder.Csv.new!(
+          headers: ["name", "age"],
+          skip_first_line: false
+        )
 
       input = [
         ["brian,21\n", "rick,34"],
@@ -54,10 +55,11 @@ defmodule Decoder.CsvTest do
     end
 
     test "parses csv while skipping first line" do
-      decoder = Decoder.Csv.new!(
-        headers: ["name", "age"],
-        skip_first_line: true
-      )
+      decoder =
+        Decoder.Csv.new!(
+          headers: ["name", "age"],
+          skip_first_line: true
+        )
 
       input = [
         ["brian,21\n", "rick,34"],

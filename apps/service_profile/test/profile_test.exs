@@ -30,10 +30,11 @@ defmodule ProfileTest do
         subset_id: "sb1",
         source: Source.Fake.new!(),
         decoder: Decoder.Noop.new(),
-        destination: Kafka.Topic.new!(
-          endpoints: [localhost: 9092],
-          name: "topic-ds1"
-        ),
+        destination:
+          Kafka.Topic.new!(
+            endpoints: [localhost: 9092],
+            name: "topic-ds1"
+          ),
         dictionary: [
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Timestamp.new!(name: "ts", format: "%Y"),

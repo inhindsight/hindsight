@@ -30,7 +30,8 @@ defmodule Extractor.Server do
 
   @impl GenServer
   def handle_continue(:init, state) do
-    with {:ok, extract_context} <- Ok.reduce(state.extractor.steps, Extract.Context.new(), &Extract.Step.execute/2),
+    with {:ok, extract_context} <-
+           Ok.reduce(state.extractor.steps, Extract.Context.new(), &Extract.Step.execute/2),
          :ok <- run_stream(state, extract_context) do
       {:stop, :normal, state}
     else

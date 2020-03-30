@@ -5,7 +5,6 @@ defmodule Decoder.JsonLines do
   defstruct []
 
   defimpl Decoder do
-
     def lines_or_bytes(_t), do: :line
 
     def decode(_t, stream) do

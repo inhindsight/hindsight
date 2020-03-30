@@ -21,7 +21,6 @@ defmodule ExtractorTest do
   end
 
   describe "source" do
-
     setup do
       test = self()
 
@@ -29,29 +28,33 @@ defmodule ExtractorTest do
       error_function = fn -> send(test, :error_function) end
 
       steps = [
-               %Test.Steps.RegisterFunctions{after: after_function, error: error_function},
-               %Test.Steps.CreateResponse{response: %{body: [1, 2, 3, 4, 5, 6]}},
-               %Test.Steps.SetStream{},
-               %Test.Steps.TransformStream{transform: fn x -> x * 2 end}
-              ]
+        %Test.Steps.RegisterFunctions{after: after_function, error: error_function},
+        %Test.Steps.CreateResponse{response: %{body: [1, 2, 3, 4, 5, 6]}},
+        %Test.Steps.SetStream{},
+        %Test.Steps.TransformStream{transform: fn x -> x * 2 end}
+      ]
 
       source = Extractor.new!(steps: steps)
 
-      context = Source.Context.new!(
-        dictionary: Dictionary.from_list([]),
-        handler: SourceHandler,
-        app_name: "testing",
-        dataset_id: "ds1",
-        subset_id: "sb1",
-        assigns: %{
-          test: self()
-        }
-      )
+      context =
+        Source.Context.new!(
+          dictionary: Dictionary.from_list([]),
+          handler: SourceHandler,
+          app_name: "testing",
+          dataset_id: "ds1",
+          subset_id: "sb1",
+          assigns: %{
+            test: self()
+          }
+        )
 
       [source: source, context: context]
     end
 
-    test "sends data from extract pipeline to source handler", %{source: source, context: source_context} do
+    test "sends data from extract pipeline to source handler", %{
+      source: source,
+      context: source_context
+    } do
       {:ok, _source} = Source.start_link(source, source_context)
 
       assert_receive {:handle_message, 2}
@@ -74,7 +77,9 @@ defmodule ExtractorTest do
     end
 
     test "calls error function if error is raised", %{source: source, context: source_context} do
-      new_steps = source.steps ++ [%Test.Steps.TransformStream{transform: fn _ -> raise "bad stuff" end}]
+      new_steps =
+        source.steps ++ [%Test.Steps.TransformStream{transform: fn _ -> raise "bad stuff" end}]
+
       source = %{source | steps: new_steps}
 
       {:ok, _source} = Source.start_link(source, source_context)

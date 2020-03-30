@@ -26,7 +26,7 @@ defmodule Schedule.MixProject do
       {:definition, in_umbrella: true},
       {:definition_extract, in_umbrella: true},
       {:definition_transform, in_umbrella: true},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end
 end

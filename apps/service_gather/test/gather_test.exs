@@ -24,6 +24,7 @@ defmodule GatherTest do
 
   setup do
     test = self()
+
     DlqMock
     |> stub(:write, fn messages ->
       send(test, {:dlq, messages})
@@ -53,11 +54,12 @@ defmodule GatherTest do
         id: "extract-id-1",
         dataset_id: "test-ds1",
         subset_id: "Johnny",
-        source: Extractor.new!(
-          steps: [
-            Extract.Http.Get.new!(url: "http://localhost:#{bypass.port}/file.csv")
-          ]
-        ),
+        source:
+          Extractor.new!(
+            steps: [
+              Extract.Http.Get.new!(url: "http://localhost:#{bypass.port}/file.csv")
+            ]
+          ),
         decoder: Decoder.Csv.new!(headers: ["A", "B", "C"]),
         destination: Destination.Fake.new!(),
         dictionary: [

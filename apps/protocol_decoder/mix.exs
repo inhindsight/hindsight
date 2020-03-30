@@ -22,7 +22,6 @@ defmodule ProtocolDecoder.MixProject do
   end
 
   defp deps do
-    [
-    ]
+    []
   end
 end

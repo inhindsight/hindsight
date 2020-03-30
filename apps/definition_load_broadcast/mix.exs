@@ -24,7 +24,7 @@ defmodule DefinitionLoadBroadcast.MixProject do
   defp deps do
     [
       {:definition, in_umbrella: true},
-      {:protocol_source, in_umbrella: true},
+      {:protocol_source, in_umbrella: true}
     ]
   end
 end

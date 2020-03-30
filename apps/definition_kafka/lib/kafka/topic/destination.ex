@@ -60,6 +60,7 @@ defmodule Kafka.Topic.Destination do
   @impl GenServer
   def handle_continue({:init, topic}, state) do
     ensure_topic(topic)
+
     with {:ok, pid} <- start_producer(topic, state.connection),
          table <- table_name(topic) do
       :ets.new(table, [:named_table, :protected])
