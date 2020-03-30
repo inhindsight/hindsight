@@ -17,7 +17,8 @@ defmodule Profile.InitTest do
         id: "extract1",
         dataset_id: "ds1",
         subset_id: "sb1",
-        steps: [],
+        source: Source.Fake.new!(),
+        decoder: Decoder.Noop.new(),
         dictioanry: [],
         destination: Destination.Fake.new!()
       )
@@ -27,7 +28,8 @@ defmodule Profile.InitTest do
         id: "extract2",
         dataset_id: "ds2",
         subset_id: "sb2",
-        steps: [],
+        source: Source.Fake.new!(),
+        decoder: Decoder.Noop.new(),
         dictioanry: [],
         destination: Destination.Fake.new!()
       )
@@ -37,7 +39,8 @@ defmodule Profile.InitTest do
         id: "extract3",
         dataset_id: "ds3",
         subset_id: "sb3",
-        steps: [],
+        source: Source.Fake.new!(),
+        decoder: Decoder.Noop.new(),
         dictioanry: [],
         destination: Destination.Fake.new!()
       )

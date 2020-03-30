@@ -19,9 +19,10 @@ defmodule Profile.Event.HandlerTest do
           id: "extract-1",
           dataset_id: "ds1",
           subset_id: "sb1",
-          steps: [],
-          dictionary: [],
-          destination: Destination.Fake.new!()
+          source: Source.Fake.new!(),
+          decoder: Decoder.Noop.new(),
+          destination: Destination.Fake.new!(),
+          dictionary: []
         )
 
       [extract: extract]

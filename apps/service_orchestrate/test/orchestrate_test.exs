@@ -20,8 +20,9 @@ defmodule OrchestrateTest do
             id: "extract-1",
             dataset_id: "ds1",
             subset_id: "kpi",
+            source: Source.Fake.new!(),
+            decoder: Decoder.Noop.new(),
             destination: Destination.Fake.new!(),
-            steps: [],
             dictionary: []
           ),
         transform:
