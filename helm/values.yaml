@@ -72,6 +72,10 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
   host: ""
+  tls:
+    hosts:
+      - "prod.agnosticdataengine.com"
+    secretName: "hindsight-tls-key"
   paths:
     - name: acquire
       path: "/api/v[0-9]+/data/.*"
