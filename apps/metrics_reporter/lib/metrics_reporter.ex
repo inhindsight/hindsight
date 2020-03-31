@@ -16,6 +16,7 @@ defmodule MetricsReporter do
 
   defmacro __using__(opts) do
     name = Keyword.fetch!(opts, :name)
+    port = Keyword.get(opts, :port, 9568)
 
     quote location: :keep do
       use Supervisor
@@ -29,7 +30,7 @@ defmodule MetricsReporter do
       @impl Supervisor
       def init(_args) do
         children = [
-          {TelemetryMetricsPrometheus, metrics: metrics()}
+          {TelemetryMetricsPrometheus, name: :"#{unquote(name)}_prometheus", port: unquote(port), metrics: metrics()}
         ]
 
         Supervisor.init(children, strategy: :one_for_one)

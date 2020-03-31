@@ -12,6 +12,7 @@ defmodule Broadcast.Application do
         Broadcast.Cache.Registry,
         Broadcast.Stream.Registry,
         Broadcast.Stream.Supervisor,
+        Broadcast.MetricsReporter,
         BroadcastWeb.Endpoint,
         dlq(),
         brook(),

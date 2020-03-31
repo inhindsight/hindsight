@@ -24,7 +24,7 @@ defmodule MetricsReporter.MixProject do
   defp deps do
     [
       {:telemetry_poller, "~> 0.5.0"},
-      {:telemetry_metrics_prometheus, "~> 0.4.0"},
+      {:telemetry_metrics_prometheus, github: "jeffgrunewald/telemetry_metrics_prometheus"},
 
       # Dev/Test Dependencies
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
