@@ -3,6 +3,7 @@ defmodule PlatformRunner.EndToEndTest do
   use Divo
 
   import AssertAsync
+  import Definition, only: [identifier: 1]
   alias PlatformRunner.{BroadcastClient, AcquireClient}
 
   @kafka [localhost: 9092]
@@ -352,7 +353,7 @@ defmodule PlatformRunner.EndToEndTest do
           id: "e2e-json-push-1",
           dataset_id: "e2e-push-ds",
           subset_id: "e2e-push-ss",
-          destination: "e2e-push-receive",
+          destination: Kafka.Topic.new!(name: "e2e-push-receive", endpoints: @kafka),
           connection: Accept.Udp.new!(port: 6789)
         )
 
@@ -360,7 +361,7 @@ defmodule PlatformRunner.EndToEndTest do
       |> Events.send_accept_start("e2e-push-json", accept)
 
       assert_async sleep: 500, max_tries: 10 do
-        case Receive.Accept.Registry.whereis(:"#{accept.destination}_manager") do
+        case Receive.Accept.Registry.whereis(:"#{identifier(accept)}_manager") do
           :undefined -> flunk("Process is not alive yet")
           pid when is_pid(pid) -> assert true == Process.alive?(pid)
         end
