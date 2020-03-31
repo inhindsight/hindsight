@@ -41,12 +41,15 @@ defmodule Persist.Event.HandlerTest do
   describe "compaction" do
     setup do
       load =
-        Load.Persist.new!(
+        Load.new!(
           id: "persist-1",
           dataset_id: "ds1",
           subset_id: "sb1",
           source: Source.Fake.new!(),
-          destination: "table_name"
+          destination: Presto.Table.new!(
+            url: "http://localhost:8080",
+            name: "table24"
+          )
         )
 
       [load: load]

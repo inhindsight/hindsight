@@ -5,8 +5,8 @@ defmodule Persist.Event.Handler do
 
   import Events,
     only: [
-      load_persist_start: 0,
-      load_persist_end: 0,
+      load_start: 0,
+      load_end: 0,
       transform_define: 0,
       compact_start: 0,
       compact_end: 0,
@@ -19,9 +19,9 @@ defmodule Persist.Event.Handler do
   getter(:endpoints, required: true)
 
   @impl Brook.Event.Handler
-  def handle_event(%Brook.Event{type: load_persist_start(), data: %Load.Persist{} = load}) do
+  def handle_event(%Brook.Event{type: load_start(), data: %Load{destination: %Presto.Table{}} = load}) do
     Logger.debug(fn ->
-      "#{__MODULE__}: Received event #{load_persist_start()}: #{inspect(load)}"
+      "#{__MODULE__}: Received event #{load_start()}: #{inspect(load)}"
     end)
 
     Persist.Load.Supervisor.start_child(load)
@@ -29,9 +29,9 @@ defmodule Persist.Event.Handler do
   end
 
   @impl Brook.Event.Handler
-  def handle_event(%Brook.Event{type: load_persist_end(), data: %Load.Persist{} = load}) do
+  def handle_event(%Brook.Event{type: load_end(), data: %Load{destination: %Presto.Table{}} = load}) do
     Logger.debug(fn ->
-      "#{__MODULE__}: Received event #{load_persist_end()}: #{inspect(load)}"
+      "#{__MODULE__}: Received event #{load_end()}: #{inspect(load)}"
     end)
 
     Persist.Load.Supervisor.terminate_child(load)
@@ -45,7 +45,7 @@ defmodule Persist.Event.Handler do
   end
 
   @impl Brook.Event.Handler
-  def handle_event(%Brook.Event{type: compact_start(), data: %Load.Persist{} = load}) do
+  def handle_event(%Brook.Event{type: compact_start(), data: %Load{destination: %Presto.Table{}} = load}) do
     Persist.Load.Supervisor.terminate_child(load)
 
     Persist.Compact.Supervisor.start_child(load)
@@ -53,7 +53,7 @@ defmodule Persist.Event.Handler do
   end
 
   @impl Brook.Event.Handler
-  def handle_event(%Brook.Event{type: compact_end(), data: %Load.Persist{} = load}) do
+  def handle_event(%Brook.Event{type: compact_end(), data: %Load{destination: %Presto.Table{}} = load}) do
     Persist.Load.Store.clear_compaction(load)
 
     case Persist.Load.Store.done?(load) do

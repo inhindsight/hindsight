@@ -30,6 +30,7 @@ defmodule Persist.MixProject do
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:definition_kafka, in_umbrella: true},
+      {:definition_presto, in_umbrella: true},
       {:dlq, in_umbrella: true},
       {:elsa, "~> 0.12", override: true},
       {:ex_aws_s3, "~> 2.0"},

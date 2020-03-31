@@ -23,18 +23,15 @@ defmodule Persist.Loader do
   @impl GenServer
   def init(init_arg) do
     Process.flag(:trap_exit, true)
-    %Load.Persist{} = load = Keyword.fetch!(init_arg, :load)
+    %Load{} = load = Keyword.fetch!(init_arg, :load)
     Logger.debug(fn -> "#{__MODULE__}:#{inspect(self())} initializied for #{inspect(load)}" end)
 
     with {:ok, transform} when not is_nil(transform) <-
            Transformations.get(load.dataset_id, load.subset_id),
          {:ok, dictionary} <- transform_dictionary(transform),
-         {:ok, writer_pid} <- start_writer(load, dictionary),
-         writer_function <- fn msgs ->
-           writer().write(writer_pid, msgs, dictionary: dictionary)
-         end,
-         {:ok, source_pid} <- start_source(load, dictionary, transform, writer_function) do
-      {:ok, %{load: load, writer_pid: writer_pid, source_pid: source_pid}}
+         {:ok, destination} <- start_destination(load, dictionary),
+         {:ok, source_pid} <- start_source(load, dictionary, transform, destination) do
+      {:ok, %{load: load, destination: destination, source_pid: source_pid}}
     else
       {:ok, nil} ->
         Logger.warn(fn ->
@@ -58,7 +55,7 @@ defmodule Persist.Loader do
     end)
 
     Source.stop(state.load.source, state.source_pid)
-    stop(state.writer_pid, reason)
+    Destination.stop(state.destination)
     {:stop, reason, state}
   end
 
@@ -67,12 +64,7 @@ defmodule Persist.Loader do
   end
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
-  defp start_writer(load, dictionary) do
-    writer().start_link(load: load, dictionary: dictionary)
-  end
-
-  @retry with: exponential_backoff(100) |> take(@max_retries)
-  defp start_source(load, dictionary, transform, writer) do
+  defp start_source(load, dictionary, transform, destination) do
     with {:ok, transformer} <- create_transformer(transform) do
       context =
         Source.Context.new!(
@@ -83,7 +75,7 @@ defmodule Persist.Loader do
           subset_id: load.subset_id,
           assigns: %{
             transformer: transformer,
-            writer: writer
+            destination: destination
           }
         )
 
@@ -91,25 +83,19 @@ defmodule Persist.Loader do
     end
   end
 
-  defp create_transformer(transform) do
-    Transformer.create(transform.steps, transform.dictionary)
+  @retry with: exponential_backoff(100) |> take(@max_retries)
+  defp start_destination(load, dictionary) do
+    context = Destination.Context.new!(
+      dictionary: dictionary,
+      app_name: :service_persist,
+      dataset_id: load.dataset_id,
+      subset_id: load.subset_id
+    )
+
+    Destination.start_link(load.destination, context)
   end
 
-  defp stop(nil, _), do: :ok
-
-  defp stop(pid, reason) do
-    case Process.alive?(pid) do
-      true ->
-        Process.exit(pid, reason)
-
-        receive do
-          {:EXIT, ^pid, _} -> :ok
-        after
-          30_000 -> Logger.warn(fn -> "#{__MODULE__}: unable to kill #{inspect(pid)}" end)
-        end
-
-      false ->
-        :ok
-    end
+  defp create_transformer(transform) do
+    Transformer.create(transform.steps, transform.dictionary)
   end
 end

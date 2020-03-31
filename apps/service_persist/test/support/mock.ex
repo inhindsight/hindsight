@@ -1,8 +1,3 @@
-Mox.defmock(Writer.PrestoMock, for: Writer)
-Mox.defmock(Persist.WriterMock, for: Writer)
 Mox.defmock(Persist.DLQMock, for: Dlq.Behaviour)
 Mox.defmock(Persist.LoaderMock, for: [Test.StartLink, GenServer])
-Mox.defmock(Persist.DataFileMock, for: Persist.DataFile)
-Mox.defmock(Persist.DataStorageMock, for: Persist.DataStorage)
-Mox.defmock(Persist.TableManagerMock, for: Persist.TableManager)
 Mox.defmock(Persist.CompactorMock, for: Persist.Compactor)

@@ -40,12 +40,12 @@ defmodule Persist.LoaderTest do
     end)
 
     load =
-      Load.Persist.new!(
+      Load.new!(
         id: "load-1",
         dataset_id: "ds1",
         subset_id: "fake-name",
         source: Source.Fake.new!(),
-        destination: "table-a"
+        destination: Destination.Fake.new!()
       )
 
     on_exit(fn ->
@@ -55,77 +55,27 @@ defmodule Persist.LoaderTest do
     [load: load, transform: transform]
   end
 
-  describe "start writer" do
-    test "will start persist writer", %{load: load, transform: transform} do
-      test = self()
-
-      Persist.WriterMock
-      |> expect(:start_link, fn init_arg ->
-        send(test, {:start_link, init_arg})
-        {:ok, :writer_pid}
-      end)
-
+  describe "start destination" do
+    test "will start destination", %{load: load} do
       start_supervised({Persist.Loader, load: load})
 
-      assert_receive {:start_link, init_arg}
-      assert load == Keyword.get(init_arg, :load)
-      assert transform.dictionary == Keyword.get(init_arg, :dictionary)
+      assert_receive {:destination_start_link, _}, 1_000
     end
 
-    test "will retry starting writer if it fails to start", %{load: load} do
-      test = self()
-
-      start_supervised(%{
-        id: :test_agent,
-        start: {Agent, :start_link, [fn -> 2 end, [name: :test_agent]]}
-      })
-
-      Persist.WriterMock
-      |> expect(:start_link, 3, fn init_arg ->
-        send(test, {:start_link, init_arg})
-
-        case Agent.get_and_update(:test_agent, fn s -> {s, s - 1} end) do
-          0 -> {:ok, :writer_id}
-          n -> {:error, "remaining #{n}"}
-        end
-      end)
-
-      start_supervised({Persist.Loader, load: load})
-
-      Enum.each(1..3, fn _ -> assert_receive {:start_link, _} end)
-    end
-
-    test "will die if fails to start writer", %{load: load} do
-      Persist.WriterMock
-      |> expect(:start_link, 4, fn _ -> {:error, "failure"} end)
-
+    test "will die if fails to start destination", %{load: load} do
+      load = %{load | destination: Destination.Fake.new!(start_link: "failure")}
       assert {:error, "failure"} = Persist.Loader.start_link(load: load)
     end
   end
 
   describe "source" do
-    setup do
-      test = self()
-
-      Persist.WriterMock
-      |> stub(:start_link, fn _ -> {:ok, :writer_pid} end)
-      |> stub(:write, fn :writer_pid, msgs, opts ->
-        send(test, {:write, msgs, opts})
-        :ok
-      end)
-
-      :ok
-    end
-
-    test "will start source", %{load: load, transform: %{dictionary: dictionary}} do
+    test "will start source", %{load: load} do
       start_supervised({Persist.Loader, load: load})
 
       assert_receive {:source_start_link, source, context}
       assert context.dataset_id == load.dataset_id
       assert context.subset_id == load.subset_id
-      context.assigns.writer.([:ok])
-
-      assert_receive {:write, [:ok], [dictionary: ^dictionary]}
+      assert context.assigns.destination == load.destination
     end
   end
 end

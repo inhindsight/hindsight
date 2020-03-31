@@ -7,7 +7,7 @@ defmodule Persist.Compaction do
   getter(:compactor, default: Persist.Compactor.Presto)
 
   @type init_opts :: [
-          load: Load.Persist.t()
+          load: Load.t()
         ]
 
   @spec start_link(init_opts) :: GenServer.on_start()

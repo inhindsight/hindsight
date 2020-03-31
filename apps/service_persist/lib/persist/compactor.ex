@@ -1,5 +1,5 @@
 defmodule Persist.Compactor do
-  @callback compact(Load.Persist.t()) :: :ok | {:error, term}
+  @callback compact(Load.t()) :: :ok | {:error, term}
 end
 
 defmodule Persist.Compactor.Presto do
@@ -9,14 +9,14 @@ defmodule Persist.Compactor.Presto do
   getter(:prestige, required: true)
 
   @impl true
-  def compact(%Load.Persist{} = persist) do
-    compact_table = "#{persist.destination}_compact"
+  def compact(%Load{} = load) do
+    compact_table = "#{load.destination}_compact"
     session = Prestige.new_session(prestige())
 
     with {:ok, _} <- drop_table(session, compact_table),
-         :ok <- create_table(session, persist.destination, compact_table),
-         {:ok, _} <- drop_table(session, persist.destination),
-         {:ok, _} <- rename_table(session, compact_table, persist.destination) do
+         :ok <- create_table(session, load.destination, compact_table),
+         {:ok, _} <- drop_table(session, load.destination),
+         {:ok, _} <- rename_table(session, compact_table, load.destination) do
       :ok
     else
       {:error, reason} ->
