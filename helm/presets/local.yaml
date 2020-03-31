@@ -47,10 +47,6 @@ strimzi:
       limits:
         cpu: 100m
         memory: 512Mi
-
-redis:
-  enabled: true
-  externalAddress: ""
 nginx-ingress:
   controller:
     service:

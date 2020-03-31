@@ -12,6 +12,8 @@ defmodule Initializer do
     quote location: :keep do
       use GenServer
       use Retry
+      use Annotated.Retry
+
       @behaviour Initializer
 
       @dialyzer [
@@ -30,8 +32,12 @@ defmodule Initializer do
           Map.new(init_arg)
           |> Map.put(:supervisor_ref, supervisor_ref)
 
-        case on_start(state) do
-          {:ok, new_state} -> {:ok, new_state}
+        {:ok, state, {:continue, :init}}
+      end
+
+      def handle_continue(:init, state) do
+        case do_on_start(state) do
+          {:ok, new_state} -> {:noreply, new_state}
           {:error, reason} -> {:stop, reason}
         end
       end
@@ -50,6 +56,18 @@ defmodule Initializer do
             end
         else
           _ -> {:stop, "Supervisor not available", state}
+        end
+      end
+
+      @retry with: constant_backoff(100) |> take(10)
+      defp do_on_start(state) do
+        case on_start(state) do
+          {:ok, new_state} ->
+            {:ok, new_state}
+
+          {:error, reason} ->
+            {:error,
+             "on_start for application init failed, retrying reading Brook state from store..."}
         end
       end
 
