@@ -78,9 +78,25 @@ config :service_receive, Receive.Application,
       ]
     ],
     handlers: [Receive.Event.Handler],
+    # storage: [
+    #   module: Brook.Storage.Redis,
+    #   init_arg: [redix_args: redix_args, namespace: "service:receive:view"]
+    # ],
     storage: [
-      module: Brook.Storage.Redis,
-      init_arg: [redix_args: redix_args, namespace: "service:receive:view"]
+      module: Brook.Storage.Postgres,
+      init_arg: [
+        table: "receive_state",
+        postgrex_args: [
+          hostname: "localhost",
+          username: "receive_app_user",
+          password: "receive123",
+          database: "receive_app_state"
+        ],
+        event_limits: %{
+          # "data:something" => 100,
+          # "data:something:else" => 50
+        }
+      ]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -106,8 +122,20 @@ config :service_gather, Gather.Application,
     ],
     handlers: [Gather.Event.Handler],
     storage: [
-      module: Brook.Storage.Redis,
-      init_arg: [redix_args: redix_args, namespace: "service:gather:view"]
+      module: Brook.Storage.Postgres,
+      init_arg: [
+        table: "gather_state",
+        postgrex_args: [
+          hostname: "localhost",
+          username: "gather_app_user",
+          password: "gather123",
+          database: "gather_app_state"
+        ],
+        event_limits: %{
+          # "data:something" => 100,
+          # "data:something:else" => 50
+        }
+      ]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -140,8 +168,20 @@ config :service_broadcast, Broadcast.Application,
     ],
     handlers: [Broadcast.Event.Handler],
     storage: [
-      module: Brook.Storage.Redis,
-      init_arg: [redix_args: redix_args, namespace: "service:broadcast:view"]
+      module: Brook.Storage.Postgres,
+      init_arg: [
+        table: "broadcast_state",
+        postgrex_args: [
+          hostname: "localhost",
+          username: "broadcast_app_user",
+          password: "broadcast123",
+          database: "broadcast_app_state"
+        ],
+        event_limits: %{
+          # "data:something" => 100,
+          # "data:something:else" => 50
+        }
+      ]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -179,8 +219,20 @@ config :service_persist, Persist.Application,
     ],
     handlers: [Persist.Event.Handler],
     storage: [
-      module: Brook.Storage.Redis,
-      init_arg: [redix_args: redix_args, namespace: "service:persist:view"]
+      module: Brook.Storage.Postgres,
+      init_arg: [
+        table: "persist_state",
+        postgrex_args: [
+          hostname: "localhost",
+          username: "persist_app_user",
+          password: "persist123",
+          database: "persist_app_state"
+        ],
+        event_limits: %{
+          # "data:something" => 100,
+          # "data:something:else" => 50
+        }
+      ]
     ],
     dispatcher: Brook.Dispatcher.Noop,
     event_processing_timeout: 20_000
@@ -205,8 +257,20 @@ config :service_orchestrate, Orchestrate.Application,
     ],
     handlers: [Orchestrate.Event.Handler],
     storage: [
-      module: Brook.Storage.Redis,
-      init_arg: [redix_args: redix_args, namespace: "service:orchestrate:view"]
+      module: Brook.Storage.Postgres,
+      init_arg: [
+        table: "orchestrate_state",
+        postgrex_args: [
+          hostname: "localhost",
+          username: "orchestrate_app_user",
+          password: "orchestrate123",
+          database: "orchestrate_app_state"
+        ],
+        event_limits: %{
+          # "data:something" => 100,
+          # "data:something:else" => 50
+        }
+      ]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -236,8 +300,20 @@ config :service_acquire, Acquire.Application,
     ],
     handlers: [Acquire.Event.Handler],
     storage: [
-      module: Brook.Storage.Redis,
-      init_arg: [redix_args: redix_args, namespace: "service:acquire:view"]
+      module: Brook.Storage.Postgres,
+      init_arg: [
+        table: "acquire_state",
+        postgrex_args: [
+          hostname: "localhost",
+          username: "acquire_app_user",
+          password: "acquire123",
+          database: "acquire_app_state"
+        ],
+        event_limits: %{
+          # "data:something" => 100,
+          # "data:something:else" => 50
+        }
+      ]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -273,8 +349,20 @@ config :service_define, Define.Application,
     ],
     handlers: [Define.Event.Handler],
     storage: [
-      module: Brook.Storage.Redis,
-      init_arg: [redix_args: redix_args, namespace: "service:define:view"]
+      module: Brook.Storage.Postgres,
+      init_arg: [
+        table: "define_state",
+        postgrex_args: [
+          hostname: "localhost",
+          username: "define_app_user",
+          password: "define123",
+          database: "define_app_state"
+        ],
+        event_limits: %{
+          # "data:something" => 100,
+          # "data:something:else" => 50
+        }
+      ]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
@@ -297,8 +385,20 @@ config :service_profile, Profile.Application,
     ],
     handlers: [Profile.Event.Handler],
     storage: [
-      module: Brook.Storage.Redis,
-      init_arg: [redix_args: redix_args, namespace: "service:profile:view"]
+      module: Brook.Storage.Postgres,
+      init_arg: [
+        table: "profile_state",
+        postgrex_args: [
+          hostname: "localhost",
+          username: "profile_app_user",
+          password: "profile123",
+          database: "profile_app_state"
+        ],
+        event_limits: %{
+          # "data:something" => 100,
+          # "data:something:else" => 50
+        }
+      ]
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
