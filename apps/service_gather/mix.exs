@@ -40,7 +40,6 @@ defmodule Gather.MixProject do
       {:retry, "~> 0.13.0"},
       {:transformer, in_umbrella: true},
       {:writer, in_umbrella: true},
-      {:writer_kafka, in_umbrella: true},
 
       # Dev/Test Dependencies
       {:bypass, "~> 1.0", only: [:test]},
