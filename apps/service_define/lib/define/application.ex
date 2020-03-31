@@ -1,6 +1,6 @@
 defmodule Define.Application do
   use Application
-  use Properties, otp_app: :service_acquire
+  use Properties, otp_app: :service_define
 
   getter(:brook, required: true)
 

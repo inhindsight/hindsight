@@ -1,4 +1,6 @@
 defmodule Define.TypespecAnalysis do
+  import Logger
+
   def find() do
     paths =
       Application.spec(:extractor)
@@ -16,6 +18,10 @@ defmodule Define.TypespecAnalysis do
     {:ok, [type_spec]} = Code.Typespec.fetch_types(module)
 
     extract_fields(type_spec)
+
+  rescue 
+    e -> Logger.error("Unable to get types for #{module}") 
+         reraise("Unable to get types for #{module}", __STACKTRACE__)
   end
 
   defp extract_fields([]) do

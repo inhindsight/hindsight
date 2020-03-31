@@ -51,7 +51,7 @@ defmodule Hindsight.MixProject do
       define: [
         version: {:from_app, :service_define},
         include_executables_for: [:unix],
-        applications: [service_acquire: :permanent]
+        applications: [service_define: :permanent]
       ]
     ]
   end
