@@ -1,22 +1,23 @@
-defmodule Persist.Compactor do
+defmodule Presto.Table.Compactor do
   @callback compact(Load.t()) :: :ok | {:error, term}
 end
 
-defmodule Persist.Compactor.Presto do
-  @behaviour Persist.Compactor
-  use Properties, otp_app: :service_persist
+defmodule Presto.Table.Compactor.Presto do
+  @behaviour Presto.Table.Compactor
+  use Properties, otp_app: :definition_presto
 
-  getter(:prestige, required: true)
+  getter(:catalog, required: true)
+  getter(:user, required: true)
 
   @impl true
-  def compact(%Load{} = load) do
-    compact_table = "#{load.destination}_compact"
-    session = Prestige.new_session(prestige())
+  def compact(table) do
+    compact_table = "#{table.name}_compact"
+    session = new_session(table)
 
     with {:ok, _} <- drop_table(session, compact_table),
-         :ok <- create_table(session, load.destination, compact_table),
-         {:ok, _} <- drop_table(session, load.destination),
-         {:ok, _} <- rename_table(session, compact_table, load.destination) do
+         :ok <- create_table(session, table.name, compact_table),
+         {:ok, _} <- drop_table(session, table.name),
+         {:ok, _} <- rename_table(session, compact_table, table.name) do
       :ok
     else
       {:error, reason} ->
@@ -28,7 +29,7 @@ defmodule Persist.Compactor.Presto do
   defp create_table(session, from, to) do
     create_task =
       Task.async(fn ->
-        Persist.TableManager.create_from(to, from)
+        Presto.Table.Manager.create_from(session, to, from)
         |> get_count()
       end)
 
@@ -61,5 +62,14 @@ defmodule Persist.Compactor.Presto do
 
   defp rename_table(session, from, to) do
     Prestige.execute(session, "ALTER TABLE #{from} RENAME TO #{to}")
+  end
+
+  defp new_session(table) do
+    Prestige.new_session(
+      url: table.url,
+      catalog: catalog(),
+      schema: table.schema,
+      user: user()
+    )
   end
 end

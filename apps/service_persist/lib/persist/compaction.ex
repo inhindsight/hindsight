@@ -24,7 +24,7 @@ defmodule Persist.Compaction do
 
   @impl GenServer
   def handle_continue({:compact, load}, state) do
-    with {:error, reason} <- compactor().compact(load) do
+    with {:error, reason} <- Presto.Table.compact(load.destination) do
       Logger.warn(
         "#{__MODULE__}: Unable to complete compaction for #{load.dataset_id}__#{load.subset_id}: #{
           inspect(reason)

@@ -15,6 +15,9 @@ defmodule Presto.Table do
             name: nil,
             pid: nil
 
+  @spec compact(t) :: :ok | {:error, term}
+  defdelegate compact(table), to: Presto.Table.Compactor.Presto
+
   defimpl Destination do
     defdelegate start_link(t, context), to: Presto.Table.Destination
     defdelegate write(t, messages), to: Presto.Table.Destination

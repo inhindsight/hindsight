@@ -1,4 +1,4 @@
-defmodule Persist.Compactor.PrestoIntTest do
+defmodule Presto.Table.Compactor.PrestoIntTest do
   use ExUnit.Case
   use Divo
   require Temp.Env
@@ -14,10 +14,11 @@ defmodule Persist.Compactor.PrestoIntTest do
 
   Temp.Env.modify([
     %{
-      app: :service_persist,
-      key: Persist.Compactor.Presto,
+      app: :definition_presto,
+      key: Presto.Table.Compactor.Presto,
       set: [
-        prestige: @prestige
+        catalog: "hive",
+        user: "testing"
       ]
     }
   ])
@@ -31,37 +32,34 @@ defmodule Persist.Compactor.PrestoIntTest do
   end
 
   test "should compact a table in presto" do
-    persist =
-      Load.Persist.new!(
-        id: "persist-1",
-        dataset_id: "ds1",
-        subset_id: "sb1",
-        source: Source.Fake.new!(),
-        destination: "table_temp_table_167"
+    destination =
+      Presto.Table.new!(
+        url: "http://localhost:8080",
+        name: "table_temp_table_167"
       )
 
     session = Prestige.new_session(@prestige)
-    Prestige.execute!(session, "CREATE TABLE #{persist.destination}(name varchar, age integer)")
+    Prestige.execute!(session, "CREATE TABLE #{destination.name}(name varchar, age integer)")
 
     1..10
     |> Enum.each(fn _ ->
       Prestige.execute!(
         session,
-        "INSERT INTO #{persist.destination}(name, age) values(#{generate_row()})"
+        "INSERT INTO #{destination.name}(name, age) values(#{generate_row()})"
       )
     end)
 
-    Prestige.execute!(session, "select * from #{persist.destination}")
+    Prestige.execute!(session, "select * from #{destination.name}")
     |> Prestige.Result.as_maps()
 
     assert_async do
-      assert 10 <= number_of_s3_files(persist.destination)
+      assert 10 <= number_of_s3_files(destination.name)
     end
 
-    assert :ok == Persist.Compactor.Presto.compact(persist)
+    assert :ok == Presto.Table.compact(destination)
 
     assert_async do
-      assert 10 >= number_of_s3_files(persist.destination)
+      assert 10 >= number_of_s3_files(destination.name)
     end
   end
 
