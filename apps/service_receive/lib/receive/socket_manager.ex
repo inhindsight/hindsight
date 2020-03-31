@@ -6,7 +6,6 @@ defmodule Receive.SocketManager do
   require Logger
 
   @max_retries get_config_value(:max_retries, default: 10)
-  getter(:writer, default: Receive.Writer)
   getter(:batch_size, default: 1_000)
   getter(:timeout, default: 1_000)
   getter(:app_name, default: true)
@@ -39,11 +38,6 @@ defmodule Receive.SocketManager do
   def handle_info({:EXIT, _pid, reason}, state) do
     Logger.warn(fn -> "#{__MODULE__}: Stopping : #{inspect(reason)}" end)
     {:stop, reason, state}
-  end
-
-  @retry with: exponential_backoff(100) |> take(@max_retries)
-  defp start_writer(accept) do
-    writer().start_link(accept: accept)
   end
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
