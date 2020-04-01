@@ -16,6 +16,7 @@ jobs:
           name: inhindsight/hindsight
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+          tag_semver: true
   dialyzer:
     name: Cache PLT
     runs-on: ubuntu-latest
