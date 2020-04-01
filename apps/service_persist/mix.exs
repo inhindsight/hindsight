@@ -45,7 +45,6 @@ defmodule Persist.MixProject do
       {:sweet_xml, "~> 0.6.6"},
       {:timex, "~> 3.6"},
       {:transformer, in_umbrella: true},
-      {:writer_presto, in_umbrella: true},
 
       # Dev/Test Dependencies
       {:checkov, "~> 1.0", only: [:dev, :test]},
