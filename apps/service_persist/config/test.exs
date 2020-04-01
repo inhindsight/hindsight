@@ -15,6 +15,8 @@ config :ex_aws, :s3,
   },
   port: 9000
 
+config :dlq, Dlq.Application, init?: false
+
 config :service_persist,
   divo: "docker-compose.yml",
   divo_wait: [dwell: 1000, max_tries: 120]

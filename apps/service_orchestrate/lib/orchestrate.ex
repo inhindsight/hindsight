@@ -40,7 +40,7 @@ defmodule Orchestrate do
 
   defp get_load_persist(schedule) do
     Enum.find(schedule.load, fn
-      %Load.Persist{} -> true
+      %Load{destination: %Presto.Table{}} -> true
       _ -> false
     end)
   end

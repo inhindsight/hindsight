@@ -27,9 +27,11 @@ defmodule Persist.MixProject do
     [
       {:annotated_retry, in_umbrella: true},
       {:avro, in_umbrella: true},
-      {:broadway_configurator, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:definition_kafka, in_umbrella: true},
+      {:definition_presto, in_umbrella: true},
+      {:dlq, in_umbrella: true},
       {:elsa, "~> 0.12", override: true},
       {:ex_aws_s3, "~> 2.0"},
       {:extractor, in_umbrella: true},
@@ -37,14 +39,12 @@ defmodule Persist.MixProject do
       {:initializer, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:management, in_umbrella: true},
-      {:off_broadway_kafka, "~> 1.0"},
       {:poison, "~> 4.0"},
       {:properties, in_umbrella: true},
+      {:protocol_source, in_umbrella: true},
       {:sweet_xml, "~> 0.6.6"},
       {:timex, "~> 3.6"},
       {:transformer, in_umbrella: true},
-      {:writer_dlq, in_umbrella: true},
-      {:writer_presto, in_umbrella: true},
 
       # Dev/Test Dependencies
       {:checkov, "~> 1.0", only: [:dev, :test]},

@@ -25,8 +25,9 @@ defmodule Orchestrate.Event.HandlerTest do
             id: "extract-1",
             dataset_id: "ds1",
             subset_id: "kpi",
-            destination: "topic-1",
-            steps: [],
+            source: Source.Fake.new!(),
+            decoder: Decoder.Noop.new(),
+            destination: Destination.Fake.new!(),
             dictionary: []
           ),
         transform:
@@ -38,19 +39,22 @@ defmodule Orchestrate.Event.HandlerTest do
             steps: []
           ),
         load: [
-          Load.Persist.new!(
+          Load.new!(
             id: "persist-1",
             dataset_id: "ds1",
             subset_id: "kpi",
-            source: "topic-1",
-            destination: "table-1",
-            schema: []
+            source: Source.Fake.new!(),
+            destination:
+              Presto.Table.new!(
+                url: "http://localhost:8080",
+                name: "table-1"
+              )
           ),
           Load.Broadcast.new!(
             id: "broadcast-1",
             dataset_id: "ds1",
             subset_id: "kpi",
-            source: "topic-1",
+            source: Source.Fake.new!(),
             destination: "ds1"
           )
         ]
@@ -104,7 +108,9 @@ defmodule Orchestrate.Event.HandlerTest do
       assert hour < 24
     end
 
-    test "should not schedule job is no Load.Persist is available", %{schedule: schedule} do
+    test "should not schedule job is no Load with Presto.Table is available", %{
+      schedule: schedule
+    } do
       [_persist, broadcast] = schedule.load
       schedule = %{schedule | load: [broadcast]}
 
@@ -127,7 +133,7 @@ defmodule Orchestrate.Event.HandlerTest do
     Brook.Test.send(@instance, schedule_start(), "testing", schedule)
 
     persist = schedule.load |> List.first()
-    assert_receive {:brook_event, %{type: "load:persist:start", data: ^persist}}
+    assert_receive {:brook_event, %{type: "load:start", data: ^persist}}
   end
 
   test "logs error when unable to process event", %{schedule: schedule} do

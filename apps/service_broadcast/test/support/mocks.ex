@@ -1,1 +1,1 @@
-Mox.defmock(Broadcast.DLQMock, for: Writer)
+Mox.defmock(Broadcast.DLQMock, for: Dlq.Behaviour)

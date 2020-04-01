@@ -50,6 +50,7 @@ defmodule Ok do
   end
 
   def map_if_error({:ok, _} = result, _function), do: result
+  def map_if_error(:ok, _function), do: :ok
 
   @doc """
   Receives an enumerable, an accumulator, and a function and calls

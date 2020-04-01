@@ -1,5 +1,7 @@
 use Mix.Config
 
+config :dlq, Dlq.Application, init?: false
+
 config :service_gather, Gather.Application,
   kafka_endpoints: nil,
   brook: [
