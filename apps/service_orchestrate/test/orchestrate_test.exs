@@ -34,13 +34,15 @@ defmodule OrchestrateTest do
             steps: []
           ),
         load: [
-          Load.Persist.new!(
+          Load.new!(
             id: "persist-1",
             dataset_id: "ds1",
             subset_id: "kpi",
             source: Source.Fake.new!(),
-            destination: "table-1",
-            schema: []
+            destination: Presto.Table.new!(
+              url: "http://localhost:8080",
+              name: "table-1"
+            )
           ),
           Load.Broadcast.new!(
             id: "broadcast-1",
