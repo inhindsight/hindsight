@@ -1,23 +1,7 @@
 defmodule Persist.LoaderTest do
   use ExUnit.Case
-  require Temp.Env
-
-  import Mox
 
   @instance Persist.Application.instance()
-
-  Temp.Env.modify([
-    %{
-      app: :service_persist,
-      key: Persist.Loader,
-      set: [
-        writer: Persist.WriterMock
-      ]
-    }
-  ])
-
-  setup :set_mox_global
-  setup :verify_on_exit!
 
   setup do
     Process.flag(:trap_exit, true)

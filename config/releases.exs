@@ -85,10 +85,6 @@ config :service_receive, Receive.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_receive, Receive.Writer,
-  app_name: "service_receive",
-  kafka_endpoints: kafka_endpoints
-
 config :service_receive, Receive.SocketManager, app_name: "service_receive"
 
 config :service_receive, Receive.Event.Handler, endpoints: kafka_endpoints
@@ -118,10 +114,6 @@ config :service_gather, Gather.Application,
 
 config :service_gather, Gather.Event.Handler, endpoints: kafka_endpoints
 config :service_gather, Gather.Extraction, app_name: "service_gather"
-
-config :service_gather, Gather.Writer,
-  app_name: "service_gather",
-  kafka_endpoints: kafka_endpoints
 
 # SERVICE BROADCAST
 config :service_broadcast, BroadcastWeb.Endpoint,

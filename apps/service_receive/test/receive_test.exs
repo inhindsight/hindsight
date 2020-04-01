@@ -11,7 +11,7 @@ defmodule ReceiveTest do
     %{
       app: :service_receive,
       key: Receive.SocketManager,
-      set: [Receive.WriterMock, batch_size: 10]
+      set: [batch_size: 10]
     }
   ])
 
