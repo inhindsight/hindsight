@@ -9,8 +9,8 @@ defmodule Define.Model.PersistView do
 
   @derive Jason.Encoder
   defstruct version: 1,
-            source: nil,
-            destination: nil
+            source: "",
+            destination: ""
 end
 
 defmodule Define.Model.PersistView.V1 do

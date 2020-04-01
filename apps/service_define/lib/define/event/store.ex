@@ -2,40 +2,39 @@ defmodule Define.Event.Store do
   require Logger
   alias Define.DefinitionSerialization
   alias Define.Model.{DataDefinitionView, ExtractView, PersistView, TransformView}
+  import Definition, only: [identifier: 1]
 
   @instance Define.Application.instance()
   @collection "definitions"
 
-  def update_definition(%Extract{} = data) do
-    get_or_create(data.dataset_id)
-    |> Map.put(:dataset_id, data.dataset_id)
-    |> Map.put(:subset_id, data.subset_id)
-    |> Map.put(:extract, to_extract_view(data))
-    |> persist()
-  end
-
   def update_definition(%Transform{} = data) do
-    get_or_create(data.dataset_id)
-    |> Map.put(:dataset_id, data.dataset_id)
-    |> Map.put(:subset_id, data.subset_id)
-    |> Map.put(:transform, to_transform_view(data))
-    |> persist()
+    update_definition_field(data, :transform, &to_transform_view/1)
   end
 
   def update_definition(%Load.Persist{} = data) do
-    get_or_create(data.dataset_id)
-    |> Map.put(:dataset_id, data.dataset_id)
-    |> Map.put(:subset_id, data.subset_id)
-    |> Map.put(:persist, to_persist_view(data))
-    |> persist()
+    update_definition_field(data, :persist, &to_persist_view/1)
+  end
+
+  def update_definition(%Extract{} = data) do
+    update_definition_field(data, :extract, &to_extract_view/1)
   end
 
   def update_definition(data) do
     Logger.error("Got unexpected data definition update: #{inspect(data)}")
   end
 
-  def get(dataset_id) do
-    Brook.get!(@instance, @collection, dataset_id)
+  defp update_definition_field(data, key, to_view_converter) do
+    get_or_create(data)
+    |> Map.put(key, to_view_converter.(data))
+    |> persist()
+  rescue
+    err ->
+      Logger.error("Unable to process transform event: #{inspect(err)}")
+      discard()
+  end
+
+  def get(id) do
+    Brook.get!(@instance, @collection, id)
   end
 
   def get_all() do
@@ -47,35 +46,39 @@ defmodule Define.Event.Store do
   end
 
   defp to_extract_view(event) do
-    %ExtractView{
+    ExtractView.new!(%{
       destination: event.destination,
       dictionary: DefinitionSerialization.serialize(event.dictionary),
       steps: DefinitionSerialization.serialize(event.steps)
-    }
+    })
   end
 
   defp to_transform_view(event) do
-    %TransformView{
+    TransformView.new!(%{
       dictionary: DefinitionSerialization.serialize(event.dictionary),
       steps: DefinitionSerialization.serialize(event.steps)
-    }
+    })
   end
 
   defp to_persist_view(event) do
-    %PersistView{
+    PersistView.new!(%{
       source: event.source,
       destination: event.destination
-    }
+    })
   end
 
-  defp get_or_create(id) do
-    case get(id) do
-      nil -> %DataDefinitionView{}
+  defp get_or_create(data) do
+    case get(identifier(data)) do
+      nil -> DataDefinitionView.new!(dataset_id: data.dataset_id, subset_id: data.subset_id)
       map -> map
     end
   end
 
   defp persist(data) do
-    Brook.ViewState.merge(@collection, data.dataset_id, data)
+    Brook.ViewState.merge(@collection, identifier(data), data)
+  end
+
+  defp discard() do
+    :discard
   end
 end

@@ -22,7 +22,7 @@ end
 
 defmodule Define.DataDefinitionView.V1 do
   use Definition.Schema
-  alias Define.{ExtractView, PersistView}
+  alias Define.Model.{ExtractView, TransformView, PersistView}
 
   @impl true
   def s do

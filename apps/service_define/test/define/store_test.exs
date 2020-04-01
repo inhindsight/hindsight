@@ -1,5 +1,9 @@
 defmodule StoreTest do
   use ExUnit.Case
+  import AssertAsync
+  import Definition, only: [identifier: 1]
+
+  @moduletag capture_log: true
 
   alias Define.Model.{
     DataDefinitionView,
@@ -14,41 +18,35 @@ defmodule StoreTest do
 
   @instance Define.Application.instance()
 
+  setup do
+    on_exit(fn -> Store.delete_all_definitions() end)
+    :ok
+  end
+
   describe "update_definition/1" do
-    setup do
-      on_exit(fn -> Store.delete_all_definitions() end)
-      :ok
-    end
-
     test "persists a new extract" do
-      id = "adataset"
+      event =
+        Extract.new!(
+          id: "extract-1",
+          dataset_id: "adataset",
+          subset_id: "default",
+          destination: "success",
+          dictionary: [
+            Dictionary.Type.String.new!(name: "letter")
+          ],
+          steps: [
+            Extract.Http.Get.new!(
+              url: "http://localhost/file.csv",
+              headers: %{"content-length" => "5"}
+            )
+          ]
+        )
 
-      Brook.Test.with_event(@instance, fn ->
-        event =
-          Extract.new!(
-            id: "extract-1",
-            dataset_id: id,
-            subset_id: "default",
-            destination: "success",
-            dictionary: [
-              Dictionary.Type.String.new!(name: "letter")
-            ],
-            steps: [
-              Extract.Http.Get.new!(
-                url: "http://localhost/file.csv",
-                headers: %{"content-length" => "5"}
-              )
-            ]
-          )
-
-        Store.update_definition(event)
-      end)
-
-      persisted = Store.get(id)
+      Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
 
       expected = %DataDefinitionView{
         version: 1,
-        dataset_id: id,
+        dataset_id: "adataset",
         extract: %ExtractView{
           destination: "success",
           dictionary: [
@@ -89,26 +87,46 @@ defmodule StoreTest do
         subset_id: "default"
       }
 
-      assert expected == persisted
+      assert_async do
+        assert expected == Store.get(identifier(event))
+      end
+    end
+
+    test "does not persist invalid extracts" do
+      event = %Extract{
+        id: "extract-1",
+        dataset_id: "invalid_dataset",
+        subset_id: 5,
+        destination: nil,
+        dictionary: [
+          Dictionary.Type.String.new!(name: "letter")
+        ],
+        steps: [
+          Extract.Http.Get.new!(
+            url: "http://localhost/file.csv",
+            headers: %{"content-length" => "5"}
+          )
+        ]
+      }
+
+      Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
+
+      assert_async do
+        assert nil == Store.get(identifier(event))
+      end
     end
 
     test "persists a new persist" do
-      id = "bdataset"
+      event =
+        Load.Persist.new!(
+          id: "persist-1",
+          dataset_id: "bdataset",
+          subset_id: "default",
+          source: "akafkatopic",
+          destination: "storage__json"
+        )
 
-      Brook.Test.with_event(@instance, fn ->
-        event =
-          Load.Persist.new!(
-            id: "persist-1",
-            dataset_id: id,
-            subset_id: "default",
-            source: "akafkatopic",
-            destination: "storage__json"
-          )
-
-        Store.update_definition(event)
-      end)
-
-      persisted = Store.get(id)
+      Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
 
       expected =
         PersistView.new!(
@@ -117,40 +135,40 @@ defmodule StoreTest do
           version: 1
         )
 
-      assert id == persisted.dataset_id
-      assert "default" == persisted.subset_id
-      assert expected == persisted.persist
+      assert_async do
+        persisted = Store.get(identifier(event))
+
+        assert event.dataset_id == persisted.dataset_id
+        assert "default" == persisted.subset_id
+        assert expected == persisted.persist
+      end
     end
 
     test "persists a new transform" do
-      id = "tdataset"
+      event =
+        Transform.new!(
+          id: "transform-1",
+          dataset_id: "tdataset",
+          subset_id: "default",
+          dictionary: [
+            Dictionary.Type.String.new!(name: "letter")
+          ],
+          steps: [
+            Transform.Wkt.Point.new!(
+              longitude: "long",
+              latitude: "lat",
+              to: "point"
+            )
+          ]
+        )
 
       Brook.Test.with_event(@instance, fn ->
-        event =
-          Transform.new!(
-            id: "transform-1",
-            dataset_id: id,
-            subset_id: "default",
-            dictionary: [
-              Dictionary.Type.String.new!(name: "letter")
-            ],
-            steps: [
-              Transform.Wkt.Point.new!(
-                longitude: "long",
-                latitude: "lat",
-                to: "point"
-              )
-            ]
-          )
-
         Store.update_definition(event)
       end)
 
-      persisted = Store.get(id)
-
       expected = %DataDefinitionView{
         version: 1,
-        dataset_id: id,
+        dataset_id: "tdataset",
         transform: %TransformView{
           dictionary: [
             %ModuleFunctionArgsView{
@@ -195,43 +213,41 @@ defmodule StoreTest do
         subset_id: "default"
       }
 
-      assert expected == persisted
+      assert_async do
+        assert expected == Store.get(identifier(event))
+      end
     end
 
     test "persists updated args when two events are posted" do
-      id = "cDataset"
+      eventA =
+        Extract.new!(
+          id: "extract-1",
+          dataset_id: "cDataset",
+          subset_id: "default",
+          destination: "success",
+          dictionary: [Dictionary.Type.String.new!(name: "person")],
+          steps: []
+        )
 
       Brook.Test.with_event(@instance, fn ->
-        event =
-          Extract.new!(
-            id: "extract-1",
-            dataset_id: id,
-            subset_id: "default",
-            destination: "success",
-            dictionary: [Dictionary.Type.String.new!(name: "person")],
-            steps: []
-          )
-
-        Store.update_definition(event)
+        Store.update_definition(eventA)
       end)
+
+      eventB =
+        Load.Persist.new!(
+          id: "persist-1",
+          dataset_id: "cDataset",
+          subset_id: "default",
+          source: "akafkatopic",
+          destination: "storage__json"
+        )
 
       Brook.Test.with_event(@instance, fn ->
-        event =
-          Load.Persist.new!(
-            id: "persist-1",
-            dataset_id: id,
-            subset_id: "default",
-            source: "akafkatopic",
-            destination: "storage__json"
-          )
-
-        Store.update_definition(event)
+        Store.update_definition(eventB)
       end)
-
-      persisted = Store.get(id)
 
       expected = %DataDefinitionView{
-        dataset_id: id,
+        dataset_id: "cDataset",
         subset_id: "default",
         extract: %ExtractView{
           destination: "success",
@@ -261,30 +277,30 @@ defmodule StoreTest do
         version: 1
       }
 
-      assert expected == persisted
+      assert_async do
+        assert expected == Store.get(identifier(eventB))
+      end
     end
   end
 
   describe "get/1" do
     test "returns DataDefinitionView" do
-      id = "my-id"
+      event =
+        Extract.new!(
+          id: "extract-1",
+          dataset_id: "my-id",
+          subset_id: "default",
+          destination: "success",
+          dictionary: [Dictionary.Type.String.new!(name: "person")],
+          steps: []
+        )
 
       Brook.Test.with_event(@instance, fn ->
-        event =
-          Extract.new!(
-            id: "extract-1",
-            dataset_id: id,
-            subset_id: "default",
-            destination: "success",
-            dictionary: [Dictionary.Type.String.new!(name: "person")],
-            steps: []
-          )
-
         Store.update_definition(event)
       end)
 
       expected = %DataDefinitionView{
-        dataset_id: id,
+        dataset_id: "my-id",
         subset_id: "default",
         extract: %ExtractView{
           destination: "success",
@@ -310,11 +326,15 @@ defmodule StoreTest do
         version: 1
       }
 
-      assert expected == Store.get(id)
+      assert_async do
+        assert expected == Store.get(identifier(event))
+      end
     end
 
     test "when id does not exist returns nil" do
-      assert nil == Store.get("non-existant-id")
+      assert_async do
+        assert nil == Store.get("non-existant-id")
+      end
     end
   end
 
@@ -324,14 +344,54 @@ defmodule StoreTest do
         Brook.Test.with_event(@instance, fn ->
           event = %Extract{
             id: "extract-#{index}",
-            dataset_id: "id-#{index}"
+            dataset_id: "id-#{index}",
+            subset_id: "default",
+            destination: "destination"
           }
 
           Store.update_definition(event)
         end)
       end)
 
-      assert 3 == length(Store.get_all())
+      assert_async do
+        assert 3 == length(Store.get_all())
+      end
+    end
+  end
+
+  test "does not persist a persist when it is invalid" do
+    event = %Load.Persist{
+      id: "persist-1",
+      dataset_id: "p-broken",
+      subset_id: "default",
+      source: "akafkatopic",
+      destination: nil
+    }
+
+    Brook.Test.with_event(@instance, fn ->
+      Store.update_definition(event)
+    end)
+
+    assert_async do
+      assert nil == Store.get(identifier(event))
+    end
+  end
+
+  test "does not persist a transform when it is invalid" do
+    event = %Transform{
+      id: "transform-1",
+      dataset_id: "t-broken",
+      subset_id: "default",
+      dictionary: nil,
+      steps: []
+    }
+
+    Brook.Test.with_event(@instance, fn ->
+      Store.update_definition(event)
+    end)
+
+    assert_async do
+      assert nil == Store.get(identifier(event))
     end
   end
 end

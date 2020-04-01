@@ -11,7 +11,7 @@ defmodule Define.Model.ExtractView do
 
   @derive Jason.Encoder
   defstruct version: 1,
-            destination: nil,
+            destination: "",
             dictionary: [],
             steps: []
 end
