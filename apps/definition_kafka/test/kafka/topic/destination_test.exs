@@ -4,21 +4,9 @@ defmodule Kafka.Topic.DestinationTest do
 
   require Temp.Env
   import AssertAsync
-  import Mox
 
   @endpoints [localhost: 9092]
   @moduletag integration: true, divo: true
-
-  Temp.Env.modify([
-    %{
-      app: :definition_kafka,
-      key: Kafka.Topic.Destination,
-      set: [dlq: DlqMock]
-    }
-  ])
-
-  setup :set_mox_global
-  setup :verify_on_exit!
 
   setup do
     test = self()
@@ -117,25 +105,6 @@ defmodule Kafka.Topic.DestinationTest do
                  Enum.map(messages, &{&1.key, &1.value})
       end
 
-      assert_down(topic.pid)
-    end
-
-    test "writes errors to DLQ" do
-      expect(DlqMock, :write, fn %{app_name: "some-app"} -> :ok end)
-
-      context = context(app_name: "some-app")
-      topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-errors")
-      {:ok, topic} = Destination.start_link(topic, context)
-
-      assert :ok = Destination.write(topic, [%{one: 1}, ~r/no/, %{two: 2}])
-
-      assert_async debug: true do
-        assert Elsa.topic?(@endpoints, topic.name)
-        {:ok, _, messages} = Elsa.fetch(@endpoints, topic.name)
-        assert [~s|{"one":1}|, ~s|{"two":2}|] == Enum.map(messages, & &1.value)
-      end
-
-      assert_receive {:telemetry_event, [:destination, :kafka, :write], %{count: 2}, _, _}, 5_000
       assert_down(topic.pid)
     end
   end
