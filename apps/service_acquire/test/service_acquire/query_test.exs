@@ -34,12 +34,15 @@ defmodule Acquire.QueryTest do
     setup do
       Brook.Test.with_event(@instance, fn ->
         Acquire.Dictionaries.persist(
-          Load.Persist.new!(
+          Load.new!(
             id: "persist-1",
             dataset_id: "a",
             subset_id: "default",
             source: Source.Fake.new!(),
-            destination: "table_name"
+            destination: Presto.Table.new!(
+              url: "http://localhost:8080",
+              name: "table_name"
+            )
           )
         )
       end)

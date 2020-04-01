@@ -37,12 +37,15 @@ defmodule AcquireWeb.V2.DataControllerTest do
         )
 
         Acquire.Dictionaries.persist(
-          Load.Persist.new!(
+          Load.new!(
             id: "persist-1",
             dataset_id: path_variables["dataset_id"],
             subset_id: path_variables["subset_id"] || "default",
             source: Source.Fake.new!(),
-            destination: "table_destination"
+            destination: Presto.Table.new!(
+              url: "http://localhost:8080",
+              name: "table_destination"
+            )
           )
         )
       end)
@@ -110,12 +113,15 @@ defmodule AcquireWeb.V2.DataControllerTest do
         )
 
         Acquire.Dictionaries.persist(
-          Load.Persist.new!(
+          Load.new!(
             id: "persist-1",
             dataset_id: "dataset_id_1",
             subset_id: "subset_id_1",
             source: Source.Fake.new!(),
-            destination: "table_destination"
+            destination: Presto.Table.new!(
+              url: "http://localhost:8080",
+              name: "table_destination"
+            )
           )
         )
       end)
