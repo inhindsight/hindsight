@@ -1,12 +1,12 @@
 defmodule Presto.Table.Compactor do
   use Properties, otp_app: :definition_presto
 
-  @callback compact(Load.t()) :: :ok | {:error, term}
+  @callback compact(Presto.Table.t()) :: :ok | {:error, term}
 
   getter(:impl, default: Presto.Table.Compactor.Presto)
 
-  def compact(load) do
-    impl().compact(load)
+  def compact(table) do
+    impl().compact(table)
   end
 end
 

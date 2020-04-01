@@ -29,7 +29,7 @@ defmodule Acquire.Dictionaries do
   end
 
   @spec get_destination(dataset_id :: String.t(), subset_id :: String.t()) ::
-          {:ok, String.t()} | {:error, term}
+          {:ok, Presto.Table.t()} | {:error, term}
   def get_destination(dataset_id, subset_id) do
     get(dataset_id, subset_id, "destination")
   end
