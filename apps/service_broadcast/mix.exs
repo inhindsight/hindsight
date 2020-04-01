@@ -46,7 +46,6 @@ defmodule Broadcast.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:properties, in_umbrella: true},
       {:protocol_source, in_umbrella: true},
-      {:simple_registry, in_umbrella: true},
       {:transformer, in_umbrella: true},
 
       # Dev/Test Dependencies
