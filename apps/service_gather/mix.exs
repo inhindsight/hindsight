@@ -39,7 +39,6 @@ defmodule Gather.MixProject do
       {:properties, in_umbrella: true},
       {:retry, "~> 0.13.0"},
       {:transformer, in_umbrella: true},
-      {:writer, in_umbrella: true},
 
       # Dev/Test Dependencies
       {:bypass, "~> 1.0", only: [:test]},
