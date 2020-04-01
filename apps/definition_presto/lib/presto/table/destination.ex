@@ -27,11 +27,9 @@ defmodule Presto.Table.Destination do
   def delete(table) do
     session = new_session(table)
     Manager.delete(session, table.name)
-    DataStorage.delete(table.name, include_directory: true)
 
     staging_table = "#{table.name}__staging"
     Manager.delete(session, staging_table)
-    DataStorage.delete(staging_table, include_directory: true)
     :ok
   end
 
@@ -50,7 +48,7 @@ defmodule Presto.Table.Destination do
   def handle_continue(:init, state) do
     with :ok <- Manager.create(state.session, state.table.name, state.context.dictionary, :orc),
          {:ok, _} <-
-           Manager.create_from(state.session, state.staging_table, state.table.name, DataFile.format()) do
+           Manager.create_from(state.session, state.staging_table, state.table.name, format: DataFile.format()) do
       {:noreply, state}
     else
       {:error, reason} ->

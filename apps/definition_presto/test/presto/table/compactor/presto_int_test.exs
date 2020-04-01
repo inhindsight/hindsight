@@ -49,8 +49,8 @@ defmodule Presto.Table.Compactor.PrestoIntTest do
       )
     end)
 
-    Prestige.execute!(session, "select * from #{destination.name}")
-    |> Prestige.Result.as_maps()
+    # Prestige.execute!(session, "select * from #{destination.name}")
+    # |> Prestige.Result.as_maps()
 
     assert_async do
       assert 10 <= number_of_s3_files(destination.name)

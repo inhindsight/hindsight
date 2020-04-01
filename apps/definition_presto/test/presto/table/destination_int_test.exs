@@ -58,16 +58,26 @@ defmodule Presto.Table.DestinationIntTest do
       )
 
     {:ok, destination} = Destination.start_link(destination, context)
-
     on_exit(fn -> assert_down(destination.pid) end)
 
     [dictionary: dictionary, destination: destination, session: session]
   end
 
   @tag timeout: :infinity
-  test "creates table in presto correctly", %{destination: destination, session: session} do
+  test "creates tables in presto correctly", %{destination: destination, session: session} do
     assert_async sleep: 1_000 do
       assert {:ok, result} = Prestige.execute(session, "DESCRIBE #{destination.name}")
+      result = Prestige.Result.as_maps(result)
+
+      assert result == [
+        %{"Column" => "name", "Type" => "varchar", "Comment" => "", "Extra" => ""},
+        %{"Column" => "age", "Type" => "bigint", "Comment" => "", "Extra" => ""},
+        %{"Column" => "birthdate", "Type" => "date", "Comment" => "", "Extra" => ""}
+      ]
+    end
+
+    assert_async sleep: 1_000 do
+      assert {:ok, result} = Prestige.execute(session, "DESCRIBE #{destination.name}__staging")
       result = Prestige.Result.as_maps(result)
 
       assert result == [

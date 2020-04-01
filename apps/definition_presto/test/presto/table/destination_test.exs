@@ -32,8 +32,8 @@ defmodule Presto.Table.DestinationTest do
       send(test, {:create_table, session, name, dictionary, format})
       :ok
     end)
-    |> stub(:create_from, fn session, from, to, format ->
-      send(test, {:create_from, session, from, to, format})
+    |> stub(:create_from, fn session, from, to, format, with_data ->
+      send(test, {:create_from, session, from, to, format, with_data})
       {:ok, 0}
     end)
 

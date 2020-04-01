@@ -14,7 +14,8 @@ defmodule Presto.Table.Manager do
               session :: Prestige.Session.t(),
               table :: String.t(),
               from :: String.t(),
-              Presto.Table.DataFile.format()
+              format :: Presto.Table.DataFile.format(),
+              with_data :: boolean
             ) ::
               {:ok, term} | {:error, term}
   @callback copy(
@@ -31,8 +32,10 @@ defmodule Presto.Table.Manager do
     impl().create(session, table, dictionary, @formats[format])
   end
 
-  def create_from(session, table, from, format \\ :orc) do
-    impl().create_from(session, table, from, @formats[format])
+  def create_from(session, table, from, opts) do
+    format = Keyword.get(opts, :format, :orc)
+    with_data = Keyword.get(opts, :with_data, false)
+    impl().create_from(session, table, from, @formats[format], with_data)
   end
 
   def copy(session, from_table, to_table) do
@@ -68,8 +71,16 @@ defmodule Presto.Table.Manager.Impl do
   end
 
   @impl Presto.Table.Manager
-  def create_from(session, table, from, format) do
-    create_table = "CREATE TABLE IF NOT EXISTS #{table} WITH (format = '#{format}') AS SELECT * FROM #{from}"
+  def create_from(session, table, from, format, false) do
+    create_table =
+      "CREATE TABLE IF NOT EXISTS #{table} WITH (format = '#{format}') AS SELECT * FROM #{from} WITH NO DATA"
+
+    Prestige.execute(session, create_table)
+  end
+
+  def create_from(session, table, from, format, true) do
+    create_table =
+      "CREATE TABLE IF NOT EXISTS #{table} WITH (format = '#{format}') AS SELECT * FROM #{from}"
 
     Prestige.execute(session, create_table)
   end

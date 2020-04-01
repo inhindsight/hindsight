@@ -1,5 +1,13 @@
 defmodule Presto.Table.Compactor do
+  use Properties, otp_app: :definition_presto
+
   @callback compact(Load.t()) :: :ok | {:error, term}
+
+  getter(:impl, default: Presto.Table.Compactor.Presto)
+
+  def compact(load) do
+    impl().compact(load)
+  end
 end
 
 defmodule Presto.Table.Compactor.Presto do
@@ -29,7 +37,7 @@ defmodule Presto.Table.Compactor.Presto do
   defp create_table(session, from, to) do
     create_task =
       Task.async(fn ->
-        Presto.Table.Manager.create_from(session, to, from)
+        Presto.Table.Manager.create_from(session, to, from, format: :orc, with_data: true)
         |> get_count()
       end)
 
