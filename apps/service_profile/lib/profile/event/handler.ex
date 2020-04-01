@@ -3,7 +3,10 @@ defmodule Profile.Event.Handler do
 
   import Events, only: [extract_start: 0, profile_update: 0]
 
-  def handle_event(%Brook.Event{type: extract_start(), data: %Extract{} = extract}) do
+  def handle_event(%Brook.Event{
+        type: extract_start(),
+        data: %Extract{destination: %Kafka.Topic{}} = extract
+      }) do
     Profile.Feed.Supervisor.start_child(extract)
     Profile.Feed.Store.persist(extract)
   end

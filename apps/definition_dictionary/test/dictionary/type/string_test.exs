@@ -3,20 +3,6 @@ defmodule Dictionary.Type.StringTest do
   import Checkov
 
   describe "new/1" do
-    data_test "validates #{inspect(field)} against bad input" do
-      assert {:error, [%{input: value, path: [field]} | _]} =
-               put_in(%{}, [field], value)
-               |> Dictionary.Type.String.new()
-
-      where [
-        [:field, :value],
-        [:version, "1"],
-        [:name, ""],
-        [:name, nil],
-        [:description, nil]
-      ]
-    end
-
     test "name gets lowercased" do
       assert Dictionary.Type.String.new!(name: "name") ==
                Dictionary.Type.String.new!(name: "Name")

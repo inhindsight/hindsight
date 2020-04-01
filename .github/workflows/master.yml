@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Push
-        uses: elgohr/Publish-Docker-Github-Action@2.12
+        uses: elgohr/Publish-Docker-Github-Action@2.14
         with:
           name: inhindsight/hindsight
           username: ${{ secrets.DOCKER_USERNAME }}

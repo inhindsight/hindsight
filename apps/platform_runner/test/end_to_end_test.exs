@@ -3,6 +3,8 @@ defmodule PlatformRunner.EndToEndTest do
   use Divo
 
   import AssertAsync
+  import Definition, only: [identifier: 1]
+
   alias PlatformRunner.{BroadcastClient, AcquireClient}
 
   @kafka [localhost: 9092]
@@ -27,11 +29,18 @@ defmodule PlatformRunner.EndToEndTest do
             id: "e2e-csv-extract-1",
             dataset_id: "e2e-csv-ds",
             subset_id: "csv-subset",
-            destination: "e2e-csv-gather",
-            steps: [
-              Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/file.csv"),
-              Extract.Decode.Csv.new!(headers: ["letter", "number", "float"])
-            ],
+            source:
+              Extractor.new!(
+                steps: [
+                  Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/file.csv")
+                ]
+              ),
+            decoder: Decoder.Csv.new!(headers: ["letter", "number", "float"]),
+            destination:
+              Kafka.Topic.new!(
+                endpoints: @kafka,
+                name: "e2e-csv-gather"
+              ),
             dictionary: [
               Dictionary.Type.String.new!(name: "letter"),
               Dictionary.Type.String.new!(name: "number"),
@@ -57,15 +66,27 @@ defmodule PlatformRunner.EndToEndTest do
             id: "e2e-csv-broadcast-1",
             dataset_id: "e2e-csv-ds",
             subset_id: "csv-subset",
-            source: "e2e-csv-gather",
+            source:
+              Kafka.Topic.new!(
+                endpoints: [localhost: 9092],
+                name: "e2e-csv-gather"
+              ),
             destination: "e2e_csv_broadcast"
           ),
-          Load.Persist.new!(
+          Load.new!(
             id: "e2e-csv-persist-1",
             dataset_id: "e2e-csv-ds",
             subset_id: "csv-subset",
-            source: "e2e-csv-gather",
-            destination: "e2e__csv"
+            source:
+              Kafka.Topic.new!(
+                endpoints: [localhost: 9092],
+                name: "e2e-csv-gather"
+              ),
+            destination:
+              Presto.Table.new!(
+                url: "http://localhost:8080",
+                name: "e2e__csv"
+              )
           )
         ]
       )
@@ -152,11 +173,18 @@ defmodule PlatformRunner.EndToEndTest do
           id: "e2e-json-extract-1",
           dataset_id: "e2e-json-ds",
           subset_id: "json-subset",
-          destination: "e2e-json-gather",
-          steps: [
-            Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/json"),
-            Extract.Decode.Json.new!([])
-          ],
+          source:
+            Extractor.new!(
+              steps: [
+                Extract.Http.Get.new!(url: "http://localhost:#{bp.port}/json")
+              ]
+            ),
+          decoder: Decoder.Json.new!([]),
+          destination:
+            Kafka.Topic.new!(
+              endpoints: @kafka,
+              name: "e2e-json-gather"
+            ),
           dictionary: [
             Dictionary.Type.String.new!(name: "name"),
             Dictionary.Type.Integer.new!(name: "number"),
@@ -216,7 +244,11 @@ defmodule PlatformRunner.EndToEndTest do
           id: "e2e-json-broadcast-1",
           dataset_id: "e2e-json-ds",
           subset_id: "json-subset",
-          source: "e2e-json-gather",
+          source:
+            Kafka.Topic.new!(
+              endpoints: [localhost: 9092],
+              name: "e2e-json-gather"
+            ),
           destination: "e2e_json_broadcast"
         )
 
@@ -238,16 +270,24 @@ defmodule PlatformRunner.EndToEndTest do
 
     test "persisted" do
       load =
-        Load.Persist.new!(
+        Load.new!(
           id: "e2e-json-persist-1",
           dataset_id: "e2e-json-ds",
           subset_id: "json-subset",
-          source: "e2e-json-gather",
-          destination: "e2e__json"
+          source:
+            Kafka.Topic.new!(
+              endpoints: [localhost: 9092],
+              name: "e2e-json-gather"
+            ),
+          destination:
+            Presto.Table.new!(
+              url: "http://localhost:8080",
+              name: "e2e__json"
+            )
         )
 
       Persist.Application.instance()
-      |> Events.send_load_persist_start("e2e-json", load)
+      |> Events.send_load_start("e2e-json", load)
 
       session =
         Prestige.new_session(
@@ -322,7 +362,7 @@ defmodule PlatformRunner.EndToEndTest do
           id: "e2e-json-push-1",
           dataset_id: "e2e-push-ds",
           subset_id: "e2e-push-ss",
-          destination: "e2e-push-receive",
+          destination: Kafka.Topic.new!(name: "e2e-push-receive", endpoints: @kafka),
           connection: Accept.Udp.new!(port: 6789)
         )
 
@@ -330,7 +370,7 @@ defmodule PlatformRunner.EndToEndTest do
       |> Events.send_accept_start("e2e-push-json", accept)
 
       assert_async sleep: 500, max_tries: 10 do
-        case Receive.Accept.Registry.whereis(:"#{accept.destination}_manager") do
+        case Receive.Accept.Registry.whereis(:"#{identifier(accept)}_manager") do
           :undefined -> flunk("Process is not alive yet")
           pid when is_pid(pid) -> assert true == Process.alive?(pid)
         end
@@ -354,11 +394,17 @@ defmodule PlatformRunner.EndToEndTest do
           id: "e2e-json-gather-1",
           dataset_id: "e2e-push-ds",
           subset_id: "e2e-push-ss",
-          destination: "e2e-push-gather",
-          steps: [
-            Extract.Kafka.Subscribe.new!(endpoints: [localhost: 9092], topic: "e2e-push-receive"),
-            Extract.Decode.JsonLines.new!([])
-          ],
+          source:
+            Kafka.Topic.new!(
+              endpoints: [localhost: 9092],
+              name: "e2e-push-receive"
+            ),
+          decoder: Decoder.JsonLines.new!([]),
+          destination:
+            Kafka.Topic.new!(
+              endpoints: @kafka,
+              name: "e2e-push-gather"
+            ),
           dictionary: [
             Dictionary.Type.String.new!(name: "name"),
             Dictionary.Type.Timestamp.new!(name: "ts", format: "%Y-%m-%d %H:%M:%S")
@@ -401,16 +447,24 @@ defmodule PlatformRunner.EndToEndTest do
       |> Events.send_transform_define("e2e-push-json", transform)
 
       persist =
-        Load.Persist.new!(
+        Load.new!(
           id: "e2e-push-persist-1",
           dataset_id: "e2e-push-ds",
           subset_id: "e2e-push-ss",
-          source: "e2e-push-gather",
-          destination: "e2e_push_ds"
+          source:
+            Kafka.Topic.new!(
+              endpoints: [localhost: 9092],
+              name: "e2e-push-gather"
+            ),
+          destination:
+            Presto.Table.new!(
+              url: "http://localhost:8080",
+              name: "e2e_push_ds"
+            )
         )
 
       Persist.Application.instance()
-      |> Events.send_load_persist_start("e2e-push-json", persist)
+      |> Events.send_load_start("e2e-push-json", persist)
 
       Process.sleep(5_000)
 

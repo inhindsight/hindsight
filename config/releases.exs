@@ -49,6 +49,18 @@ kafka_endpoints =
 redix_args = [host: System.get_env("REDIS_HOST", "localhost")]
 config :redix, :args, redix_args
 
+config :dlq, Dlq.Server,
+  endpoints: kafka_endpoints,
+  topic: "dead-letter-queue"
+
+config :definition_presto, Presto.Table.Destination,
+  catalog: "hive",
+  user: "hindsight"
+
+config :definition_presto, Presto.Table.DataStorage.S3,
+  s3_bucket: System.get_env("BUCKET_NAME", "kdp-cloud-storage"),
+  s3_path: "hive-s3"
+
 # SERVICE_RECEIVE
 config :service_receive, Receive.Application,
   kafka_endpoints: kafka_endpoints,
@@ -73,15 +85,12 @@ config :service_receive, Receive.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_receive, Receive.Writer,
-  app_name: "service_receive",
-  kafka_endpoints: kafka_endpoints
+config :service_receive, Receive.SocketManager, app_name: "service_receive"
 
 config :service_receive, Receive.Event.Handler, endpoints: kafka_endpoints
 
 # SERVICE_GATHER
 config :service_gather, Gather.Application,
-  kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [
       module: Brook.Driver.Kafka,
@@ -106,10 +115,6 @@ config :service_gather, Gather.Application,
 config :service_gather, Gather.Event.Handler, endpoints: kafka_endpoints
 config :service_gather, Gather.Extraction, app_name: "service_gather"
 
-config :service_gather, Gather.Writer,
-  app_name: "service_gather",
-  kafka_endpoints: kafka_endpoints
-
 # SERVICE BROADCAST
 config :service_broadcast, BroadcastWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
@@ -120,7 +125,6 @@ config :service_broadcast, BroadcastWeb.Endpoint,
   check_origin: false
 
 config :service_broadcast, Broadcast.Application,
-  kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [
       module: Brook.Driver.Kafka,
@@ -142,29 +146,7 @@ config :service_broadcast, Broadcast.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_broadcast, Broadcast.Stream.Broadway.Configuration,
-  endpoints: kafka_endpoints,
-  broadway_config: [
-    producer: [
-      concurrency: 1
-    ],
-    processors: [
-      default: [
-        concurrency: 1
-      ]
-    ],
-    batchers: [
-      default: [
-        concurrency: 1,
-        batch_size: 1_000,
-        batch_timeout: 1_000
-      ]
-    ]
-  ]
-
 config :service_broadcast, Broadcast.Event.Handler, endpoints: kafka_endpoints
-
-config :service_broadcast, Broadcast.Stream.Broadway, app_name: "service_broadcast"
 
 # SERVICE PERSIST
 bucket_region = [region: System.get_env("BUCKET_REGION", "local")]
@@ -182,7 +164,6 @@ config :ex_aws, bucket_region
 config :ex_aws, :s3, object_storage
 
 config :service_persist, Persist.Application,
-  kafka_endpoints: kafka_endpoints,
   brook: [
     driver: [
       module: Brook.Driver.Kafka,
@@ -204,34 +185,6 @@ config :service_persist, Persist.Application,
     dispatcher: Brook.Dispatcher.Noop,
     event_processing_timeout: 20_000
   ]
-
-config :service_persist, Persist.TableManager.Presto, Keyword.put(presto_db, :user, "hindsight")
-
-config :service_persist, Persist.DataStorage.S3,
-  s3_bucket: System.get_env("BUCKET_NAME", "kdp-cloud-storage"),
-  s3_path: "hive-s3"
-
-config :service_persist, Persist.Load.Broadway.Configuration,
-  endpoints: kafka_endpoints,
-  broadway_config: [
-    producer: [
-      concurrency: 1
-    ],
-    processors: [
-      default: [
-        concurrency: 100
-      ]
-    ],
-    batchers: [
-      default: [
-        concurrency: 2,
-        batch_size: 1_000,
-        batch_timeout: 2_000
-      ]
-    ]
-  ]
-
-config :service_persist, Persist.Load.Broadway, app_name: "service_persist"
 
 config :service_persist, Persist.Event.Handler, endpoints: kafka_endpoints
 

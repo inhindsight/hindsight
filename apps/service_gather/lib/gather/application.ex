@@ -11,7 +11,6 @@ defmodule Gather.Application do
       [
         Gather.Extraction.Registry,
         Gather.Extraction.Supervisor,
-        dlq(),
         brook(),
         init()
       ]
@@ -25,13 +24,6 @@ defmodule Gather.Application do
     case get_config_value(:init?, default: true) do
       true -> Gather.Init
       false -> []
-    end
-  end
-
-  defp dlq() do
-    case get_config_value(:kafka_endpoints) do
-      nil -> []
-      endpoints -> {Gather.DLQ, endpoints: endpoints}
     end
   end
 

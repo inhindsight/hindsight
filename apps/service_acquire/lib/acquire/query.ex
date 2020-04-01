@@ -52,7 +52,8 @@ defmodule Acquire.Query do
       |> String.split(",", trim: true)
       |> Enum.map(&String.trim/1)
 
-    with {:ok, table_name} <- Acquire.Dictionaries.get_destination(dataset, subset),
+    with {:ok, destination} <- Acquire.Dictionaries.get_destination(dataset, subset),
+         table_name <- destination.name,
          {:ok, where_clause} <- Acquire.Query.Where.from_params(params) do
       new(table: table_name, fields: fields, limit: limit(params), where: where_clause)
     end

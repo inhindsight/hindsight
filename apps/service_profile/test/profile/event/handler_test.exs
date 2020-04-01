@@ -19,9 +19,14 @@ defmodule Profile.Event.HandlerTest do
           id: "extract-1",
           dataset_id: "ds1",
           subset_id: "sb1",
-          steps: [],
-          dictionary: [],
-          destination: "topic"
+          source: Source.Fake.new!(),
+          decoder: Decoder.Noop.new(),
+          destination:
+            Kafka.Topic.new!(
+              endpoints: [localhost: 9092],
+              name: "topic-1"
+            ),
+          dictionary: []
         )
 
       [extract: extract]

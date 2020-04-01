@@ -37,7 +37,6 @@ defmodule Receive.MixProject do
       {:initializer, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:transformer, in_umbrella: true},
-      {:writer_kafka, in_umbrella: true},
 
       # Dev/Test Dependencies
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},

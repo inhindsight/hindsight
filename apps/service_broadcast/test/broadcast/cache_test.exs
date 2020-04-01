@@ -10,7 +10,7 @@ defmodule Broadcast.CacheTest do
         id: "broadcast-1",
         dataset_id: "ds1",
         subset_id: "sb1",
-        source: "topic-1",
+        source: Source.Fake.new!(),
         destination: "channel-1",
         cache: 10
       )
