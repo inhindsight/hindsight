@@ -34,7 +34,7 @@ defmodule Platform.Runner.PerformanceTest do
     csv(opts)
 
     persist =
-      Load.Persist.new!(
+      Load.new!(
         id: "perf-#{ds}-persist-1",
         dataset_id: "perf-#{ds}",
         subset_id: "default",
@@ -51,7 +51,7 @@ defmodule Platform.Runner.PerformanceTest do
       )
 
     Gather.Application.instance()
-    |> Events.send_load_persist_start("performance", persist)
+    |> Events.send_load_start("performance", persist)
 
     session =
       Prestige.new_session(

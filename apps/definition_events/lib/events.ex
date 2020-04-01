@@ -10,8 +10,6 @@ defmodule Events do
     {"load:end", Load},
     {"load:broadcast:start", Load.Broadcast},
     {"load:broadcast:end", Load.Broadcast},
-    {"load:persist:start", Load.Persist},
-    {"load:persist:end", Load.Persist},
     {"schedule:start", Schedule},
     {"schedule:end", Schedule},
     {"dataset:delete", Delete},
