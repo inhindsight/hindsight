@@ -19,3 +19,7 @@ defmodule TypespecAnalysisTestModule do
           dictionary_type: Dictionary.t()
         }
 end
+
+defmodule TypespecAnalysisTestModuleNoSpec do
+  defstruct field: nil
+end

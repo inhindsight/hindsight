@@ -16,4 +16,8 @@ defmodule Define.TypespecAnalysisTest do
 
     assert expected == TypespecAnalysis.get_types(TypespecAnalysisTestModule)
   end
+
+  test "returns empty map when a typespec is not defined" do
+    assert %{} == TypespecAnalysis.get_types(TypespecAnalysisTestModuleNoSpec)
+  end
 end

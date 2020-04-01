@@ -1,6 +1,13 @@
+FROM node:12.5.0 as npm_builder
+COPY apps/service_define/assets/ /app
+WORKDIR /app/
+RUN npm install \
+  && npm run release
+
 FROM bitwalker/alpine-elixir-phoenix:1.9.4 as build
 COPY . /opt/app
-WORKDIR /opt/app
+WORKDIR /opt/app/
+COPY --from=npm_builder /app/dist/ apps/service_define/priv/static
 RUN mix do \
   local.hex --force, \
   local.rebar --force, \

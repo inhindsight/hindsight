@@ -51,7 +51,10 @@ defmodule Hindsight.MixProject do
       define: [
         version: {:from_app, :service_define},
         include_executables_for: [:unix],
-        applications: [service_define: :permanent]
+        applications: [service_define: :permanent],
+        # This is necessary for Define.TypespecAnalysis to have the typespec data in needs
+        # so that we can procedurally generate UI elements
+        strip_beams: false
       ]
     ]
   end

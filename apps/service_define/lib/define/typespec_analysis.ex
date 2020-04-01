@@ -15,13 +15,17 @@ defmodule Define.TypespecAnalysis do
 
   @spec get_types(atom()) :: %{required(String.t()) => String.t()}
   def get_types(module) do
-    {:ok, [type_spec]} = Code.Typespec.fetch_types(module)
+    case Code.Typespec.fetch_types(module) do
+      {:ok, [type_spec]} ->
+        extract_fields(type_spec)
 
-    extract_fields(type_spec)
+      {:ok, []} ->
+        %{}
 
-  rescue 
-    e -> Logger.error("Unable to get types for #{module}") 
-         reraise("Unable to get types for #{module}", __STACKTRACE__)
+      {:error} ->
+        Logger.error("Unable to get types for #{module}")
+        raise(ArgumentError, "Unable to get types for #{module}")
+    end
   end
 
   defp extract_fields([]) do
