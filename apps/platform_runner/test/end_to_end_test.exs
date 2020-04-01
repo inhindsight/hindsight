@@ -394,15 +394,10 @@ defmodule PlatformRunner.EndToEndTest do
           id: "e2e-json-gather-1",
           dataset_id: "e2e-push-ds",
           subset_id: "e2e-push-ss",
-          source:
-            Extractor.new!(
-              steps: [
-                Extract.Kafka.Subscribe.new!(
-                  endpoints: [localhost: 9092],
-                  topic: "e2e-push-receive"
-                )
-              ]
-            ),
+          source: Kafka.Topic.new!(
+            endpoints: [localhost: 9092],
+            name: "e2e-push-receive"
+          ),
           decoder: Decoder.JsonLines.new!([]),
           destination:
             Kafka.Topic.new!(
