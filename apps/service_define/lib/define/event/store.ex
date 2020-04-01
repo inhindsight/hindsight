@@ -1,7 +1,7 @@
 defmodule Define.Event.Store do
   require Logger
   alias Define.DefinitionSerialization
-  alias Define.Model.{DataDefinitionView, ExtractView, PersistView, TransformView}
+  alias Define.Model.{DataDefinitionView, ExtractView, LoadView, TransformView}
   import Definition, only: [identifier: 1]
 
   @instance Define.Application.instance()
@@ -11,8 +11,8 @@ defmodule Define.Event.Store do
     update_definition_field(data, :transform, &to_transform_view/1)
   end
 
-  def update_definition(%Load.Persist{} = data) do
-    update_definition_field(data, :persist, &to_persist_view/1)
+  def update_definition(%Load{} = data) do
+    update_definition_field(data, :load, &to_load_view/1)
   end
 
   def update_definition(%Extract{} = data) do
@@ -60,8 +60,8 @@ defmodule Define.Event.Store do
     })
   end
 
-  defp to_persist_view(event) do
-    PersistView.new!(%{
+  defp to_load_view(event) do
+    LoadView.new!(%{
       source: event.source,
       destination: event.destination
     })

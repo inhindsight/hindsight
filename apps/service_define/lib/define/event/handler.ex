@@ -2,7 +2,7 @@ defmodule Define.Event.Handler do
   use Brook.Event.Handler
   require Logger
 
-  import Events, only: [extract_start: 0, transform_define: 0, load_persist_start: 0]
+  import Events, only: [extract_start: 0, transform_define: 0, load_start: 0]
 
   def handle_event(%Brook.Event{type: extract_start(), data: %Extract{} = extract}) do
     Define.Event.Store.update_definition(extract)
@@ -12,7 +12,7 @@ defmodule Define.Event.Handler do
     Define.Event.Store.update_definition(transform)
   end
 
-  def handle_event(%Brook.Event{type: load_persist_start(), data: %Load.Persist{} = persist}) do
-    Define.Event.Store.update_definition(persist)
+  def handle_event(%Brook.Event{type: load_start(), data: %Load{} = load}) do
+    Define.Event.Store.update_definition(load)
   end
 end

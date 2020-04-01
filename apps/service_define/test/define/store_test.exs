@@ -10,7 +10,7 @@ defmodule StoreTest do
     ExtractView,
     ModuleFunctionArgsView,
     ArgumentView,
-    PersistView,
+    LoadView,
     TransformView
   }
 
@@ -118,8 +118,8 @@ defmodule StoreTest do
 
     test "persists a new persist" do
       event =
-        Load.Persist.new!(
-          id: "persist-1",
+        Load.new!(
+          id: "load-1",
           dataset_id: "bdataset",
           subset_id: "default",
           source: "akafkatopic",
@@ -129,7 +129,7 @@ defmodule StoreTest do
       Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
 
       expected =
-        PersistView.new!(
+        LoadView.new!(
           source: "akafkatopic",
           destination: "storage__json",
           version: 1
@@ -234,8 +234,8 @@ defmodule StoreTest do
       end)
 
       eventB =
-        Load.Persist.new!(
-          id: "persist-1",
+        Load.new!(
+          id: "load-1",
           dataset_id: "cDataset",
           subset_id: "default",
           source: "akafkatopic",
@@ -270,7 +270,7 @@ defmodule StoreTest do
           ],
           steps: []
         },
-        persist: %PersistView{
+        load: %LoadView{
           source: "akafkatopic",
           destination: "storage__json"
         },

@@ -1,6 +1,6 @@
 defmodule Define.Model.DataDefinitionView do
   use Definition, schema: Define.DataDefinitionView.V1
-  alias Define.Model.{ExtractView, PersistView, TransformView}
+  alias Define.Model.{ExtractView, LoadView, TransformView}
 
   @type t :: %__MODULE__{
           version: integer,
@@ -8,7 +8,7 @@ defmodule Define.Model.DataDefinitionView do
           subset_id: String.t(),
           extract: ExtractView.t(),
           transform: TransformView.t(),
-          persist: PersistView.t()
+          load: LoadView.t()
         }
 
   @derive Jason.Encoder
@@ -17,12 +17,12 @@ defmodule Define.Model.DataDefinitionView do
             subset_id: "default",
             extract: %ExtractView{},
             transform: %TransformView{},
-            persist: %PersistView{}
+            load: %LoadView{}
 end
 
 defmodule Define.DataDefinitionView.V1 do
   use Definition.Schema
-  alias Define.Model.{ExtractView, TransformView, PersistView}
+  alias Define.Model.{ExtractView, TransformView, LoadView}
 
   @impl true
   def s do
@@ -32,7 +32,7 @@ defmodule Define.DataDefinitionView.V1 do
       subset_id: string(),
       extract: of_struct(ExtractView),
       transform: of_struct(TransformView),
-      persist: of_struct(PersistView)
+      load: of_struct(LoadView)
     })
   end
 end
