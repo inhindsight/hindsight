@@ -39,10 +39,11 @@ defmodule Acquire.QueryTest do
             dataset_id: "a",
             subset_id: "default",
             source: Source.Fake.new!(),
-            destination: Presto.Table.new!(
-              url: "http://localhost:8080",
-              name: "table_name"
-            )
+            destination:
+              Presto.Table.new!(
+                url: "http://localhost:8080",
+                name: "table_name"
+              )
           )
         )
       end)

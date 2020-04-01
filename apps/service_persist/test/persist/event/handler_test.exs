@@ -46,16 +46,19 @@ defmodule Persist.Event.HandlerTest do
           dataset_id: "ds1",
           subset_id: "sb1",
           source: Source.Fake.new!(),
-          destination: Presto.Table.new!(
-            url: "http://localhost:8080",
-            name: "table24"
-          )
+          destination:
+            Presto.Table.new!(
+              url: "http://localhost:8080",
+              name: "table24"
+            )
         )
 
       [load: load]
     end
 
-    test "persists and starts a compaction on #{compact_start()}", %{load: %{destination: destination} = load} do
+    test "persists and starts a compaction on #{compact_start()}", %{
+      load: %{destination: destination} = load
+    } do
       test = self()
 
       Persist.CompactorMock

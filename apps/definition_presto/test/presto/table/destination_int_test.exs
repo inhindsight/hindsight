@@ -37,17 +37,19 @@ defmodule Presto.Table.DestinationIntTest do
         Dictionary.Type.Date.new!(name: "birthdate", format: "%Y")
       ])
 
-    destination = Presto.Table.new!(
-      url: "http://localhost:8080",
-      name: "table1"
-    )
+    destination =
+      Presto.Table.new!(
+        url: "http://localhost:8080",
+        name: "table1"
+      )
 
-    context = Destination.Context.new!(
-      dictionary: dictionary,
-      app_name: "testing",
-      dataset_id: "ds1",
-      subset_id: "default"
-    )
+    context =
+      Destination.Context.new!(
+        dictionary: dictionary,
+        app_name: "testing",
+        dataset_id: "ds1",
+        subset_id: "default"
+      )
 
     session =
       Prestige.new_session(
@@ -70,10 +72,10 @@ defmodule Presto.Table.DestinationIntTest do
       result = Prestige.Result.as_maps(result)
 
       assert result == [
-        %{"Column" => "name", "Type" => "varchar", "Comment" => "", "Extra" => ""},
-        %{"Column" => "age", "Type" => "bigint", "Comment" => "", "Extra" => ""},
-        %{"Column" => "birthdate", "Type" => "date", "Comment" => "", "Extra" => ""}
-      ]
+               %{"Column" => "name", "Type" => "varchar", "Comment" => "", "Extra" => ""},
+               %{"Column" => "age", "Type" => "bigint", "Comment" => "", "Extra" => ""},
+               %{"Column" => "birthdate", "Type" => "date", "Comment" => "", "Extra" => ""}
+             ]
     end
 
     assert_async sleep: 1_000 do
@@ -81,10 +83,10 @@ defmodule Presto.Table.DestinationIntTest do
       result = Prestige.Result.as_maps(result)
 
       assert result == [
-        %{"Column" => "name", "Type" => "varchar", "Comment" => "", "Extra" => ""},
-        %{"Column" => "age", "Type" => "bigint", "Comment" => "", "Extra" => ""},
-        %{"Column" => "birthdate", "Type" => "date", "Comment" => "", "Extra" => ""}
-      ]
+               %{"Column" => "name", "Type" => "varchar", "Comment" => "", "Extra" => ""},
+               %{"Column" => "age", "Type" => "bigint", "Comment" => "", "Extra" => ""},
+               %{"Column" => "birthdate", "Type" => "date", "Comment" => "", "Extra" => ""}
+             ]
     end
   end
 

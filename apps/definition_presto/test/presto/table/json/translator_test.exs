@@ -5,7 +5,7 @@ defmodule Presto.Table.Json.TranslatorTest do
   data_test "translate #{input} to json" do
     assert {:ok, output} == Presto.Table.Json.Translator.translate(type, input)
 
-    where [
+    where([
       [:input, :output, :type],
       ["a string", "a string", Dictionary.Type.String.new!(name: "a name")],
       [10, 10, Dictionary.Type.Integer.new!(name: "a integer")],
@@ -19,7 +19,7 @@ defmodule Presto.Table.Json.TranslatorTest do
         "2020-01-01 01:27:41.0",
         Dictionary.Type.Timestamp.new!(name: "a timestamp", format: "%Y")
       ]
-    ]
+    ])
   end
 
   test "translates values in simple list" do

@@ -19,7 +19,10 @@ defmodule Persist.Event.Handler do
   getter(:endpoints, required: true)
 
   @impl Brook.Event.Handler
-  def handle_event(%Brook.Event{type: load_start(), data: %Load{destination: %Presto.Table{}} = load}) do
+  def handle_event(%Brook.Event{
+        type: load_start(),
+        data: %Load{destination: %Presto.Table{}} = load
+      }) do
     Logger.debug(fn ->
       "#{__MODULE__}: Received event #{load_start()}: #{inspect(load)}"
     end)
@@ -29,7 +32,10 @@ defmodule Persist.Event.Handler do
   end
 
   @impl Brook.Event.Handler
-  def handle_event(%Brook.Event{type: load_end(), data: %Load{destination: %Presto.Table{}} = load}) do
+  def handle_event(%Brook.Event{
+        type: load_end(),
+        data: %Load{destination: %Presto.Table{}} = load
+      }) do
     Logger.debug(fn ->
       "#{__MODULE__}: Received event #{load_end()}: #{inspect(load)}"
     end)
@@ -45,7 +51,10 @@ defmodule Persist.Event.Handler do
   end
 
   @impl Brook.Event.Handler
-  def handle_event(%Brook.Event{type: compact_start(), data: %Load{destination: %Presto.Table{}} = load}) do
+  def handle_event(%Brook.Event{
+        type: compact_start(),
+        data: %Load{destination: %Presto.Table{}} = load
+      }) do
     Persist.Load.Supervisor.terminate_child(load)
 
     Persist.Compact.Supervisor.start_child(load)
@@ -53,7 +62,10 @@ defmodule Persist.Event.Handler do
   end
 
   @impl Brook.Event.Handler
-  def handle_event(%Brook.Event{type: compact_end(), data: %Load{destination: %Presto.Table{}} = load}) do
+  def handle_event(%Brook.Event{
+        type: compact_end(),
+        data: %Load{destination: %Presto.Table{}} = load
+      }) do
     Persist.Load.Store.clear_compaction(load)
 
     case Persist.Load.Store.done?(load) do

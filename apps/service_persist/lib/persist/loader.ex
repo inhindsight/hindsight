@@ -83,12 +83,13 @@ defmodule Persist.Loader do
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
   defp start_destination(load, dictionary) do
-    context = Destination.Context.new!(
-      dictionary: dictionary,
-      app_name: :service_persist,
-      dataset_id: load.dataset_id,
-      subset_id: load.subset_id
-    )
+    context =
+      Destination.Context.new!(
+        dictionary: dictionary,
+        app_name: :service_persist,
+        dataset_id: load.dataset_id,
+        subset_id: load.subset_id
+      )
 
     Destination.start_link(load.destination, context)
   end

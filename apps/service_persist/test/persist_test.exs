@@ -12,20 +12,24 @@ defmodule PersistTest do
 
   setup do
     test = self()
-    allow Destination.start_link(any(), any()), exec: fn table, context ->
-      send(test, {:destination_start_link, table, context})
-      {:ok, table}
-    end
 
-    allow Destination.write(any(), any()), exec: fn table, messages ->
-      send(test, {:destination_write, table, messages})
-      :ok
-    end
+    allow Destination.start_link(any(), any()),
+      exec: fn table, context ->
+        send(test, {:destination_start_link, table, context})
+        {:ok, table}
+      end
 
-    allow Destination.stop(any()), exec: fn table ->
-      send(test, {:destination_stop, table})
-      :ok
-    end
+    allow Destination.write(any(), any()),
+      exec: fn table, messages ->
+        send(test, {:destination_write, table, messages})
+        :ok
+      end
+
+    allow Destination.stop(any()),
+      exec: fn table ->
+        send(test, {:destination_stop, table})
+        :ok
+      end
 
     Brook.Test.clear_view_state(@instance, "transformations")
 
@@ -61,10 +65,11 @@ defmodule PersistTest do
         dataset_id: "ds1",
         subset_id: "example",
         source: Source.Fake.new!(),
-        destination: Presto.Table.new!(
-          url: "http://localhost:8080",
-          name: "table_testing"
-        )
+        destination:
+          Presto.Table.new!(
+            url: "http://localhost:8080",
+            name: "table_testing"
+          )
       )
 
     Brook.Test.send(@instance, load_start(), "testing", load)
@@ -85,7 +90,6 @@ defmodule PersistTest do
   end
 
   test "load:end stops source and marks load as done" do
-
     transform =
       Transform.new!(
         id: "transform-1",
@@ -108,10 +112,11 @@ defmodule PersistTest do
         dataset_id: "ds1",
         subset_id: "example",
         source: Source.Fake.new!(),
-        destination: Presto.Table.new!(
-          url: "http://localhost:8080",
-          name: "table_b"
-        )
+        destination:
+          Presto.Table.new!(
+            url: "http://localhost:8080",
+            name: "table_b"
+          )
       )
 
     Brook.Test.send(@instance, load_start(), "testing", load)
@@ -138,10 +143,11 @@ defmodule PersistTest do
         dataset_id: "ds1",
         subset_id: "example",
         source: Source.Fake.new!(),
-        destination: Presto.Table.new!(
-          url: "http://localhost:8080",
-          name: "table_c"
-        )
+        destination:
+          Presto.Table.new!(
+            url: "http://localhost:8080",
+            name: "table_c"
+          )
       )
 
     Brook.Test.send(@instance, load_end(), "testing", load)

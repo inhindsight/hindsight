@@ -39,10 +39,11 @@ defmodule OrchestrateTest do
             dataset_id: "ds1",
             subset_id: "kpi",
             source: Source.Fake.new!(),
-            destination: Presto.Table.new!(
-              url: "http://localhost:8080",
-              name: "table-1"
-            )
+            destination:
+              Presto.Table.new!(
+                url: "http://localhost:8080",
+                name: "table-1"
+              )
           ),
           Load.Broadcast.new!(
             id: "broadcast-1",

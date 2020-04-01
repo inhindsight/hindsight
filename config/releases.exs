@@ -89,8 +89,7 @@ config :service_receive, Receive.Writer,
   app_name: "service_receive",
   kafka_endpoints: kafka_endpoints
 
-config :service_receive, Receive.SocketManager,
-  app_name: "service_receive"
+config :service_receive, Receive.SocketManager, app_name: "service_receive"
 
 config :service_receive, Receive.Event.Handler, endpoints: kafka_endpoints
 

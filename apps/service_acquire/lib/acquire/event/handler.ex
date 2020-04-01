@@ -8,7 +8,10 @@ defmodule Acquire.Event.Handler do
     Acquire.Dictionaries.persist(transform)
   end
 
-  def handle_event(%Brook.Event{type: load_start(), data: %Load{destination: %Presto.Table{}} = persist}) do
+  def handle_event(%Brook.Event{
+        type: load_start(),
+        data: %Load{destination: %Presto.Table{}} = persist
+      }) do
     Acquire.Dictionaries.persist(persist)
   end
 

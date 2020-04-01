@@ -50,7 +50,9 @@ defmodule Presto.Table.Destination do
   def handle_continue(:init, state) do
     with :ok <- Manager.create(state.session, state.table.name, state.context.dictionary, :orc),
          {:ok, _} <-
-           Manager.create_from(state.session, state.staging_table, state.table.name, format: DataFile.format()) do
+           Manager.create_from(state.session, state.staging_table, state.table.name,
+             format: DataFile.format()
+           ) do
       {:noreply, state}
     else
       {:error, reason} ->
@@ -59,8 +61,11 @@ defmodule Presto.Table.Destination do
     end
   catch
     _, reason ->
-      Logger.error(fn -> "#{__MODULE__}: unexpected error - #{inspect(reason)} - #{inspect(__STACKTRACE__)}" end)
-    {:stop, reason, state}
+      Logger.error(fn ->
+        "#{__MODULE__}: unexpected error - #{inspect(reason)} - #{inspect(__STACKTRACE__)}"
+      end)
+
+      {:stop, reason, state}
   end
 
   def handle_call({:write, messages}, from, state) do
@@ -72,13 +77,17 @@ defmodule Presto.Table.Destination do
         GenServer.reply(from, :ok)
         copy_to_production(state)
         {:noreply, %{state | staged: 0}}
+
       false ->
         {:reply, :ok, %{state | staged: new_staged}, no_activity_timeout()}
     end
   catch
     _, reason ->
-      Logger.error(fn -> "#{__MODULE__}: unexpected error - #{inspect(reason)} - #{inspect(__STACKTRACE__)}" end)
-    {:stop, reason, state}
+      Logger.error(fn ->
+        "#{__MODULE__}: unexpected error - #{inspect(reason)} - #{inspect(__STACKTRACE__)}"
+      end)
+
+      {:stop, reason, state}
   end
 
   def handle_call(:stop, _from, state) do
@@ -96,7 +105,8 @@ defmodule Presto.Table.Destination do
   end
 
   defp write_data(messages, state) do
-    with {:ok, data_file} <- Presto.Table.DataFile.open(state.staging_table, state.context.dictionary),
+    with {:ok, data_file} <-
+           Presto.Table.DataFile.open(state.staging_table, state.context.dictionary),
          {:ok, _size} <- Presto.Table.DataFile.write(data_file, messages),
          file_path <- Presto.Table.DataFile.close(data_file),
          {:ok, _} <- upload_file(file_path, state.staging_table) do
