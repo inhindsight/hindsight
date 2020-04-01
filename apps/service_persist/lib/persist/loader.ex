@@ -8,10 +8,8 @@ defmodule Persist.Loader do
 
   alias Persist.Transformations
 
-  getter(:writer, default: Persist.Writer.TwoStep)
-
   @type init_opts :: [
-          load: %Load.Persist{}
+          load: %Load{}
         ]
 
   @spec start_link(init_opts) :: GenServer.on_start()

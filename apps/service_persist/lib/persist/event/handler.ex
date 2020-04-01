@@ -76,9 +76,8 @@ defmodule Persist.Event.Handler do
       load ->
         Persist.Compact.Supervisor.terminate_child(load)
         Persist.Load.Supervisor.terminate_child(load)
-        Persist.TableManager.delete(load.destination)
-        Persist.TableManager.delete("#{load.destination}__staging")
-        if Elsa.topic?(endpoints(), load.source), do: Elsa.delete_topic(endpoints(), load.source)
+        Source.delete(load.source)
+        Destination.delete(load.destination)
         Logger.debug("Deleted existing state")
     end
 

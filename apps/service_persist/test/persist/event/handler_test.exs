@@ -9,9 +9,9 @@ defmodule Persist.Event.HandlerTest do
 
   Temp.Env.modify([
     %{
-      app: :service_persist,
-      key: Persist.Compaction,
-      set: [compactor: Persist.CompactorMock]
+      app: :definition_presto,
+      key: Presto.Table.Compactor,
+      set: [impl: Persist.CompactorMock]
     }
   ])
 
@@ -55,18 +55,18 @@ defmodule Persist.Event.HandlerTest do
       [load: load]
     end
 
-    test "persists and starts a compaction on #{compact_start()}", %{load: load} do
+    test "persists and starts a compaction on #{compact_start()}", %{load: %{destination: destination} = load} do
       test = self()
 
       Persist.CompactorMock
-      |> stub(:compact, fn load ->
-        send(test, {:compact, load})
+      |> stub(:compact, fn table ->
+        send(test, {:compact, table})
         :ok
       end)
 
       Brook.Test.send(@instance, compact_start(), "testing", load)
 
-      assert_receive {:compact, ^load}, 2_000
+      assert_receive {:compact, ^destination}, 2_000
       assert true == Persist.Load.Store.is_being_compacted?(load)
       assert_receive {:brook_event, %Brook.Event{type: compact_end(), data: ^load}}
     end
