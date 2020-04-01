@@ -26,10 +26,16 @@ defmodule Initializer do
           Map.new(init_arg)
           |> Map.put(:supervisor_ref, supervisor_ref)
 
+        {:ok, state}
+      end
+
+      def handle_continue(:init, state) do
         case on_start(state) do
           {:ok, new_state} -> {:ok, new_state}
           {:error, reason} -> {:stop, reason}
         end
+
+        {:no_reply, state}
       end
 
       def handle_info({:DOWN, supervisor_ref, _, _, _}, %{supervisor_ref: supervisor_ref} = state) do
