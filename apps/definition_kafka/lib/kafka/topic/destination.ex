@@ -10,11 +10,10 @@ defmodule Kafka.Topic.Destination do
           {:ok, Destination.t()} | {:error, term}
   def start_link(topic, %Destination.Context{} = context) do
     GenServer.start_link(__MODULE__, {topic, context})
-    |> Ok.map(&%{topic | pid: &1})
   end
 
-  @spec write(Destination.t(), [term]) :: :ok | {:error, term}
-  def write(topic, [%{} | _] = messages) do
+  @spec write(Destination.t(), GenServer.server(), [term]) :: :ok | {:error, term}
+  def write(topic, server, [%{} | _] = messages) do
     encoded =
       Enum.reduce(messages, %{ok: [], error: []}, fn msg, %{ok: ok, error: err} = acc ->
         case Jason.encode(msg) do
@@ -23,22 +22,22 @@ defmodule Kafka.Topic.Destination do
         end
       end)
 
-    with :ok <- write(topic, Enum.reverse(encoded.ok)) do
-      GenServer.cast(topic.pid, {:dlq, Enum.reverse(encoded.error)})
+    with :ok <- write(topic, server, Enum.reverse(encoded.ok)) do
+      GenServer.cast(server, {:dlq, Enum.reverse(encoded.error)})
       :ok
     end
   end
 
-  def write(topic, messages) do
-    with {:ok, _} <- do_write(topic, messages) do
+  def write(topic, server, messages) do
+    with {:ok, _} <- do_write(topic, server, messages) do
       count = Enum.count(messages)
       :telemetry.execute([:destination, :kafka, :write], %{count: count}, topic)
     end
   end
 
-  @spec stop(Destination.t()) :: :ok
-  def stop(topic) do
-    GenServer.call(topic.pid, :stop)
+  @spec stop(Destination.t(), GenServer.server()) :: :ok
+  def stop(_topic, server) do
+    GenServer.call(server, :stop)
   end
 
   @spec delete(Destination.t()) :: :ok | {:error, term}
@@ -136,15 +135,15 @@ defmodule Kafka.Topic.Destination do
     end
   end
 
-  defp do_write(topic, messages) do
-    connection(topic)
+  defp do_write(topic, server, messages) do
+    connection(topic, server)
     |> Ok.map(&Elsa.produce(&1, topic.name, messages, partitioner: topic.partitioner))
   end
 
   @retry with: constant_backoff(100) |> take(10)
-  defp connection(topic) do
+  defp connection(topic, pid) do
     table_name(topic)
-    |> :ets.lookup_element(topic.pid, 2)
+    |> :ets.lookup_element(pid, 2)
     |> Ok.ok()
   catch
     _, reason ->
