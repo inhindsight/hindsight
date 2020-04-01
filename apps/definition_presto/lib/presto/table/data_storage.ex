@@ -20,12 +20,15 @@ end
 defmodule Presto.Table.DataStorage.S3 do
   @behaviour Presto.Table.DataStorage
   use Properties, otp_app: :definition_presto
+  require Logger
 
   getter(:s3_bucket, required: true)
   getter(:s3_path, required: true)
 
   @impl Presto.Table.DataStorage
   def upload(file_path, upload_path) do
+    Logger.debug(fn -> "#{__MODULE__}: uploading file #{file_path} to #{upload_path}" end)
+
     file_path
     |> ExAws.S3.Upload.stream_file()
     |> ExAws.S3.upload(s3_bucket(), "#{s3_path()}/#{upload_path}")
@@ -34,25 +37,31 @@ defmodule Presto.Table.DataStorage.S3 do
 
   @impl Presto.Table.DataStorage
   def delete(path, opts) do
-    stream =
-      s3_bucket()
-      |> ExAws.S3.list_objects(prefix: "#{s3_path()}/#{path}/")
-      |> ExAws.stream!()
-      |> Stream.map(& &1.key)
+    with objects <- get_all_objects("#{s3_path()}/#{path}"),
+         {:ok, _} <- delete_all_objects(objects),
+         true <- Keyword.get(opts, :include_directory, false),
+         {:ok, _} <- delete_directory(path) do
+      :ok
+    else
+      false -> :ok
+      error_result -> error_result
+    end
+  end
 
-    ExAws.S3.delete_all_objects(s3_bucket(), stream)
+  defp get_all_objects(path) do
+    s3_bucket()
+    |> ExAws.S3.list_objects(prefix: path)
+    |> ExAws.stream!()
+    |> Stream.map(& &1.key)
+  end
+
+  defp delete_all_objects(objects) do
+    ExAws.S3.delete_all_objects(s3_bucket(), objects)
     |> ExAws.request()
-    |> Ok.map(fn _ ->
-      case Keyword.get(opts, :include_directory, false) do
-        true -> delete_directory(path)
-        false -> :ok
-      end
-    end)
   end
 
   defp delete_directory(path) do
     ExAws.S3.delete_object(s3_bucket(), "#{s3_path()}/#{path}/")
     |> ExAws.request()
-    |> Ok.map(fn _ -> :ok end)
   end
 end

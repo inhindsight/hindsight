@@ -4,6 +4,7 @@ defmodule PlatformRunner.EndToEndTest do
 
   import AssertAsync
   import Definition, only: [identifier: 1]
+
   alias PlatformRunner.{BroadcastClient, AcquireClient}
 
   @kafka [localhost: 9092]
@@ -72,7 +73,7 @@ defmodule PlatformRunner.EndToEndTest do
               ),
             destination: "e2e_csv_broadcast"
           ),
-          Load.Persist.new!(
+          Load.new!(
             id: "e2e-csv-persist-1",
             dataset_id: "e2e-csv-ds",
             subset_id: "csv-subset",
@@ -81,7 +82,11 @@ defmodule PlatformRunner.EndToEndTest do
                 endpoints: [localhost: 9092],
                 name: "e2e-csv-gather"
               ),
-            destination: "e2e__csv"
+            destination:
+              Presto.Table.new!(
+                url: "http://localhost:8080",
+                name: "e2e__csv"
+              )
           )
         ]
       )
@@ -265,7 +270,7 @@ defmodule PlatformRunner.EndToEndTest do
 
     test "persisted" do
       load =
-        Load.Persist.new!(
+        Load.new!(
           id: "e2e-json-persist-1",
           dataset_id: "e2e-json-ds",
           subset_id: "json-subset",
@@ -274,11 +279,15 @@ defmodule PlatformRunner.EndToEndTest do
               endpoints: [localhost: 9092],
               name: "e2e-json-gather"
             ),
-          destination: "e2e__json"
+          destination:
+            Presto.Table.new!(
+              url: "http://localhost:8080",
+              name: "e2e__json"
+            )
         )
 
       Persist.Application.instance()
-      |> Events.send_load_persist_start("e2e-json", load)
+      |> Events.send_load_start("e2e-json", load)
 
       session =
         Prestige.new_session(
@@ -442,7 +451,7 @@ defmodule PlatformRunner.EndToEndTest do
       |> Events.send_transform_define("e2e-push-json", transform)
 
       persist =
-        Load.Persist.new!(
+        Load.new!(
           id: "e2e-push-persist-1",
           dataset_id: "e2e-push-ds",
           subset_id: "e2e-push-ss",
@@ -451,11 +460,15 @@ defmodule PlatformRunner.EndToEndTest do
               endpoints: [localhost: 9092],
               name: "e2e-push-gather"
             ),
-          destination: "e2e_push_ds"
+          destination:
+            Presto.Table.new!(
+              url: "http://localhost:8080",
+              name: "e2e_push_ds"
+            )
         )
 
       Persist.Application.instance()
-      |> Events.send_load_persist_start("e2e-push-json", persist)
+      |> Events.send_load_start("e2e-push-json", persist)
 
       Process.sleep(5_000)
 

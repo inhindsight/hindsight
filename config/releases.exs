@@ -53,6 +53,14 @@ config :dlq, Dlq.Server,
   endpoints: kafka_endpoints,
   topic: "dead-letter-queue"
 
+config :definition_presto, Presto.Table.Destination,
+  catalog: "hive",
+  user: "hindsight"
+
+config :definition_presto, Presto.Table.DataStorage.S3,
+  s3_bucket: System.get_env("BUCKET_NAME", "kdp-cloud-storage"),
+  s3_path: "hive-s3"
+
 # SERVICE_RECEIVE
 config :service_receive, Receive.Application,
   kafka_endpoints: kafka_endpoints,
@@ -186,12 +194,6 @@ config :service_persist, Persist.Application,
     dispatcher: Brook.Dispatcher.Noop,
     event_processing_timeout: 20_000
   ]
-
-config :service_persist, Persist.TableManager.Presto, Keyword.put(presto_db, :user, "hindsight")
-
-config :service_persist, Persist.DataStorage.S3,
-  s3_bucket: System.get_env("BUCKET_NAME", "kdp-cloud-storage"),
-  s3_path: "hive-s3"
 
 config :service_persist, Persist.Event.Handler, endpoints: kafka_endpoints
 

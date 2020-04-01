@@ -34,6 +34,8 @@ defmodule Presto.Table.Destination do
   end
 
   def init({table, context}) do
+    Logger.debug(fn -> "#{__MODULE__}: init with #{inspect(table)} - #{inspect(context)}" end)
+
     state = %{
       table: table,
       context: context,
