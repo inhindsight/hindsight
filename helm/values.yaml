@@ -71,17 +71,17 @@ securityContext: {}
 ingress:
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-issuer"
   host: ""
   tls:
-    hosts:
-      - "prod.agnosticdataengine.com"
-    secretName: "hindsight-tls-key"
+    - hosts:
+        - "prod.agnosticdataengine.com"
+      secretName: "acme-cert"
   paths:
     - name: acquire
       path: "/api/v[0-9]+/data/.*"
     - name: broadcast
       path: "/socket/websocket"
-  tls: []
 
 resources: {}
 nodeSelector: {}
