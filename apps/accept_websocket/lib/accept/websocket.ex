@@ -1,4 +1,13 @@
 defmodule Accept.Websocket do
+  @moduledoc """
+  A WebSocket connection for data being pushed to Hindsight.
+
+  ## Configuration
+  * `path` - Required. Path of WebSocket endpoint.
+  * `port` - Required. Port on which the WebSocket can be reached.
+  * `idle_timeout` - Timeout in milliseconds. Defaults to 3 minutes.
+  * `hibernate` - Defaults to false.
+  """
   use Definition, schema: Accept.Websocket.V1
 
   @derive Jason.Encoder

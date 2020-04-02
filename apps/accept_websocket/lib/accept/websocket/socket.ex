@@ -1,7 +1,8 @@
 defmodule Accept.Websocket.Socket do
-  @moduledoc "TODO"
+  @moduledoc false
   use Accept.Socket
   require Logger
+
   @behaviour :cowboy_websocket
 
   @impl :cowboy_websocket
