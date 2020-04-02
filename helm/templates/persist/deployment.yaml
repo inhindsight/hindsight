@@ -32,6 +32,10 @@ spec:
             - persist/bin/persist
             - start
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: metrics
+              containerPort: 9568
+              protocol: TCP
           env:
             {{- if .Values.global.objectStore.minio.enabled }}
             - name: BUCKET_HOST

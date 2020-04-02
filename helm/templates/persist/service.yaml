@@ -1,21 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "hindsight.fullname" . }}-broadcast
+  name: {{ include "hindsight.fullname" . }}-persist
   labels:
-    app: hindsight-broadcast
+    app: hindsight-persist
     {{- include "hindsight.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.broadcast.service.type }}
+  type: ClusterIP
   ports:
-    - port: {{ .Values.broadcast.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
     - port: 9568
       targetPort: metrics
       protocol: TCP
       name: metrics
   selector:
-    app: hindsight-broadcast
+    app: hindsight-persist
     {{- include "hindsight.selectorLabels" . | nindent 4 }}

@@ -32,6 +32,10 @@ spec:
             - gather/bin/gather
             - start
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: metrics
+              containerPort: 9568
+              protocol: TCP
           env:
             - name: KAFKA_ENDPOINTS
               value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092
