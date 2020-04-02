@@ -13,7 +13,10 @@ defmodule Broadcast.Event.Handler do
 
   getter(:endpoints, required: true)
 
-  def handle_event(%Brook.Event{type: load_start(), data: %Load{destination: %Channel.Topic{}} = load}) do
+  def handle_event(%Brook.Event{
+        type: load_start(),
+        data: %Load{destination: %Channel.Topic{}} = load
+      }) do
     Logger.debug(fn ->
       "#{__MODULE__}: Received event #{load_start()}: #{inspect(load)}"
     end)
@@ -23,7 +26,10 @@ defmodule Broadcast.Event.Handler do
     :ok
   end
 
-  def handle_event(%Brook.Event{type: load_end(), data: %Load{destination: %Channel.Topic{}} = load}) do
+  def handle_event(%Brook.Event{
+        type: load_end(),
+        data: %Load{destination: %Channel.Topic{}} = load
+      }) do
     terminate_stream(load)
   end
 

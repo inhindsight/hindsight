@@ -24,6 +24,7 @@ defmodule Broadcast.Stream.SourceHandler do
 
   def handle_batch(batch, context) do
     Logger.debug(fn -> "#{__MODULE__} handle_batch - #{inspect(context)} - #{inspect(batch)}" end)
+
     unless context.assigns.load.destination.cache == 0 do
       Broadcast.Cache.add(context.assigns.cache, batch)
     end

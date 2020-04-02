@@ -2,13 +2,13 @@ defmodule Kafka.Topic do
   use Definition, schema: Kafka.Topic.V1
 
   @type t :: %__MODULE__{
-    version: integer(),
-    endpoints: [{atom, pos_integer}],
-    name: String.t(),
-    partitions: pos_integer,
-    partitioner: :default | :md5 | :random,
-    key_path: list
-  }
+          version: integer(),
+          endpoints: [{atom, pos_integer}],
+          name: String.t(),
+          partitions: pos_integer,
+          partitioner: :default | :md5 | :random,
+          key_path: list
+        }
 
   defstruct version: 1,
             endpoints: nil,

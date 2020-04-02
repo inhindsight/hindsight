@@ -10,7 +10,6 @@ defmodule Channel.Topic do
             cache: 0
 
   defimpl Destination do
-
     def start_link(_topic, _context) do
       raise "Not Implemented"
     end

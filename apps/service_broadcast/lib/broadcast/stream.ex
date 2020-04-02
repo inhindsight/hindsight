@@ -6,8 +6,6 @@ defmodule Broadcast.Stream do
 
   alias Broadcast.Transformations
 
-  import Definition, only: [identifier: 1]
-
   @max_retries get_config_value(:max_retries, default: 50)
 
   @type init_opts :: [

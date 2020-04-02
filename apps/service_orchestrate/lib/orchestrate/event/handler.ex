@@ -8,7 +8,7 @@ defmodule Orchestrate.Event.Handler do
       schedule_end: 0,
       dataset_delete: 0,
       send_transform_define: 3,
-      send_load_start: 3,
+      send_load_start: 3
     ]
 
   import Definition, only: [identifier: 1]
