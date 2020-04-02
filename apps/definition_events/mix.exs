@@ -32,7 +32,6 @@ defmodule DefinitionEvents.MixProject do
       {:definition_delete, in_umbrella: true},
       {:definition_extract, in_umbrella: true},
       {:definition_load, in_umbrella: true},
-      {:definition_load_broadcast, in_umbrella: true},
       {:definition_profile_update, in_umbrella: true},
       {:definition_schedule, in_umbrella: true},
       {:extractor, in_umbrella: true}
