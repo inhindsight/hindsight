@@ -47,9 +47,10 @@ defmodule Define.Event.Store do
 
   defp to_extract_view(event) do
     ExtractView.new!(%{
-      destination: event.destination,
-      dictionary: DefinitionSerialization.serialize(event.dictionary),
-      steps: DefinitionSerialization.serialize(event.steps)
+      source: DefinitionSerialization.serialize(event.source),
+      decoder: DefinitionSerialization.serialize(event.decoder),
+      destination: DefinitionSerialization.serialize(event.destination),
+      dictionary: DefinitionSerialization.serialize(event.dictionary)
     })
   end
 
@@ -62,8 +63,8 @@ defmodule Define.Event.Store do
 
   defp to_load_view(event) do
     LoadView.new!(%{
-      source: event.source,
-      destination: event.destination
+      source: DefinitionSerialization.serialize(event.source),
+      destination: DefinitionSerialization.serialize(event.destination)
     })
   end
 

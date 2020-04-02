@@ -1,16 +1,17 @@
 defmodule Define.Model.LoadView do
   use Definition, schema: Define.Model.LoadView.V1
+  alias Define.Model.{ModuleFunctionArgsView}
 
   @type t :: %__MODULE__{
           version: integer,
-          source: String.t(),
-          destination: String.t()
+          source: ModuleFunctionArgsView.t(),
+          destination: ModuleFunctionArgsView.t()
         }
 
   @derive Jason.Encoder
   defstruct version: 1,
-            source: "",
-            destination: ""
+    source: %ModuleFunctionArgsView{},
+    destination: %ModuleFunctionArgsView{}
 end
 
 defmodule Define.Model.LoadView.V1 do
@@ -20,8 +21,8 @@ defmodule Define.Model.LoadView.V1 do
   def s do
     schema(%Define.Model.LoadView{
       version: version(1),
-      source: string(),
-      destination: string()
+      source: of_struct(ModuleFunctionArgsView),
+      destination: of_struct(ModuleFunctionArgsView)
     })
   end
 end

@@ -66,23 +66,6 @@ defmodule StoreTest do
               ]
             }
           ],
-          steps: [
-            %ModuleFunctionArgsView{
-              struct_module_name: "Elixir.Extract.Http.Get",
-              args: [
-                %ArgumentView{
-                  key: "headers",
-                  type: "map",
-                  value: %{"content-length" => "5"}
-                },
-                %ArgumentView{
-                  key: "url",
-                  type: "string",
-                  value: "http://localhost/file.csv"
-                }
-              ]
-            }
-          ]
         },
         subset_id: "default"
       }
@@ -101,12 +84,8 @@ defmodule StoreTest do
         dictionary: [
           Dictionary.Type.String.new!(name: "letter")
         ],
-        steps: [
-          Extract.Http.Get.new!(
-            url: "http://localhost/file.csv",
-            headers: %{"content-length" => "5"}
-          )
-        ]
+        source: Source.Fake.new!(),
+        destination: Destination.Fake.new!()
       }
 
       Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
@@ -122,15 +101,21 @@ defmodule StoreTest do
           id: "load-1",
           dataset_id: "bdataset",
           subset_id: "default",
-          source: "akafkatopic",
-          destination: "storage__json"
+          source: Source.Fake.new!(),
+          destination: Destination.Fake.new!(),
         )
 
       Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
 
       expected =
         LoadView.new!(
-          source: "akafkatopic",
+          source: ModuleFunctionArgsView.new!(
+            struct_module_name: "Elixir.Source.Fake",
+            args: [
+              ArgumentView.new!(key: "id")
+            ]
+
+          ),
           destination: "storage__json",
           version: 1
         )
@@ -267,8 +252,7 @@ defmodule StoreTest do
                 }
               ]
             }
-          ],
-          steps: []
+          ]
         },
         load: %LoadView{
           source: "akafkatopic",
@@ -320,8 +304,7 @@ defmodule StoreTest do
                 }
               ]
             }
-          ],
-          steps: []
+          ]
         },
         version: 1
       }
@@ -360,11 +343,11 @@ defmodule StoreTest do
   end
 
   test "does not persist a persist when it is invalid" do
-    event = %Load.Persist{
+    event = %Load{
       id: "persist-1",
       dataset_id: "p-broken",
       subset_id: "default",
-      source: "akafkatopic",
+      source: Source.Fake.new!(),
       destination: nil
     }
 

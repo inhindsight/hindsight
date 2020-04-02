@@ -4,16 +4,18 @@ defmodule Define.Model.ExtractView do
 
   @type t :: %__MODULE__{
           version: integer,
-          destination: String.t(),
           dictionary: [ModuleFunctionArgsView.t()],
-          steps: [ModuleFunctionArgsView.t()]
+          decoder: ModuleFunctionArgsView.t(),
+          source: ModuleFunctionArgsView.t(),
+          destination: ModuleFunctionArgsView.t()
         }
 
   @derive Jason.Encoder
   defstruct version: 1,
-            destination: "",
             dictionary: [],
-            steps: []
+            decoder: %ModuleFunctionArgsView{},
+            source: %ModuleFunctionArgsView{},
+            destination: %ModuleFunctionArgsView{}
 end
 
 defmodule Define.Model.ExtractView.V1 do
@@ -23,9 +25,10 @@ defmodule Define.Model.ExtractView.V1 do
   def s do
     schema(%Define.Model.ExtractView{
       version: version(1),
-      destination: string(),
       dictionary: list(),
-      steps: list()
+      decoder: of_struct(ModuleFunctionArgsView),
+      source: of_struct(ModuleFunctionArgsView),
+      destination: of_struct(ModuleFunctionArgsView)
     })
   end
 end
