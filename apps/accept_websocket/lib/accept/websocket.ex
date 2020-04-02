@@ -3,6 +3,7 @@ defmodule Accept.Websocket do
   A WebSocket connection for data being pushed to Hindsight.
 
   ## Configuration
+
   * `path` - Required. Path of WebSocket endpoint.
   * `port` - Required. Port on which the WebSocket can be reached.
   * `idle_timeout` - Timeout in milliseconds. Defaults to 3 minutes.

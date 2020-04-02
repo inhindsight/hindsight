@@ -4,6 +4,7 @@ defmodule DeadLetter do
   objects should be written to the dead-letter-queue through `dlq`.
 
   ## Configuration
+
   * `dataset_id` - Required.
   * `subset_id` - Required.
   * `app_name` - Required. Atom or string name for application that produced the error.
