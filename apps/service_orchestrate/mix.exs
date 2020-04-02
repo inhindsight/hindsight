@@ -31,6 +31,7 @@ defmodule Orchestrate.MixProject do
       {:elsa, "~> 0.12", override: true},
       {:gen_stage, "~> 1.0", override: true},
       {:extractor, in_umbrella: true},
+      {:metrics_reporter, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:quantum, "~> 2.3"},
       {:timex, "~> 3.0"},

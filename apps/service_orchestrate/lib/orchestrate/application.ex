@@ -9,6 +9,7 @@ defmodule Orchestrate.Application do
   def start(_type, _args) do
     children =
       [
+        Orchestrate.MetricsReporter,
         Orchestrate.Scheduler,
         brook()
       ]

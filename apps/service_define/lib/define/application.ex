@@ -3,6 +3,7 @@ defmodule Define.Application do
 
   def start(_type, _args) do
     children = [
+      Define.MetricsReporter,
       DefineWeb.Endpoint
     ]
 

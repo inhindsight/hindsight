@@ -11,6 +11,7 @@ defmodule Profile.Application do
       [
         Profile.Feed.Registry,
         Profile.Feed.Supervisor,
+        Profile.MetricsReporter,
         brook(),
         init()
       ]

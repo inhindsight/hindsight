@@ -29,12 +29,16 @@ defmodule Define.MixProject do
 
   defp deps do
     [
-      {:phoenix, "~> 1.4.15"},
-      {:phoenix_pubsub, "~> 1.1"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
+      {:metrics_reporter, in_umbrella: true},
+      {:phoenix, "~> 1.4.15"},
+      {:phoenix_pubsub, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
+      {:properties, in_umbrella: true},
+
+      # Dev/Test dependencies
+      {:phoenix_live_reload, "~> 1.2", only: [:dev]},
       {:testing, in_umbrella: true, only: [:test]}
     ]
   end

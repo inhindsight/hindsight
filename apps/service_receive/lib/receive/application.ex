@@ -11,6 +11,7 @@ defmodule Receive.Application do
       [
         Receive.Accept.Registry,
         Receive.Accept.Supervisor,
+        Receive.MetricsReporter,
         brook(),
         init()
       ]

@@ -21,6 +21,7 @@ defmodule MetricsReporter do
     quote location: :keep do
       use Supervisor
       import Telemetry.Metrics
+      import MetricsReporter.Packages
       @behaviour MetricsReporter
 
       def start_link(_args) do

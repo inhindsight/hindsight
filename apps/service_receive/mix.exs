@@ -35,6 +35,7 @@ defmodule Receive.MixProject do
       {:elsa, "~> 0.12", override: true},
       {:extractor, in_umbrella: true},
       {:initializer, in_umbrella: true},
+      {:metrics_reporter, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:transformer, in_umbrella: true},
 
