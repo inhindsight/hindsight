@@ -27,7 +27,7 @@ defmodule Gather.Extraction do
     Logger.debug(fn -> "#{__MODULE__}: Started extraction: #{inspect(extract)}" end)
 
     case extract(extract) do
-      {:ok, _topic} ->
+      {:ok, _destination_pid} ->
         Logger.debug(fn -> "#{__MODULE__}: Extraction Completed: #{inspect(extract)}" end)
         Brook.Event.send(Gather.Application.instance(), extract_end(), "gather", extract)
         {:stop, :normal, state}
@@ -40,9 +40,9 @@ defmodule Gather.Extraction do
 
   @retry with: exponential_backoff(@initial_delay) |> take(@max_tries)
   defp extract(extract) do
-    with {:ok, topic} <- start_destination(extract),
-         :ok <- do_extract(topic, extract) do
-      {:ok, topic}
+    with {:ok, pid} <- start_destination(extract),
+         :ok <- do_extract(pid, extract) do
+      {:ok, pid}
     end
   end
 
@@ -58,7 +58,7 @@ defmodule Gather.Extraction do
     )
   end
 
-  defp do_extract(topic, extract) do
+  defp do_extract(destination_pid, extract) do
     Gather.Extraction.SourceStream.stream(extract)
     |> decode(extract)
     |> Ok.each(fn chunk ->
@@ -66,14 +66,14 @@ defmodule Gather.Extraction do
         Enum.map(chunk, &lowercase_fields/1)
         |> normalize(extract)
 
-      Destination.write(topic, messages)
+      Destination.write(extract.destination, destination_pid, messages)
     end)
   rescue
     e ->
       warn_extract_failure(extract, e)
       {:error, e}
   after
-    Destination.stop(topic)
+    Destination.stop(extract.destination, destination_pid)
   end
 
   defp normalize(messages, extract) do

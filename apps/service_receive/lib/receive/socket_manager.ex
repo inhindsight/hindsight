@@ -24,9 +24,9 @@ defmodule Receive.SocketManager do
     Logger.debug(fn -> "#{__MODULE__}: initialized for #{inspect(accept)}" end)
 
     with {:ok, context} <- destination_context(accept),
-         {:ok, destination} <- Destination.start_link(accept.destination, context),
-         {:ok, socket_pid} <- start_socket(%{accept | destination: destination}) do
-      Ok.ok(%{destination: destination, socket_pid: socket_pid})
+         {:ok, destination_pid} <- Destination.start_link(accept.destination, context),
+         {:ok, socket_pid} <- start_socket(accept, destination_pid) do
+      Ok.ok(%{destination_pid: destination_pid, socket_pid: socket_pid})
     else
       {:error, reason} ->
         Logger.warn(fn -> "#{__MODULE__}: Stopping : #{inspect(reason)}" end)
@@ -41,31 +41,17 @@ defmodule Receive.SocketManager do
   end
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
-  defp start_socket(accept) do
+  defp start_socket(accept, destination_pid) do
     {mod, fun, args} =
       Accept.Connection.connect(
         accept.connection,
-        writer: &Destination.write(accept.destination, &1),
+        writer: &Destination.write(accept.destination, destination_pid, &1),
         batch_size: batch_size(),
         timeout: timeout(),
         name: Receive.Accept.Registry.via(:"#{identifier(accept)}_socket")
       )
 
     apply(mod, fun, [args])
-  end
-
-  @retry with: exponential_backoff(100) |> take(@max_retries)
-  defp start_socket(accept, writer) do
-    {socket_module, start_function, args} =
-      Accept.Connection.connect(
-        accept.connection,
-        writer: writer,
-        batch_size: batch_size(),
-        timeout: timeout(),
-        name: Receive.Accept.Registry.via(:"#{identifier(accept)}_socket")
-      )
-
-    apply(socket_module, start_function, [args])
   end
 
   defp destination_context(accept) do

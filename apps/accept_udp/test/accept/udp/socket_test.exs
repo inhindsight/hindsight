@@ -6,7 +6,8 @@ defmodule Accept.Udp.SocketTest do
     source_opts = [port: port]
 
     destination = Destination.Fake.new!()
-    writer = &Destination.write(destination, &1)
+    {:ok, destination_pid} = Destination.start_link(destination, [])
+    writer = &Destination.write(destination, destination_pid, &1)
 
     udp_opts = [
       port: port,

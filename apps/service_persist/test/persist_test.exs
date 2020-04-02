@@ -19,15 +19,15 @@ defmodule PersistTest do
         {:ok, table}
       end
 
-    allow Destination.write(any(), any()),
-      exec: fn table, messages ->
-        send(test, {:destination_write, table, messages})
+    allow Destination.write(any(), any(), any()),
+      exec: fn table, pid, messages ->
+        send(test, {:destination_write, table, pid, messages})
         :ok
       end
 
-    allow Destination.stop(any()),
-      exec: fn table ->
-        send(test, {:destination_stop, table})
+    allow Destination.stop(any(), any()),
+      exec: fn table, pid ->
+        send(test, {:destination_stop, table, pid})
         :ok
       end
 
@@ -84,7 +84,7 @@ defmodule PersistTest do
 
     Source.Fake.inject_messages(load.source, messages)
 
-    assert_receive {:destination_write, _, [%{"fullname" => "bob", "age" => 12}]}
+    assert_receive {:destination_write, _, _, [%{"fullname" => "bob", "age" => 12}]}
 
     assert load == Persist.Load.Store.get!(load.dataset_id, load.subset_id)
   end

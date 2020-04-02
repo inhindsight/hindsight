@@ -1,9 +1,9 @@
-defmodule DefinitionLoadBroadcast.MixProject do
+defmodule DefinitionChannel.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :definition_load_broadcast,
+      app: :definition_channel,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -24,7 +24,7 @@ defmodule DefinitionLoadBroadcast.MixProject do
   defp deps do
     [
       {:definition, in_umbrella: true},
-      {:protocol_source, in_umbrella: true}
+      {:protocol_destination, in_umbrella: true}
     ]
   end
 end

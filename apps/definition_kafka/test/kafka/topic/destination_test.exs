@@ -23,45 +23,36 @@ defmodule Kafka.Topic.DestinationTest do
   end
 
   describe "start_link/2" do
-    test "returns topic struct with pid" do
-      topic = Kafka.Topic.new!(endpoints: @endpoints, name: "noop")
-      {:ok, topic} = Destination.start_link(topic, context([]))
-
-      assert is_pid(topic.pid)
-
-      assert_down(topic.pid)
-    end
-
     test "creates topic in Kafka" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "create-me")
-      {:ok, topic} = Destination.start_link(topic, context([]))
+      {:ok, pid} = Destination.start_link(topic, context([]))
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
       end
 
-      assert_down(topic.pid)
+      assert_down(pid)
     end
 
     test "creates topic with configurable number of partitions" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "partitioned", partitions: 3)
-      {:ok, topic} = Destination.start_link(topic, context([]))
+      {:ok, pid} = Destination.start_link(topic, context([]))
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
         assert Elsa.Util.partition_count(@endpoints, topic.name) == 3
       end
 
-      assert_down(topic.pid)
+      assert_down(pid)
     end
   end
 
   describe "write/2" do
     test "produces messages to Kafka" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-me")
-      {:ok, topic} = Destination.start_link(topic, context([]))
+      {:ok, pid} = Destination.start_link(topic, context([]))
 
-      assert :ok = Destination.write(topic, ["one", "two", "three"])
+      assert :ok = Destination.write(topic, pid, ["one", "two", "three"])
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
@@ -69,14 +60,14 @@ defmodule Kafka.Topic.DestinationTest do
         assert ["one", "two", "three"] == Enum.map(messages, & &1.value)
       end
 
-      assert_down(topic.pid)
+      assert_down(pid)
     end
 
     test "encodes maps to JSON before producing to Kafka" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "write-maps")
-      {:ok, topic} = Destination.start_link(topic, context([]))
+      {:ok, pid} = Destination.start_link(topic, context([]))
 
-      assert :ok = Destination.write(topic, [%{one: 1}, %{two: 2}])
+      assert :ok = Destination.write(topic, pid, [%{one: 1}, %{two: 2}])
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
@@ -86,15 +77,15 @@ defmodule Kafka.Topic.DestinationTest do
                  Enum.map(messages, &{&1.key, &1.value})
       end
 
-      assert_down(topic.pid)
+      assert_down(pid)
     end
 
     test "keys message off topic's key_path field" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "key-me", key_path: ["a", "b"])
-      {:ok, topic} = Destination.start_link(topic, context([]))
+      {:ok, pid} = Destination.start_link(topic, context([]))
 
       input = [%{"a" => %{"b" => "1"}}, %{"a" => %{"b" => "2"}}]
-      assert :ok = Destination.write(topic, input)
+      assert :ok = Destination.write(topic, pid, input)
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
@@ -105,22 +96,22 @@ defmodule Kafka.Topic.DestinationTest do
                  Enum.map(messages, &{&1.key, &1.value})
       end
 
-      assert_down(topic.pid)
+      assert_down(pid)
     end
   end
 
   describe "stop/1" do
     test "stops the destination topic process" do
       topic = Kafka.Topic.new!(endpoints: @endpoints, name: "stop-me")
-      {:ok, topic} = Destination.start_link(topic, context([]))
+      {:ok, pid} = Destination.start_link(topic, context([]))
 
       assert_async debug: true do
         assert Elsa.topic?(@endpoints, topic.name)
       end
 
-      assert :ok = Destination.stop(topic)
+      assert :ok = Destination.stop(topic, pid)
 
-      refute Process.alive?(topic.pid)
+      refute Process.alive?(pid)
     end
   end
 

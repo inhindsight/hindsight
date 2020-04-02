@@ -1,12 +1,12 @@
 defprotocol Destination do
-  @spec start_link(t, Destination.Context.t()) :: {:ok, t} | {:error, term}
+  @spec start_link(t, Destination.Context.t()) :: GenServer.on_start()
   def start_link(t, context)
 
-  @spec write(t, messages :: list(term)) :: :ok | {:error, term}
-  def write(t, messages)
+  @spec write(t, GenServer.server(), messages :: list(term)) :: :ok | {:error, term}
+  def write(t, server, messages)
 
-  @spec stop(t) :: :ok
-  def stop(t)
+  @spec stop(t, GenServer.server()) :: :ok
+  def stop(t, server)
 
   @spec delete(t) :: :ok | {:error, term}
   def delete(t)

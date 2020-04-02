@@ -50,12 +50,12 @@ defmodule Orchestrate.Event.HandlerTest do
                 name: "table-1"
               )
           ),
-          Load.Broadcast.new!(
+          Load.new!(
             id: "broadcast-1",
             dataset_id: "ds1",
             subset_id: "kpi",
             source: Source.Fake.new!(),
-            destination: "ds1"
+            destination: Channel.Topic.new!(name: "ds1")
           )
         ]
       )

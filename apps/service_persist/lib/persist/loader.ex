@@ -27,9 +27,9 @@ defmodule Persist.Loader do
     with {:ok, transform} when not is_nil(transform) <-
            Transformations.get(load.dataset_id, load.subset_id),
          {:ok, dictionary} <- transform_dictionary(transform),
-         {:ok, destination} <- start_destination(load, dictionary),
-         {:ok, source_pid} <- start_source(load, dictionary, transform, destination) do
-      {:ok, %{load: load, destination: destination, source_pid: source_pid}}
+         {:ok, destination_pid} <- start_destination(load, dictionary),
+         {:ok, source_pid} <- start_source(load, dictionary, transform, destination_pid) do
+      {:ok, %{load: load, destination_pid: destination_pid, source_pid: source_pid}}
     else
       {:ok, nil} ->
         Logger.warn(fn ->
@@ -53,7 +53,7 @@ defmodule Persist.Loader do
     end)
 
     Source.stop(state.load.source, state.source_pid)
-    Destination.stop(state.destination)
+    Destination.stop(state.load.destination, state.destination_pid)
     {:stop, reason, state}
   end
 
@@ -62,7 +62,7 @@ defmodule Persist.Loader do
   end
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
-  defp start_source(load, dictionary, transform, destination) do
+  defp start_source(load, dictionary, transform, destination_pid) do
     with {:ok, transformer} <- create_transformer(transform) do
       context =
         Source.Context.new!(
@@ -73,7 +73,8 @@ defmodule Persist.Loader do
           subset_id: load.subset_id,
           assigns: %{
             transformer: transformer,
-            destination: destination
+            destination: load.destination,
+            destination_pid: destination_pid
           }
         )
 

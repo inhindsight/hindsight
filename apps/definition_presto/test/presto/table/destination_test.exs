@@ -62,10 +62,10 @@ defmodule Presto.Table.DestinationTest do
   end
 
   test "stop will stop the process", %{destination: destination, context: context} do
-    assert {:ok, destination} = Destination.start_link(destination, context)
-    assert Process.alive?(destination.pid)
+    assert {:ok, pid} = Destination.start_link(destination, context)
+    assert Process.alive?(pid)
 
-    assert :ok = Destination.stop(destination)
-    refute Process.alive?(destination.pid)
+    assert :ok = Destination.stop(destination, pid)
+    refute Process.alive?(pid)
   end
 end

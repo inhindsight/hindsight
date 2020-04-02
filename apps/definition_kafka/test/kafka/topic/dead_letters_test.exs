@@ -49,9 +49,9 @@ defmodule Kafka.Topic.DestinationDeadLettersTest do
         )
 
       topic = Kafka.Topic.new!(endpoints: [foo: 123], name: "write-errors")
-      {:ok, topic} = Destination.start_link(topic, context)
+      {:ok, pid} = Destination.start_link(topic, context)
 
-      assert :ok = Destination.write(topic, [%{one: 1}, ~r/no/, %{two: 2}])
+      assert :ok = Destination.write(topic, pid, [%{one: 1}, ~r/no/, %{two: 2}])
       assert_receive {:telemetry_event, [:destination, :kafka, :write], %{count: 2}, _, _}, 5_000
 
       assert_async do
