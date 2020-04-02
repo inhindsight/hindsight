@@ -14,7 +14,6 @@ defmodule Broadcast.Application do
         Broadcast.Stream.Supervisor,
         Broadcast.MetricsReporter,
         BroadcastWeb.Endpoint,
-        dlq(),
         brook(),
         init()
       ]
@@ -28,13 +27,6 @@ defmodule Broadcast.Application do
     case get_config_value(:init?, default: true) do
       true -> Broadcast.Init
       false -> []
-    end
-  end
-
-  defp dlq() do
-    case get_config_value(:kafka_endpoints) do
-      nil -> []
-      endpoints -> {Broadcast.DLQ, endpoints: endpoints}
     end
   end
 

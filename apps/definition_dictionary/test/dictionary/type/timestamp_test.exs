@@ -2,24 +2,6 @@ defmodule Dictionary.Type.TimestampTest do
   use ExUnit.Case
   import Checkov
 
-  describe "new/1" do
-    data_test "validates #{inspect(field)} against bad input" do
-      assert {:error, [%{input: value, path: [field]} | _]} =
-               put_in(%{}, [field], value)
-               |> Dictionary.Type.Timestamp.new()
-
-      where [
-        [:field, :value],
-        [:version, "1"],
-        [:name, ""],
-        [:name, nil],
-        [:description, nil],
-        [:format, ""],
-        [:format, nil]
-      ]
-    end
-  end
-
   test "can be encoded to json" do
     expected = %{
       "version" => 1,

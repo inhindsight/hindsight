@@ -1,6 +1,5 @@
 defmodule ReceiveTest do
   use ExUnit.Case
-  import Mox
   import Events, only: [accept_start: 0, accept_end: 0]
   import AssertAsync
   require Temp.Env
@@ -12,35 +11,20 @@ defmodule ReceiveTest do
     %{
       app: :service_receive,
       key: Receive.SocketManager,
-      set: [writer: Receive.WriterMock, batch_size: 10]
+      set: [batch_size: 10]
     }
   ])
-
-  setup :set_mox_global
-  setup :verify_on_exit!
 
   describe "Receive Udp" do
     setup do
       start_supervised({SourceUdpSocket, port: 6789, schedule: true, interval: 100})
-      {:ok, dummy_writer} = start_supervised({Agent, fn -> :dummy_writer end})
-      test = self()
-
-      Receive.WriterMock
-      |> stub(:start_link, fn args ->
-        send(test, {:start_link, args})
-        {:ok, dummy_writer}
-      end)
-      |> stub(:write, fn server, messages, opts ->
-        send(test, {:write, server, messages, opts})
-        :ok
-      end)
 
       accept =
         Accept.new!(
           id: "accept-id-1",
           dataset_id: "test-ds1",
           subset_id: "test-ss1",
-          destination: "test-ds1",
+          destination: Destination.Fake.new!(),
           connection: Accept.Udp.new!(port: 6789)
         )
 
@@ -48,7 +32,7 @@ defmodule ReceiveTest do
         Receive.Accept.Supervisor.kill_all_children()
       end)
 
-      [accept: accept, dummy: dummy_writer]
+      [accept: accept]
     end
 
     setup do
@@ -59,12 +43,12 @@ defmodule ReceiveTest do
       :ok
     end
 
-    test "receives data from source", %{accept: accept, dummy: dummy} do
+    test "receives data from source", %{accept: accept} do
       Brook.Test.send(@instance, accept_start(), "testing", accept)
 
-      assert_receive {:write, ^dummy, messages, [dataset_id: "test-ds1", subset_id: "test-ss1"]},
-                     5_000
+      assert_receive {:destination_start_link, id}, 5_000
 
+      assert_receive {:destination_write, messages}, 5_000
       assert length(messages) == 10
 
       assert accept == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
@@ -84,25 +68,12 @@ defmodule ReceiveTest do
 
   describe "Receive Websocket" do
     setup do
-      {:ok, dummy_writer} = start_supervised({Agent, fn -> :dummy_writer end})
-      test = self()
-
-      Receive.WriterMock
-      |> stub(:start_link, fn args ->
-        send(test, {:start_link, args})
-        {:ok, dummy_writer}
-      end)
-      |> stub(:write, fn server, messages, opts ->
-        send(test, {:write, server, messages, opts})
-        :ok
-      end)
-
       accept =
         Accept.new!(
           id: "accept-id-2",
           dataset_id: "test-ds2",
           subset_id: "test-ss2",
-          destination: "test-ds2",
+          destination: Destination.Fake.new!(),
           connection: Accept.Websocket.new!(port: 6790, path: "/receive/ws")
         )
 
@@ -110,7 +81,7 @@ defmodule ReceiveTest do
         Receive.Accept.Supervisor.kill_all_children()
       end)
 
-      [accept: accept, dummy: dummy_writer]
+      [accept: accept]
     end
 
     setup do
@@ -121,7 +92,7 @@ defmodule ReceiveTest do
       :ok
     end
 
-    test "receives data from source", %{accept: accept, dummy: dummy} do
+    test "receives data from source", %{accept: accept} do
       Brook.Test.send(@instance, accept_start(), "testing", accept)
 
       {:ok, client} =
@@ -129,14 +100,20 @@ defmodule ReceiveTest do
 
       assert_async do
         Enum.map(0..10, fn int -> SourceWebsocket.push(client, "msg#{int}") end)
-
-        assert_receive {:write, ^dummy, messages, [dataset_id: "test-ds2", subset_id: "test-ss2"]}
+        assert_receive {:destination_write, messages}
 
         assert length(messages) == 10
         refute "msg10" in messages
 
         assert accept == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
       end
+
+      flush_queue(client)
     end
+  end
+
+  defp flush_queue(client) do
+    stop_supervised(client)
+    Process.sleep(1_000)
   end
 end

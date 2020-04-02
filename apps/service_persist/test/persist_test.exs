@@ -1,36 +1,36 @@
 defmodule PersistTest do
   use ExUnit.Case
-  import Mox
   import AssertAsync
   import Events
   require Temp.Env
+  use Placebo
+
+  import Definition, only: [identifier: 1]
 
   @instance Persist.Application.instance()
   @moduletag capture_log: true
 
-  Temp.Env.modify([
-    %{
-      app: :service_persist,
-      key: Persist.Load.Broadway,
-      update: fn config ->
-        config
-        |> Keyword.put(:dlq, Persist.DLQMock)
-        |> Keyword.put(:configuration, BroadwayConfigurator.Dummy)
-      end
-    },
-    %{
-      app: :service_persist,
-      key: Persist.Loader,
-      update: fn config ->
-        Keyword.put(config, :writer, Writer.PrestoMock)
-      end
-    }
-  ])
-
-  setup :set_mox_global
-  setup :verify_on_exit!
-
   setup do
+    test = self()
+
+    allow Destination.start_link(any(), any()),
+      exec: fn table, context ->
+        send(test, {:destination_start_link, table, context})
+        {:ok, table}
+      end
+
+    allow Destination.write(any(), any()),
+      exec: fn table, messages ->
+        send(test, {:destination_write, table, messages})
+        :ok
+      end
+
+    allow Destination.stop(any()),
+      exec: fn table ->
+        send(test, {:destination_stop, table})
+        :ok
+      end
+
     Brook.Test.clear_view_state(@instance, "transformations")
 
     on_exit(fn ->
@@ -40,9 +40,7 @@ defmodule PersistTest do
     :ok
   end
 
-  test "load:persist:start starts writing to presto" do
-    test = self()
-
+  test "load:start starts writing to presto" do
     transform =
       Transform.new!(
         id: "transform-1",
@@ -57,52 +55,41 @@ defmodule PersistTest do
         ]
       )
 
-    {:ok, dictionary} = Transformer.transform_dictionary(transform.steps, transform.dictionary)
-
     Brook.Test.with_event(@instance, fn ->
       Persist.Transformations.persist(transform)
     end)
 
     load =
-      Load.Persist.new!(
+      Load.new!(
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "example",
-        source: "topic-example",
-        destination: "ds1_example"
+        source: Source.Fake.new!(),
+        destination:
+          Presto.Table.new!(
+            url: "http://localhost:8080",
+            name: "table_testing"
+          )
       )
 
-    Writer.PrestoMock
-    |> stub(:start_link, fn _args -> {:ok, :writer_presto_pid} end)
-    |> stub(:write, fn :writer_presto_pid, msgs, opts ->
-      send(test, {:write, msgs, opts})
-      :ok
-    end)
-
-    Brook.Test.send(@instance, load_persist_start(), "testing", load)
+    Brook.Test.send(@instance, load_start(), "testing", load)
 
     assert_async max_tries: 20 do
-      assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
+      assert :undefined != Persist.Load.Registry.whereis(:"#{identifier(load)}")
     end
 
-    broadway = Process.whereis(:broadway_dummy)
-
     messages = [
-      %{value: %{"name" => "bob", "age" => 12} |> Jason.encode!()}
+      %{"name" => "bob", "age" => 12}
     ]
 
-    ref = Broadway.test_messages(broadway, messages)
+    Source.Fake.inject_messages(load.source, messages)
 
-    assert_receive {:write, [%{"fullname" => "bob", "age" => 12}], [dictionary: ^dictionary]}
-    assert_receive {:ack, ^ref, success, failed}
-    assert 1 == length(success)
+    assert_receive {:destination_write, _, [%{"fullname" => "bob", "age" => 12}]}
 
     assert load == Persist.Load.Store.get!(load.dataset_id, load.subset_id)
   end
 
-  test "load:persist:end stops broadway and marks load as done" do
-    test = self()
-
+  test "load:end stops source and marks load as done" do
     transform =
       Transform.new!(
         id: "transform-1",
@@ -120,32 +107,28 @@ defmodule PersistTest do
     end)
 
     load =
-      Load.Persist.new!(
+      Load.new!(
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "example",
-        source: "topic-example",
-        destination: "ds1_example",
-        schema: []
+        source: Source.Fake.new!(),
+        destination:
+          Presto.Table.new!(
+            url: "http://localhost:8080",
+            name: "table_b"
+          )
       )
 
-    Writer.PrestoMock
-    |> stub(:start_link, fn _args -> {:ok, :writer_presto_pid} end)
-    |> stub(:write, fn :writer_presto_pid, msgs, _opts ->
-      send(test, {:write, msgs})
-      :ok
-    end)
-
-    Brook.Test.send(@instance, load_persist_start(), "testing", load)
+    Brook.Test.send(@instance, load_start(), "testing", load)
 
     assert_async max_tries: 40, debug: true do
-      assert :undefined != Persist.Load.Registry.whereis(:"#{load.source}")
+      assert :undefined != Persist.Load.Registry.whereis(:"#{identifier(load)}")
     end
 
-    Brook.Test.send(@instance, load_persist_end(), "testing", load)
+    Brook.Test.send(@instance, load_end(), "testing", load)
 
     assert_async max_tries: 20 do
-      assert :undefined == Persist.Load.Registry.whereis(:"#{load.source}")
+      assert :undefined == Persist.Load.Registry.whereis(:"#{identifier(load)}")
     end
 
     assert true == Persist.Load.Store.done?(load)
@@ -155,18 +138,18 @@ defmodule PersistTest do
 
   test "gracefully handles load:persist:end with no start" do
     load =
-      Load.Persist.new!(
+      Load.new!(
         id: "persist-1",
         dataset_id: "ds1",
         subset_id: "example",
-        source: "topic-example",
-        destination: "ds1_example",
-        schema: [
-          %Dictionary.Type.String{name: "name"},
-          %Dictionary.Type.Integer{name: "age"}
-        ]
+        source: Source.Fake.new!(),
+        destination:
+          Presto.Table.new!(
+            url: "http://localhost:8080",
+            name: "table_c"
+          )
       )
 
-    Brook.Test.send(@instance, load_persist_end(), "testing", load)
+    Brook.Test.send(@instance, load_end(), "testing", load)
   end
 end

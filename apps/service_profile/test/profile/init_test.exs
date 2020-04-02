@@ -17,9 +17,10 @@ defmodule Profile.InitTest do
         id: "extract1",
         dataset_id: "ds1",
         subset_id: "sb1",
-        steps: [],
+        source: Source.Fake.new!(),
+        decoder: Decoder.Noop.new(),
         dictioanry: [],
-        destination: "topic1"
+        destination: Destination.Fake.new!()
       )
 
     extract2 =
@@ -27,9 +28,10 @@ defmodule Profile.InitTest do
         id: "extract2",
         dataset_id: "ds2",
         subset_id: "sb2",
-        steps: [],
+        source: Source.Fake.new!(),
+        decoder: Decoder.Noop.new(),
         dictioanry: [],
-        destination: "topic2"
+        destination: Destination.Fake.new!()
       )
 
     extract3 =
@@ -37,9 +39,10 @@ defmodule Profile.InitTest do
         id: "extract3",
         dataset_id: "ds3",
         subset_id: "sb3",
-        steps: [],
+        source: Source.Fake.new!(),
+        decoder: Decoder.Noop.new(),
         dictioanry: [],
-        destination: "topic3"
+        destination: Destination.Fake.new!()
       )
 
     Brook.Test.with_event(@instance, fn ->

@@ -5,6 +5,7 @@ defmodule Receive.Event.Handler do
 
   alias Receive.SocketManager
   import Events, only: [accept_start: 0, accept_end: 0, dataset_delete: 0]
+  import Definition, only: [identifier: 1]
 
   getter(:endpoints, required: true)
 
@@ -49,7 +50,7 @@ defmodule Receive.Event.Handler do
   end
 
   defp terminate_manager(%Accept{} = accept) do
-    case Receive.Accept.Registry.whereis(:"#{accept.destination}_manager") do
+    case Receive.Accept.Registry.whereis(:"#{identifier(accept)}_manager") do
       :undefined ->
         Logger.debug("No manager to delete for #{inspect(accept)}")
 

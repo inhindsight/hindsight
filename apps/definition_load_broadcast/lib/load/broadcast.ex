@@ -8,7 +8,7 @@ defmodule Load.Broadcast do
           id: uuid,
           dataset_id: String.t(),
           subset_id: String.t(),
-          source: String.t(),
+          source: Source.t(),
           destination: String.t(),
           cache: integer,
           config: map
@@ -34,7 +34,7 @@ defmodule Load.Broadcast.V1 do
       id: id(),
       dataset_id: required_string(),
       subset_id: required_string(),
-      source: required_string(),
+      source: impl_of(Source),
       destination: required_string(),
       cache: spec(is_integer()),
       config: spec(is_map())

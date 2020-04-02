@@ -20,8 +20,9 @@ defmodule OrchestrateTest do
             id: "extract-1",
             dataset_id: "ds1",
             subset_id: "kpi",
-            destination: "topic-1",
-            steps: [],
+            source: Source.Fake.new!(),
+            decoder: Decoder.Noop.new(),
+            destination: Destination.Fake.new!(),
             dictionary: []
           ),
         transform:
@@ -33,19 +34,22 @@ defmodule OrchestrateTest do
             steps: []
           ),
         load: [
-          Load.Persist.new!(
+          Load.new!(
             id: "persist-1",
             dataset_id: "ds1",
             subset_id: "kpi",
-            source: "topic-1",
-            destination: "table-1",
-            schema: []
+            source: Source.Fake.new!(),
+            destination:
+              Presto.Table.new!(
+                url: "http://localhost:8080",
+                name: "table-1"
+              )
           ),
           Load.Broadcast.new!(
             id: "broadcast-1",
             dataset_id: "ds1",
             subset_id: "kpi",
-            source: "topic-1",
+            source: Source.Fake.new!(),
             destination: "kpi"
           )
         ]

@@ -37,7 +37,7 @@ defmodule Accept do
           id: uuid,
           dataset_id: String.t(),
           subset_id: String.t(),
-          destination: String.t(),
+          destination: Destination.t(),
           connection: Accept.Connection.t()
         }
 
@@ -59,6 +59,7 @@ defmodule Accept.V1 do
       id: id(),
       dataset_id: required_string(),
       subset_id: required_string(),
+      destination: impl_of(Destination),
       connection: is_accept()
     })
   end

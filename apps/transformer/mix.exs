@@ -25,7 +25,7 @@ defmodule Transformer.MixProject do
 
   defp deps do
     [
-      {:transform_step, in_umbrella: true},
+      {:protocol_transform_step, in_umbrella: true},
       {:transform_wkt, in_umbrella: true},
       {:ok, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
