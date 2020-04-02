@@ -1,6 +1,6 @@
 defmodule Define.Model.ExtractView do
   use Definition, schema: Define.Model.ExtractView.V1
-  alias Define.Model.{ModuleFunctionArgsView}
+  alias Define.Model.ModuleFunctionArgsView
 
   @type t :: %__MODULE__{
           version: integer,
@@ -20,6 +20,7 @@ end
 
 defmodule Define.Model.ExtractView.V1 do
   use Definition.Schema
+  alias Define.Model.ModuleFunctionArgsView
 
   @impl true
   def s do

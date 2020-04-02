@@ -30,16 +30,12 @@ defmodule StoreTest do
           id: "extract-1",
           dataset_id: "adataset",
           subset_id: "default",
-          destination: "success",
+          source: Source.Fake.new!(),
+          destination: Destination.Fake.new!(),
           dictionary: [
             Dictionary.Type.String.new!(name: "letter")
           ],
-          steps: [
-            Extract.Http.Get.new!(
-              url: "http://localhost/file.csv",
-              headers: %{"content-length" => "5"}
-            )
-          ]
+          decoder: Decoder.Json.new!([]),
         )
 
       Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
@@ -65,7 +61,7 @@ defmodule StoreTest do
                 }
               ]
             }
-          ],
+          ]
         },
         subset_id: "default"
       }
@@ -102,21 +98,27 @@ defmodule StoreTest do
           dataset_id: "bdataset",
           subset_id: "default",
           source: Source.Fake.new!(),
-          destination: Destination.Fake.new!(),
+          destination: Destination.Fake.new!()
         )
 
       Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
 
       expected =
         LoadView.new!(
-          source: ModuleFunctionArgsView.new!(
-            struct_module_name: "Elixir.Source.Fake",
-            args: [
-              ArgumentView.new!(key: "id")
-            ]
-
-          ),
-          destination: "storage__json",
+          source:
+            ModuleFunctionArgsView.new!(
+              struct_module_name: "Elixir.Source.Fake",
+              args: [
+                ArgumentView.new!(key: "id", type: "string", value: "")
+              ]
+            ),
+          destination:
+            ModuleFunctionArgsView.new!(
+              struct_module_name: "Elixir.Destination.Fake",
+              args: [
+                ArgumentView.new!(key: "id", type: "string", value: "")
+              ]
+            ),
           version: 1
         )
 
@@ -209,9 +211,10 @@ defmodule StoreTest do
           id: "extract-1",
           dataset_id: "cDataset",
           subset_id: "default",
-          destination: "success",
+          source: Source.Fake.new!(),
+          destination: Destination.Fake.new!(),
+          decoder: Decoder.Json.new!([]),
           dictionary: [Dictionary.Type.String.new!(name: "person")],
-          steps: []
         )
 
       Brook.Test.with_event(@instance, fn ->
@@ -223,8 +226,8 @@ defmodule StoreTest do
           id: "load-1",
           dataset_id: "cDataset",
           subset_id: "default",
-          source: "akafkatopic",
-          destination: "storage__json"
+          source: Source.Fake.new!(),
+          destination: Destination.Fake.new!()
         )
 
       Brook.Test.with_event(@instance, fn ->
@@ -274,9 +277,10 @@ defmodule StoreTest do
           id: "extract-1",
           dataset_id: "my-id",
           subset_id: "default",
-          destination: "success",
+          source: Source.Fake.new!(),
+          destination: Destination.Fake.new!(),
+          decoder: Decoder.Json.new!([]),
           dictionary: [Dictionary.Type.String.new!(name: "person")],
-          steps: []
         )
 
       Brook.Test.with_event(@instance, fn ->
