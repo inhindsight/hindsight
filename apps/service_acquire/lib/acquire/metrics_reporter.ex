@@ -1,7 +1,5 @@
 defmodule Acquire.MetricsReporter do
-  use Properties, otp_app: :service_acquire
-  getter(:port, default: 9568)
-  use MetricsReporter, name: :acquire_metrics, port: port()
+  use MetricsReporter, name: :acquire_metrics, port: 9568
 
   @impl MetricsReporter
   def metrics() do

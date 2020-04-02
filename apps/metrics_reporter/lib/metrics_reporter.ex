@@ -30,7 +30,12 @@ defmodule MetricsReporter do
       @impl Supervisor
       def init(_args) do
         children = [
-          {TelemetryMetricsPrometheus, name: :"#{unquote(name)}_prometheus", port: unquote(port), metrics: metrics()}
+          TelemetryMetricsPrometheus.child_spec(
+            name: :"#{unquote(name)}_prometheus",
+            port: unquote(port),
+            metrics: metrics(),
+            plug_cowboy_opts: [ref: make_ref()]
+          )
         ]
 
         Supervisor.init(children, strategy: :one_for_one)

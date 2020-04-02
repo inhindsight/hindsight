@@ -1,7 +1,5 @@
 defmodule Broadcast.MetricsReporter do
-  use Properties, otp_app: :service_broadcast
-  getter(:port, default: 9569)
-  use MetricsReporter, name: :broadcast_metrics, port: port()
+  use MetricsReporter, name: :broadcast_metrics, port: 9569
 
   @impl MetricsReporter
   def metrics() do
