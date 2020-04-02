@@ -38,3 +38,5 @@ config :service_persist, Persist.Application,
   ]
 
 config :service_persist, Persist.Loader, max_retries: 3
+
+config :service_persist, Persist.MetricsReporter, port: 9574
