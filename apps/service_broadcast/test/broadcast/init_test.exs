@@ -14,19 +14,19 @@ defmodule Broadcast.InitTest do
     allow(Broadcast.Stream.Supervisor.start_child(any()), return: {:ok, :pid})
 
     loads = [
-      Load.Broadcast.new!(
+      Load.new!(
         id: "load1",
         dataset_id: "ds1",
         subset_id: "one",
         source: Source.Fake.new!(),
-        destination: "d1"
+        destination: Channel.Topic.new!(name: "d1")
       ),
-      Load.Broadcast.new!(
+      Load.new!(
         id: "load2",
         dataset_id: "ds2",
         subset_id: "two",
         source: Source.Fake.new!(),
-        destination: "d2"
+        destination: Channel.Topic.new!(name: "d2")
       )
     ]
 

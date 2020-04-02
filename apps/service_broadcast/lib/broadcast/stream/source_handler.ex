@@ -12,18 +12,19 @@ defmodule Broadcast.Stream.SourceHandler do
       load = context.assigns.load
 
       Logger.debug(fn ->
-        "#{__MODULE__}: Broadcasting to broadcast:#{load.destination}: #{
+        "#{__MODULE__}: Broadcasting to broadcast:#{load.destination.name}: #{
           inspect(transformed_value)
         }"
       end)
 
-      Endpoint.broadcast!("broadcast:#{load.destination}", "update", transformed_value)
+      Endpoint.broadcast!("broadcast:#{load.destination.name}", "update", transformed_value)
       Ok.ok(transformed_value)
     end
   end
 
   def handle_batch(batch, context) do
-    unless context.assigns.load.cache == 0 do
+    Logger.debug(fn -> "#{__MODULE__} handle_batch - #{inspect(context)} - #{inspect(batch)}" end)
+    unless context.assigns.load.destination.cache == 0 do
       Broadcast.Cache.add(context.assigns.cache, batch)
     end
 

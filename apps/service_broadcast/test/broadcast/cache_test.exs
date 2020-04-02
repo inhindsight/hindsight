@@ -6,13 +6,12 @@ defmodule Broadcast.CacheTest do
 
   setup do
     load =
-      Load.Broadcast.new!(
+      Load.new!(
         id: "broadcast-1",
         dataset_id: "ds1",
         subset_id: "sb1",
         source: Source.Fake.new!(),
-        destination: "channel-1",
-        cache: 10
+        destination: Channel.Topic.new!(name: "channel-1", cache: 10)
       )
 
     {:ok, pid} = start_supervised({Broadcast.Cache, load: load})

@@ -11,7 +11,7 @@ defmodule Broadcast.Stream do
   @max_retries get_config_value(:max_retries, default: 50)
 
   @type init_opts :: [
-          load: Load.Broadcast.t()
+          load: Load.t()
         ]
 
   def start_link(init_opts) do
@@ -61,7 +61,7 @@ defmodule Broadcast.Stream do
 
   @retry with: exponential_backoff(100) |> take(@max_retries)
   defp start_cache(load) do
-    cache_name = Broadcast.Cache.Registry.via(identifier(load))
+    cache_name = Broadcast.Cache.Registry.via(load.destination.name)
     Broadcast.Cache.start_link(name: cache_name, load: load)
   end
 
@@ -77,7 +77,7 @@ defmodule Broadcast.Stream do
         assigns: %{
           load: load,
           transformer: transformer,
-          cache: Broadcast.Cache.Registry.via(identifier(load)),
+          cache: Broadcast.Cache.Registry.via(load.destination.name),
           kafka: %{
             offset_reset_policy: :reset_to_latest
           }
