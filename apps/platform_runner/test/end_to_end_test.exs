@@ -252,7 +252,7 @@ defmodule PlatformRunner.EndToEndTest do
           destination: Channel.Topic.new!(name: "e2e_json_broadcast")
         )
 
-      assert {:ok, pid} = BroadcastClient.join(caller: self(), topic: load.destination)
+      assert {:ok, pid} = BroadcastClient.join(caller: self(), topic: load.destination.name)
 
       Broadcast.Application.instance()
       |> Events.send_load_start("e2e-json", load)

@@ -2,12 +2,10 @@ defmodule Extractor do
   use Definition, schema: Extractor.V1
 
   @type t :: %__MODULE__{
-          pid: pid,
           steps: list(Extract.Step.t())
         }
 
-  defstruct pid: nil,
-            steps: []
+  defstruct steps: []
 
   defimpl Source do
     defdelegate start_link(t, context), to: Extractor.Server
