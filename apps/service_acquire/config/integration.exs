@@ -5,5 +5,4 @@ config :service_acquire, AcquireWeb.Endpoint,
   server: true,
   check_origin: false
 
-config :service_acquire, Acquire.MetricsReporter,
-  port: 9569
+config :service_acquire, Acquire.MetricsReporter, port: 9569

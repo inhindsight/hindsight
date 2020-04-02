@@ -5,5 +5,4 @@ config :service_broadcast, BroadcastWeb.Endpoint,
   server: true,
   check_origin: false
 
-config :service_broadcast, Broadcast.MetricsReporter,
-  port: 9570
+config :service_broadcast, Broadcast.MetricsReporter, port: 9570
