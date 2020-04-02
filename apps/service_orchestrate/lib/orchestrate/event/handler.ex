@@ -9,7 +9,6 @@ defmodule Orchestrate.Event.Handler do
       dataset_delete: 0,
       send_transform_define: 3,
       send_load_start: 3,
-      send_load_broadcast_start: 3
     ]
 
   import Definition, only: [identifier: 1]
@@ -88,10 +87,6 @@ defmodule Orchestrate.Event.Handler do
 
   defp create_compaction_job(_schedule, _unknown_struct) do
     :ok
-  end
-
-  defp send_load_event(%Load.Broadcast{} = load) do
-    send_load_broadcast_start(@instance, "orchestrate", load)
   end
 
   defp send_load_event(load) do
