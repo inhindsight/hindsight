@@ -75,7 +75,7 @@ ingress:
   host: ""
   tls:
     - hosts:
-        - "prod.agnosticdataengine.com"
+        - ""
       secretName: "acme-cert"
   paths:
     - name: acquire
