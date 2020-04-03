@@ -35,7 +35,7 @@ defmodule StoreTest do
           dictionary: [
             Dictionary.Type.String.new!(name: "letter")
           ],
-          decoder: Decoder.Json.new!([]),
+          decoder: Decoder.Json.new!([])
         )
 
       Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
@@ -44,7 +44,15 @@ defmodule StoreTest do
         version: 1,
         dataset_id: "adataset",
         extract: %ExtractView{
-          destination: "success",
+          destination: %ModuleFunctionArgsView{
+            struct_module_name: "Elixir.Destination.Fake"
+          },
+          source: %ModuleFunctionArgsView{
+            struct_module_name: "Elixir.Source.Fake"
+          },
+          decoder: %ModuleFunctionArgsView{
+            struct_module_name: "Elixir.Decoder.Json"
+          },
           dictionary: [
             %ModuleFunctionArgsView{
               struct_module_name: "Elixir.Dictionary.Type.String",
@@ -75,13 +83,13 @@ defmodule StoreTest do
       event = %Extract{
         id: "extract-1",
         dataset_id: "invalid_dataset",
-        subset_id: 5,
-        destination: nil,
+        subset_id: "123",
         dictionary: [
           Dictionary.Type.String.new!(name: "letter")
         ],
-        source: Source.Fake.new!(),
-        destination: Destination.Fake.new!()
+        source: "invalid_value",
+        destination: Destination.Fake.new!(),
+        decoder: Decoder.Json.new!([])
       }
 
       Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
@@ -103,31 +111,18 @@ defmodule StoreTest do
 
       Brook.Test.with_event(@instance, fn -> Store.update_definition(event) end)
 
-      expected =
-        LoadView.new!(
-          source:
-            ModuleFunctionArgsView.new!(
-              struct_module_name: "Elixir.Source.Fake",
-              args: [
-                ArgumentView.new!(key: "id", type: "string", value: "")
-              ]
-            ),
-          destination:
-            ModuleFunctionArgsView.new!(
-              struct_module_name: "Elixir.Destination.Fake",
-              args: [
-                ArgumentView.new!(key: "id", type: "string", value: "")
-              ]
-            ),
-          version: 1
-        )
+      expected = %LoadView{
+        destination: %ModuleFunctionArgsView{struct_module_name: "Elixir.Destination.Fake"},
+        source: %ModuleFunctionArgsView{struct_module_name: "Elixir.Source.Fake"},
+        version: 1
+      }
 
       assert_async do
         persisted = Store.get(identifier(event))
 
         assert event.dataset_id == persisted.dataset_id
         assert "default" == persisted.subset_id
-        assert expected == persisted.persist
+        assert expected == persisted.load
       end
     end
 
@@ -214,7 +209,7 @@ defmodule StoreTest do
           source: Source.Fake.new!(),
           destination: Destination.Fake.new!(),
           decoder: Decoder.Json.new!([]),
-          dictionary: [Dictionary.Type.String.new!(name: "person")],
+          dictionary: [Dictionary.Type.String.new!(name: "person")]
         )
 
       Brook.Test.with_event(@instance, fn ->
@@ -238,7 +233,15 @@ defmodule StoreTest do
         dataset_id: "cDataset",
         subset_id: "default",
         extract: %ExtractView{
-          destination: "success",
+          destination: %ModuleFunctionArgsView{
+            struct_module_name: "Elixir.Destination.Fake"
+          },
+          source: %ModuleFunctionArgsView{
+            struct_module_name: "Elixir.Source.Fake"
+          },
+          decoder: %ModuleFunctionArgsView{
+            struct_module_name: "Elixir.Decoder.Json"
+          },
           dictionary: [
             %ModuleFunctionArgsView{
               struct_module_name: "Elixir.Dictionary.Type.String",
@@ -258,8 +261,9 @@ defmodule StoreTest do
           ]
         },
         load: %LoadView{
-          source: "akafkatopic",
-          destination: "storage__json"
+          destination: %ModuleFunctionArgsView{struct_module_name: "Elixir.Destination.Fake"},
+          source: %ModuleFunctionArgsView{struct_module_name: "Elixir.Source.Fake"},
+          version: 1
         },
         version: 1
       }
@@ -280,7 +284,7 @@ defmodule StoreTest do
           source: Source.Fake.new!(),
           destination: Destination.Fake.new!(),
           decoder: Decoder.Json.new!([]),
-          dictionary: [Dictionary.Type.String.new!(name: "person")],
+          dictionary: [Dictionary.Type.String.new!(name: "person")]
         )
 
       Brook.Test.with_event(@instance, fn ->
@@ -291,7 +295,21 @@ defmodule StoreTest do
         dataset_id: "my-id",
         subset_id: "default",
         extract: %ExtractView{
-          destination: "success",
+          destination: %Define.Model.ModuleFunctionArgsView{
+            args: [],
+            struct_module_name: "Elixir.Destination.Fake",
+            version: 1
+          },
+          source: %Define.Model.ModuleFunctionArgsView{
+            args: '',
+            struct_module_name: "Elixir.Source.Fake",
+            version: 1
+          },
+          decoder: %Define.Model.ModuleFunctionArgsView{
+            args: '',
+            struct_module_name: "Elixir.Decoder.Json",
+            version: 1
+          },
           dictionary: [
             %ModuleFunctionArgsView{
               struct_module_name: "Elixir.Dictionary.Type.String",
@@ -333,7 +351,9 @@ defmodule StoreTest do
             id: "extract-#{index}",
             dataset_id: "id-#{index}",
             subset_id: "default",
-            destination: "destination"
+            source: Source.Fake.new!(),
+            destination: Destination.Fake.new!(),
+            decoder: Decoder.Json.new!([])
           }
 
           Store.update_definition(event)

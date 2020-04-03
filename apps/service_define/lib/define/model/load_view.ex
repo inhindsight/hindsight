@@ -10,8 +10,8 @@ defmodule Define.Model.LoadView do
 
   @derive Jason.Encoder
   defstruct version: 1,
-    source: %ModuleFunctionArgsView{},
-    destination: %ModuleFunctionArgsView{}
+            source: %ModuleFunctionArgsView{},
+            destination: %ModuleFunctionArgsView{}
 end
 
 defmodule Define.Model.LoadView.V1 do

@@ -6,8 +6,12 @@ defmodule Define.DefinitionSerialization do
     serialize(ordered)
   end
 
-  def serialize(definitions) do
+  def serialize(definitions) when is_list(definitions) do
     Enum.map(definitions, &to_module_function_args_view/1)
+  end
+
+  def serialize(definition) do
+    to_module_function_args_view(definition)
   end
 
   defp to_module_function_args_view(definition) do

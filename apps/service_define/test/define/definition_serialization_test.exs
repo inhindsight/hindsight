@@ -64,49 +64,18 @@ defmodule Define.DefinitionSerializationTest do
     assert expected == DefinitionSerialization.serialize(dict)
   end
 
-  test "serializes maps" do
-    dict =
-      Dictionary.from_list([
-        Dictionary.Type.Map.new!(
-          name: "person",
-          dictionary: [
-            Dictionary.Type.String.new!(name: "first_name"),
-            Dictionary.Type.Integer.new!(name: "age")
-          ]
-        )
-      ])
+  test "serializes modules" do
+    source = Dictionary.Type.String.new!(name: "letter")
 
-    expected = [
-      %ModuleFunctionArgsView{
-        struct_module_name: "Elixir.Dictionary.Type.Map",
-        args: [
-          %ArgumentView{key: "description", type: "string", value: ""},
-          %ArgumentView{
-            key: "dictionary",
-            type: "module",
-            value: [
-              %ModuleFunctionArgsView{
-                struct_module_name: "Elixir.Dictionary.Type.String",
-                args: [
-                  %ArgumentView{key: "description", type: "string", value: ""},
-                  %ArgumentView{key: "name", type: "string", value: "first_name"}
-                ]
-              },
-              %ModuleFunctionArgsView{
-                struct_module_name: "Elixir.Dictionary.Type.Integer",
-                args: [
-                  %ArgumentView{key: "description", type: "string", value: ""},
-                  %ArgumentView{key: "name", type: "string", value: "age"}
-                ]
-              }
-            ]
-          },
-          %ArgumentView{key: "name", type: "string", value: "person"}
-        ]
-      }
-    ]
+    expected = %ModuleFunctionArgsView{
+      struct_module_name: "Elixir.Dictionary.Type.String",
+      args: [
+        %ArgumentView{key: "description", type: "string", value: ""},
+        %ArgumentView{key: "name", type: "string", value: "letter"}
+      ]
+    }
 
-    assert expected == DefinitionSerialization.serialize(dict)
+    assert expected == DefinitionSerialization.serialize(source)
   end
 
   test "serializes lists of maps" do
