@@ -21,4 +21,4 @@ config :service_profile, Profile.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_persist, Persist.MetricsReporter, port: 9574
+config :service_persist, Persist.MetricsReporter, port: 9575
