@@ -7,7 +7,8 @@ defmodule Orchestrate.Event.Handler do
       schedule_start: 0,
       schedule_end: 0,
       dataset_delete: 0,
-      send_transform_define: 3
+      send_transform_define: 3,
+      send_load_start: 3
     ]
 
   import Definition, only: [identifier: 1]
@@ -74,7 +75,7 @@ defmodule Orchestrate.Event.Handler do
     Ok.each(schedule.load, &create_compaction_job(schedule, &1))
   end
 
-  defp create_compaction_job(schedule, %Load.Persist{}) do
+  defp create_compaction_job(schedule, %Load{destination: %Presto.Table{}}) do
     with {:ok, cron} <- parse_compaction_cron(schedule.compaction_cron) do
       Orchestrate.Scheduler.new_job()
       |> Job.set_name(:"#{identifier(schedule)}_compaction")
@@ -89,7 +90,6 @@ defmodule Orchestrate.Event.Handler do
   end
 
   defp send_load_event(load) do
-    type = Events.get_event_type("load", "start", load)
-    Brook.Event.send(@instance, type, "orchestrate", load)
+    send_load_start(@instance, "orchestrate", load)
   end
 end

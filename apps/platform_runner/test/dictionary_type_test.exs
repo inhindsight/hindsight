@@ -4,7 +4,7 @@ defmodule Dictionary.Type.Test do
   @protocols [
     Jason.Encoder,
     Dictionary.Type.Normalizer,
-    Persist.Dictionary.Translator,
+    Presto.Table.Dictionary.Translator,
     Avro.Translator
   ]
 

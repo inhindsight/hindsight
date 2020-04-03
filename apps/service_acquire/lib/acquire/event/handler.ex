@@ -2,13 +2,16 @@ defmodule Acquire.Event.Handler do
   use Brook.Event.Handler
   require Logger
 
-  import Events, only: [transform_define: 0, load_persist_start: 0, dataset_delete: 0]
+  import Events, only: [transform_define: 0, load_start: 0, dataset_delete: 0]
 
   def handle_event(%Brook.Event{type: transform_define(), data: %Transform{} = transform}) do
     Acquire.Dictionaries.persist(transform)
   end
 
-  def handle_event(%Brook.Event{type: load_persist_start(), data: %Load.Persist{} = persist}) do
+  def handle_event(%Brook.Event{
+        type: load_start(),
+        data: %Load{destination: %Presto.Table{}} = persist
+      }) do
     Acquire.Dictionaries.persist(persist)
   end
 

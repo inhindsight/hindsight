@@ -1,5 +1,7 @@
 import Config
 
+config :dlq, Dlq.Application, init?: false
+
 config :service_broadcast, BroadcastWeb.Endpoint,
   http: [port: 4002],
   server: false

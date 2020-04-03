@@ -5,13 +5,9 @@ defmodule Gather.Extraction do
   use Properties, otp_app: :service_gather
   use Annotated.Retry
 
-  alias Extract.Context
-  alias Writer.DLQ.DeadLetter
-
   @max_tries get_config_value(:max_tries, default: 10)
   @initial_delay get_config_value(:initial_delay, default: 500)
-  getter(:writer, default: Gather.Writer)
-  getter(:dlq, default: Gather.DLQ)
+  getter(:dlq, default: Dlq)
   getter(:app_name, required: true)
 
   def start_link(args) do
@@ -31,8 +27,8 @@ defmodule Gather.Extraction do
     Logger.debug(fn -> "#{__MODULE__}: Started extraction: #{inspect(extract)}" end)
 
     case extract(extract) do
-      :ok ->
-        Logger.debug("#{__MODULE__}: Extraction Completed: #{inspect(extract)}")
+      {:ok, _destination_pid} ->
+        Logger.debug(fn -> "#{__MODULE__}: Extraction Completed: #{inspect(extract)}" end)
         Brook.Event.send(Gather.Application.instance(), extract_end(), "gather", extract)
         {:stop, :normal, state}
 
@@ -44,43 +40,43 @@ defmodule Gather.Extraction do
 
   @retry with: exponential_backoff(@initial_delay) |> take(@max_tries)
   defp extract(extract) do
-    with {:ok, writer} <- writer().start_link(extract: extract) do
-      do_extract(writer, extract)
+    with {:ok, pid} <- start_destination(extract),
+         :ok <- do_extract(pid, extract) do
+      {:ok, pid}
     end
   end
 
-  defp do_extract(writer, extract) do
-    with {:ok, context} <- Extractor.execute(extract.steps),
-         {:error, reason} <- write(writer, extract, context) do
-      warn_extract_failure(extract, reason)
-      {:error, reason}
-    end
-  rescue
-    e -> {:error, e}
-  after
-    Process.exit(writer, :normal)
+  defp start_destination(extract) do
+    Destination.start_link(
+      extract.destination,
+      Destination.Context.new!(
+        app_name: app_name(),
+        dataset_id: extract.dataset_id,
+        subset_id: extract.subset_id,
+        dictionary: extract.dictionary
+      )
+    )
   end
 
-  defp write(writer, extract, context) do
-    writer_opts = [extract: extract]
-
-    Context.get_stream(context)
+  defp do_extract(destination_pid, extract) do
+    Gather.Extraction.SourceStream.stream(extract)
+    |> decode(extract)
     |> Ok.each(fn chunk ->
-      with data <- Enum.map(chunk, &Map.get(&1, :data)),
-           lowercase_data <- Enum.map(data, &lowercase_fields/1),
-           normalized_messages <- normalize(extract, lowercase_data),
-           :ok <- writer().write(writer, normalized_messages, writer_opts) do
-        Context.run_after_functions(context, chunk)
-        :ok
-      end
+      messages =
+        Enum.map(chunk, &lowercase_fields/1)
+        |> normalize(extract)
+
+      Destination.write(extract.destination, destination_pid, messages)
     end)
-  catch
-    _, reason ->
-      Context.run_error_functions(context)
-      {:error, reason}
+  rescue
+    e ->
+      warn_extract_failure(extract, e)
+      {:error, e}
+  after
+    Destination.stop(extract.destination, destination_pid)
   end
 
-  defp normalize(extract, messages) do
+  defp normalize(messages, extract) do
     %{good: good, bad: bad} =
       Enum.reduce(messages, %{good: [], bad: []}, fn message, acc ->
         case Dictionary.normalize(extract.dictionary, message) do
@@ -100,6 +96,10 @@ defmodule Gather.Extraction do
     Enum.reverse(good)
   end
 
+  defp decode(stream, extract) do
+    Decoder.decode(extract.decoder, stream)
+  end
+
   defp to_dead_letter(extract, og, reason) do
     DeadLetter.new(
       dataset_id: extract.dataset_id,
@@ -111,9 +111,11 @@ defmodule Gather.Extraction do
   end
 
   defp warn_extract_failure(extract, reason) do
-    Logger.warn(
+    Logger.warn(fn ->
       "#{__MODULE__}: Failed with reason: #{inspect(reason)}, extract: #{inspect(extract)}"
-    )
+    end)
+
+    reason
   end
 
   defp lowercase_fields(%{} = map) do

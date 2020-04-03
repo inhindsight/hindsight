@@ -59,8 +59,8 @@ defmodule Hindsight.MixProject do
 
   defp aliases() do
     [
-      "test.unit": "test --exclude integration --exclude performance --exclude e2e",
-      "test.int": "test --only integration",
+      "test.unit": "test --exclude integration --exclude performance --exclude e2e --color",
+      "test.int": "test --only integration --color",
       "test.e2e": "cmd --app platform_runner mix test.integration --only e2e --color",
       "test.perf": "cmd --app platform_runner mix test.integration --only performance --color"
     ]

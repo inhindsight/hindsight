@@ -4,7 +4,7 @@ defmodule Acquire.Dictionaries do
 
   import Definition, only: [identifier: 1, identifier: 2]
 
-  @spec persist(Transform.t() | Load.Persist.t()) :: :ok
+  @spec persist(Transform.t() | Load.t()) :: :ok
   def persist(%Transform{} = transform) do
     with {:ok, dictionary} <-
            Transformer.transform_dictionary(transform.steps, transform.dictionary) do
@@ -13,7 +13,7 @@ defmodule Acquire.Dictionaries do
     end
   end
 
-  def persist(%Load.Persist{destination: destination} = persist) do
+  def persist(%Load{destination: %Presto.Table{} = destination} = persist) do
     Brook.ViewState.merge(@collection, identifier(persist), %{"destination" => destination})
   end
 
@@ -29,7 +29,7 @@ defmodule Acquire.Dictionaries do
   end
 
   @spec get_destination(dataset_id :: String.t(), subset_id :: String.t()) ::
-          {:ok, String.t()} | {:error, term}
+          {:ok, Presto.Table.t()} | {:error, term}
   def get_destination(dataset_id, subset_id) do
     get(dataset_id, subset_id, "destination")
   end

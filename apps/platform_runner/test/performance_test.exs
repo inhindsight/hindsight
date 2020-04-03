@@ -34,22 +34,26 @@ defmodule Platform.Runner.PerformanceTest do
     csv(opts)
 
     persist =
-      Load.Persist.new!(
+      Load.new!(
         id: "perf-#{ds}-persist-1",
         dataset_id: "perf-#{ds}",
         subset_id: "default",
-        source: "perf-#{ds}-csv",
-        destination: "perf_#{ds}_persist",
-        config: %{
-          "kafka" => %{
-            "partitions" => 4,
-            "partitioner" => "md5"
-          }
-        }
+        source:
+          Kafka.Topic.new!(
+            endpoints: [localhost: 9092],
+            name: "perf-#{ds}-csv",
+            partitions: 4,
+            partitioner: :md5
+          ),
+        destination:
+          Presto.Table.new1(
+            url: "http://localhost:8080",
+            name: "perf_#{ds}_persist"
+          )
       )
 
     Gather.Application.instance()
-    |> Events.send_load_persist_start("performance", persist)
+    |> Events.send_load_start("performance", persist)
 
     session =
       Prestige.new_session(
@@ -73,12 +77,12 @@ defmodule Platform.Runner.PerformanceTest do
     csv(opts)
 
     broadcast =
-      Load.Broadcast.new!(
+      Load.new!(
         id: "perf-#{ds}-broadcast-1",
         dataset_id: "perf-#{ds}",
         subset_id: "default",
         source: "perf-#{ds}-csv",
-        destination: "perf_#{ds}_broadcast"
+        destination: Channel.Topic.new!(name: "perf_#{ds}_broadcast")
       )
 
     {:ok, _} =
@@ -88,7 +92,7 @@ defmodule Platform.Runner.PerformanceTest do
       )
 
     Gather.Application.instance()
-    |> Events.send_load_broadcast_start("performance", broadcast)
+    |> Events.send_load_start("performance", broadcast)
 
     assert_receive %{"letter" => "b", "number" => 100_000}, 90_000
   end

@@ -30,11 +30,13 @@ defmodule Profile.MixProject do
       {:extractor, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:definition_kafka, in_umbrella: true},
       {:flow, "~> 1.0"},
       {:gen_stage, "~> 1.0", override: true},
       {:initializer, in_umbrella: true},
       {:management, in_umbrella: true},
       {:properties, in_umbrella: true},
+      {:protocol_source, in_umbrella: true},
 
       # dev/testing deps
       {:checkov, "~> 1.0", only: [:dev, :test]},

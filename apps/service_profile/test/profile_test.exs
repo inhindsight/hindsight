@@ -13,13 +13,6 @@ defmodule ProfileTest do
   Temp.Env.modify([
     %{
       app: :service_profile,
-      key: Profile.Feed.Producer,
-      set: [
-        endpoints: [localhost: 9092]
-      ]
-    },
-    %{
-      app: :service_profile,
       key: Profile.Feed.Flow,
       set: [
         window_limit: 10,
@@ -28,15 +21,20 @@ defmodule ProfileTest do
     }
   ])
 
-  @tag timeout: :infinity, capture_log: false
+  @tag timeout: :infinity
   test "will profile a dataset" do
     extract =
       Extract.new!(
         id: "extract-1",
         dataset_id: "ds1",
         subset_id: "sb1",
-        destination: "topic-ds1",
-        steps: [],
+        source: Source.Fake.new!(),
+        decoder: Decoder.Noop.new(),
+        destination:
+          Kafka.Topic.new!(
+            endpoints: [localhost: 9092],
+            name: "topic-ds1"
+          ),
         dictionary: [
           Dictionary.Type.String.new!(name: "name"),
           Dictionary.Type.Timestamp.new!(name: "ts", format: "%Y"),
