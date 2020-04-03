@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "hindsight.fullname" . }}-receive-tcp
+  name: {{ include "hindsight.fullname" . }}-receive-udp
   labels:
     app: hindsight-receive
     {{- include "hindsight.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.receive.service_tcp.type }}
+  type: {{ .Values.receive.service_udp.type }}
   ports:
-    - port: {{ .Values.receive.service_tcp.port }}
-      targetPort: websocket
-      protocol: TCP
-      name: websocket
+    - port: {{ .Values.receive.service_udp.port }}
+      targetPort: udp-push
+      protocol: UDP
+      name: udp-push
   selector:
     app: hindsight-receive
     {{- include "hindsight.selectorLabels" . | nindent 4 }}

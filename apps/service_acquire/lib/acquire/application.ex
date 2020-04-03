@@ -10,6 +10,7 @@ defmodule Acquire.Application do
 
   def start(_type, _args) do
     children = [
+      Acquire.MetricsReporter,
       start_brook(),
       AcquireWeb.Endpoint
     ]

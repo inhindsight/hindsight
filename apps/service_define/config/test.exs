@@ -5,3 +5,5 @@ config :service_define, DefineWeb.Endpoint,
   server: false
 
 config :logger, level: :warn
+
+config :service_define, Define.MetricsReporter, port: 9571

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hindsight.fullname" . }}-gather
+  labels:
+    app: hindsight-gather
+    {{- include "hindsight.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9568
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    app: hindsight-gather
+    {{- include "hindsight.selectorLabels" . | nindent 4 }}

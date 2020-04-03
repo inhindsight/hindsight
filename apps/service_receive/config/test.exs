@@ -14,3 +14,5 @@ config :service_receive, Receive.Application,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
+
+config :service_receive, Receive.MetricsReporter, port: 9576

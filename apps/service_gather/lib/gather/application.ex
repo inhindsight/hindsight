@@ -11,6 +11,7 @@ defmodule Gather.Application do
       [
         Gather.Extraction.Registry,
         Gather.Extraction.Supervisor,
+        Gather.MetricsReporter,
         brook(),
         init()
       ]

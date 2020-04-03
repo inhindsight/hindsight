@@ -33,11 +33,14 @@ spec:
             - start
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 80
-              protocol: UDP
             - name: websocket
+              containerPort: 80
+              protocol: TCP
+            - name: udp-push
               containerPort: 6790
+              protocol: UDP
+            - name: metrics
+              containerPort: 9568
               protocol: TCP
           env:
             - name: KAFKA_ENDPOINTS
