@@ -1,4 +1,12 @@
 defmodule Extract.Message do
+  @moduledoc """
+  Envelope for data moving through the extraction pipeline.
+
+  ## Fields
+
+  * `data` - Data message being processed.
+  * `meta` - `Map` for optional metadata key/value pairs.
+  """
   @type t :: %__MODULE__{
           data: term,
           meta: map

@@ -1,4 +1,22 @@
 defmodule Extract.Context do
+  @moduledoc """
+  The extraction process is a reduce, and this module is its
+  accumulator.
+
+
+  ## Fields
+
+  * `response` - Response of the last action in the reduce. This field should
+  be overwritten, not accumulated.
+  * `variables` - A `Map` accumulation of variable names and values. These
+  key/value pairs can later be referenced as part of another step in the reduce.
+  * `source` - Function acting on a `Stream` of data. This can accumulate
+  more functions wrapping an original function acting on the `Stream`.
+  * `after_functions` - A list of functions to be executed once the extraction
+  pipeline is fully executed. Think of this as the `after` block in `try/catch/after`.
+  * `error_functions` - A list of functions to be executed in case an error is
+  caught. Think of this as the `catch` block in `try/catch/after`.
+  """
   @type source_opts :: [
           read: :lines | :bytes,
           byte_count: non_neg_integer,
@@ -15,7 +33,12 @@ defmodule Extract.Context do
           after_functions: [(list -> no_return())],
           error_functions: [(() -> no_return)]
         }
-  defstruct response: nil, variables: %{}, source: nil, after_functions: [], error_functions: []
+
+  defstruct response: nil,
+            variables: %{},
+            source: nil,
+            after_functions: [],
+            error_functions: []
 
   @spec new() :: %__MODULE__{}
   def new() do
