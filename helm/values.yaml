@@ -29,10 +29,6 @@ strimzi:
     storage:
       enabled: false
       size: ""
-redis:
-  usePassword: false
-  cluster:
-    enabled: false
 nginx-ingress:
   controller:
     metrics:

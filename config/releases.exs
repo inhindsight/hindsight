@@ -46,9 +46,6 @@ kafka_endpoints =
   |> Enum.map(fn entry -> String.split(entry, ":") end)
   |> Enum.map(fn [host, port] -> {String.to_atom(host), String.to_integer(port)} end)
 
-redix_args = [host: System.get_env("REDIS_HOST", "localhost")]
-config :redix, :args, redix_args
-
 config :dlq, Dlq.Server,
   endpoints: kafka_endpoints,
   topic: "dead-letter-queue"
@@ -78,10 +75,6 @@ config :service_receive, Receive.Application,
       ]
     ],
     handlers: [Receive.Event.Handler],
-    # storage: [
-    #   module: Brook.Storage.Redis,
-    #   init_arg: [redix_args: redix_args, namespace: "service:receive:view"]
-    # ],
     storage: [
       module: Brook.Storage.Postgres,
       init_arg: [
@@ -91,11 +84,7 @@ config :service_receive, Receive.Application,
           username: "receive_app_user",
           password: "receive123",
           database: "receive_app_state"
-        ],
-        event_limits: %{
-          # "data:something" => 100,
-          # "data:something:else" => 50
-        }
+        ]
       ]
     ],
     dispatcher: Brook.Dispatcher.Noop
@@ -130,11 +119,7 @@ config :service_gather, Gather.Application,
           username: "gather_app_user",
           password: "gather123",
           database: "gather_app_state"
-        ],
-        event_limits: %{
-          # "data:something" => 100,
-          # "data:something:else" => 50
-        }
+        ]
       ]
     ],
     dispatcher: Brook.Dispatcher.Noop
@@ -176,11 +161,7 @@ config :service_broadcast, Broadcast.Application,
           username: "broadcast_app_user",
           password: "broadcast123",
           database: "broadcast_app_state"
-        ],
-        event_limits: %{
-          # "data:something" => 100,
-          # "data:something:else" => 50
-        }
+        ]
       ]
     ],
     dispatcher: Brook.Dispatcher.Noop
@@ -227,11 +208,7 @@ config :service_persist, Persist.Application,
           username: "persist_app_user",
           password: "persist123",
           database: "persist_app_state"
-        ],
-        event_limits: %{
-          # "data:something" => 100,
-          # "data:something:else" => 50
-        }
+        ]
       ]
     ],
     dispatcher: Brook.Dispatcher.Noop,
@@ -265,11 +242,7 @@ config :service_orchestrate, Orchestrate.Application,
           username: "orchestrate_app_user",
           password: "orchestrate123",
           database: "orchestrate_app_state"
-        ],
-        event_limits: %{
-          # "data:something" => 100,
-          # "data:something:else" => 50
-        }
+        ]
       ]
     ],
     dispatcher: Brook.Dispatcher.Noop
@@ -308,11 +281,7 @@ config :service_acquire, Acquire.Application,
           username: "acquire_app_user",
           password: "acquire123",
           database: "acquire_app_state"
-        ],
-        event_limits: %{
-          # "data:something" => 100,
-          # "data:something:else" => 50
-        }
+        ]
       ]
     ],
     dispatcher: Brook.Dispatcher.Noop
@@ -357,11 +326,7 @@ config :service_define, Define.Application,
           username: "define_app_user",
           password: "define123",
           database: "define_app_state"
-        ],
-        event_limits: %{
-          # "data:something" => 100,
-          # "data:something:else" => 50
-        }
+        ]
       ]
     ],
     dispatcher: Brook.Dispatcher.Noop
@@ -393,11 +358,7 @@ config :service_profile, Profile.Application,
           username: "profile_app_user",
           password: "profile123",
           database: "profile_app_state"
-        ],
-        event_limits: %{
-          # "data:something" => 100,
-          # "data:something:else" => 50
-        }
+        ]
       ]
     ],
     dispatcher: Brook.Dispatcher.Noop

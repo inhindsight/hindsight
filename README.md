@@ -56,6 +56,5 @@ Set location to `aws` to use AWS presets. You must give external service informa
                   global.objectStore.region=[AWS_REGION] \
                   presto.postgres.externalAddress=[RDS_URL] \
                   presto.postgres.db.password=[DB_PASSWORD] \
-                  presto.postgres.db.user=[DB_USER] \
-                  redis.externalAddress=[REDIS_URL]
+                  presto.postgres.db.user=[DB_USER]
 ```

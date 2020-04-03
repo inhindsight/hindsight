@@ -53,10 +53,6 @@ app.kubernetes.io/name: {{ include "hindsight.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
-{{- define "redis.host" -}}
-{{ printf "%s-%s" .Release.Name "redis-master" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
 {{/*
 Create the name of the service account to use
 */}}

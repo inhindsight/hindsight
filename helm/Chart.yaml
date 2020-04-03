@@ -8,10 +8,6 @@ home: https://github.com/inhindsight
 sources:
   - https://github.com/inhindsight/hindsight
 dependencies:
-  - name: redis
-    version: 10.5.7
-    repository:  https://kubernetes-charts.storage.googleapis.com
-    condition: redis.enabled
   - name: nginx-ingress
     version: 1.34.2
     repository: https://kubernetes-charts.storage.googleapis.com

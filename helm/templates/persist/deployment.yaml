@@ -57,8 +57,6 @@ spec:
               value: http://{{ template "presto.fullname" . }}:{{ .Values.presto.presto.service.port }}
             - name: KAFKA_ENDPOINTS
               value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092
-            - name: REDIS_HOST
-              value: {{ template "redis.host" . }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
