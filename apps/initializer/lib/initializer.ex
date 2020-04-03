@@ -8,6 +8,8 @@ defmodule Initializer do
     quote location: :keep do
       use GenServer
       use Retry
+      use Annotated.Retry
+
       @behaviour Initializer
 
       @dialyzer [
@@ -30,10 +32,7 @@ defmodule Initializer do
       end
 
       def handle_continue(:init, state) do
-        case on_start(state) do
-          {:ok, new_state} -> {:noreply, new_state}
-          {:error, reason} -> {:stop, reason}
-        end
+        do_on_start(state)
       end
 
       def handle_info({:DOWN, supervisor_ref, _, _, _}, %{supervisor_ref: supervisor_ref} = state) do
@@ -50,6 +49,14 @@ defmodule Initializer do
             end
         else
           _ -> {:stop, "Supervisor not available", state}
+        end
+      end
+
+      @retry with: constant_backoff(100) |> take(10)
+      defp do_on_start(state) do
+        case on_start(state) do
+          {:ok, new_state} -> {:noreply, new_state}
+          {:error, reason} -> {:stop, reason}
         end
       end
 

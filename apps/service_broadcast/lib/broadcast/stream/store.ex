@@ -35,9 +35,11 @@ defmodule Broadcast.Stream.Store do
     Brook.ViewState.delete(@collection, identifier(dataset_id, subset_id))
   end
 
-  @spec get_all!() :: [Load.t()]
-  def get_all!() do
-    Brook.get_all_values!(@instance, @collection)
-    |> Enum.map(&Map.get(&1, "load"))
+  @spec get_all() :: [Load.Broadcast.t()]
+  def get_all() do
+    case (Brook.get_all_values(@instance, @collection)) do
+      {:error, _} -> {:error, "Failed to read initial state for Broadcast"}
+      {:ok, values} -> values |> Enum.map(&Map.get(&1, "load"))
+    end
   end
 end
