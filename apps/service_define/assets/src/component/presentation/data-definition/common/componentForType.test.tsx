@@ -29,12 +29,26 @@ describe("componentForType()", () => {
         expect(element.textContent).to.equal("foo")
     })
 
-    it("when list type returns component that renders the list", () => {
+    it("when list of string type returns component that renders the list", () => {
         const Component = componentForType(["list", PrimitiveArgumentType.string])
         const element = renderComponent(<Component value={["foo", "bar"]}/>)
 
         expect(element.textContent).to.contain("foo")
         expect(element.textContent).to.contain("bar")
+    })
+
+    it("when list of module type returns component that renders the list", () => {
+        const Component = componentForType(["list", PrimitiveArgumentType.module])
+        const modules: readonly ModuleFunctionArgsView[] = [
+            {
+                struct_module_name: "Foo",
+                args: [],
+            }
+        ]
+
+        const element = renderComponent(<Component value={modules}/>)
+
+        expect(element.textContent).to.contain("Foo")
     })
 
     it("when map type returns component that renders the map", () => {

@@ -14,11 +14,15 @@ export type ValueComponent<T> = (props: { readonly value: T }) => JSX.Element
 
 export const componentForType = (type: ArgumentType): ValueComponent<any> => {
     if(isListArgumentType(type)) {
-        return ListWrapper
+        const [, subtype] = type
+        switch (subtype) {
+            case PrimitiveArgumentType.string: return ListWrapper
+            case PrimitiveArgumentType.module: return ModuleFunctionArgsWrapper
+            default: return StringWrapper
+        }
     } else {
         switch (type) {
             case PrimitiveArgumentType.module: return ModuleFunctionArgsWrapper
-            case PrimitiveArgumentType.map: return MapWrapper
             case PrimitiveArgumentType.map: return MapWrapper
             default: return StringWrapper
         }

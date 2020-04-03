@@ -4,7 +4,7 @@ export interface DataDefinitionView {
     readonly dataset_id: string
     readonly subset_id: string
     readonly extract: ExtractView
-    readonly persist: PersistView
+    readonly load: LoadView
     readonly transform: TransformView
 }
 
@@ -14,12 +14,13 @@ export interface TransformView {
 }
 
 export interface ExtractView {
-    readonly destination: string | null
     readonly dictionary: readonly ModuleFunctionArgsView[]
-    readonly steps: readonly ModuleFunctionArgsView[]
+    readonly source: ModuleFunctionArgsView
+    readonly destination: ModuleFunctionArgsView
+    readonly decoder: ModuleFunctionArgsView
 }
 
-export interface PersistView {
-    readonly source: string | null
-    readonly destination: string | null
+export interface LoadView {
+    readonly source: ModuleFunctionArgsView
+    readonly destination: ModuleFunctionArgsView
 }

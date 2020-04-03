@@ -2,13 +2,52 @@ import {storiesOf} from "@storybook/react"
 import React from "react"
 import {DataDefinition} from "./DataDefinition"
 import {DataDefinitionView} from "../../../model/view/DataDefinitionView"
-import { PrimitiveArgumentType } from "../../../model/view/ModuleFunctionArgsView"
+import {PrimitiveArgumentType} from "../../../model/view/ModuleFunctionArgsView"
 
 const simpleProps: DataDefinitionView = {
     dataset_id: "houses",
     subset_id: "default",
     extract: {
-        destination: "gather-topic",
+        source: {
+            struct_module_name: "Elixir.Extractor",
+            args: [
+                {
+                    key: "steps",
+                    type: ["list", PrimitiveArgumentType.module],
+                    value: [
+                        {
+                            struct_module_name: "Extract.Http.Get",
+                            args: [
+                                { key: "url", type: PrimitiveArgumentType.string, value: "http://www.source.com/the-data.csv"}
+                            ]
+                        }
+                    ]
+                }
+
+            ]
+        },
+        destination: {
+            struct_module_name: "Elixir.Kafka.Topic",
+            args: [
+                { key: "name", type: PrimitiveArgumentType.string, value: "csv-gather"},
+                { key: "endpoints", type: PrimitiveArgumentType.map, value: { host: 9092 }},
+            ]
+        },
+        decoder: {
+            struct_module_name: "Elixir.Decoder.Csv",
+            args: [
+                {
+                    key: "headers",
+                    type: ["list", PrimitiveArgumentType.string],
+                    value: ["address", "owner_first_name", "owner_last_name", "square_feet"]
+                },
+                {
+                    key: "skip_first_line",
+                    type: PrimitiveArgumentType.boolean,
+                    value: true
+                }
+            ]
+        },
         dictionary: [
             {
                 struct_module_name: "Elixir.Dictionary.Type.String",
@@ -27,12 +66,6 @@ const simpleProps: DataDefinitionView = {
                 args: [ { key: "name", type: PrimitiveArgumentType.integer, value: "square_feet" } ]
             },
 
-        ],
-        steps: [
-            {
-                struct_module_name: "Elixir.Extract.Http.Get",
-                args: [ { key: "url", type: PrimitiveArgumentType.integer, value: "http://example.com/api/v1/homes" } ]
-            },
         ],
     },
     transform: {
@@ -61,9 +94,21 @@ const simpleProps: DataDefinitionView = {
             },
         ],
     },
-    persist: {
-        source: "gathered-topic",
-        destination: "houses-table",
+    load: {
+        source: {
+            struct_module_name: "Elixir.Kafka.Topic",
+            args: [
+                { key: "name", type: PrimitiveArgumentType.string, value: "csv-gather"},
+                { key: "endpoints", type: PrimitiveArgumentType.map, value: { host: 9092 }},
+            ]
+        },
+        destination: {
+            struct_module_name: "Elixir.Presto.Table",
+            args: [
+                { key: "url", type: PrimitiveArgumentType.string, value: "http://localhost:8080"},
+                { key: "name", type: PrimitiveArgumentType.string, value: "csv-table"},
+            ]
+        },
     }
 }
 
@@ -71,20 +116,30 @@ const nestedProps: DataDefinitionView = {
     ...simpleProps,
     extract: {
         ...simpleProps.extract,
-        steps: [
-            {
-                struct_module_name: "Elixir.Extract.Http.Get",
-                args: [
-                     { key: "url", type: PrimitiveArgumentType.integer, value: "http://example.com/api/v1/homes" },
-                     { key: "headers", type: PrimitiveArgumentType.map, value: {"content-length": "5"} },
-                     { key: "alternate_urls", type: ["list", PrimitiveArgumentType.string], value: [
-                         "http://east.example.com/api/v1/homes",
-                         "http://mirror.example.com/api/v1/homes",
-                         "http://backup.example.com/api/v1/homes",
-                     ] },
-                ]
-            },
-        ],
+        source: {
+            struct_module_name: "Elixir.Extractor",
+            args: [
+                {
+                    key: "steps",
+                    type: ["list", PrimitiveArgumentType.module],
+                    value: [
+                        {
+                            struct_module_name: "Elixir.Extract.Http.Get",
+                            args: [
+                                { key: "url", type: PrimitiveArgumentType.integer, value: "http://example.com/api/v1/homes" },
+                                { key: "headers", type: PrimitiveArgumentType.map, value: {"content-length": "5"} },
+                                { key: "alternate_urls", type: ["list", PrimitiveArgumentType.string], value: [
+                                        "http://east.example.com/api/v1/homes",
+                                        "http://mirror.example.com/api/v1/homes",
+                                        "http://backup.example.com/api/v1/homes",
+                                    ] },
+                            ]
+                        },
+                    ],
+                }
+
+            ]
+        },
         dictionary: [
             {
                 struct_module_name: "Elixir.Dictionary.Type.Map",
