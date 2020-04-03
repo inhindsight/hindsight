@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where.Temporal do
+  @moduledoc false
   import Acquire.Query.Where.Functions
 
   @spec to_queryable(

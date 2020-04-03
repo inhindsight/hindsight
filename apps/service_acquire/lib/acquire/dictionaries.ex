@@ -1,4 +1,5 @@
 defmodule Acquire.Dictionaries do
+  @moduledoc false
   @instance Acquire.Application.instance()
   @collection "fields"
 

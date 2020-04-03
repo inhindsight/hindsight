@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where.Parameter do
+  @moduledoc false
   use Definition, schema: Acquire.Query.Where.Parameter.Schema
 
   @type t :: %__MODULE__{value: term}
@@ -17,6 +18,7 @@ defmodule Acquire.Query.Where.Parameter do
 end
 
 defmodule Acquire.Query.Where.Parameter.Schema do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

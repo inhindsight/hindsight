@@ -1,5 +1,4 @@
 defprotocol Acquire.Queryable do
-  # TODO
   @moduledoc false
 
   @spec parse_statement(t) :: String.t()
