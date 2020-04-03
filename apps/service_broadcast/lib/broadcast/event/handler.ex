@@ -43,6 +43,7 @@ defmodule Broadcast.Event.Handler do
     end)
 
     Broadcast.Transformations.delete(delete)
+
     case Broadcast.Stream.Store.get!(delete.dataset_id, delete.subset_id) do
       nil ->
         Logger.debug("No existing state to delete")

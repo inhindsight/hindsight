@@ -30,39 +30,41 @@ defmodule Broadcast.Event.HandlerTest do
   end
 
   describe "dataset_delete" do
-
     setup do
       Brook.Test.clear_view_state(@instance, "transformations")
       Brook.Test.clear_view_state(@instance, "streams")
 
-      allow Broadcast.Stream.Supervisor.terminate_child(any()), return: :ok
+      allow(Broadcast.Stream.Supervisor.terminate_child(any()), return: :ok)
 
-      transform = Transform.new!(
-        id: "transform-1",
-        dataset_id: "ds1",
-        subset_id: "sb1",
-        dictionary: [],
-        steps: []
-      )
+      transform =
+        Transform.new!(
+          id: "transform-1",
+          dataset_id: "ds1",
+          subset_id: "sb1",
+          dictionary: [],
+          steps: []
+        )
 
-      load = Load.new!(
-        id: "load-1",
-        dataset_id: "ds1",
-        subset_id: "sb1",
-        source: Source.Fake.new!(),
-        destination: Destination.Fake.new!()
-      )
+      load =
+        Load.new!(
+          id: "load-1",
+          dataset_id: "ds1",
+          subset_id: "sb1",
+          source: Source.Fake.new!(),
+          destination: Destination.Fake.new!()
+        )
 
       Brook.Test.with_event(@instance, fn ->
         Broadcast.Transformations.persist(transform)
         Broadcast.Stream.Store.persist(load)
       end)
 
-      delete = Delete.new!(
-        id: "delete-1",
-        dataset_id: "ds1",
-        subset_id: "sb1"
-      )
+      delete =
+        Delete.new!(
+          id: "delete-1",
+          dataset_id: "ds1",
+          subset_id: "sb1"
+        )
 
       Brook.Test.send(@instance, dataset_delete(), "testing", delete)
 
@@ -83,7 +85,7 @@ defmodule Broadcast.Event.HandlerTest do
 
     test "stops the stream", %{load: load} do
       assert_async do
-        assert_called Broadcast.Stream.Supervisor.terminate_child(load)
+        assert_called(Broadcast.Stream.Supervisor.terminate_child(load))
       end
     end
 
