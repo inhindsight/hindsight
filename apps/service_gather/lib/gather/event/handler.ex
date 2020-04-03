@@ -30,12 +30,10 @@ defmodule Gather.Event.Handler do
         nil
 
       extract ->
-        if Elsa.topic?(endpoints(), extract.destination),
-          do: Elsa.delete_topic(endpoints(), extract.destination)
-
-        Logger.debug("Deleted Extract destination topic")
+        Extraction.Supervisor.terminate_child(extract)
+        Source.delete(extract.source)
+        Destination.delete(extract.destination)
+        Extraction.Store.delete(delete.dataset_id, delete.subset_id)
     end
-
-    Extraction.Store.delete(delete.dataset_id, delete.subset_id)
   end
 end
