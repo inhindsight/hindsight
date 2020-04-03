@@ -1,4 +1,17 @@
 defmodule Kafka.Topic do
+  @moduledoc """
+  Defines a Kafka topic. Kafka topics are used as message buses
+  in Hindsight, allowing data to be passed from one service to another
+  without directly coupling those services.
+
+  ## Configuration
+
+  * `name` - Required. Topic name.
+  * `endpoints` - Required. Keyword list of Kafka brokers.
+  * `partitions` - Number of partitions to create the topic with in Kafka. Defaults to 1.
+  * `partitioner` - Method for partitioning messages as they're written to Kafka. Must be one of `[:default, :md5, :random]`.
+  * `key_path` - String or list of strings used to parse message key from message content. Defaults to empty list, resulting in no message key (`""`).
+  """
   use Definition, schema: Kafka.Topic.V1
 
   @type t :: %__MODULE__{
@@ -56,6 +69,7 @@ defmodule Kafka.Topic do
 end
 
 defmodule Kafka.Topic.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

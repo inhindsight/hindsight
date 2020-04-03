@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where.FilterParser do
+  @moduledoc false
   import NimbleParsec
 
   alias Acquire.Query.Where.{Function, Parameter, Field}

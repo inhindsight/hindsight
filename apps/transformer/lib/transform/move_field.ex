@@ -1,4 +1,15 @@
 defmodule Transform.MoveField do
+  @moduledoc """
+  `Transform.Step` impl to move or rename a field
+  in a dataset.
+
+  ## Configuration
+
+  * `from` - Required. Field to be moved. This can be a string or
+  path. Ex: `"foo"` or `["foo", "bar", "baz"]`
+  * `to` - Required. Where to move the field. This can be a string
+  or path. Ex: `"abc"` or `["abc", "xyz"]`
+  """
   use Definition, schema: Transform.MoveField.V1
 
   @type t :: %__MODULE__{

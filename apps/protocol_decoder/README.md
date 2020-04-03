@@ -1,21 +1,20 @@
 # ProtocolDecoder
 
-**TODO: Add description**
+Defines a protocol for decoding data (based on format) as it's ingested.
+
+## Usage
+
+A decoder must implement two functions to allow decoding via this protocol:
+`lines_or_bytes/1` and `decode/2`.
+
+See [Decover.Csv](../decoder_csv/lib/decoder/csv.ex) as an example.
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `protocol_decoder` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:protocol_decoder, "~> 0.1.0"}
+    {:protocol_decoder, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/protocol_decoder](https://hexdocs.pm/protocol_decoder).
-

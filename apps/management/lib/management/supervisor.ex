@@ -1,4 +1,9 @@
 defmodule Management.Supervisor do
+  @moduledoc """
+  Folds helper functionality around `DynamicSupervisor` usage
+  into a custom `Supervisor` module.
+  """
+
   @callback on_start_child(term, name :: term) ::
               Supervisor.child_spec() | {module, term} | module
   @callback say_my_name(term) :: atom | {:global, atom} | {:via, module, {atom, term}}

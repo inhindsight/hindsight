@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where.Array do
+  @moduledoc false
   use Definition, schema: Acquire.Query.Where.Array.V1
 
   @type t :: %__MODULE__{
@@ -26,6 +27,7 @@ defmodule Acquire.Query.Where.Array do
 end
 
 defmodule Acquire.Query.Where.Array.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

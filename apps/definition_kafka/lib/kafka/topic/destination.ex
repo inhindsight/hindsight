@@ -1,4 +1,5 @@
 defmodule Kafka.Topic.Destination do
+  @moduledoc false
   use GenServer, shutdown: 30_000
   use Properties, otp_app: :definition_kafka
   use Annotated.Retry
