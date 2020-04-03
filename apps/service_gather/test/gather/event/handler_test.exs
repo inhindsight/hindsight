@@ -42,7 +42,7 @@ defmodule Gather.Event.HandlerTest do
       assert_called Gather.Extraction.Supervisor.terminate_child(extract)
     end
 
-    test "deletes extration from view state", %{extract: extract} do
+    test "deletes extraction from view state", %{extract: extract} do
       assert_async do
         assert nil == Gather.Extraction.Store.get!(extract.dataset_id, extract.subset_id)
       end
