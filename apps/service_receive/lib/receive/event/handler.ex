@@ -38,9 +38,7 @@ defmodule Receive.Event.Handler do
 
       accept ->
         terminate_manager(accept)
-
-        if Elsa.topic?(endpoints(), accept.destination),
-          do: Elsa.delete_topic(endpoints(), accept.destination)
+        Destination.delete(accept.destination)
 
         Logger.debug("Deleted Supervisor and Topic")
     end
