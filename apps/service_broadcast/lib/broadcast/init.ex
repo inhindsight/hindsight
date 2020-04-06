@@ -4,15 +4,20 @@ defmodule Broadcast.Init do
     supervisor: Broadcast.Stream.Supervisor
 
   def on_start(state) do
-    with {:ok, store} <- Broadcast.Stream.Store.get_all(),
-      _ <- store |> Enum.reject(&is_nil/1)
-        |> Enum.reject(&Broadcast.Stream.Store.done?(&1))
-        |> Enum.each(fn load ->
-          Broadcast.Stream.Supervisor.start_child(load) end)
-      do
+    case Broadcast.Stream.Store.get_all() do
+      {:ok, store} ->
+        restore_state_from_store(store)
         {:ok, state}
-      else
-        {:error, _} -> {:error, "Failed reading initial state for Broadcast on startup"}
-      end
+
+      {:error, _} ->
+        {:error, "Failed reading initial state for Broadcast on startup"}
+    end
+  end
+
+  def restore_state_from_store(store) do
+    store
+    |> Enum.reject(&is_nil/1)
+    |> Enum.reject(&Broadcast.Stream.Store.done?(&1))
+    |> Enum.each(fn load -> Broadcast.Stream.Supervisor.start_child(load) end)
   end
 end

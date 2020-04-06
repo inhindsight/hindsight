@@ -58,8 +58,12 @@ defmodule Initializer do
       @retry with: constant_backoff(100) |> take(10)
       defp do_on_start(state) do
         case on_start(state) do
-          {:ok, new_state} -> {:ok, new_state}
-          {:error, reason} -> {:error, "on_start for application init failed, retrying..."}
+          {:ok, new_state} ->
+            {:ok, new_state}
+
+          {:error, reason} ->
+            {:error,
+             "on_start for application init failed, retrying reading Brook state from store..."}
         end
       end
 
