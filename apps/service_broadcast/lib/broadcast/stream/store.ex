@@ -38,7 +38,7 @@ defmodule Broadcast.Stream.Store do
   @spec get_all() :: [Load.Broadcast.t()]
   def get_all() do
     case (Brook.get_all_values(@instance, @collection)) do
-      {:error, _} -> {:error, "Failed to read initial state for Broadcast"}
+      {:error, _} -> :error
       {:ok, values} -> values |> Enum.map(&Map.get(&1, "load"))
     end
   end
