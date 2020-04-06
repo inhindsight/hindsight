@@ -1,4 +1,8 @@
 defmodule Transformer do
+  @moduledoc """
+  Executes `Transform.Step` impls to generate transformed dictionaries
+  and functions used to transform data.
+  """
   @type transform_function :: (map -> {:ok, map} | {:error, term})
 
   @type t :: %__MODULE__{

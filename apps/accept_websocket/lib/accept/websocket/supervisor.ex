@@ -1,5 +1,5 @@
 defmodule Accept.Websocket.Supervisor do
-  @moduledoc "TODO"
+  @moduledoc false
   use Supervisor
   require Logger
 

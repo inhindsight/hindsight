@@ -23,3 +23,5 @@ config :service_broadcast, Broadcast.Application,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
+
+config :service_broadcast, Broadcast.MetricsReporter, port: 9570

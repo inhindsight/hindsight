@@ -54,7 +54,9 @@ defmodule Destination.Fake do
       :ok
     end
 
-    def delete(_t) do
+    def delete(t) do
+      pid = :ets.lookup_element(Destination.Fake, t.id, 2)
+      send(pid, {:destination_delete, t})
       :ok
     end
   end

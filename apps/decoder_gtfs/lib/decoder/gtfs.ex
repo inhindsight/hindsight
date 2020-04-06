@@ -1,4 +1,11 @@
 defmodule Decoder.Gtfs do
+  @moduledoc """
+  Defines a `Decoder` impl for GTFS data.
+
+  ## Configuration
+
+  * `chunk_size` - Limits chunks by bytes. Defaults to 100.
+  """
   use Definition, schema: Decoder.Gtfs.V1
 
   @derive Jason.Encoder

@@ -1,21 +1,20 @@
 # ProtocolTransformStep
 
-**TODO: Add description**
+Defines a protocol for transforming fields in a [dictionary](../definition_dictionary/README.md).
+
+## Usage
+
+A step must implement this protocol to be used in transformations by Hindsight services.
+Implementing this protocol requires two functions: `transform_dictionary/2` and `create_function/2`.
+
+See [Transform.DeleteField](../transformer/lib/transform/delete_field.ex) as an example.
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `protocol_transform_step` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:protocol_transform_step, "~> 0.1.0"}
+    {:protocol_transform_step, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/protocol_transform_step](https://hexdocs.pm/protocol_transform_step).
-

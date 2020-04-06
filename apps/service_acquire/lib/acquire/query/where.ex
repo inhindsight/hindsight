@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where do
+  @moduledoc false
   alias Acquire.Query.Where.{And, FilterParser, Bbox, Temporal}
 
   @spec from_params(params :: map) :: {:ok, Acquire.Queryable.t()} | {:error, term}

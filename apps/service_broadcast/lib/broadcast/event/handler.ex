@@ -42,6 +42,8 @@ defmodule Broadcast.Event.Handler do
       "#{__MODULE__}: Received event #{dataset_delete()}: #{inspect(delete)}"
     end)
 
+    Broadcast.Transformations.delete(delete)
+
     case Broadcast.Stream.Store.get!(delete.dataset_id, delete.subset_id) do
       nil ->
         Logger.debug("No existing state to delete")
@@ -49,12 +51,12 @@ defmodule Broadcast.Event.Handler do
 
       load ->
         terminate_stream(load)
-        if Elsa.topic?(endpoints(), load.source), do: Elsa.delete_topic(endpoints(), load.source)
-        Logger.debug("Deleted kafka topic")
+        Broadcast.Stream.Store.delete(delete.dataset_id, delete.subset_id)
+        Source.delete(load.source)
+        Destination.delete(load.destination)
     end
 
-    Broadcast.Transformations.delete(delete)
-    Broadcast.Stream.Store.delete(delete.dataset_id, delete.subset_id)
+    :ok
   end
 
   defp terminate_stream(%Load{} = load) do

@@ -1,8 +1,8 @@
 receive:
+  service_udp:
+    type: LoadBalancer
   service:
-    type: NodePort
-  service_tcp:
-    type: NodePort
+    type: ClusterIP
 broadcast:
   service:
     type: ClusterIP

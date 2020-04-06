@@ -35,12 +35,14 @@ defmodule Receive.MixProject do
       {:elsa, "~> 0.12", override: true},
       {:extractor, in_umbrella: true},
       {:initializer, in_umbrella: true},
+      {:metrics_reporter, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:transformer, in_umbrella: true},
 
       # Dev/Test Dependencies
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:mox, "~> 0.5.1", only: [:test]},
+      {:placebo, "~> 2.0.0-rc2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}
     ]
   end

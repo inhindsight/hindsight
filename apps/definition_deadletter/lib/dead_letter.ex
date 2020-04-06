@@ -1,4 +1,17 @@
 defmodule DeadLetter do
+  @moduledoc """
+  Structure around errors in the data processing pipeline. `DeadLetter`
+  objects should be written to the dead-letter-queue through `dlq`.
+
+  ## Configuration
+
+  * `dataset_id` - Required.
+  * `subset_id` - Required.
+  * `app_name` - Required. Atom or string name for application that produced the error.
+  * `original_message` - Original message that caused the error.
+  * `stacktrace` - Stacktrace for the error.
+  * `reason` - Reason for the error. This is usually taken from an `{:error, reason}` tuple.
+  """
   @type t :: %__MODULE__{
           version: integer,
           dataset_id: String.t(),

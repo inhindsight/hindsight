@@ -35,6 +35,7 @@ defmodule Profile.MixProject do
       {:gen_stage, "~> 1.0", override: true},
       {:initializer, in_umbrella: true},
       {:management, in_umbrella: true},
+      {:metrics_reporter, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:protocol_source, in_umbrella: true},
 

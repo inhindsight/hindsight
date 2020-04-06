@@ -2,10 +2,10 @@ orchestrate:
   replicaCount: 1
 receive:
   replicaCount: 1
+  service_udp:
+    port: 6790
   service:
     port: 80
-  service_tcp:
-    port: 6790
 gather:
   replicaCount: 1
 broadcast:

@@ -13,6 +13,7 @@ defmodule Persist.Application do
         Persist.Load.Supervisor,
         Persist.Compact.Registry,
         Persist.Compact.Supervisor,
+        Persist.MetricsReporter,
         brook(),
         init()
       ]

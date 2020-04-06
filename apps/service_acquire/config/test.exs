@@ -19,3 +19,5 @@ config :service_acquire, Acquire.Application,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
+
+config :service_acquire, Acquire.MetricsReporter, port: 9569

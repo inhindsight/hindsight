@@ -1,4 +1,5 @@
 defmodule Kafka.Topic.Source do
+  @moduledoc false
   use GenServer, shutdown: 30_000
   use Annotated.Retry
   require Logger

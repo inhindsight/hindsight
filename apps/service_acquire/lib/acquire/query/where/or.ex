@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where.Or do
+  @moduledoc false
   use Definition, schema: Acquire.Query.Where.Or.Schema
   defstruct [:conditions]
 
@@ -20,6 +21,7 @@ defmodule Acquire.Query.Where.Or do
 end
 
 defmodule Acquire.Query.Where.Or.Schema do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

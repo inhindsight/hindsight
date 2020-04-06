@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where.Function do
+  @moduledoc false
   use Definition, schema: Acquire.Query.Where.Function.Schema
 
   @type t :: %__MODULE__{
@@ -33,6 +34,7 @@ defmodule Acquire.Query.Where.Function do
 end
 
 defmodule Acquire.Query.Where.Function.Schema do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

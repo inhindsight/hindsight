@@ -1,5 +1,8 @@
 defmodule Acquire.Query.ST do
-  @moduledoc "TODO"
+  @moduledoc """
+  Collection of functions that generate `Acquire.Query.Where.Function`
+  objects representing PrestoDB [ST_*](https://prestosql.io/docs/current/functions/geospatial.html#ST_Intersects) functions.
+  """
 
   alias Acquire.Query.Where.Function
   alias Acquire.Queryable

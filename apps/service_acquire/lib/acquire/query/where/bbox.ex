@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where.Bbox do
+  @moduledoc false
   alias Acquire.Query.ST
 
   @spec to_queryable([float], dataset_id :: String.t(), subset_id :: String.t()) ::
