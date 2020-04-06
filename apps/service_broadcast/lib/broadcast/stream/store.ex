@@ -35,9 +35,14 @@ defmodule Broadcast.Stream.Store do
     Brook.ViewState.delete(@collection, identifier(dataset_id, subset_id))
   end
 
-  @spec get_all!() :: [Load.t()]
-  def get_all!() do
-    Brook.get_all_values!(@instance, @collection)
-    |> Enum.map(&Map.get(&1, "load"))
+  @spec get_all() :: [Load.t()]
+  def get_all() do
+    with {:ok, store} <- Brook.get_all_values(@instance, @collection),
+      results <- store |> Enum.map(&Map.get(&1, "load"))
+    do
+      {:ok, results}
+    else
+      _ -> {:error, "Failed to get values from Broadcast store"}
+    end
   end
 end

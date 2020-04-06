@@ -32,8 +32,10 @@ defmodule Initializer do
       end
 
       def handle_continue(:init, state) do
-        do_on_start(state)
-        {:noreply, state}
+        case do_on_start(state) do
+          {:ok, new_state} -> {:noreply, new_state}
+          {:error, reason} -> {:stop, reason}
+        end
       end
 
       def handle_info({:DOWN, supervisor_ref, _, _, _}, %{supervisor_ref: supervisor_ref} = state) do
@@ -56,14 +58,9 @@ defmodule Initializer do
       @retry with: constant_backoff(100) |> take(10)
       defp do_on_start(state) do
         case on_start(state) do
-          {:ok, new_state} -> {:noreply, new_state}
-          {:error, reason} -> {:stop, reason}
+          {:ok, new_state} -> {:ok, new_state}
+          {:error, reason} -> {:error, "on_start for application init failed, retrying..."}
         end
-        catch
-          _, reason ->
-          Logger.error(fn ->
-          "State tables not ready; retrying..."
-        end)
       end
 
       defp setup_monitor() do
