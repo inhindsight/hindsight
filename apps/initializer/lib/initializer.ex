@@ -33,6 +33,7 @@ defmodule Initializer do
 
       def handle_continue(:init, state) do
         do_on_start(state)
+        {:noreply, state}
       end
 
       def handle_info({:DOWN, supervisor_ref, _, _, _}, %{supervisor_ref: supervisor_ref} = state) do
@@ -58,6 +59,11 @@ defmodule Initializer do
           {:ok, new_state} -> {:noreply, new_state}
           {:error, reason} -> {:stop, reason}
         end
+        catch
+          _, reason ->
+          Logger.error(fn ->
+          "State tables not ready; retrying..."
+        end)
       end
 
       defp setup_monitor() do
