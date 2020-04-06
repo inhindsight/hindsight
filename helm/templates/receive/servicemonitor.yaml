@@ -9,6 +9,6 @@ spec:
   selector:
     matchLabels:
       app: hindsight-receive
-      {{- include "hindsight.labels" . | nindent 4 }}
+      {{- include "hindsight.labels" . | nindent 6 }}
   endpoints:
   - port: metrics
