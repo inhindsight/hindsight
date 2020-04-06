@@ -80,6 +80,10 @@ presto:
     db:
       user: ""
       password: ""
+
+cert_manager:
+  enabled: true
+
 global:
   objectStore:
     region: "us-east-2"

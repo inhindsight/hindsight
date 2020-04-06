@@ -1,16 +1,16 @@
+{{- if .Values.cert_manager.enabled -}}
 apiVersion: cert-manager.io/v1alpha2
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-issuer
 spec:
   acme:
-    email: jdenen@pillartechnology.com
+    email: {{ .Values.issuer.email | required "issuer.email must be set" }}
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
-      # Secret resource that will be used to store the account's private key.
-      name: hindsight-prod-tls-key
-    # Add a single challenge solver, HTTP01 using nginx
+      name: hindsight-tls-private-key
     solvers:
     - http01:
         ingress:
           class: nginx
+{{- end -}}
