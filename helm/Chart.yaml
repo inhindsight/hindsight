@@ -19,3 +19,7 @@ dependencies:
     version: 8.12.3
     repository: https://kubernetes-charts.storage.googleapis.com
     condition: prometheus-operator.enabled
+  - name: cert-manager
+    version: 0.14.1
+    repository: https://charts.jetstack.io
+    condition: cert_manager.enabled

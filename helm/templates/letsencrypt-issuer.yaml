@@ -1,0 +1,16 @@
+{{- if .Values.cert_manager.enabled -}}
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-issuer
+spec:
+  acme:
+    email: {{ .Values.issuer.email | required "issuer.email must be set" }}
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: hindsight-tls-private-key
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+{{- end -}}

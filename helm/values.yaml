@@ -68,16 +68,23 @@ serviceAccount:
 podSecurityContext: {}
 securityContext: {}
 
+cert_manager:
+  enabled: false
+
 ingress:
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-issuer"
   host: ""
+  tls:
+    - hosts:
+        - ""
+      secretName: "acme-cert"
   paths:
     - name: acquire
       path: "/api/v[0-9]+/data/.*"
     - name: broadcast
       path: "/socket/websocket"
-  tls: []
 
 resources: {}
 nodeSelector: {}
