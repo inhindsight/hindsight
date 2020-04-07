@@ -11,6 +11,7 @@ acquire:
     type: ClusterIP
 ingress:
   host: hindsight.local
+  tls: []
 strimzi:
   kafka:
     resources:
