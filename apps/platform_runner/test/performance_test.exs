@@ -77,12 +77,12 @@ defmodule Platform.Runner.PerformanceTest do
     csv(opts)
 
     broadcast =
-      Load.Broadcast.new!(
+      Load.new!(
         id: "perf-#{ds}-broadcast-1",
         dataset_id: "perf-#{ds}",
         subset_id: "default",
         source: "perf-#{ds}-csv",
-        destination: "perf_#{ds}_broadcast"
+        destination: Channel.Topic.new!(name: "perf_#{ds}_broadcast")
       )
 
     {:ok, _} =
@@ -92,7 +92,7 @@ defmodule Platform.Runner.PerformanceTest do
       )
 
     Gather.Application.instance()
-    |> Events.send_load_broadcast_start("performance", broadcast)
+    |> Events.send_load_start("performance", broadcast)
 
     assert_receive %{"letter" => "b", "number" => 100_000}, 90_000
   end

@@ -9,9 +9,13 @@ spec:
   type: {{ .Values.receive.service.type }}
   ports:
     - port: {{ .Values.receive.service.port }}
-      targetPort: http
-      protocol: UDP
-      name: http
+      targetPort: websocket
+      protocol: TCP
+      name: websocket
+    - port: 9568
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
   selector:
     app: hindsight-receive
     {{- include "hindsight.selectorLabels" . | nindent 4 }}

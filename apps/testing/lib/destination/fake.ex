@@ -22,39 +22,41 @@ defmodule Destination.Fake do
   end
 
   defimpl Destination do
-    def start_link(%{start_link: "ok", id: id} = t, _) do
+    def start_link(%{start_link: "ok", id: id}, _) do
       Process.sleep(10)
 
       pid = :ets.lookup_element(Destination.Fake, id, 2)
       send(pid, {:destination_start_link, id})
 
-      {:ok, t}
+      {:ok, :destination_fake_pid}
     end
 
     def start_link(%{start_link: error}, _) do
       Ok.error(error)
     end
 
-    def write(%{write: "ok", id: id}, messages) do
+    def write(%{write: "ok", id: id}, :destination_fake_pid, messages) do
       pid = :ets.lookup_element(Destination.Fake, id, 2)
       send(pid, {:destination_write, messages})
 
       :ok
     end
 
-    def write(%{write: error, id: id}, _) do
+    def write(%{write: error, id: id}, :destination_fake_pid, _) do
       pid = :ets.lookup_element(Destination.Fake, id, 2)
       send(pid, {:destination_write, error})
       Ok.error(error)
     end
 
-    def stop(%{id: id}) do
+    def stop(%{id: id}, :destination_fake_pid) do
       pid = :ets.lookup_element(Destination.Fake, id, 2)
       Process.exit(pid, :normal)
       :ok
     end
 
-    def delete(_t) do
+    def delete(t) do
+      pid = :ets.lookup_element(Destination.Fake, t.id, 2)
+      send(pid, {:destination_delete, t})
       :ok
     end
   end

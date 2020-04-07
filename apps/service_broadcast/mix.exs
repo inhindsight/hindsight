@@ -41,6 +41,7 @@ defmodule Broadcast.MixProject do
       {:initializer, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:management, in_umbrella: true},
+      {:metrics_reporter, in_umbrella: true},
       {:phoenix, "~> 1.4.11"},
       {:phoenix_pubsub, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},

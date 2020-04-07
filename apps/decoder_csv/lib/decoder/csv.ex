@@ -1,6 +1,14 @@
 NimbleCSV.define(Decoder.Csv.Parser, [])
 
 defmodule Decoder.Csv do
+  @moduledoc """
+  Defines a `Decoder` impl for CSV data.
+
+  ## Configuration
+
+  * `headers` - Required. List of column headers.
+  * `skip_first_line` - Is first line the headers? Defaults to `false`.
+  """
   use Definition, schema: Decoder.Csv.V1
 
   @type t :: %__MODULE__{

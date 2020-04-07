@@ -9,6 +9,7 @@ defmodule Define.Application do
   def start(_type, _args) do
     children = [
       start_brook(),
+      Define.MetricsReporter,
       DefineWeb.Endpoint
     ]
 

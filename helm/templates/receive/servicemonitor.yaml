@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "hindsight.fullname" . }}-receive
+  labels:
+    app: hindsight-receive
+    {{- include "hindsight.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: hindsight-receive
+      {{- include "hindsight.labels" . | nindent 6 }}
+  endpoints:
+  - port: metrics

@@ -20,5 +20,5 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-definition_load_broadcast-*.tar
+definition_channel-*.tar
 

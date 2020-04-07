@@ -21,7 +21,7 @@ defmodule Broadcast.Cache do
 
   def init(init_arg) do
     Process.flag(:trap_exit, true)
-    broadcast = Keyword.fetch!(init_arg, :load)
+    broadcast = Keyword.fetch!(init_arg, :load) |> Map.get(:destination)
 
     state = %{
       list: [],

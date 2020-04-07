@@ -1,5 +1,4 @@
 defmodule Acquire.Query do
-  # TODO
   @moduledoc false
 
   use Definition, schema: Acquire.Query.Schema

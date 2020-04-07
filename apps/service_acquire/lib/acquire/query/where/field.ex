@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where.Field do
+  @moduledoc false
   use Definition, schema: Acquire.Query.Where.Field.V1
 
   @type t :: %__MODULE__{
@@ -19,6 +20,7 @@ defmodule Acquire.Query.Where.Field do
 end
 
 defmodule Acquire.Query.Where.Field.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

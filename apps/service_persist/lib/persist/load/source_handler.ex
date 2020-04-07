@@ -12,7 +12,7 @@ defmodule Persist.Load.SourceHandler do
   end
 
   def handle_batch(batch, context) do
-    Destination.write(context.assigns.destination, batch)
+    Destination.write(context.assigns.destination, context.assigns.destination_pid, batch)
     :ok
   end
 

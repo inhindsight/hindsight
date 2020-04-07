@@ -12,6 +12,10 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: 9568
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
   selector:
     app: hindsight-acquire
     {{- include "hindsight.selectorLabels" . | nindent 4 }}

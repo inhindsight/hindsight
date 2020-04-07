@@ -17,9 +17,6 @@ defmodule Acquire.MixProject do
     ]
   end
 
-  # Configuration for the OTP application.
-  #
-  # Type `mix help compile.app` for more information.
   def application do
     [
       mod: {Acquire.Application, []},
@@ -27,13 +24,9 @@ defmodule Acquire.MixProject do
     ]
   end
 
-  # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  # Specifies your project dependencies.
-  #
-  # Type `mix help deps` for examples and options.
   defp deps do
     [
       {:corsica, "~> 1.0"},
@@ -45,6 +38,7 @@ defmodule Acquire.MixProject do
       {:extractor, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
+      {:metrics_reporter, in_umbrella: true},
       {:nimble_parsec, "~> 0.5.3"},
       {:ok, in_umbrella: true},
       {:phoenix, "~> 1.4.11"},

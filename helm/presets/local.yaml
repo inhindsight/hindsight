@@ -2,10 +2,10 @@ define:
   service:
     type: NodePort
 receive:
+  service_udp:
+    type: LoadBalancer
   service:
-    type: NodePort
-  service_tcp:
-    type: NodePort
+    type: ClusterIP
 broadcast:
   service:
     type: ClusterIP
@@ -14,6 +14,7 @@ acquire:
     type: ClusterIP
 ingress:
   host: hindsight.local
+  tls: []
 strimzi:
   kafka:
     resources:

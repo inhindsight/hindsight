@@ -1,21 +1,22 @@
 # ExtractDecodeCsv
 
-**TODO: Add description**
+Implementation of the [decoder](../protocol_decoder/README.md) protocol for CSV data.
+
+## Usage
+
+Create a new object with `new/1` and pass it to another struct requireing a `Decoder` impl.
+
+```elixir
+{:ok, csv_decoder} = Decoder.Csv.new(headers: ["a", "b"], skip_first_line: true)
+{:ok, extract} = Extract.new(decoder: csv_decoder, ...)
+```
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `decoder_csv` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:decoder_csv, "~> 0.1.0"}
+    {:decoder_csv, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/extract_decode_csv](https://hexdocs.pm/decoder_csv).
-

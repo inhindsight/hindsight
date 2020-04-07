@@ -1,5 +1,5 @@
 defmodule Accept.Websocket.Router do
-  @moduledoc "TODO"
+  @moduledoc false
   use Plug.Router
 
   plug(:match)

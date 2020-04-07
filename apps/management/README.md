@@ -1,21 +1,39 @@
 # Management
 
-**TODO: Add description**
+This app contains modules to help implement `DynamicSupervisor` and `Registry`
+functionality with less boilerplate. These modules take care of the logic to start 
+event objects as processes under service supervisors/registries.
+
+## Usage
+
+### Supervisor
+
+`Management.Supervisor` folds helpful `DynamicSupervisor` functions into your own
+`DynamicSupervisor` implementation without the boilerplate.
+
+Use `Management.Supervisor` and implement callbacks to name and start child processes
+under it. See [Broadcast.Stream.Supervisor](../service_broadcast/lib/broadcast/stream/supervisor.ex) as an example.
+
+### Registry
+
+`Management.Registry` folds helpful `Registry` functions into your own `Registry`
+implementation without the boilerplate.
+
+```elixir
+defmodule Some.Registry do
+  use Management.Registry, name: __MODULE__
+end
+
+{:via, Registry, {Some.Registry, :foobar}} = Some.Registry.via(:foobar)
+pid = Some.Registry.whereis(:foobar)
+```
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `management` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:management, "~> 0.1.0"}
+    {:management, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/management](https://hexdocs.pm/management).
-

@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where.Functions do
+  @moduledoc false
   alias Acquire.Query.Where.{Array, Field, Function, Literal, Parameter}
   alias Acquire.Queryable
 

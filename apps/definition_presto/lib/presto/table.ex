@@ -20,8 +20,8 @@ defmodule Presto.Table do
 
   defimpl Destination do
     defdelegate start_link(t, context), to: Presto.Table.Destination
-    defdelegate write(t, messages), to: Presto.Table.Destination
-    defdelegate stop(t), to: Presto.Table.Destination
+    defdelegate write(t, server, messages), to: Presto.Table.Destination
+    defdelegate stop(t, server), to: Presto.Table.Destination
     defdelegate delete(t), to: Presto.Table.Destination
   end
 end

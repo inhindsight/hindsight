@@ -5,17 +5,20 @@ defmodule Broadcast.Event.Handler do
 
   import Events,
     only: [
-      load_broadcast_start: 0,
-      load_broadcast_end: 0,
+      load_start: 0,
+      load_end: 0,
       transform_define: 0,
       dataset_delete: 0
     ]
 
   getter(:endpoints, required: true)
 
-  def handle_event(%Brook.Event{type: load_broadcast_start(), data: %Load.Broadcast{} = load}) do
+  def handle_event(%Brook.Event{
+        type: load_start(),
+        data: %Load{destination: %Channel.Topic{}} = load
+      }) do
     Logger.debug(fn ->
-      "#{__MODULE__}: Received event #{load_broadcast_start()}: #{inspect(load)}"
+      "#{__MODULE__}: Received event #{load_start()}: #{inspect(load)}"
     end)
 
     Broadcast.Stream.Supervisor.start_child(load)
@@ -23,7 +26,10 @@ defmodule Broadcast.Event.Handler do
     :ok
   end
 
-  def handle_event(%Brook.Event{type: load_broadcast_end(), data: %Load.Broadcast{} = load}) do
+  def handle_event(%Brook.Event{
+        type: load_end(),
+        data: %Load{destination: %Channel.Topic{}} = load
+      }) do
     terminate_stream(load)
   end
 
@@ -36,6 +42,8 @@ defmodule Broadcast.Event.Handler do
       "#{__MODULE__}: Received event #{dataset_delete()}: #{inspect(delete)}"
     end)
 
+    Broadcast.Transformations.delete(delete)
+
     case Broadcast.Stream.Store.get!(delete.dataset_id, delete.subset_id) do
       nil ->
         Logger.debug("No existing state to delete")
@@ -43,15 +51,15 @@ defmodule Broadcast.Event.Handler do
 
       load ->
         terminate_stream(load)
-        if Elsa.topic?(endpoints(), load.source), do: Elsa.delete_topic(endpoints(), load.source)
-        Logger.debug("Deleted kafka topic")
+        Broadcast.Stream.Store.delete(delete.dataset_id, delete.subset_id)
+        Source.delete(load.source)
+        Destination.delete(load.destination)
     end
 
-    Broadcast.Transformations.delete(delete)
-    Broadcast.Stream.Store.delete(delete.dataset_id, delete.subset_id)
+    :ok
   end
 
-  defp terminate_stream(%Load.Broadcast{} = load) do
+  defp terminate_stream(%Load{} = load) do
     Broadcast.Stream.Supervisor.terminate_child(load)
     Broadcast.Stream.Store.mark_done(load)
   end

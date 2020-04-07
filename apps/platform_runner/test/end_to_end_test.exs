@@ -62,7 +62,7 @@ defmodule PlatformRunner.EndToEndTest do
             ]
           ),
         load: [
-          Load.Broadcast.new!(
+          Load.new!(
             id: "e2e-csv-broadcast-1",
             dataset_id: "e2e-csv-ds",
             subset_id: "csv-subset",
@@ -71,7 +71,7 @@ defmodule PlatformRunner.EndToEndTest do
                 endpoints: [localhost: 9092],
                 name: "e2e-csv-gather"
               ),
-            destination: "e2e_csv_broadcast"
+            destination: Channel.Topic.new!(name: "e2e_csv_broadcast")
           ),
           Load.new!(
             id: "e2e-csv-persist-1",
@@ -240,7 +240,7 @@ defmodule PlatformRunner.EndToEndTest do
 
     test "broadcasted" do
       load =
-        Load.Broadcast.new!(
+        Load.new!(
           id: "e2e-json-broadcast-1",
           dataset_id: "e2e-json-ds",
           subset_id: "json-subset",
@@ -249,13 +249,13 @@ defmodule PlatformRunner.EndToEndTest do
               endpoints: [localhost: 9092],
               name: "e2e-json-gather"
             ),
-          destination: "e2e_json_broadcast"
+          destination: Channel.Topic.new!(name: "e2e_json_broadcast")
         )
 
-      assert {:ok, pid} = BroadcastClient.join(caller: self(), topic: load.destination)
+      assert {:ok, pid} = BroadcastClient.join(caller: self(), topic: load.destination.name)
 
       Broadcast.Application.instance()
-      |> Events.send_load_broadcast_start("e2e-json", load)
+      |> Events.send_load_start("e2e-json", load)
 
       assert_receive %{
                        "name" => "LeBron",
@@ -476,6 +476,15 @@ defmodule PlatformRunner.EndToEndTest do
       assert_async sleep: 1_000, max_tries: 30, debug: true do
         assert {:ok, ^expected} =
                  AcquireClient.data("/e2e-push-ds/e2e-push-ss?after=2020-01-23T00:00:00")
+      end
+    end
+  end
+
+  describe "metrics" do
+    test "exposes metrics for all services" do
+      for port <- [9569, 9570, 9572, 9573, 9574, 9576] do
+        {:ok, %Tesla.Env{body: body}} = Tesla.get("http://localhost:#{port}/metrics")
+        assert String.contains?(body, "vm_memory_total")
       end
     end
   end

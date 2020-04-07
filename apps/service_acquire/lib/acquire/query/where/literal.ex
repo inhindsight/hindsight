@@ -1,4 +1,5 @@
 defmodule Acquire.Query.Where.Literal do
+  @moduledoc false
   use Definition, schema: Acquire.Query.Where.Literal.V1
 
   @type t :: %__MODULE__{
@@ -23,6 +24,7 @@ defmodule Acquire.Query.Where.Literal do
 end
 
 defmodule Acquire.Query.Where.Literal.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

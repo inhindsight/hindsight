@@ -1,4 +1,8 @@
 defmodule Management.Registry do
+  @moduledoc """
+  Folds helper functions around `Registry` usage into a
+  custom `Registry` module.
+  """
   defmacro __using__(opts) do
     name = Keyword.fetch!(opts, :name)
 

@@ -1,4 +1,11 @@
 defmodule Transform.DeleteField do
+  @moduledoc """
+  `Transform.Step` impl to delete fields from a dataset.
+
+  ## Configuration
+
+  * `name` - Required. Field name or path. Ex: `"foo"` or `["foo", "bar"]`
+  """
   use Definition, schema: Transform.DeleteField.V1
 
   @type t :: %__MODULE__{

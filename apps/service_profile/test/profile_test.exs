@@ -21,7 +21,7 @@ defmodule ProfileTest do
     }
   ])
 
-  @tag timeout: :infinity, capture_log: false
+  @tag timeout: :infinity
   test "will profile a dataset" do
     extract =
       Extract.new!(

@@ -1,21 +1,21 @@
 # AcceptWebsocket
 
-**TODO: Add description**
+Implementation of the [connection](../definition_accept/lib/accept/connection.ex) protocol for data pushed over a WebSocket.
+
+## Usage
+
+Create a new object with `new/1`.
+
+```elixir
+{:ok, ws} = Accept.Websocket.new(path: "foo/bar/", port: 9001)
+```
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `accept_websocket` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:accept_websocket, "~> 0.1.0"}
+    {:accept_websocket, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/accept_websocket](https://hexdocs.pm/accept_websocket).
-

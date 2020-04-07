@@ -1,4 +1,5 @@
 defmodule Kafka.Topic.Source.Handler do
+  @moduledoc false
   use Elsa.Consumer.MessageHandler
 
   def handle_messages(messages, context) do

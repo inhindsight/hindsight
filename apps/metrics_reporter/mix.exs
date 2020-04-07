@@ -1,9 +1,9 @@
-defmodule DefinitionLoadBroadcast.MixProject do
+defmodule MetricsReporter.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :definition_load_broadcast,
+      app: :metrics_reporter,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -23,8 +23,13 @@ defmodule DefinitionLoadBroadcast.MixProject do
 
   defp deps do
     [
-      {:definition, in_umbrella: true},
-      {:protocol_source, in_umbrella: true}
+      {:telemetry_poller, "~> 0.5.0"},
+      {:telemetry_metrics_prometheus, "~> 0.5.0"},
+
+      # Dev/Test Dependencies
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
+      {:tesla, "~> 1.3", only: [:test]},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

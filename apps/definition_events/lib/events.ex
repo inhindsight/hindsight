@@ -8,8 +8,6 @@ defmodule Events do
     {"compact:end", Load},
     {"load:start", Load},
     {"load:end", Load},
-    {"load:broadcast:start", Load.Broadcast},
-    {"load:broadcast:end", Load.Broadcast},
     {"schedule:start", Schedule},
     {"schedule:end", Schedule},
     {"dataset:delete", Delete},

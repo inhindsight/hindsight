@@ -1,5 +1,4 @@
 defmodule Acquire.Db do
-  # TODO
   @moduledoc false
 
   @type statement :: String.t()

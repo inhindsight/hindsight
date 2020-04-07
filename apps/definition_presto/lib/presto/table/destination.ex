@@ -13,15 +13,14 @@ defmodule Presto.Table.Destination do
 
   def start_link(table, context) do
     GenServer.start_link(__MODULE__, {table, context})
-    |> Ok.map(&%{table | pid: &1})
   end
 
-  def write(table, messages) do
-    GenServer.call(table.pid, {:write, messages}, write_timeout())
+  def write(_table, server, messages) do
+    GenServer.call(server, {:write, messages}, write_timeout())
   end
 
-  def stop(table) do
-    GenServer.call(table.pid, :stop, write_timeout())
+  def stop(_table, server) do
+    GenServer.call(server, :stop, write_timeout())
   end
 
   def delete(table) do

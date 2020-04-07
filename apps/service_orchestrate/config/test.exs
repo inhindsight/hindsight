@@ -13,3 +13,5 @@ config :service_orchestrate, Orchestrate.Application,
     ],
     dispatcher: Brook.Dispatcher.Noop
   ]
+
+config :service_orchestrate, Orchestrate.MetricsReporter, port: 9573

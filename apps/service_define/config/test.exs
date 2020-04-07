@@ -21,3 +21,5 @@ config :service_define, Define.Application,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :service_define, Define.MetricsReporter, port: 9571

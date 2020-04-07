@@ -59,10 +59,14 @@ defmodule Presto.Table.DestinationIntTest do
         user: "testing"
       )
 
-    {:ok, destination} = Destination.start_link(destination, context)
-    on_exit(fn -> assert_down(destination.pid) end)
+    {:ok, pid} =
+      start_supervised(%{
+        id: :destination,
+        start: {Destination, :start_link, [destination, context]},
+        restart: :temporary
+      })
 
-    [dictionary: dictionary, destination: destination, session: session]
+    [dictionary: dictionary, destination: destination, session: session, pid: pid]
   end
 
   @tag timeout: :infinity
@@ -90,13 +94,13 @@ defmodule Presto.Table.DestinationIntTest do
     end
   end
 
-  test "writes to table", %{session: session, destination: destination} do
+  test "writes to table", %{session: session, destination: destination, pid: pid} do
     data = [
       %{"name" => "fred", "age" => 87, "birthdate" => "1956-01-01"},
       %{"name" => "joey", "age" => 12, "birthdate" => "1987-12-12"}
     ]
 
-    Destination.write(destination, data)
+    Destination.write(destination, pid, data)
 
     assert_async sleep: 1_000, max_tries: 30 do
       result =
@@ -117,11 +121,5 @@ defmodule Presto.Table.DestinationIntTest do
     assert_async sleep: 1_000 do
       assert {:error, _} = Prestige.execute(session, "DESCRIBE #{destination.name}")
     end
-  end
-
-  defp assert_down(pid, reason \\ :normal) do
-    ref = Process.monitor(pid)
-    Process.exit(pid, reason)
-    assert_receive {:DOWN, ^ref, _, _, _}, 2_000
   end
 end
