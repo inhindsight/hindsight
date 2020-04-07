@@ -1,18 +1,21 @@
 defmodule Profile.Init do
-  use Retry
   use Initializer,
     name: __MODULE__,
     supervisor: Profile.Feed.Supervisor
 
   def on_start(state) do
-    retry with: constant_backoff(100) do
-      Profile.Feed.Store.get_all_extracts!()
-      |> Enum.each(&Profile.Feed.Supervisor.start_child/1)
-    after
-      _ ->
+    case Profile.Feed.Store.get_all_extracts() do
+      {:ok, store} ->
+        restore_state_from_store(store)
         {:ok, state}
-    else
-      _ -> {:stop, "Could not read state from store", state}
+
+      {:error, reason} ->
+        {:error, reason}
     end
+  end
+
+  defp restore_state_from_store(store) do
+    store
+    |> Enum.each(&Profile.Feed.Supervisor.start_child/1)
   end
 end

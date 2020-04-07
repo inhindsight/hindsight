@@ -1,5 +1,4 @@
 defmodule Gather.Init do
-  use Retry
   use Initializer,
     name: __MODULE__,
     supervisor: Gather.Extraction.Supervisor
@@ -7,18 +6,22 @@ defmodule Gather.Init do
   alias Gather.Extraction
 
   def on_start(state) do
-    retry with: constant_backoff(100) do
-      Extraction.Store.get_all!()
-      |> Enum.reject(&is_nil/1)
-      |> Enum.reject(&Extraction.Store.done?(&1))
-      |> Enum.each(fn extract ->
-        Extraction.Supervisor.start_child(extract)
-      end)
-    after
-      _ ->
+    case Extraction.Store.get_all() do
+      {:ok, store} ->
+        restore_state_from_store(store)
         {:ok, state}
-    else
-      _ -> {:stop, "Could not read state from store", state}
+
+      {:error, reason} ->
+        {:error, reason}
     end
+  end
+
+  defp restore_state_from_store(store) do
+    store
+    |> Enum.reject(&is_nil/1)
+    |> Enum.reject(&Extraction.Store.done?(&1))
+    |> Enum.each(fn extract ->
+      Extraction.Supervisor.start_child(extract)
+    end)
   end
 end

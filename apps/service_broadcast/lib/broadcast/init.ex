@@ -9,11 +9,12 @@ defmodule Broadcast.Init do
         restore_state_from_store(store)
         {:ok, state}
 
-      {:error, reason} -> {:error, reason}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
-  def restore_state_from_store(store) do
+  defp restore_state_from_store(store) do
     store
     |> Enum.reject(&is_nil/1)
     |> Enum.reject(&Broadcast.Stream.Store.done?(&1))

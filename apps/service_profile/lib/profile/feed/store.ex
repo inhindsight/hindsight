@@ -34,10 +34,18 @@ defmodule Profile.Feed.Store do
     end
   end
 
-  @spec get_all_extracts!() :: [Extract.t()]
-  def get_all_extracts!() do
-    Brook.get_all_values!(@instance, @collection)
-    |> Enum.map(&Map.get(&1, "extract"))
-    |> Enum.filter(& &1)
+  @spec get_all_extracts() :: [Extract.t()]
+  def get_all_extracts() do
+    case Brook.get_all_values(@instance, @collection) do
+      {:ok, results} ->
+        results
+        |> Enum.map(&Map.get(&1, "extract"))
+        |> Enum.filter(& &1)
+
+        {:ok, results}
+
+      {:error, _} ->
+        {:error, "Failed to get values from Profile store"}
+    end
   end
 end

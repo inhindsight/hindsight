@@ -53,9 +53,15 @@ defmodule Persist.Load.Store do
     Brook.ViewState.delete(@collection, identifier(dataset_id, subset_id))
   end
 
-  @spec get_all!() :: [%Load{}]
-  def get_all!() do
-    Brook.get_all_values!(@instance, @collection)
-    |> Enum.map(&Map.get(&1, "load"))
+  @spec get_all() :: [%Load{}]
+  def get_all() do
+    case Brook.get_all_values(@instance, @collection) do
+      {:ok, results} ->
+        results |> Enum.map(&Map.get(&1, "load"))
+        {:ok, results}
+
+      {:error, _} ->
+        {:error, "Failed to get values from Persist store"}
+    end
   end
 end

@@ -1,5 +1,4 @@
 defmodule Receive.Init do
-  use Retry
   use Initializer,
     name: __MODULE__,
     supervisor: Receive.Accept.Supervisor
@@ -7,18 +6,22 @@ defmodule Receive.Init do
   alias Receive.{Accept, SocketManager}
 
   def on_start(state) do
-    retry with: constant_backoff(100) do
-      Accept.Store.get_all!()
-      |> Enum.reject(&is_nil/1)
-      |> Enum.reject(&Accept.Store.done?(&1))
-      |> Enum.each(fn accept ->
-        Accept.Supervisor.start_child({SocketManager, accept: accept})
-      end)
-    after
-      _ ->
+    case Accept.Store.get_all() do
+      {:ok, store} ->
+        restore_state_from_store(store)
         {:ok, state}
-    else
-      _ -> {:stop, "Could not read state from store", state}
+
+      {:error, reason} ->
+        {:error, reason}
     end
+  end
+
+  defp restore_state_from_store(store) do
+    store
+    |> Enum.reject(&is_nil/1)
+    |> Enum.reject(&Accept.Store.done?(&1))
+    |> Enum.each(fn accept ->
+      Accept.Supervisor.start_child({SocketManager, accept: accept})
+    end)
   end
 end

@@ -38,9 +38,15 @@ defmodule Receive.Accept.Store do
     Brook.ViewState.delete(@collection, identifier(dataset_id, subset_id))
   end
 
-  @spec get_all!() :: [Accept.t()]
-  def get_all!() do
-    Brook.get_all_values!(@instance, @collection)
-    |> Enum.map(&Map.get(&1, "accept"))
+  @spec get_all() :: [Accept.t()]
+  def get_all() do
+    case Brook.get_all_values(@instance, @collection) do
+      {:ok, results} ->
+        results |> Enum.map(&Map.get(&1, "accept"))
+        {:ok, results}
+
+      {:error, _} ->
+        {:error, "Failed to get values from Receive store"}
+    end
   end
 end

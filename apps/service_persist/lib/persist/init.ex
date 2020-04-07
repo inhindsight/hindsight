@@ -1,22 +1,25 @@
 defmodule Persist.Init do
-  use Retry
   use Initializer,
     name: __MODULE__,
     supervisor: Persist.Load.Supervisor
 
   def on_start(state) do
-    retry with: constant_backoff(100) do
-      Persist.Load.Store.get_all!()
-      |> Enum.reject(&is_nil/1)
-      |> Enum.reject(&Persist.Load.Store.done?/1)
-      |> Enum.map(fn load -> {load, Persist.Load.Store.is_being_compacted?(load)} end)
-      |> Enum.each(&start/1)
-    after
-      _ ->
+    case Persist.Load.Store.get_all() do
+      {:ok, store} ->
+        restore_state_from_store(store)
         {:ok, state}
-    else
-      _ -> {:stop, "Could not read state from store", state}
+
+      {:error, reason} ->
+        {:error, reason}
     end
+  end
+
+  defp restore_state_from_store(store) do
+    store
+    |> Enum.reject(&is_nil/1)
+    |> Enum.reject(&Persist.Load.Store.done?/1)
+    |> Enum.map(fn load -> {load, Persist.Load.Store.is_being_compacted?(load)} end)
+    |> Enum.each(&start/1)
   end
 
   defp start({load, false = _compacted?}) do

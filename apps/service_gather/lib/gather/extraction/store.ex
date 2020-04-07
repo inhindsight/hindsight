@@ -39,9 +39,15 @@ defmodule Gather.Extraction.Store do
     Brook.ViewState.delete(@collection, identifier(dataset_id, subset_id))
   end
 
-  @spec get_all!() :: [Extract.t()]
-  def get_all!() do
-    Brook.get_all_values!(@instance, @collection)
-    |> Enum.map(&Map.get(&1, "extract"))
+  @spec get_all() :: [Extract.t()]
+  def get_all() do
+    case Brook.get_all_values(@instance, @collection) do
+      {:ok, results} ->
+        results |> Enum.map(&Map.get(&1, "extract"))
+        {:ok, results}
+
+      {:error, _} ->
+        {:error, "Failed to get values from Gather store"}
+    end
   end
 end
