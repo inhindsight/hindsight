@@ -23,7 +23,7 @@ defmodule Initializer.MixProject do
 
   defp deps do
     [
-      {:retry, "~> 0.13.0"}
+      {:annotated_retry, in_umbrella: true}
     ]
   end
 end

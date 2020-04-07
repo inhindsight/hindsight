@@ -38,7 +38,6 @@ defmodule Gather.MixProject do
       {:management, in_umbrella: true},
       {:metrics_reporter, in_umbrella: true},
       {:properties, in_umbrella: true},
-      {:retry, "~> 0.13.0"},
       {:transformer, in_umbrella: true},
 
       # Dev/Test Dependencies

@@ -47,7 +47,9 @@ defmodule Initializer do
               {:ok, new_state} -> {:noreply, state}
               {:error, reason} -> {:stop, reason, state}
             end
-          false -> {:stop, "Supervisor not available", state}
+
+          false ->
+            {:stop, "Supervisor not available", state}
         end
       end
 
