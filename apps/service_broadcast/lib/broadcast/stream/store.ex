@@ -42,8 +42,7 @@ defmodule Broadcast.Stream.Store do
         results |> Enum.map(&Map.get(&1, "load"))
         {:ok, results}
 
-      {:error, _} ->
-        {:error, "Failed to get values from Broadcast store"}
+      {:error, _} -> {:error, "Failed to get values from Broadcast store"}
     end
   end
 end

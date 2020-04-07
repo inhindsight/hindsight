@@ -9,8 +9,7 @@ defmodule Broadcast.Init do
         restore_state_from_store(store)
         {:ok, state}
 
-      {:error, _} ->
-        {:error, "Failed reading initial state for Broadcast on startup"}
+      {:error, reason} -> {:error, reason}
     end
   end
 
