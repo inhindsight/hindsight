@@ -10,8 +10,8 @@ defmodule Define.Model.ArgumentView do
 
   @derive Jason.Encoder
   defstruct version: 1,
-            key: nil,
-            type: nil,
+            key: "",
+            type: "",
             value: nil
 end
 

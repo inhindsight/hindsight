@@ -20,7 +20,7 @@ defmodule Define.Model.AppView.V1 do
   def s do
     schema(%Define.Model.AppView{
       version: version(1),
-      data_definitions: of_struct(DataDefinitionView)
+      data_definitions: list()
     })
   end
 end

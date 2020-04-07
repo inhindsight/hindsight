@@ -10,7 +10,7 @@ defmodule Define.Model.ModuleFunctionArgsView do
 
   @derive Jason.Encoder
   defstruct version: 1,
-            struct_module_name: nil,
+            struct_module_name: "",
             args: []
 end
 

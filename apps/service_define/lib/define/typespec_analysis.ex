@@ -22,7 +22,7 @@ defmodule Define.TypespecAnalysis do
       {:ok, []} ->
         %{}
 
-      {:error} ->
+      :error ->
         Logger.error("Unable to get types for #{module}")
         raise(ArgumentError, "Unable to get types for #{module}")
     end

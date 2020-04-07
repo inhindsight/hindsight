@@ -34,6 +34,7 @@ defmodule Define.MixProject do
       {:definition, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
+      {:definition_kafka, in_umbrella: true},
       {:extractor, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
