@@ -39,7 +39,6 @@ defmodule Gather.MixProject do
       {:metrics_reporter, in_umbrella: true},
       {:plugins, in_umbrella: true},
       {:properties, in_umbrella: true},
-      {:retry, "~> 0.13.0"},
       {:transformer, in_umbrella: true},
       {:bypass, "~> 1.0", only: [:test]},
       {:credo, "~> 1.3", only: [:dev]},

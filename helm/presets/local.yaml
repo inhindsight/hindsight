@@ -65,6 +65,13 @@ presto:
       annotations:
         nginx.ingress.kubernetes.io/use-regex: "true"
       hosts: [storage.hindsight.local/minio.*]
+  view_state_apps:
+    broadcast:
+      db:
+        user: broadcast_app_user
+        password: broadcast123
+        name: broadcast_app_state
+
 vernemq:
   enabled: true
   service:

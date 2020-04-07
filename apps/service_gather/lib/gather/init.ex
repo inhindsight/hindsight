@@ -16,4 +16,13 @@ defmodule Gather.Init do
       Ok.ok(state)
     end
   end
+
+  defp restore_state_from_store(store) do
+    store
+    |> Enum.reject(&is_nil/1)
+    |> Enum.reject(&Extraction.Store.done?(&1))
+    |> Enum.each(fn extract ->
+      Extraction.Supervisor.start_child(extract)
+    end)
+  end
 end

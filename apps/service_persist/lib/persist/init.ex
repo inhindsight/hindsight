@@ -13,7 +13,6 @@ defmodule Persist.Init do
       Enum.split_with(loads, fn load -> load in compactions end)
       |> start_load_or_compaction()
     end
-
     Ok.ok(state)
   end
 
