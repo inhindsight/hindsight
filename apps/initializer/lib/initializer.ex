@@ -7,7 +7,6 @@ defmodule Initializer do
 
     quote location: :keep do
       use GenServer
-      use Retry
       use Annotated.Retry
 
       @behaviour Initializer
@@ -39,10 +38,8 @@ defmodule Initializer do
       end
 
       def handle_info({:DOWN, supervisor_ref, _, _, _}, %{supervisor_ref: supervisor_ref} = state) do
-        retry with: constant_backoff(100) |> Stream.take(10), atoms: [false] do
-          Process.whereis(unquote(supervisor)) != nil
-        after
-          _ ->
+        case do_wait_for_supervisor(supervisor_ref) do
+          true ->
             supervisor_ref = setup_monitor()
             state = Map.put(state, :supervisor_ref, supervisor_ref)
 
@@ -50,9 +47,13 @@ defmodule Initializer do
               {:ok, new_state} -> {:noreply, state}
               {:error, reason} -> {:stop, reason, state}
             end
-        else
-          _ -> {:stop, "Supervisor not available", state}
+          false -> {:stop, "Supervisor not available", state}
         end
+      end
+
+      @retry with: constant_backoff(100) |> take(10)
+      defp do_wait_for_supervisor(supervisor) do
+        Process.whereis(unquote(supervisor)) != nil
       end
 
       @retry with: constant_backoff(100) |> take(10)
