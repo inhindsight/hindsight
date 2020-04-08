@@ -1,6 +1,6 @@
 define:
   service:
-    type: NodePort
+    type: ClusterIP
 receive:
   service_udp:
     type: LoadBalancer

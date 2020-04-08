@@ -1,3 +1,6 @@
+define:
+  service:
+    type: ClusterIP
 receive:
   service:
     type: ClusterIP

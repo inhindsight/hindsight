@@ -1,7 +1,6 @@
 use Mix.Config
 
 config :service_define, Define.Application,
-  kafka_endpoints: nil,
   brook: [
     driver: [
       module: Brook.Driver.Default,

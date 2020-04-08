@@ -18,7 +18,7 @@ const simpleProps: DataDefinitionView = {
                         {
                             struct_module_name: "Extract.Http.Get",
                             args: [
-                                { key: "url", type: PrimitiveArgumentType.string, value: "http://www.source.com/the-data.csv"}
+                                { key: "url", type: PrimitiveArgumentType.string, value: "http://www.example.com/the-data.csv"}
                             ]
                         }
                     ]
