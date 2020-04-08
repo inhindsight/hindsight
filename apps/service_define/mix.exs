@@ -44,7 +44,7 @@ defmodule Define.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:properties, in_umbrella: true},
       # This should eventually be transformer once that has been created (like extractor)
-      {:transform_wkt, in_umbrella: true}
+      {:transform_wkt, in_umbrella: true},
 
       # Dev/Test dependencies
       {:phoenix_live_reload, "~> 1.2", only: [:dev]},
