@@ -20,7 +20,7 @@ defmodule Define.Event.Store do
   end
 
   def update_definition(data) do
-    Logger.error("Got unexpected data definition update: #{inspect(data)}")
+    Logger.error(fn -> "Got unexpected data definition update: #{inspect(data)}" end)
   end
 
   defp update_definition_field(data, key, to_view_converter) do
