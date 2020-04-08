@@ -8,8 +8,8 @@ metadata:
 {{ include "presto.labels" . | indent 4 }}
 data:
   app-state-config.sql: |-
-    {{- range .Values.view_state_apps }}
-    CREATE USER {{ .db.user | required "view_state_apps app db.user must be set" }} WITH PASSWORD '{{ .db.password | required "view_state_apps app db.password must be set" }}';
-    CREATE DATABASE {{ .db.name }} WITH OWNER {{ .db.user }};
+    {{- range $key, $value := .Values.view_state_apps }}
+    CREATE USER {{ $value.db.user | required "view_state_apps app db.user must be set" }} WITH PASSWORD '{{ $value.db.password | required "view_state_apps app db.password must be set" }}';
+    CREATE DATABASE {{ $value.db.name }} WITH OWNER {{ $value.db.user }};
     {{- end }}
 {{- end }}

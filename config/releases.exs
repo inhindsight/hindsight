@@ -157,10 +157,10 @@ config :service_broadcast, Broadcast.Application,
       init_arg: [
         table: "broadcast_state",
         postgrex_args: [
-          hostname: "localhost",
-          username: "broadcast_app_user",
-          password: "broadcast123",
-          database: "broadcast_app_state"
+          hostname: System.get_env("BROADCAST_DB_HOST", "localhost"),
+          username: System.get_env("BROADCAST_DB_USER", "broadcast_app_user"),
+          password: System.get_env("BROADCAST_DB_PASSWORD", "broadcast123"),
+          database: System.get_env("BROADCAST_DB_NAME", "broadcast_app_state")
         ]
       ]
     ],

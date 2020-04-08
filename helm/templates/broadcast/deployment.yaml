@@ -40,6 +40,14 @@ spec:
               containerPort: 9568
               protocol: TCP
           env:
+            - name: BROADCAST_DB_HOST
+              value: {{ $.Values.presto.postgres.service.externalAddress | required "externalAddress of postgres service is required"}}
+            - name: BROADCAST_DB_NAME
+              value: {{ .Values.presto.view_state_apps.broadcast.db.name }}
+            - name: BROADCAST_DB_USER
+              value: {{ .Values.presto.view_state_apps.broadcast.db.user }}
+            - name: BROADCAST_DB_PASSWORD
+              value: {{ .Values.presto.view_state_apps.broadcast.db.password }}
             - name: KAFKA_ENDPOINTS
               value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092
             - name: SECRET_KEY_BASE

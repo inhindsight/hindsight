@@ -47,46 +47,11 @@ presto:
         nginx.ingress.kubernetes.io/use-regex: "true"
       hosts: [storage.hindsight.local/minio.*]
   view_state_apps:
-    - app: acquire
-      db:
-        user: acquire_app_user
-        password: acquire123
-        name: acquire_app_state
-    - app: broadcast
+    broadcast:
       db:
         user: broadcast_app_user
         password: broadcast123
         name: broadcast_app_state
-    - app: define
-      db:
-        user: define_app_user
-        password: define123
-        name: define_app_state
-    - app: gather
-      db:
-        user: gather_app_user
-        password: gather123
-        name: gather_app_state
-    - app: orchestrate
-      db:
-        user: orchestrate_app_user
-        password: orchestrate123
-        name: orchestrate_app_state
-    - app: persist
-      db:
-        user: persist_app_user
-        password: persist123
-        name: persist_app_state
-    - app: profile
-      db:
-        user: profile_app_user
-        password: profile123
-        name: profile_app_state
-    - app: receive
-      db:
-        user: receive_app_user
-        password: receive123
-        name: receive_app_state
 global:
   objectStore:
     bucketName: hindsight-object-storage
