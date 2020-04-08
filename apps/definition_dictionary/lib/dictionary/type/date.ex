@@ -3,11 +3,11 @@ defmodule Dictionary.Type.Date do
   use Dictionary.JsonEncoder
 
   @type t :: %__MODULE__{
-    version: integer,
-    name: String.t(),
-    description: String.t(),
-    format: String.t()
-  }
+          version: integer,
+          name: String.t(),
+          description: String.t(),
+          format: String.t()
+        }
 
   defstruct version: 1,
             name: nil,

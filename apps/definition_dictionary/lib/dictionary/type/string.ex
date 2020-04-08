@@ -3,10 +3,10 @@ defmodule Dictionary.Type.String do
   use Dictionary.JsonEncoder
 
   @type t :: %__MODULE__{
-    version: integer,
-    name: String.t(),
-    description: String.t()
-  }
+          version: integer,
+          name: String.t(),
+          description: String.t()
+        }
 
   defstruct version: 1,
             name: nil,
