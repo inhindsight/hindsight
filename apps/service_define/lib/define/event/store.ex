@@ -20,7 +20,7 @@ defmodule Define.Event.Store do
   end
 
   def update_definition(data) do
-    Logger.error("Got unexpected data definition update: #{inspect(data)}")
+    Logger.error(fn -> "Got unexpected data definition update: #{inspect(data)}" end)
   end
 
   defp update_definition_field(data, key, to_view_converter) do
@@ -29,7 +29,7 @@ defmodule Define.Event.Store do
     |> persist()
   rescue
     err ->
-      Logger.error("Unable to process transform event: #{inspect(err)}")
+      Logger.error(fn -> "Unable to process transform event: #{inspect(err)}" end)
       discard()
   end
 
