@@ -34,6 +34,9 @@ spec:
           - mountPath: /docker-entrypoint-initdb.d/init.sql
             name: postgres-init
             subPath: init.sql
+          - mountPath: /docker-entrypoint-initdb.d/app-state-config.sql
+            name: postgres-app-state-config
+            subPath: app-state-config.sql
 {{- if .Values.postgres.storage.persist }}
           - mountPath: /var/lib/postgres/data
             name: postgres-data
@@ -42,6 +45,9 @@ spec:
       - name: postgres-init
         configMap:
           name: {{ template "presto.postgres.fullname" . }}-init
+      - name: postgres-app-state-config
+        configMap:
+          name: {{ template "presto.postgres.fullname" . }}-app-state-config
 {{- if .Values.postgres.storage.persist }}
       - name: postgres-data
         persistentVolumeClaim:
