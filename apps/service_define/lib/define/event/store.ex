@@ -29,7 +29,7 @@ defmodule Define.Event.Store do
     |> persist()
   rescue
     err ->
-      Logger.error("Unable to process transform event: #{inspect(err)}")
+      Logger.error(fn -> "Unable to process transform event: #{inspect(err)}" end)
       discard()
   end
 
