@@ -37,6 +37,14 @@ spec:
               containerPort: 9568
               protocol: TCP
           env:
+            - name: ORCHESTRATE_DB_HOST
+              value: {{ template "postgres.fullname" . }}
+            - name: ORCHESTRATE_DB_NAME
+              value: {{ .Values.presto.view_state_apps.orchestrate.db.name }}
+            - name: ORCHESTRATE_DB_USER
+              value: {{ .Values.presto.view_state_apps.orchestrate.db.user | required "app db.user must be set" }}
+            - name: ORCHESTRATE_DB_PASSWORD
+              value: {{ .Values.presto.view_state_apps.orchestrate.db.password | required "app db.password must be set" }}
             - name: KAFKA_ENDPOINTS
               value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092
           resources:

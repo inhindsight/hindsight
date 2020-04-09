@@ -37,6 +37,14 @@ spec:
               containerPort: 9568
               protocol: TCP
           env:
+            - name: GATHER_DB_HOST
+              value: {{ template "postgres.fullname" . }}
+            - name: GATHER_DB_NAME
+              value: {{ .Values.presto.view_state_apps.gather.db.name }}
+            - name: GATHER_DB_USER
+              value: {{ .Values.presto.view_state_apps.gather.db.user | required "app db.user must be set" }}
+            - name: GATHER_DB_PASSWORD
+              value: {{ .Values.presto.view_state_apps.gather.db.password | required "app db.password must be set" }}
             - name: KAFKA_ENDPOINTS
               value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092
           resources:

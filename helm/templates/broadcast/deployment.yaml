@@ -45,9 +45,9 @@ spec:
             - name: BROADCAST_DB_NAME
               value: {{ .Values.presto.view_state_apps.broadcast.db.name }}
             - name: BROADCAST_DB_USER
-              value: {{ .Values.presto.view_state_apps.broadcast.db.user }}
+              value: {{ .Values.presto.view_state_apps.broadcast.db.user | required "app db.user must be set" }}
             - name: BROADCAST_DB_PASSWORD
-              value: {{ .Values.presto.view_state_apps.broadcast.db.password }}
+              value: {{ .Values.presto.view_state_apps.broadcast.db.password | required "app db.password must be set" }}
             - name: KAFKA_ENDPOINTS
               value: {{ template "hindsight.fullname" . }}-kafka-bootstrap:9092
             - name: SECRET_KEY_BASE
