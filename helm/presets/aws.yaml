@@ -2,7 +2,7 @@ receive:
   service:
     type: ClusterIP
   service_udp:
-    type: LoadBalancer
+    type: ClusterIP
 broadcast:
   service:
     type: ClusterIP
