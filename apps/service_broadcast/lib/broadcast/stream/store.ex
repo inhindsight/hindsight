@@ -37,13 +37,8 @@ defmodule Broadcast.Stream.Store do
 
   @spec get_all() :: [Load.t()]
   def get_all() do
-    case Brook.get_all_values(@instance, @collection) do
-      {:ok, results} ->
-        results |> Enum.map(&Map.get(&1, "load"))
-        {:ok, results}
-
-      {:error, _} ->
-        {:error, "Failed to get values from Broadcast store"}
+    with {:ok, _state} = results <- Brook.get_all_values(@instance, @collection) do
+      Ok.map(results, fn col -> Enum.map(col, &Map.get(&1, "load")) end)
     end
   end
 end
