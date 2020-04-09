@@ -20,6 +20,19 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
+Create a fully qualified postgres name.
+This is a duplicate of the presto.postgres.fullname for applications that need to
+conncet to the postgres database.
+*/}}
+{{- define "postgres.fullname" -}}
+{{- if .Values.postgres.fullnameOverride -}}
+{{- .Values.postgres.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s-%s" .Release.Name "hindsight" "postgres" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "hindsight.chart" -}}

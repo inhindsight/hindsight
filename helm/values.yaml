@@ -12,6 +12,7 @@ broadcast:
   replicaCount: 1
   service:
     port: 80
+postgres: {}
 persist:
   replicaCount: 1
 acquire:

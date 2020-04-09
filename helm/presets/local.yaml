@@ -34,9 +34,6 @@ nginx-ingress:
     service:
       type: LoadBalancer
 presto:
-  postgres:
-    service:
-      externalAddress: "localhost"
   presto:
     ingress:
       enable: true
