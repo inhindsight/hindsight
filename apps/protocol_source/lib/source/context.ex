@@ -1,4 +1,17 @@
 defmodule Source.Context do
+  @moduledoc """
+  Encapsulates usage-specific metadata for protocol implementations.
+
+  ## Metadata
+
+  `dictionary` - Required. Dictionary for data being read from `Source.t()`.
+  `handler` - Required. Module used to process incoming data.
+  `app_name` - Name of service reading from `Source.t()`.
+  `dataset_id` - Dataset identifier.
+  `subset_id` - Dataset's subset identifier.
+  `decode_json` - Boolean value indicating whether JSON decoding should occur.
+  `assigns` - Map used as a key/value bucket for very impl-specific metadata.
+  """
   use Definition, schema: Source.Context.V1
 
   @type t :: %__MODULE__{
@@ -21,6 +34,7 @@ defmodule Source.Context do
 end
 
 defmodule Source.Context.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do
