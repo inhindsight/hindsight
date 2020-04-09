@@ -1,6 +1,7 @@
 defmodule Profile.InitTest do
   use ExUnit.Case
   use Placebo
+  import AssertAsync
 
   import Definition, only: [identifier: 1]
   @instance Profile.Application.instance()
@@ -56,8 +57,10 @@ defmodule Profile.InitTest do
 
     assert {:ok, :state} = Profile.Init.on_start(:state)
 
-    assert_called(Profile.Feed.Supervisor.start_child(extract1))
-    assert_called(Profile.Feed.Supervisor.start_child(extract2))
-    assert_called(Profile.Feed.Supervisor.start_child(extract3))
+    assert_async do
+      assert_called(Profile.Feed.Supervisor.start_child(extract1))
+      assert_called(Profile.Feed.Supervisor.start_child(extract2))
+      assert_called(Profile.Feed.Supervisor.start_child(extract3))
+    end
   end
 end

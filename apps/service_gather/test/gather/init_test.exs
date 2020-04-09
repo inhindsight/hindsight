@@ -1,6 +1,7 @@
 defmodule Gather.InitTest do
   use Gather.Case
   import Definition, only: [identifier: 1]
+  import AssertAsync
 
   @moduletag capture_log: true
 
@@ -41,10 +42,12 @@ defmodule Gather.InitTest do
 
     {:ok, _pid} = start_supervised({Gather.Init, name: :init_test})
 
-    assert_receive {:destination_start_link, id1}, 5_000
-    assert_receive {:destination_start_link, id2}, 5_000
+    assert_async do
+      assert_receive {:destination_start_link, id1}, 5_000
+      assert_receive {:destination_start_link, id2}, 5_000
 
-    refute id1 == id2
+      refute id1 == id2
+    end
 
     Gather.Extraction.Supervisor.kill_all_children()
   end

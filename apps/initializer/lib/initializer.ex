@@ -43,7 +43,7 @@ defmodule Initializer do
 
       def handle_info({:DOWN, supervisor_ref, _, _, _}, %{supervisor_ref: supervisor_ref} = state) do
         case do_wait_for_supervisor(supervisor_ref) do
-          true ->
+          {:ok, _} ->
             supervisor_ref = setup_monitor()
             state = Map.put(state, :supervisor_ref, supervisor_ref)
 
@@ -52,14 +52,19 @@ defmodule Initializer do
               {:error, reason} -> {:stop, reason, state}
             end
 
-          false ->
+          _ ->
             {:stop, "Supervisor not available", state}
         end
       end
 
       @retry with: constant_backoff(100) |> take(10)
       defp do_wait_for_supervisor(supervisor) do
-        Process.whereis(unquote(supervisor)) != nil
+        sup_pid = Process.whereis(unquote(supervisor))
+
+        case sup_pid do
+          nil -> {:error, "Failed to get supervisor"}
+          _ -> {:ok, sup_pid}
+        end
       end
 
       @retry with: constant_backoff(100) |> take(10)
