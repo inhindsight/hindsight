@@ -1,21 +1,28 @@
 # ExtractDecodeJson
 
-**TODO: Add description**
+Implementation of the [decoder](../protocol_decoder/README.md) protocol for JSON 
+and JSON Lines data.
+
+## Usage
+
+Create a new object with `new/1` ans pass it to another struct requiring a `Decoder` impl.
+
+```elixir
+{:ok, json_decoder} = Decoder.Json.new([chunk_size: 1_000])
+{:ok, extract} = Extract.new(decoder: json_decoder, ... )
+```
+
+```elixir
+{:ok, json_lines_decoder} = Decoder.JsonLines.new([])
+{:ok, extract} = Extract.new(decoder: json_lines_decoder, ... )
+```
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `decoder_json` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:decoder_json, "~> 0.1.0"}
+    {:decoder_json, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/extract_decode_json](https://hexdocs.pm/decoder_json).
-
