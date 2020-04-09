@@ -1,4 +1,16 @@
 defmodule Load do
+  @moduledoc """
+  Defines a load event, reading data from a `Source.t()` and writing it
+  to a `Destination.t()`.
+
+  ## Configuration
+
+  * `id` - Required. Event instance UUID.
+  * `dataset_id` - Required. Dataset identifier.
+  * `subset_id` - Required. Dataset's subset identifier.
+  * `source` - Required. `Source` impl to read data from.
+  * `destination` - Required. `Destination` impl to write data to.
+  """
   use Definition, schema: Load.V1
 
   @type uuid :: String.t()
@@ -21,6 +33,7 @@ defmodule Load do
 end
 
 defmodule Load.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do
