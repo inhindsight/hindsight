@@ -1,4 +1,19 @@
 defmodule Presto.Table.Manager do
+  @moduledoc """
+  It's more performant to write a data file directly to object storage
+  than to write through PrestoDB, but writing some formats directly to
+  object storage results in poor read performance. JSON, for example.
+
+  In these cases, we write data files directly to object storage and use
+  PrestoDB to copy into a new (and properly) formatted table.
+
+  ## Example
+
+  JSON data is written to a file via `Presto.Table.DataFile` behaviour,
+  uploaded to a staging table via `Presto.Table.DataStorage` behaviour,
+  and staged JSON data is written to a production table in ORC format through
+  PrestoDB with this behaviour.
+  """
   use Properties, otp_app: :definition_presto
 
   @formats %{json: "JSON", avro: "AVRO", orc: "ORC"}
@@ -48,6 +63,7 @@ defmodule Presto.Table.Manager do
 end
 
 defmodule Presto.Table.Manager.Impl do
+  @moduledoc false
   @behaviour Presto.Table.Manager
 
   alias Presto.Table.Dictionary.Translator

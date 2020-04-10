@@ -1,4 +1,9 @@
 defmodule Presto.Table.DataFile do
+  @moduledoc """
+  It's more performant to write a data file directly to object storage
+  than to write through PrestoDB. This behaviour defines the callbacks
+  used to manage files that will be written directly to object storage.
+  """
   use Properties, otp_app: :definition_presto
   @type t :: term
   @type file_path :: Path.t()
@@ -35,6 +40,9 @@ defmodule Presto.Table.DataFile do
 end
 
 defmodule Presto.Table.DataFile.Avro do
+  @moduledoc """
+  Implementation of `DataFile` behaviour to manage avro data files.
+  """
   @behaviour Presto.Table.DataFile
 
   def format(), do: :avro
@@ -45,6 +53,9 @@ defmodule Presto.Table.DataFile.Avro do
 end
 
 defmodule Presto.Table.DataFile.Json do
+  @moduledoc """
+  Implementation of `DataFile` behaviour to manage JSON data files.
+  """
   @behaviour Presto.Table.DataFile
 
   @type t :: %__MODULE__{

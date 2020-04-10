@@ -1,4 +1,11 @@
 defmodule Presto.Table.Compactor do
+  @moduledoc """
+  Behaviour for compacting table data from many object-storage
+  files to one. Compaction should be run to increase read performance
+  out of object storage.
+
+  This behaviour exists to allow easy testing with `Mox`.
+  """
   use Properties, otp_app: :definition_presto
 
   @callback compact(Presto.Table.t()) :: :ok | {:error, term}
@@ -11,6 +18,7 @@ defmodule Presto.Table.Compactor do
 end
 
 defmodule Presto.Table.Compactor.Presto do
+  @moduledoc false
   @behaviour Presto.Table.Compactor
   use Properties, otp_app: :definition_presto
 
