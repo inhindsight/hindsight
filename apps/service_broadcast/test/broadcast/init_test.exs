@@ -1,6 +1,7 @@
 defmodule Broadcast.InitTest do
   use ExUnit.Case
   use Placebo
+  import AssertAsync
 
   @instance Broadcast.Application.instance()
 
@@ -35,7 +36,9 @@ defmodule Broadcast.InitTest do
     end)
 
     start_supervised(Broadcast.Init)
-    assert_called(Broadcast.Stream.Supervisor.start_child(Enum.at(loads, 0)))
-    assert_called(Broadcast.Stream.Supervisor.start_child(Enum.at(loads, 1)))
+    assert_async do
+      assert_called(Broadcast.Stream.Supervisor.start_child(Enum.at(loads, 0)))
+      assert_called(Broadcast.Stream.Supervisor.start_child(Enum.at(loads, 1)))
+    end
   end
 end
