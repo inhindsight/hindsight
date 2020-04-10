@@ -35,12 +35,12 @@ defmodule Define.DefinitionSerialization do
 
   defp to_argument_view({_, "dictionary"}, %Dictionary.Type.Map{} = map_definition) do
     value = to_module_function_args_view(map_definition)
-    %ArgumentView{key: "dictionary", type: "module", value: value}
+    %ArgumentView{key: "dictionary", type: {"list", "module"}, value: value}
   end
 
   defp to_argument_view({_, "dictionary"}, dictionary) do
     value = dictionary |> Dictionary.from_list() |> serialize()
-    %ArgumentView{key: "dictionary", type: "module", value: value}
+    %ArgumentView{key: "dictionary", type: {"list", "module"}, value: value}
   end
 
   defp to_argument_view({_, "module"}, dictionary) do

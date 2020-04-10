@@ -145,7 +145,7 @@ const nestedProps: DataDefinitionView = {
                 struct_module_name: "Elixir.Dictionary.Type.Map",
                 args: [
                     { key: "name", type: PrimitiveArgumentType.string, value: "address" },
-                    { key: "dictionary", type: PrimitiveArgumentType.module, value: [
+                    { key: "dictionary", type: ["list", PrimitiveArgumentType.module], value: [
                         {
                             struct_module_name: "Elixir.Dictionary.Type.String",
                             args: [ { key: "name", type: PrimitiveArgumentType.string, value: "street_address" } ]
@@ -168,6 +168,32 @@ const nestedProps: DataDefinitionView = {
             {
                 struct_module_name: "Elixir.Dictionary.Type.String",
                 args: [ { key: "name", type: PrimitiveArgumentType.string, value: "owner_name" } ]
+            },
+            {
+                struct_module_name: "Elixir.Dictionary.Type.List",
+                args: [
+                    { key: "name", type: PrimitiveArgumentType.string, value: "features" },
+                    { key: "item_type",
+                      type: PrimitiveArgumentType.module,
+                      value: {
+                          struct_module_name: "Elixir.Dictionary.Type.Map",
+                          args: [
+                              { key: "name", type: PrimitiveArgumentType.string, value: "feature" },
+                              { key: "dictionary",
+                                type: ["list", PrimitiveArgumentType.module],
+                                value: [
+                                  {struct_module_name: "Elixir.Dictionary.Type.Integer",
+                                   args: [{key: "name", type: PrimitiveArgumentType.string, value: "num_of_bedrooms" }]
+                                  },
+                                  {struct_module_name: "Elixir.Dictionary.Type.Integer",
+                                   args: [{key: "name", type: PrimitiveArgumentType.string, value: "num_of_bathrooms" }]
+                                  }
+                                ]
+                              }
+                          ]
+                      }
+                    }
+                ]
             }
         ]
     },

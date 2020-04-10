@@ -17,7 +17,7 @@ export const componentForType = (type: ArgumentType): ValueComponent<any> => {
         const [, subtype] = type
         switch (subtype) {
             case PrimitiveArgumentType.string: return ListWrapper
-            case PrimitiveArgumentType.module: return ModuleFunctionArgsWrapper
+            case PrimitiveArgumentType.module: return ModuleFunctionArgsListWrapper
             default: return StringWrapper
         }
     } else {
@@ -32,8 +32,13 @@ export const componentForType = (type: ArgumentType): ValueComponent<any> => {
 const StringWrapper: ValueComponent<string> =
     ({value}) => <>{value.toString()}</>
 
-const ModuleFunctionArgsWrapper: ValueComponent<readonly ModuleFunctionArgsView[]> =
-    ({value}) => <>{value.map((value, index) => <span key={index}><ModuleFunctionArgs{...value}/><br/></span>)}</>
+const ModuleFunctionArgsWrapper: ValueComponent<ModuleFunctionArgsView> = 
+    ({value}) => <ModuleFunctionArgs{...value}/>
+
+const ModuleFunctionArgsListWrapper: ValueComponent<readonly ModuleFunctionArgsView[]> = ({value}) => 
+    <>
+        {value.map((value, index) => <span key={index}><ModuleFunctionArgs{...value}/><br/></span>)}
+    </>
 
 const MapWrapper: ValueComponent<ObjectMap<string>> =
     ({value}) => <Map object={value}/>

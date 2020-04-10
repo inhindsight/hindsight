@@ -114,7 +114,7 @@ defmodule Define.DefinitionSerializationTest do
                 },
                 %ArgumentView{
                   key: "dictionary",
-                  type: "module",
+                  type: {"list", "module"},
                   version: 1,
                   value: [
                     %ModuleFunctionArgsView{
