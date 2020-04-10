@@ -1,8 +1,13 @@
 defmodule Presto.Table.Dictionary.Translator.Result do
+  @moduledoc false
   defstruct [:name, :type]
 end
 
 defprotocol Presto.Table.Dictionary.Translator do
+  @moduledoc """
+  Protocol for formatting Hindsight `Dictionary.Type`s into proper
+  PrestoDB-formatted values.
+  """
   @spec translate_type(t) :: %Presto.Table.Dictionary.Translator.Result{}
   def translate_type(field)
 
@@ -11,6 +16,7 @@ defprotocol Presto.Table.Dictionary.Translator do
 end
 
 defmodule Presto.Table.Dictionary do
+  @moduledoc false
   alias Presto.Table.Dictionary.Translator
   alias Presto.Table.Dictionary.Translator.Result
 

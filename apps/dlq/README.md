@@ -1,21 +1,39 @@
 # Dlq
 
-**TODO: Add description**
+Application to write a list of [DeadLetter](../definition_deadletter/README.md) messages
+to a dead-letter-queue.
+
+## Usage
+
+Pulling `:dlq` app into your app/service will cause the [server](lib/dlq/server.ex) to
+start automatically. Using the running application is as easy as passing your messages
+to `Dlq.write/1`.
+
+```elixir
+DeadLetter.new(...)
+|> List.wrap()
+|> Dlq.write()
+```
+
+### Dlq and testing
+
+For tests and local development, you may not want to spin up your `:dlq` dependency.
+You can turn off auto-start with the `:init?` config option. By default, auto-start
+is toggled on.
+
+```elixir
+config :dlq, Dlq.Application, init?: false
+```
+
+The `Dlq` module adheres to a [behaviour](lib/dlq.ex) for testing purposes.
+Mock `Dlq.write/1` usage with `Mox` in your tests to make usage verification easy.
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `dlq` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:dlq, "~> 0.1.0"}
+    {:dlq, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/dlq](https://hexdocs.pm/dlq).
-

@@ -1,4 +1,16 @@
 defmodule Channel.Topic do
+  @moduledoc """
+  Defines a channel topic, encapsulating destination information for
+  a WebSocket. Data can be cached so a user receives the cached data
+  on subscription to the channel.
+
+  ## Configuration
+
+  * `name` - Required. Topic name. Do NOT prepend with app-specific
+  routing information. (ex. `broadcast:topic_name`).
+  * `cache` - Number of messages to cache and push to user on channel
+  join. Defaults to 0 (off).
+  """
   use Definition, schema: Channel.Topic.V1
 
   @type t :: %__MODULE__{
@@ -29,6 +41,7 @@ defmodule Channel.Topic do
 end
 
 defmodule Channel.Topic.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

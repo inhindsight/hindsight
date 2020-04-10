@@ -1,4 +1,14 @@
 defmodule Presto.Table do
+  @moduledoc """
+  Defines a PrestoDB table and makes it a `Destination.t()` impl.
+
+  ## Configuration
+
+  * `url` - Required. PrestoDB location.
+  * `name` - Required. Table name.
+  * `schema` - Optional database schema. Defaults to `"default"`.
+  * `pid` - Optional. Tracks writer processes for specific table instance.
+  """
   use Definition, schema: Presto.Table.V1
 
   @type t :: %__MODULE__{
@@ -27,6 +37,7 @@ defmodule Presto.Table do
 end
 
 defmodule Presto.Table.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

@@ -1,9 +1,16 @@
 defmodule Source.Message do
+  @moduledoc """
+  Encapsulates data through source handler functions.
+  """
   @type t :: %__MODULE__{}
   defstruct [:original, :value, :error, :stacktrace]
 end
 
 defmodule Source.Handler do
+  @moduledoc """
+  Behaviour describing functions necessary to handle single messages,
+  message batches, and writing errant messages to a DLQ.
+  """
   @type impl :: module
 
   @callback handle_message(map, Source.Context.t()) :: {:ok, map} | {:error, term}

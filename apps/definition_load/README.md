@@ -1,21 +1,29 @@
 # DefinitionLoad
 
-**TODO: Add description**
+Defines an event to describe loading (as in ETL) data from a
+[source](../protocol_source/README.md) to a [destination](../protocol_destination/README.md).
+
+## Usage
+
+Decide on a source and destination, then define a load.
+
+```elixir
+{:ok, load} =
+  Load.new(
+    id: "some-id",
+    dataset_id: "dataset-identifier",
+    subset_id: "subset-identifier",
+    source: source,
+    destination: destination
+  )
+```
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `definition_load` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:definition_load, "~> 0.1.0"}
+    {:definition_load, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/definition_load](https://hexdocs.pm/definition_load).
-

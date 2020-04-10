@@ -1,4 +1,14 @@
 defmodule Destination.Context do
+  @moduledoc """
+  Encapsulates usage-specific metadata for protocol implementations.
+
+  ## Metadata
+
+  `dictionary` - Dictionary for data being written to `Destination.t()`.
+  `app_name` - Name of service writing to `Destination.t()`.
+  `dataset_id` - Dataset identifier.
+  `subset_id` - Dataset's subset identifier.
+  """
   use Definition, schema: Destination.Context.V1
 
   @type t :: %__MODULE__{
@@ -12,6 +22,7 @@ defmodule Destination.Context do
 end
 
 defmodule Destination.Context.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

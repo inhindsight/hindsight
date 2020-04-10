@@ -1,4 +1,5 @@
 defmodule Presto.Table.Destination do
+  @moduledoc false
   use GenServer
   use Properties, otp_app: :definition_presto
   require Logger

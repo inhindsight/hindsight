@@ -60,6 +60,7 @@ defmodule Decoder.Csv do
 end
 
 defmodule Decoder.Csv.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

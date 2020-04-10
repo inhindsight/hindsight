@@ -1,4 +1,7 @@
 defprotocol Destination do
+  @moduledoc """
+  Defines a protocol for data destinations -- where data is written or loaded into.
+  """
   @spec start_link(t, Destination.Context.t()) :: GenServer.on_start()
   def start_link(t, context)
 
