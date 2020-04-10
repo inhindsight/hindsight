@@ -1,8 +1,14 @@
 defmodule Dlq.Behaviour do
+  @moduledoc """
+  Defines behaviour of `Dlq` to make testing `Dlq` usage easier.
+  """
   @callback write([DeadLetter.t()]) :: :ok
 end
 
 defmodule Dlq do
+  @moduledoc """
+  Used to write `DeadLetter` messages to a dead-letter-queue.
+  """
   @behaviour Dlq.Behaviour
 
   @impl true
