@@ -40,13 +40,8 @@ defmodule Receive.Accept.Store do
 
   @spec get_all() :: [Accept.t()]
   def get_all() do
-    case Brook.get_all_values(@instance, @collection) do
-      {:ok, results} ->
-        results |> Enum.map(&Map.get(&1, "accept"))
-        {:ok, results}
-
-      {:error, _} ->
-        {:error, "Failed to get values from Receive store"}
+    with {:ok, _state} = results <- Brook.get_all_values(@instance, @collection) do
+      Ok.map(results, fn col -> Enum.map(col, &Map.get(&1, "accept")) end)
     end
   end
 end
