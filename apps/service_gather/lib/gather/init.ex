@@ -20,8 +20,6 @@ defmodule Gather.Init do
     store
     |> Enum.reject(&is_nil/1)
     |> Enum.reject(&Extraction.Store.done?(&1))
-    |> Enum.each(fn extract ->
-      Extraction.Supervisor.start_child(extract)
-    end)
+    |> Enum.each(&Extraction.Supervisor.start_child/1)
   end
 end

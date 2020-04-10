@@ -41,13 +41,8 @@ defmodule Gather.Extraction.Store do
 
   @spec get_all() :: [Extract.t()]
   def get_all() do
-    case Brook.get_all_values(@instance, @collection) do
-      {:ok, results} ->
-        results |> Enum.map(&Map.get(&1, "extract"))
-        {:ok, results}
-
-      {:error, _} ->
-        {:error, "Failed to get values from Gather store"}
+    with {:ok, _state} = results <- Brook.get_all_values(@instance, @collection) do
+      Ok.map(results, fn col -> Enum.map(col, &Map.get(&1, "extract")) end)
     end
   end
 end
