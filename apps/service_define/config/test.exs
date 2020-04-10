@@ -19,7 +19,8 @@ config :service_define, Define.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-# Print only warnings and errors during test
 config :logger, level: :warn
+
+config :dlq, Dlq.Application, init?: false
 
 config :service_define, Define.MetricsReporter, port: 9571
