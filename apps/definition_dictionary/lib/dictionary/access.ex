@@ -44,13 +44,7 @@ defmodule Dictionary.Access do
       |> Enum.map(fn {entry, index} ->
         wrapper = fn value ->
           with {get_value, update_value} <- next.(value) do
-            case is_spreadable?(update_value, spread?) do
-              true ->
-                {get_value, Enum.at(update_value, index)}
-
-              false ->
-                {get_value, update_value}
-            end
+            spread_if_spreadable(get_value, update_value, index, spread?)
           end
         end
 
@@ -72,7 +66,10 @@ defmodule Dictionary.Access do
     end
   end
 
-  defp is_spreadable?(value, spread?) do
-    is_list(value) && spread?
+  defp spread_if_spreadable(value, update, index, spread?) do
+    case is_list(update) && spread? do
+      true -> {value, Enum.at(update, index)}
+      false -> {value, update}
+    end
   end
 end

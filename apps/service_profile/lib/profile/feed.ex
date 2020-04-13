@@ -54,10 +54,9 @@ defmodule Profile.Feed do
   end
 
   defp maybe_add_reducers(reducers, reducer, dictionary, path) do
-    unless includes_reducer?(reducers, reducer) do
-      reducers ++ create_reducers(reducer, dictionary, path)
-    else
-      reducers
+    case includes_reducer?(reducers, reducer) do
+      true -> reducers
+      false -> reducers ++ create_reducers(reducer, dictionary, path)
     end
   end
 

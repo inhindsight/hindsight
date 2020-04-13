@@ -17,7 +17,7 @@ defmodule BroadcastWeb.Channel do
   def handle_info({:after_join, topic}, socket) do
     Broadcast.Cache.Registry.via(topic)
     |> Broadcast.Cache.get()
-    |> Enum.map(&push(socket, @update_event, &1))
+    |> Enum.each(&push(socket, @update_event, &1))
 
     {:noreply, socket}
   catch
