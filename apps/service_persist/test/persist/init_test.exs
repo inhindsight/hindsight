@@ -1,6 +1,7 @@
 defmodule Persist.InitTest do
   use ExUnit.Case
   use Placebo
+  import AssertAsync
 
   @instance Persist.Application.instance()
 
@@ -51,8 +52,9 @@ defmodule Persist.InitTest do
       Persist.Load.Store.mark_done(load)
     end)
 
-    assert {:ok, :state} = Persist.Init.on_start(:state)
-
-    refute_called Persist.Compact.Supervisor.start_child(load)
+    assert_async do
+      assert {:ok, :state} = Persist.Init.on_start(:state)
+      refute_called Persist.Compact.Supervisor.start_child(load)
+    end
   end
 end
