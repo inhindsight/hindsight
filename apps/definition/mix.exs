@@ -28,7 +28,8 @@ defmodule Definition.MixProject do
       {:jason, "~> 1.1"},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:stream_data, "~> 0.4.0", only: [:dev, :test]},
-      {:checkov, "~> 1.0", only: [:dev, :test]}
+      {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:credo, "~> 1.3", only: [:dev]}
     ]
   end
 end

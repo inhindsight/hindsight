@@ -29,6 +29,7 @@ defmodule Transformer.MixProject do
       {:transform_wkt, in_umbrella: true},
       {:ok, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
+      {:credo, "~> 1.3", only: [:dev]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:testing, in_umbrella: true, only: [:test]}
     ]
