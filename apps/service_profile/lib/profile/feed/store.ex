@@ -38,9 +38,10 @@ defmodule Profile.Feed.Store do
   def get_all_extracts() do
     case Brook.get_all_values(@instance, @collection) do
       {:ok, results} ->
-        filtered_results = results
-        |> Enum.map(&Map.get(&1, "extract"))
-        |> Enum.filter(& &1)
+        filtered_results =
+          results
+          |> Enum.map(&Map.get(&1, "extract"))
+          |> Enum.filter(& &1)
 
         {:ok, filtered_results}
 

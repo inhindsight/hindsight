@@ -36,6 +36,7 @@ defmodule Broadcast.InitTest do
     end)
 
     start_supervised(Broadcast.Init)
+
     assert_async do
       assert_called(Broadcast.Stream.Supervisor.start_child(Enum.at(loads, 0)))
       assert_called(Broadcast.Stream.Supervisor.start_child(Enum.at(loads, 1)))

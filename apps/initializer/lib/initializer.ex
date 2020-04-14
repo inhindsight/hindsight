@@ -56,6 +56,7 @@ defmodule Initializer do
       @retry with: constant_backoff(100) |> take(10)
       defp do_wait_for_supervisor(supervisor) do
         sup_pid = Process.whereis(unquote(supervisor))
+
         case sup_pid do
           nil -> {:error, "Failed to get supervisor"}
           _ -> {:ok, sup_pid}
