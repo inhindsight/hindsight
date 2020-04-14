@@ -28,8 +28,7 @@ function check_strimzi {
 
 function deps {
     info "Installing Helm dependencies"
-    helm repo add google https://kubernetes-charts.storage.googleapis.com
-    (cd ./helm; helm dependency build)
+    (cd ./helm; helm dependency update)
 }
 
 function strimzi {
@@ -40,7 +39,7 @@ function strimzi {
         info "Installing Strimzi"
         helm upgrade strimzi-kafka-operator strimzi/strimzi-kafka-operator \
              --install \
-             --version 0.16.2 \
+             --version 0.17.0 \
              --set watchAnyNamespace=true
 
         check_strimzi 300s
