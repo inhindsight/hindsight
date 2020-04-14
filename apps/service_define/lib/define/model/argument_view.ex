@@ -4,7 +4,7 @@ defmodule Define.Model.ArgumentView do
   @type t :: %__MODULE__{
           version: integer,
           key: String.t(),
-          type: String.t(),
+          type: String.t() | list(String.t()),
           value: any()
         }
 
@@ -23,7 +23,7 @@ defmodule Define.Model.ArgumentView.V1 do
     schema(%Define.Model.ArgumentView{
       version: version(1),
       key: string(),
-      type: string()
+      type: spec(is_binary() or is_list())
     })
   end
 end

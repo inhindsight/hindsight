@@ -33,7 +33,7 @@ export class StateProvider extends React.Component<PropsWithChildren<{}>, { read
     }
 
     componentDidMount() {
-        this.socket = new Socket("/socket")
+        this.socket = new Socket("/define-socket")
         this.socket.connect()
 
         this.channel = this.socket.channel("view_messages", {})

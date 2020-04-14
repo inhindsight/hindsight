@@ -40,6 +40,7 @@ defmodule Define.MixProject do
       {:jason, "~> 1.0"},
       {:metrics_reporter, in_umbrella: true},
       {:phoenix, "~> 1.4.15"},
+      {:phoenix_html, "~> 2.14"},
       {:phoenix_pubsub, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       {:properties, in_umbrella: true},
