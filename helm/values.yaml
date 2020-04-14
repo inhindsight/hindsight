@@ -60,7 +60,10 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
-# Strimzi subchart
+# Subchart configuration is namespaced under the subchart's name
+# as a top-level key. For example, the Certificate Manager's subchart is
+# configured under the cert_manager key.
+
 strimzi:
   enabled: true
   kafka:
@@ -73,13 +76,11 @@ strimzi:
       enabled: false
       size: ""
 
-# Redis subchart
 redis:
   usePassword: false
   cluster:
     enabled: false
 
-# Nginx Ingress subchart
 nginx-ingress:
   controller:
     metrics:
@@ -87,7 +88,6 @@ nginx-ingress:
     service:
       type: LoadBalancer
 
-# Prometheus subchart
 prometheus-operator:
   enabled: false
   prometheusOperator:
@@ -96,11 +96,9 @@ prometheus-operator:
       additional:
         - kube-system
 
-# Cert-Manager subchart
 cert_manager:
   enabled: false
 
-# VerneMQ subchart
 vernemq:
   enabled: false
   image:

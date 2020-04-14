@@ -23,7 +23,10 @@ global:
       port: 9000
       scheme: "http://"
 
-# Strimzi subchart
+# Subchart configuration is namespaced under the subchart's name
+# as a top-level key. For example, the Certificate Manager's subchart is
+# configured under the cert_manager key.
+
 strimzi:
   kafka:
     resources:
@@ -42,7 +45,6 @@ strimzi:
         cpu: 100m
         memory: 512Mi
 
-# Redis subchart
 redis:
   enabled: true
   externalAddress: ""
@@ -51,7 +53,6 @@ nginx-ingress:
     service:
       type: LoadBalancer
 
-# Presto subchart
 presto:
   presto:
     ingress:
@@ -66,7 +67,6 @@ presto:
         nginx.ingress.kubernetes.io/use-regex: "true"
       hosts: [storage.hindsight.local/minio.*]
 
-# VerneMQ subchart
 vernemq:
   enabled: true
   service:

@@ -25,7 +25,10 @@ global:
     minio:
       enabled: false
 
-# Strimzi subchart
+# Subchart configuration is namespaced under the subchart's name
+# as a top-level key. For example, the Certificate Manager's subchart is
+# configured under the cert_manager key.
+
 strimzi:
   kafka:
     storage:
@@ -53,12 +56,10 @@ strimzi:
         cpu: 250m
         memory: 512Mi
 
-# Redis subchart
 redis:
   enabled: false
   externalAddress: ""
 
-# Nginx subchart
 nginx-ingress:
   controller:
     service:
@@ -66,7 +67,6 @@ nginx-ingress:
         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
       type: LoadBalancer
 
-# Prometheus subchart
 prometheus-operator:
   enabled: true
   prometheus:
@@ -89,7 +89,6 @@ prometheus-operator:
     ingress:
       enabled: true
 
-# Presto subchart
 presto:
   postgres:
     enable: false
@@ -99,11 +98,9 @@ presto:
       user: ""
       password: ""
 
-# Cert Manager subchart
 cert_manager:
   enabled: true
 
-# VerneMQ subchart
 vernemq:
   enabled: false
   persistentVolume.size: 25Gi
