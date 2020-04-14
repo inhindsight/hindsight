@@ -16,6 +16,16 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
+
+global:
+  objectStore:
+    region: "us-east-2"
+    accessKey: ""
+    accessSecret: ""
+    minio:
+      enabled: false
+
+# Strimzi subchart
 strimzi:
   kafka:
     storage:
@@ -42,15 +52,21 @@ strimzi:
       limits:
         cpu: 250m
         memory: 512Mi
+
+# Redis subchart
 redis:
   enabled: false
   externalAddress: ""
+
+# Nginx subchart
 nginx-ingress:
   controller:
     service:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
       type: LoadBalancer
+
+# Prometheus subchart
 prometheus-operator:
   enabled: true
   prometheus:
@@ -72,6 +88,8 @@ prometheus-operator:
   grafana:
     ingress:
       enabled: true
+
+# Presto subchart
 presto:
   postgres:
     enable: false
@@ -81,13 +99,16 @@ presto:
       user: ""
       password: ""
 
+# Cert Manager subchart
 cert_manager:
   enabled: true
 
-global:
-  objectStore:
-    region: "us-east-2"
-    accessKey: ""
-    accessSecret: ""
-    minio:
-      enabled: false
+# VerneMQ subchart
+vernemq:
+  enabled: false
+  persistentVolume.size: 25Gi
+  replicaCount: 3
+  service:
+    type: LoadBalancer
+  serviceMonitor:
+    enabled: true

@@ -12,6 +12,18 @@ acquire:
 ingress:
   host: hindsight.local
   tls: []
+global:
+  objectStore:
+    bucketName: hindsight-object-storage
+    region: local
+    accessKey: hindsightAccessKey
+    accessSecret: hindsightAccessSecret
+    minio:
+      enabled: true
+      port: 9000
+      scheme: "http://"
+
+# Strimzi subchart
 strimzi:
   kafka:
     resources:
@@ -29,6 +41,8 @@ strimzi:
       limits:
         cpu: 100m
         memory: 512Mi
+
+# Redis subchart
 redis:
   enabled: true
   externalAddress: ""
@@ -36,6 +50,8 @@ nginx-ingress:
   controller:
     service:
       type: LoadBalancer
+
+# Presto subchart
 presto:
   presto:
     ingress:
@@ -49,13 +65,9 @@ presto:
       annotations:
         nginx.ingress.kubernetes.io/use-regex: "true"
       hosts: [storage.hindsight.local/minio.*]
-global:
-  objectStore:
-    bucketName: hindsight-object-storage
-    region: local
-    accessKey: hindsightAccessKey
-    accessSecret: hindsightAccessSecret
-    minio:
-      enabled: true
-      port: 9000
-      scheme: "http://"
+
+# VerneMQ subchart
+vernemq:
+  enabled: true
+  service:
+    type: LoadBalancer
