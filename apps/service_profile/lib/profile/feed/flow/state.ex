@@ -1,4 +1,7 @@
 defmodule Profile.Feed.Flow.State do
+  @moduledoc """
+  Simple state management functions for profiling `Flow`s.
+  """
   def start_link(opts) do
     reducers = Keyword.fetch!(opts, :reducers)
 

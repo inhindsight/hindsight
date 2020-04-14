@@ -1,4 +1,8 @@
 defmodule Receive.SocketManager do
+  @moduledoc """
+  Process that wraps socket connection initialization. Links `Destination.t()`
+  process as well as socket consumer process.
+  """
   use GenServer
   use Annotated.Retry
   use Properties, otp_app: :service_receive

@@ -1,4 +1,8 @@
 defmodule Profile.Feed.Consumer do
+  @moduledoc """
+  Process for handling `GenStage` messages during profiling, sending a
+  `profile_update` event.
+  """
   use GenStage
   require Logger
 

@@ -1,4 +1,6 @@
 defmodule Dictionary.Access do
+  @moduledoc false
+
   @type access_fun :: Access.access_fun(data :: struct | map, get_value :: term())
 
   @type opts :: [

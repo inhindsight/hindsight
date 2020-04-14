@@ -1,4 +1,5 @@
 defmodule Profile.Feed.Flow do
+  @moduledoc false
   use Flow
   use Properties, otp_app: :service_profile
   require Logger

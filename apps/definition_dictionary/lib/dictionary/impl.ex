@@ -1,4 +1,5 @@
 defmodule Dictionary.Impl do
+  @moduledoc false
   require Logger
 
   @behaviour Access

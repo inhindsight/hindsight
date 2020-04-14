@@ -1,4 +1,10 @@
 defmodule Accept.Udp do
+  @moduledoc """
+  `Accept.Connection` impl for UDP communication.
+
+  See [Accept.Connection](../../../definition_accept/README.md) for more
+  information.
+  """
   use Definition, schema: Accept.Udp.V1
 
   @type uuid :: String.t()
@@ -25,6 +31,7 @@ defmodule Accept.Udp do
 end
 
 defmodule Accept.Udp.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

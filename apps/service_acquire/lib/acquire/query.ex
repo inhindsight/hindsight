@@ -63,6 +63,7 @@ defmodule Acquire.Query do
 end
 
 defmodule Acquire.Query.Schema do
+  @moduledoc false
   use Definition.Schema
 
   alias Acquire.Query.Where.{Function, And, Or}

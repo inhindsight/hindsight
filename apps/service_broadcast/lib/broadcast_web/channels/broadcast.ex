@@ -1,4 +1,5 @@
 defmodule BroadcastWeb.Channel do
+  @moduledoc false
   use BroadcastWeb, :channel
   require Logger
 

@@ -1,4 +1,12 @@
 defmodule Profile.Update do
+  @moduledoc """
+  Object representing the profiling of data. Use `new/1` to create a new instance.
+
+  ## Init options
+
+  * `dataset_id` - Dataset identifier.
+  * `subset_id` - Dataset's subset identifier.
+  """
   use Definition, schema: Profile.Update.V1
 
   @type t :: %__MODULE__{
@@ -27,6 +35,7 @@ defmodule Profile.Update do
 end
 
 defmodule Profile.Update.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

@@ -1,4 +1,5 @@
 defmodule Define.ViewMessages.Channel do
+  @moduledoc false
   use DefineWeb, :channel
   require Logger
   alias Define.ViewState

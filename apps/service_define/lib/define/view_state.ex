@@ -1,4 +1,7 @@
 defmodule Define.ViewState do
+  @moduledoc """
+  State management functions for events.
+  """
   use GenServer
 
   def event(pid, type, payload) do

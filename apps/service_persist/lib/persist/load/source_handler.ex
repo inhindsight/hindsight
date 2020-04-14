@@ -1,4 +1,10 @@
 defmodule Persist.Load.SourceHandler do
+  @moduledoc """
+  Callbacks for handling data messages.
+
+  See [Source.Handler](../../../../protocol_source/lib/source/handler.ex)
+  for more.
+  """
   use Source.Handler
   use Properties, otp_app: :service_persist
   require Logger

@@ -1,4 +1,5 @@
 defmodule Extract.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

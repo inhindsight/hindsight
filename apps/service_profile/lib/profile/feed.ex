@@ -1,4 +1,7 @@
 defmodule Profile.Feed do
+  @moduledoc """
+  Supervises dataset profiling `Flow`s.
+  """
   use Supervisor
 
   @type init_opts :: [
