@@ -24,8 +24,7 @@ defmodule Dictionary.Type.Date do
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
     @tokenizer Timex.Parse.DateTime.Tokenizers.Strftime
 
-    # TODO use `in` guard
-    def normalize(_field, value) when is_nil(value) or value == "" do
+    def normalize(_field, value) when value in [nil, ""] do
       Ok.ok("")
     end
 

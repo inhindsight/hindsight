@@ -30,7 +30,7 @@ defmodule Dictionary.Type.Timestamp do
     @tokenizer Timex.Parse.DateTime.Tokenizers.Strftime
     @utc "Etc/UTC"
 
-    def normalize(_, value) when is_nil(value) or value == "" do
+    def normalize(_, value) when value in [nil, ""] do
       Ok.ok("")
     end
 
