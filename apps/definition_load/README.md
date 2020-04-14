@@ -1,6 +1,6 @@
 # DefinitionLoad
 
-Defines an event to describe loading (as in ETL) data from a
+Defines an event struct for loading (`L` in `ETL`) data from a
 [source](../protocol_source/README.md) to a [destination](../protocol_destination/README.md).
 
 ## Usage

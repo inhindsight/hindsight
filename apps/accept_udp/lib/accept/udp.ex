@@ -4,6 +4,10 @@ defmodule Accept.Udp do
 
   See [Accept.Connection](../../../definition_accept/README.md) for more
   information.
+
+  ## Init options
+
+  * `port` - The port data messages will be pushed through.
   """
   use Definition, schema: Accept.Udp.V1
 
