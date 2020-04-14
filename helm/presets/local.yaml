@@ -71,3 +71,8 @@ vernemq:
   enabled: true
   service:
     type: LoadBalancer
+  additionalEnv:
+    - name: DOCKER_VERNEMQ_ALLOW_ANONYMOUS
+      value: "on"
+    - name: DOCKER_VERNEMQ_USER_HINDSIGHT
+      value: "hindsight"
