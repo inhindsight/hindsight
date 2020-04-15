@@ -30,7 +30,7 @@ export const componentForType = (type: ArgumentType): ValueComponent<any> => {
 }
 
 const StringWrapper: ValueComponent<string> =
-    ({value}) => <>{value ? value.toString() : "null"}</>
+    ({value}) => <>{value ? value.toString() : ""}</>
 
 const ModuleFunctionArgsWrapper: ValueComponent<ModuleFunctionArgsView> =
     ({value}) => <ModuleFunctionArgs{...value}/>

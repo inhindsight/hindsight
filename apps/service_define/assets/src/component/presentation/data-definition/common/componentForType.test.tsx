@@ -64,7 +64,7 @@ describe("componentForType()", () => {
         const Component = componentForType(PrimitiveArgumentType.string)
         const element = renderComponent(<Component value={null}/>)
 
-        expect(element.textContent).to.contain("null")
+        expect(element.textContent).to.equal("")
     })
 
     values(PrimitiveArgumentType).forEach(type => {

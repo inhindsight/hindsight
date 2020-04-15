@@ -94,3 +94,6 @@ global:
     accessSecret: ""
     minio:
       enabled: false
+image:
+  pullPolicy: Always
+  repository: nbeachaccenture/hindsight

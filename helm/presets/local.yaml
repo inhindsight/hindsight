@@ -62,3 +62,6 @@ global:
       enabled: true
       port: 9000
       scheme: "http://"
+image:
+  pullPolicy: Always
+  repository: nbeachaccenture/hindsight
