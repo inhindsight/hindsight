@@ -25,6 +25,7 @@ defmodule Orchestrate.MixProject do
   defp deps do
     [
       {:brook, "~> 0.5"},
+      {:brook_storage_postgres, "~> 0.1.1"},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},
       {:definition_presto, in_umbrella: true},
