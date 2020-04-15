@@ -1,9 +1,3 @@
-# FROM node:12.5.0 as npm_builder
-# COPY apps/service_define/assets/ /app
-# WORKDIR /app/
-# RUN npm install \
-#   && npm run release
-
 FROM bitwalker/alpine-elixir-phoenix:1.9.4 as build
 COPY . /opt/app
 WORKDIR /opt/app/
@@ -21,7 +15,8 @@ RUN mix release orchestrate \
   && mix release define \
   && mix release acquire
 RUN npm install --prefix apps/service_define/assets \
-  && npm run release --prefix apps/service_define/assets 
+  && npm run release --prefix apps/service_define/assets \
+  && rm -rf _build/prod/rel/define/lib/service_define-0.1.0/priv/static/
 COPY apps/service_define/assets/dist _build/prod/rel/define/lib/service_define-0.1.0/priv/static/
 
 FROM bitwalker/alpine-erlang:22.2.3

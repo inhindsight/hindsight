@@ -11,12 +11,11 @@ describe("componentForType()", () => {
 
     it("when module type returns component that renders the module", () => {
         const Component = componentForType(PrimitiveArgumentType.module)
-        const module: readonly ModuleFunctionArgsView[] = [
-            {
-                ...moduleFunctionArgsViewDefaults,
-                struct_module_name: "foo"
-            }
-        ]
+        const module: ModuleFunctionArgsView = {
+            ...moduleFunctionArgsViewDefaults,
+            struct_module_name: "foo"
+        }
+
         const element = renderComponent(<Component value={module}/>)
 
         expect(element.textContent).to.contain("foo")
@@ -59,6 +58,13 @@ describe("componentForType()", () => {
         expect(element.textContent).to.contain("bar")
         expect(element.textContent).to.contain("cake")
         expect(element.textContent).to.contain("pie")
+    })
+
+    it("when a null value is given it renders as null", () => {
+        const Component = componentForType(PrimitiveArgumentType.string)
+        const element = renderComponent(<Component value={null}/>)
+
+        expect(element.textContent).to.contain("null")
     })
 
     values(PrimitiveArgumentType).forEach(type => {
