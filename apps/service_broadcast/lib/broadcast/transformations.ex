@@ -1,4 +1,8 @@
 defmodule Broadcast.Transformations do
+  @moduledoc """
+  State management functions for transformation events.
+  """
+
   @instance Broadcast.Application.instance()
   @collection "transformations"
 

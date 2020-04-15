@@ -1,4 +1,7 @@
 defmodule Receive.Event.Handler do
+  @moduledoc """
+  Callbacks for handling events from `Brook`.
+  """
   use Brook.Event.Handler
   use Properties, otp_app: :service_receive
   require Logger

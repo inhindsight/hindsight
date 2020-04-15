@@ -1,4 +1,18 @@
 defmodule Dictionary.Type.Date do
+  @moduledoc """
+  Date type in IS08601 format.
+
+  Date format must be supplied for conversion to ISO8601. `nil` values will
+  be converted to empty strings regardless of specified string format. Empty
+  string values are supported as well.
+
+  See [Timex](https://hexdocs.pm/timex/Timex.Format.DateTime.Formatters.Strftime.html)
+  for possible format field values.
+
+  ## Init options
+
+  * `format` - Format to parse string into `Date`.
+  """
   use Definition, schema: Dictionary.Type.Date.V1
   use Dictionary.JsonEncoder
 
@@ -10,7 +24,7 @@ defmodule Dictionary.Type.Date do
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do
     @tokenizer Timex.Parse.DateTime.Tokenizers.Strftime
 
-    def normalize(_field, value) when is_nil(value) or value == "" do
+    def normalize(_field, value) when value in [nil, ""] do
       Ok.ok("")
     end
 
@@ -25,6 +39,7 @@ defmodule Dictionary.Type.Date do
 end
 
 defmodule Dictionary.Type.Date.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

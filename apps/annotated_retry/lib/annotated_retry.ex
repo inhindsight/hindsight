@@ -1,4 +1,6 @@
 defmodule Annotated.Retry do
+  @moduledoc false
+
   defmacro __using__(_opts) do
     quote do
       import Retry.DelayStreams

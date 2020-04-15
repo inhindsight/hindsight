@@ -1,4 +1,8 @@
 defmodule Persist.Transformations do
+  @moduledoc """
+  State management functions for transformation events.
+  """
+
   @instance Persist.Application.instance()
   @collection "transformations"
 

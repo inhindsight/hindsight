@@ -23,7 +23,8 @@ defmodule ProtocolTransformStep.MixProject do
 
   defp deps do
     [
-      {:definition, in_umbrella: true}
+      {:definition, in_umbrella: true},
+      {:credo, "~> 1.3", only: [:dev]}
     ]
   end
 end

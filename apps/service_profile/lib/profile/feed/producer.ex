@@ -10,6 +10,12 @@ defmodule Profile.Feed.Producer do
   getter(:dlq, default: Dlq)
 
   defmodule Handler do
+    @moduledoc """
+    Callbacks for handling data messages.
+
+    See [Source.Handler](../../../../protocol_source/lib/source/handler.ex)
+    for more.
+    """
     use Source.Handler
 
     def handle_batch(batch, context) do

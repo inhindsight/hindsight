@@ -50,6 +50,7 @@ defmodule Accept do
 end
 
 defmodule Accept.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

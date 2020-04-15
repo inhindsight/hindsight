@@ -23,7 +23,8 @@ defmodule DefinitionDeadletter.MixProject do
 
   defp deps do
     [
-      {:jason, "~> 1.1"}
+      {:jason, "~> 1.1"},
+      {:credo, "~> 1.3", only: [:dev]}
     ]
   end
 end

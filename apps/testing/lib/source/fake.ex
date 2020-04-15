@@ -1,4 +1,7 @@
 defmodule Source.Fake do
+  @moduledoc """
+  `Source.t()` impl for testing.
+  """
   @derive Jason.Encoder
   defstruct [:id]
 

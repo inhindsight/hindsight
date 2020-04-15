@@ -1,4 +1,11 @@
 defmodule Dictionary.Type.List do
+  @moduledoc """
+  List type. Normalization of the list normalizes all of its elements.
+
+  ## Init options
+
+  * `item_type` - `Dictionary.Type.*` type for list elements.
+  """
   use Definition, schema: Dictionary.Type.List.V1
   use Dictionary.JsonEncoder
   @behaviour Access
@@ -58,6 +65,7 @@ defmodule Dictionary.Type.List do
 end
 
 defmodule Dictionary.Type.List.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

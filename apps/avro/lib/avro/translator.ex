@@ -10,6 +10,8 @@ defprotocol Avro.Translator do
 end
 
 defmodule Avro.Translator.Default do
+  @moduledoc false
+
   defmacro __using__(_opts) do
     quote do
       def type(_t), do: :avro_primitive.null_type()

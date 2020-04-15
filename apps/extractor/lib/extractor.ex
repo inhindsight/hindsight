@@ -1,4 +1,12 @@
 defmodule Extractor do
+  @moduledoc """
+  A `Source.t()` impl wrapping the extraction pipeline steps. This lets hindsight
+  treat the extraction pipeline like any other `Source.t()` impl.
+
+  ## Init options
+
+  * `steps` - List of `Extract.Step.t()` impls composing the extraction pipeline.
+  """
   use Definition, schema: Extractor.V1
 
   @type t :: %__MODULE__{
@@ -15,6 +23,7 @@ defmodule Extractor do
 end
 
 defmodule Extractor.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

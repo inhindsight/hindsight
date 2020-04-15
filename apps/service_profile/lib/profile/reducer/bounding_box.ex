@@ -1,4 +1,8 @@
 defmodule Profile.Reducer.BoundingBox do
+  @moduledoc """
+  `Profile.Reducer` impl for calculating a geospatial bounding box for datasets
+  including geospatial fields (limited to latitude/longitude for now).
+  """
   defstruct [:latitude_path, :longitude_path, :xmin, :ymin, :xmax, :ymax]
 
   def new(opts) do

@@ -1,4 +1,18 @@
 defmodule Extract do
+  @moduledoc """
+  Object representing the extraction (think ETL) of data. Use `new/1` to create a
+  new instance.
+
+  ## Init options
+
+  * `id` - ID of this instance of an extraction. Typically a UUID.
+  * `dataset_id` - Dataset identifier.
+  * `subset_id` - Dataset's subset identifier.
+  * `source` - A `Source.t()` impl from which data will be extracted.
+  * `decoder` - A `Decoder.t()` impl for decoding extracted data's format.
+  * `destination` - A `Destination.t()` impl to which the data will be written.
+  * `dictionary` - A `Dictionary.t()` impl describing the data's schema.
+  """
   use Definition, schema: Extract.V1
 
   @type uuid :: String.t()

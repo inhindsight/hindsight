@@ -36,6 +36,7 @@ defmodule Decoder.Gtfs do
 end
 
 defmodule Decoder.Gtfs.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

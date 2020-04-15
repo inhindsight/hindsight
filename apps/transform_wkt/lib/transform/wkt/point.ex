@@ -1,4 +1,14 @@
 defmodule Transform.Wkt.Point do
+  @moduledoc """
+  `Transform.Step.t()` impl for transformation of latitude/longitude into a
+  well-known text (WKT) point object.
+
+  ## Init options
+
+  * `longitude` - String or list of strings as path to `Dictionary.Type.Longitude` field.
+  * `latitude` - String or list of strings as path to `Dictionary.Type.Latitude` field.
+  * `to` - String or list of strings as path to transformed value field.
+  """
   use Definition, schema: Transform.Wkt.Point.V1
 
   defstruct [:longitude, :latitude, :to]
@@ -43,6 +53,7 @@ defmodule Transform.Wkt.Point do
 end
 
 defmodule Transform.Wkt.Point.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

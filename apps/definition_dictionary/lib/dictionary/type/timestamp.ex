@@ -1,4 +1,22 @@
 defmodule Dictionary.Type.Timestamp do
+  @moduledoc """
+  Timestamp type in ISO8601 format.
+
+  Timestamp format must be supplied for conversion to ISO8601. `nil` values will
+  be converted to empty strings regardless of specified string format. Empty
+  string values are supported as well.
+
+  See [Timex](https://hexdocs.pm/timex/Timex.Format.DateTime.Formatters.Strftime.html)
+  for possible format field values.
+
+  Timestamps will be converted to UTC timezone if `timezone` is supplied. If no
+  `timezone` value is supplied, UTC is assumed.
+
+  ## Init options
+
+  * `format` - Format to parse string into `DateTime`.
+  * `timezone` - Value's timezone. Defaults to UTC.
+  """
   use Definition, schema: Dictionary.Type.Timestamp.V1
   use Dictionary.JsonEncoder
 
@@ -12,7 +30,7 @@ defmodule Dictionary.Type.Timestamp do
     @tokenizer Timex.Parse.DateTime.Tokenizers.Strftime
     @utc "Etc/UTC"
 
-    def normalize(_, value) when is_nil(value) or value == "" do
+    def normalize(_, value) when value in [nil, ""] do
       Ok.ok("")
     end
 
@@ -40,6 +58,7 @@ defmodule Dictionary.Type.Timestamp do
 end
 
 defmodule Dictionary.Type.Timestamp.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

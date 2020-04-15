@@ -1,4 +1,6 @@
 defmodule DefineWeb do
+  @moduledoc false
+
   def controller do
     quote do
       use Phoenix.Controller, namespace: DefineWeb

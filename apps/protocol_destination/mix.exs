@@ -23,7 +23,8 @@ defmodule ProtocolDestination.MixProject do
 
   defp deps do
     [
-      {:definition_dictionary, in_umbrella: true}
+      {:definition_dictionary, in_umbrella: true},
+      {:credo, "~> 1.3", only: [:dev]}
     ]
   end
 end
