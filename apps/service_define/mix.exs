@@ -11,7 +11,6 @@ defmodule Define.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.5",
       elixirc_paths: elixirc_paths(Mix.env()),
-      elixirc_options: [debug_info: true],
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       deps: deps()

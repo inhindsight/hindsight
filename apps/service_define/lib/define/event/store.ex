@@ -30,7 +30,7 @@ defmodule Define.Event.Store do
   rescue
     err ->
       Logger.error(fn -> "Unable to process transform event: #{inspect(err)}" end)
-      discard()
+      :discard
   end
 
   def get(id) do
@@ -77,9 +77,5 @@ defmodule Define.Event.Store do
 
   defp persist(data) do
     Brook.ViewState.merge(@collection, identifier(data), data)
-  end
-
-  defp discard() do
-    :discard
   end
 end

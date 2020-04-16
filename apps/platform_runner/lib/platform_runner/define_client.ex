@@ -4,7 +4,7 @@ defmodule PlatformRunner.DefineClient do
   plug(Tesla.Middleware.BaseUrl, "http://localhost:4005/")
   plug(Tesla.Middleware.JSON)
 
-  def root() do
+  def root do
     get("")
     |> Ok.map(& &1.body)
   end
