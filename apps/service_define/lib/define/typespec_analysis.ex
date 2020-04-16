@@ -28,9 +28,7 @@ defmodule Define.TypespecAnalysis do
     end
   end
 
-  defp extract_fields([]) do
-    []
-  end
+  defp extract_fields([]), do: []
 
   defp extract_fields({:type, {:t, {:type, _, :map, fields}, _}}) do
     fields
