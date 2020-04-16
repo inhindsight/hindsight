@@ -8,3 +8,5 @@ helm/
 apps/service_define/assets/node_modules/
 apps/service_define/assets/.cache/
 apps/service_define/assets/build/
+apps/service_define/priv/static/
+
