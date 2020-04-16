@@ -15,6 +15,7 @@ defmodule Define.Model.TransformView do
 end
 
 defmodule Define.Model.TransformView.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true
