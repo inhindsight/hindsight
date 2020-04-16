@@ -13,6 +13,7 @@ defmodule Define.Model.AppView do
 end
 
 defmodule Define.Model.AppView.V1 do
+  @moduledoc false
   use Definition.Schema
   alias Define.Model.DataDefinitionView
 
