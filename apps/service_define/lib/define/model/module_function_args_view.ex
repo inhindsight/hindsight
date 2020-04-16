@@ -15,6 +15,7 @@ defmodule Define.Model.ModuleFunctionArgsView do
 end
 
 defmodule Define.Model.ModuleFunctionArgsView.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true
