@@ -1,7 +1,7 @@
 defmodule Define.TypespecAnalysis do
   import Logger
 
-  def find() do
+  def find do
     paths =
       Application.spec(:extractor)
       |> Keyword.get(:applications)
