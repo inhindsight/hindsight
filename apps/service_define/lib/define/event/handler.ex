@@ -4,15 +4,9 @@ defmodule Define.Event.Handler do
 
   import Events, only: [extract_start: 0, transform_define: 0, load_start: 0]
 
-  def handle_event(%Brook.Event{type: extract_start(), data: %Extract{} = extract}) do
-    Define.Event.Store.update_definition(extract)
-  end
-
-  def handle_event(%Brook.Event{type: transform_define(), data: %Transform{} = transform}) do
-    Define.Event.Store.update_definition(transform)
-  end
-
-  def handle_event(%Brook.Event{type: load_start(), data: %Load{} = load}) do
-    Define.Event.Store.update_definition(load)
+  @events [extract_start(), transform_define(), load_start()]
+  
+  def handle_event(%Brook.Event{type: event, data: data}) when event in @events do
+    Define.Event.Store.update_definition(data)
   end
 end
