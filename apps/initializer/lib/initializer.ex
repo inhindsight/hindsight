@@ -1,4 +1,8 @@
 defmodule Initializer do
+  @moduledoc """
+  Behaviour for reconnecting services to pre-existing event state.
+  """
+
   @callback on_start(state) :: {:ok, state} | {:error, term} when state: map
 
   defmacro __using__(opts) do

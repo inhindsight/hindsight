@@ -1,21 +1,13 @@
 # Orchestrate
 
-**TODO: Add description**
+Service for orchestrating scheduled events within Hindsight. Any cadenced event will
+be published from `Orchestrate`.
 
-## Installation
+## Release
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `service_orchestrate` to your list of dependencies in `mix.exs`:
+Run `mix release orchestrate` to build an Erlang release for this service.
 
-```elixir
-def deps do
-  [
-    {:service_orchestrate, "~> 0.1.0"}
-  ]
-end
-```
+## Docker
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/service_orchestrate](https://hexdocs.pm/service_orchestrate).
-
+The latest release is baked into the `inhindsight/hindsight:latest` Docker image
+and is started with a `orchestrate/bin/orchestrate start` command.

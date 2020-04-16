@@ -1,4 +1,11 @@
 defmodule Definition.Schema.Type.Lowercase do
+  @moduledoc """
+  Implementation of `Norm.Conformer.Comformable` that will coerce
+  a string into all lowercase letters.
+
+  Use `Definition.Schema.Type.lowercase_string/0` when you need
+  this functionality.
+  """
   defstruct []
 
   defimpl Norm.Conformer.Conformable do

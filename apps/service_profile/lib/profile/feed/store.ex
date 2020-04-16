@@ -1,4 +1,8 @@
 defmodule Profile.Feed.Store do
+  @moduledoc """
+  State management functions for events.
+  """
+
   @instance Profile.Application.instance()
   @collection "feeds"
 

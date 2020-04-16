@@ -1,4 +1,8 @@
 defmodule Profile.Reducer.TemporalRange do
+  @moduledoc """
+  `Profile.Reducer` impl for calculating temporal range for datasets including
+  temporal fields (date or timestamp).
+  """
   defstruct [:path, :first, :last]
 
   def new(opts) do

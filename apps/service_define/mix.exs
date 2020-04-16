@@ -36,8 +36,7 @@ defmodule Define.MixProject do
       {:phoenix_pubsub, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       {:properties, in_umbrella: true},
-
-      # Dev/Test dependencies
+      {:credo, "~> 1.3", only: [:dev]},
       {:phoenix_live_reload, "~> 1.2", only: [:dev]},
       {:testing, in_umbrella: true, only: [:test]}
     ]

@@ -1,4 +1,8 @@
 defmodule Persist.Load.Store do
+  @moduledoc """
+  State management functions for events.
+  """
+
   @instance Persist.Application.instance()
   @collection "loads"
 

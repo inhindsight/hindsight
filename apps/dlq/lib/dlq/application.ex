@@ -1,4 +1,5 @@
 defmodule Dlq.Application do
+  @moduledoc false
   use Application
   use Properties, otp_app: :dlq
 

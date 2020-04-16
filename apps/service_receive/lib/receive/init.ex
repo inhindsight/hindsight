@@ -1,4 +1,8 @@
 defmodule Receive.Init do
+  @moduledoc """
+  Implementation of `Initializer` behaviour to reconnect to
+  pre-existing event state.
+  """
   use Initializer,
     name: __MODULE__,
     supervisor: Receive.Accept.Supervisor

@@ -1,4 +1,13 @@
 defmodule Extract.Http.Post do
+  @moduledoc """
+  An `Extract.Step.t()` impl for extracting data via RESTful POST.
+
+  ## Init options
+
+  * `url` - Location to POST to.
+  * `headers` - Map of key/value headers to include in POST request. Defaults empty.
+  * `body` - Content to be POST'd as part of request.
+  """
   use Definition, schema: Extract.Http.Post.V1
 
   @type t :: %__MODULE__{
@@ -60,6 +69,7 @@ defmodule Extract.Http.Post do
 end
 
 defmodule Extract.Http.Post.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

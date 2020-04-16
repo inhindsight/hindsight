@@ -1,4 +1,8 @@
 defmodule Gather.Extraction do
+  @moduledoc """
+  Process to wrap and manage a dataset's extraction pipeline. This is operated
+  like a `Task`, in that it executes and shuts down.
+  """
   import Events
   use GenServer, restart: :transient
   require Logger

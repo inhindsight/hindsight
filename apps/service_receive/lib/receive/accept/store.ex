@@ -1,4 +1,8 @@
 defmodule Receive.Accept.Store do
+  @moduledoc """
+  State management functions for events.
+  """
+
   @instance Receive.Application.instance()
   @collection "accepts"
 

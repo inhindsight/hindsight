@@ -1,4 +1,5 @@
 defmodule Dlq.Server do
+  @moduledoc false
   use GenServer
   use Annotated.Retry
   use Properties, otp_app: :dlq

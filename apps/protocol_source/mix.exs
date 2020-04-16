@@ -25,7 +25,8 @@ defmodule ProtocolSource.MixProject do
     [
       {:definition_deadletter, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
-      {:ok, in_umbrella: true}
+      {:ok, in_umbrella: true},
+      {:credo, "~> 1.3", only: [:dev]}
     ]
   end
 end

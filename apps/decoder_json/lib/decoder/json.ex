@@ -1,8 +1,15 @@
 defmodule Decoder.Json do
+  @moduledoc """
+  Defines a `Decoder` impl for JSON data.
+
+  ## Configuration
+
+  * `chunk_size` - Streaming chunk size in bytes. Defaults to `1_000`.
+  """
   use Definition, schema: Decoder.Json.V1
 
   @derive Jason.Encoder
-  defstruct chunk_size: 1000
+  defstruct chunk_size: 1_000
 
   defimpl Decoder do
     def lines_or_bytes(_t), do: :line
@@ -20,6 +27,7 @@ defmodule Decoder.Json do
 end
 
 defmodule Decoder.Json.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

@@ -1,4 +1,8 @@
 defmodule Broadcast.Stream.Store do
+  @moduledoc """
+  State management functions for events.
+  """
+
   @instance Broadcast.Application.instance()
   @collection "streams"
 

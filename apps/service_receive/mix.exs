@@ -39,8 +39,7 @@ defmodule Receive.MixProject do
       {:metrics_reporter, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:transformer, in_umbrella: true},
-
-      # Dev/Test Dependencies
+      {:credo, "~> 1.3", only: [:dev]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:mox, "~> 0.5.1", only: [:test]},
       {:placebo, "~> 2.0.0-rc2", only: [:dev, :test]},

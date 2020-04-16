@@ -1,4 +1,7 @@
 defmodule Orchestrate.Event.Handler do
+  @moduledoc """
+  Callbacks for handling events from `Brook`.
+  """
   use Brook.Event.Handler
   require Logger
 

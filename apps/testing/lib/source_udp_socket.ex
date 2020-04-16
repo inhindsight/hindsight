@@ -1,4 +1,7 @@
 defmodule SourceUdpSocket do
+  @moduledoc """
+  UDP message producer for pushing tests messages.
+  """
   use GenServer
 
   def hit_me(), do: GenServer.cast(__MODULE__, :hit_me)

@@ -22,6 +22,8 @@ defmodule ProtocolDecoder.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:credo, "~> 1.3", only: [:dev]}
+    ]
   end
 end

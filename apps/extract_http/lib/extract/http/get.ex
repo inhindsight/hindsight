@@ -1,4 +1,12 @@
 defmodule Extract.Http.Get do
+  @moduledoc """
+  An `Extract.Step.t()` impl for extracting data via RESTful GET.
+
+  ## Init options
+
+  * `url` - Location to extract data from.
+  * `headers` - Map of key/value headers to include in the GET request. Defaults empty.
+  """
   use Definition, schema: Extract.Http.Get.V1
 
   @type t :: %__MODULE__{
@@ -59,6 +67,7 @@ defmodule Extract.Http.Get do
 end
 
 defmodule Extract.Http.Get.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

@@ -1,4 +1,8 @@
 defmodule Orchestrate.Schedule.Store do
+  @moduledoc """
+  State management functions for events.
+  """
+
   @collection "schedules"
   @instance Orchestrate.Application.instance()
 

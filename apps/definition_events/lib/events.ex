@@ -1,4 +1,11 @@
 defmodule Events do
+  @moduledoc """
+  Defines macros for event names, which can be useful for pattern matching.
+
+  Defines functions for sending events, which validate the event and given
+  struct are compatible. Raises an exception at runtime if they are not.
+  """
+
   @events [
     {"accept:start", Accept},
     {"accept:end", Accept},

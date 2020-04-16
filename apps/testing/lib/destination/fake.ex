@@ -1,4 +1,7 @@
 defmodule Destination.Fake do
+  @moduledoc """
+  `Destination.t()` impl for testing.
+  """
   @derive Jason.Encoder
   defstruct id: nil,
             start_link: "ok",

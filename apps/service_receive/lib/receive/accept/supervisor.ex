@@ -1,5 +1,10 @@
 defmodule Receive.Accept.Supervisor do
+  @moduledoc """
+  Supervision helpers wrapping `DynamicSupervisor` usage.
+  """
   use DynamicSupervisor
+
+  # TODO should use Management.Supervisor
 
   def start_link(args) do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__)

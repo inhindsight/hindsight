@@ -1,4 +1,8 @@
 defmodule Gather.Extraction.Store do
+  @moduledoc """
+  State management functions for events.
+  """
+
   @instance Gather.Application.instance()
   @collection "extractions"
 

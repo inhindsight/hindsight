@@ -1,4 +1,7 @@
 defmodule Profile.Feed.Flow.State do
+  @moduledoc """
+  Simple state management functions for profiling `Flow`s.
+  """
   def start_link(opts) do
     reducers = Keyword.fetch!(opts, :reducers)
 
@@ -19,15 +22,13 @@ defmodule Profile.Feed.Flow.State do
       |> Enum.reduce({[], map}, fn %struct{} = reducer, {changed, state} ->
         old_reducer = Map.get(state, struct)
         new_reducer = Profile.Reducer.merge(old_reducer, reducer)
-
-        new_changed =
-          case old_reducer == new_reducer do
-            true -> changed
-            false -> [new_reducer | changed]
-          end
+        new_changed = new_changes(new_reducer, old_reducer, changed)
 
         {new_changed, Map.put(state, struct, new_reducer)}
       end)
     end)
   end
+
+  defp new_changes(new, new, changed), do: changed
+  defp new_changes(new, _old, changed), do: [new | changed]
 end

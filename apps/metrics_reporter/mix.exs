@@ -25,8 +25,7 @@ defmodule MetricsReporter.MixProject do
     [
       {:telemetry_poller, "~> 0.5.0"},
       {:telemetry_metrics_prometheus, "~> 0.5.0"},
-
-      # Dev/Test Dependencies
+      {:credo, "~> 1.3", only: [:dev]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:tesla, "~> 1.3", only: [:test]},
       {:testing, in_umbrella: true, only: [:test]}

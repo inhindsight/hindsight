@@ -23,7 +23,8 @@ defmodule Initializer.MixProject do
 
   defp deps do
     [
-      {:annotated_retry, in_umbrella: true}
+      {:annotated_retry, in_umbrella: true},
+      {:credo, "~> 1.3", only: [:dev]}
     ]
   end
 end

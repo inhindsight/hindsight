@@ -9,13 +9,16 @@ sources:
   - https://github.com/inhindsight/hindsight
 dependencies:
   - name: nginx-ingress
-    version: 1.34.2
+    version: 1.36.0
     repository: https://kubernetes-charts.storage.googleapis.com
   - name: prometheus-operator
-    version: 8.12.3
+    version: 8.12.12
     repository: https://kubernetes-charts.storage.googleapis.com
     condition: prometheus-operator.enabled
   - name: cert-manager
-    version: 0.14.1
+    version: 0.14.2
     repository: https://charts.jetstack.io
     condition: cert_manager.enabled
+  - name: vernemq
+    repository: https://vernemq.github.io/docker-vernemq
+    version: 1.6.2

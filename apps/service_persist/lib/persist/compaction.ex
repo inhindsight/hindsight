@@ -1,4 +1,8 @@
 defmodule Persist.Compaction do
+  @moduledoc """
+  Process for manaing table compaction within `service_persist`.
+  Executes like a `Task` and then stops.
+  """
   use GenServer, restart: :transient
   use Properties, otp_app: :service_persist
   require Logger

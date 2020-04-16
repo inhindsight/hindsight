@@ -1,4 +1,9 @@
 defmodule Persist.Loader do
+  @moduledoc """
+  Process to wrap and manage a dataset's write to long-term storage. This
+  `GenServer` links processes for reading messages from a `Source.t()` impl
+  and writing to a `Destination.t()` impl.
+  """
   use GenServer, shutdown: 30_000
   use Annotated.Retry
   use Properties, otp_app: :service_persist
