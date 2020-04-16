@@ -19,6 +19,7 @@ defmodule Define.Model.ExtractView do
 end
 
 defmodule Define.Model.ExtractView.V1 do
+  @moduledoc false
   use Definition.Schema
   alias Define.Model.ModuleFunctionArgsView
 
