@@ -16,6 +16,7 @@ defmodule Define.Model.ArgumentView do
 end
 
 defmodule Define.Model.ArgumentView.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true
