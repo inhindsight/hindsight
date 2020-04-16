@@ -21,6 +21,7 @@ defmodule Define.Model.DataDefinitionView do
 end
 
 defmodule Define.DataDefinitionView.V1 do
+  @moduledoc false
   use Definition.Schema
   alias Define.Model.{ExtractView, TransformView, LoadView}
 
