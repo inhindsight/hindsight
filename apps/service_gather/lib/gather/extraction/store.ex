@@ -43,7 +43,7 @@ defmodule Gather.Extraction.Store do
     Brook.ViewState.delete(@collection, identifier(dataset_id, subset_id))
   end
 
-  @spec get_all() :: [Extract.t()]
+  @spec get_all() :: {:ok, [Extract.t()]} | {:error, term}
   def get_all() do
     with {:ok, _state} = results <- Brook.get_all_values(@instance, @collection) do
       Ok.map(results, fn col -> Enum.map(col, &Map.get(&1, "extract")) end)

@@ -38,7 +38,7 @@ defmodule Profile.Feed.Store do
     end
   end
 
-  @spec get_all_extracts() :: [Extract.t()]
+  @spec get_all_extracts() :: {:ok, [Extract.t()]} | {:error, term}
   def get_all_extracts() do
     case Brook.get_all_values(@instance, @collection) do
       {:ok, results} ->

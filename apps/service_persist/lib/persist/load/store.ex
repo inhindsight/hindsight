@@ -57,7 +57,7 @@ defmodule Persist.Load.Store do
     Brook.ViewState.delete(@collection, identifier(dataset_id, subset_id))
   end
 
-  @spec get_all() :: [%Load{}]
+  @spec get_all() :: {:ok, [%Load{}]} | {:error, term}
   def get_all() do
     with {:ok, _state} = results <- Brook.get_all_values(@instance, @collection) do
       Ok.map(results, fn col -> Enum.map(col, &Map.get(&1, "load")) end)
