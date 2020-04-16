@@ -15,6 +15,7 @@ defmodule Define.Model.LoadView do
 end
 
 defmodule Define.Model.LoadView.V1 do
+  @moduledoc false
   use Definition.Schema
   alias Define.Model.ModuleFunctionArgsView
 
