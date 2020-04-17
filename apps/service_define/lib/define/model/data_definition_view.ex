@@ -1,4 +1,7 @@
 defmodule Define.Model.DataDefinitionView do
+  @moduledoc """
+  Represents an aggregate of all events pertaining to a specific dataset.
+  """
   use Definition, schema: Define.DataDefinitionView.V1
   alias Define.Model.{ExtractView, LoadView, TransformView}
 

@@ -1,4 +1,7 @@
 defmodule Define.Model.ModuleFunctionArgsView do
+  @moduledoc """
+  Representation of a definition struct and arguments that will be used to invoke the `new` function.
+  """
   use Definition, schema: Define.Model.ModuleFunctionArgsView.V1
   alias Define.Model.ArgumentView
 

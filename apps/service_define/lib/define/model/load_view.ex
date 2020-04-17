@@ -1,4 +1,7 @@
 defmodule Define.Model.LoadView do
+  @moduledoc """
+  Representation of an Load event.
+  """
   use Definition, schema: Define.Model.LoadView.V1
   alias Define.Model.ModuleFunctionArgsView
 

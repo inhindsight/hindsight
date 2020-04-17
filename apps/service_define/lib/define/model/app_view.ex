@@ -1,4 +1,7 @@
 defmodule Define.Model.AppView do
+  @moduledoc """
+  Top level representation of UI state
+  """
   use Definition, schema: Define.Model.AppView.V1
   alias Define.Model.DataDefinitionView
 

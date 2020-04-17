@@ -1,4 +1,7 @@
 defmodule Define.Model.ArgumentView do
+  @moduledoc """
+  Represents an argument name, value, and type that will be used to create a struct.
+  """
   use Definition, schema: Define.Model.ArgumentView.V1
 
   @type t :: %__MODULE__{

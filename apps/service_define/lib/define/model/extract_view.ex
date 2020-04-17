@@ -1,4 +1,7 @@
 defmodule Define.Model.ExtractView do
+  @moduledoc """
+  Representation of an Extract event.
+  """
   use Definition, schema: Define.Model.ExtractView.V1
   alias Define.Model.ModuleFunctionArgsView
 

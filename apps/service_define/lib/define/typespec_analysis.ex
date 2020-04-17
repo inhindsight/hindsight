@@ -1,4 +1,7 @@
 defmodule Define.TypespecAnalysis do
+  @moduledoc """
+  Converts modules with typespecs into a map of fields to types.
+  """
   import Logger
 
   def find do

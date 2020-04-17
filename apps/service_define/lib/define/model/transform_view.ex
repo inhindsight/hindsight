@@ -1,4 +1,7 @@
 defmodule Define.Model.TransformView do
+  @moduledoc """
+  Representation of an Transform event.
+  """
   use Definition, schema: Define.Model.TransformView.V1
   alias Define.Model.ModuleFunctionArgsView
 
