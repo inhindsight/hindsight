@@ -52,21 +52,6 @@ defmodule Definition.Schema.Type do
     end)
   end
 
-  @spec list() :: spec
-  def list() do
-    spec(is_list())
-  end
-
-  @spec atom() :: spec
-  def atom() do
-    spec(is_atom())
-  end
-
-  @spec boolean() :: spec
-  def boolean() do
-    spec(is_boolean())
-  end
-
   def access_path do
     one_of([spec(is_binary()), coll_of(spec(is_binary()))])
   end

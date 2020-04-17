@@ -26,7 +26,7 @@ defmodule Define.Model.ModuleFunctionArgsView.V1 do
     schema(%Define.Model.ModuleFunctionArgsView{
       version: version(1),
       struct_module_name: string(),
-      args: list()
+      args: spec(is_list())
     })
   end
 end

@@ -25,8 +25,8 @@ defmodule Define.Model.TransformView.V1 do
   def s do
     schema(%Define.Model.TransformView{
       version: version(1),
-      dictionary: list(),
-      steps: list()
+      dictionary: spec(is_list()),
+      steps: spec(is_list())
     })
   end
 end

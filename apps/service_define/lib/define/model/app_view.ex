@@ -24,7 +24,7 @@ defmodule Define.Model.AppView.V1 do
   def s do
     schema(%Define.Model.AppView{
       version: version(1),
-      data_definitions: list()
+      data_definitions: spec(is_list())
     })
   end
 end

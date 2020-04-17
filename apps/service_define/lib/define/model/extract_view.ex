@@ -30,7 +30,7 @@ defmodule Define.Model.ExtractView.V1 do
   def s do
     schema(%Define.Model.ExtractView{
       version: version(1),
-      dictionary: list(),
+      dictionary: spec(is_list()),
       decoder: of_struct(ModuleFunctionArgsView),
       source: of_struct(ModuleFunctionArgsView),
       destination: of_struct(ModuleFunctionArgsView)
