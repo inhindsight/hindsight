@@ -3,6 +3,7 @@ defmodule Orchestrate do
   Functions to send cadenced events (extract, load, compact, etc.).
   """
   import Events, only: [send_extract_start: 3, send_compact_start: 3]
+  import Definition, only: [identifier: 2]
   require Logger
 
   @instance Orchestrate.Application.instance()
@@ -10,7 +11,9 @@ defmodule Orchestrate do
 
   @spec run_extract(dataset_id :: String.t(), subset_id :: String.t()) :: no_return
   def run_extract(dataset_id, subset_id) do
-    case Orchestrate.Schedule.Store.get(dataset_id, subset_id) do
+    identifier(dataset_id, subset_id)
+    |> Orchestrate.ViewState.Schedules.get()
+    |> case do
       {:ok, nil} ->
         log_no_schedule_error(dataset_id, subset_id)
 
@@ -24,7 +27,9 @@ defmodule Orchestrate do
 
   @spec run_compaction(dataset_id :: String.t(), subset_id :: String.t()) :: no_return
   def run_compaction(dataset_id, subset_id) do
-    case Orchestrate.Schedule.Store.get(dataset_id, subset_id) do
+    identifier(dataset_id, subset_id)
+    |> Orchestrate.ViewState.Schedules.get()
+    |> case do
       {:ok, nil} ->
         log_no_schedule_error(dataset_id, subset_id)
 

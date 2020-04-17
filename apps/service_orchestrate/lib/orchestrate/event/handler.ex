@@ -29,7 +29,8 @@ defmodule Orchestrate.Event.Handler do
          :ok <- create_compaction_job(schedule),
          :ok <- send_transform_define(@instance, "orchestrate", schedule.transform),
          :ok <- Enum.each(schedule.load, &send_load_event/1) do
-      Orchestrate.Schedule.Store.persist(schedule)
+      identifier(schedule)
+      |> Orchestrate.ViewState.Schedules.persist(schedule)
     else
       {:error, reason} ->
         Logger.error("Unable to process #{inspect(event)}: reason #{inspect(reason)}")
@@ -39,7 +40,9 @@ defmodule Orchestrate.Event.Handler do
 
   def handle_event(%Brook.Event{type: schedule_end(), data: %Schedule{} = schedule}) do
     Orchestrate.Scheduler.delete_job(:"#{identifier(schedule)}")
-    Orchestrate.Schedule.Store.mark_done(schedule)
+
+    identifier(schedule)
+    |> Orchestrate.ViewState.Schedules.delete()
   end
 
   def handle_event(%Brook.Event{type: dataset_delete(), data: %Delete{} = delete}) do
@@ -49,7 +52,9 @@ defmodule Orchestrate.Event.Handler do
 
     Orchestrate.Scheduler.delete_job(:"#{identifier(delete)}")
     Orchestrate.Scheduler.delete_job(:"#{identifier(delete)}_compaction")
-    Orchestrate.Schedule.Store.delete(delete.dataset_id, delete.subset_id)
+
+    identifier(delete)
+    |> Orchestrate.ViewState.Schedules.delete()
   end
 
   defp parse_cron(cron) do
