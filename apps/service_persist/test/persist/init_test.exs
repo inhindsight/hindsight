@@ -1,12 +1,8 @@
 defmodule Persist.InitTest do
   use ExUnit.Case
   use Placebo
-<<<<<<< HEAD
   import Definition, only: [identifier: 1]
   alias Persist.ViewState
-=======
-  import AssertAsync
->>>>>>> Helm tweaks for using Postgres view state backend
 
   @instance Persist.Application.instance()
 
@@ -49,20 +45,9 @@ defmodule Persist.InitTest do
     allow Persist.Load.Supervisor.start_child(any()), return: {:ok, :pid}
     allow Persist.Compact.Supervisor.start_child(any()), return: {:ok, :pid}
 
-<<<<<<< HEAD
     assert {:ok, :state} = Persist.Init.on_start(:state)
 
     assert_called Persist.Load.Supervisor.start_child(load2)
     assert_called Persist.Compact.Supervisor.start_child(load1)
-=======
-    Brook.Test.with_event(@instance, fn ->
-      Persist.Load.Store.mark_done(load)
-    end)
-
-    assert_async do
-      assert {:ok, :state} = Persist.Init.on_start(:state)
-      refute_called Persist.Compact.Supervisor.start_child(load)
-    end
->>>>>>> Helm tweaks for using Postgres view state backend
   end
 end

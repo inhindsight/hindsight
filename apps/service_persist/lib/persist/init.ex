@@ -12,8 +12,9 @@ defmodule Persist.Init do
          {:ok, loads} <- Persist.ViewState.Loads.get_all() do
       Enum.split_with(loads, fn load -> load in compactions end)
       |> start_load_or_compaction()
+
+      Ok.ok(state)
     end
-    Ok.ok(state)
   end
 
   defp start_load_or_compaction({compacting, compacted}) do
