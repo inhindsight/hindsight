@@ -4,6 +4,7 @@ defmodule Profile.Feed.Flow do
   use Properties, otp_app: :service_profile
   require Logger
 
+  import Definition, only: [identifier: 2]
   alias Profile.Feed.Flow.State
 
   getter(:window_limit, default: 5)
@@ -31,7 +32,14 @@ defmodule Profile.Feed.Flow do
 
     window = Flow.Window.periodic(window_limit(), window_unit())
 
-    {:ok, stats} = Profile.Feed.Store.get_stats(dataset_id, subset_id)
+    stats =
+      identifier(dataset_id, subset_id)
+      |> Profile.ViewState.Stats.get()
+      |> case do
+           {:ok, nil} -> %{}
+           {:ok, profile} -> profile.stats
+         end
+
     reducers = Enum.map(reducers, &Profile.Reducer.init(&1, stats))
     {:ok, state} = State.start_link(reducers: reducers)
 

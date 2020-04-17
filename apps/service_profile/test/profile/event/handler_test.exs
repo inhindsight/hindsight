@@ -5,47 +5,44 @@ defmodule Profile.Event.HandlerTest do
   @instance Profile.Application.instance()
 
   import Events, only: [extract_start: 0, profile_update: 0]
+  import Definition, only: [identifier: 1]
+  alias Profile.ViewState
 
   setup do
-    Brook.Test.clear_view_state(@instance, "feeds")
+    allow Profile.Feed.Supervisor.start_child(any()), return: {:ok, :pid}
+    on_exit(fn -> Brook.Test.clear_view_state(@instance, "feeds") end)
+
+    extract =
+      Extract.new!(
+        id: "extract-1",
+        dataset_id: "ds1",
+        subset_id: "sb1",
+        source: Source.Fake.new!(),
+        decoder: Decoder.Noop.new(),
+        destination:
+          Kafka.Topic.new!(
+            endpoints: [localhost: 9092],
+            name: "topic-1"
+          ),
+        dictionary: []
+      )
+
+    [extract: extract, key: identifier(extract)]
   end
 
-  describe "#{extract_start()}" do
-    setup do
-      allow(Profile.Feed.Supervisor.start_child(any()), return: {:ok, :pid})
-
-      extract =
-        Extract.new!(
-          id: "extract-1",
-          dataset_id: "ds1",
-          subset_id: "sb1",
-          source: Source.Fake.new!(),
-          decoder: Decoder.Noop.new(),
-          destination:
-            Kafka.Topic.new!(
-              endpoints: [localhost: 9092],
-              name: "topic-1"
-            ),
-          dictionary: []
-        )
-
-      [extract: extract]
-    end
-
+  describe "handling #{extract_start()} event" do
     test "starts the feed", %{extract: extract} do
       Brook.Test.send(@instance, extract_start(), "testing", extract)
-
-      assert_called(Profile.Feed.Supervisor.start_child(extract))
+      assert_called Profile.Feed.Supervisor.start_child(extract)
     end
 
-    test "saves the feed", %{extract: extract} do
+    test "saves the extraction object", %{extract: extract, key: key} do
       Brook.Test.send(@instance, extract_start(), "testing", extract)
-
-      assert {:ok, extract} == Profile.Feed.Store.get_extract("ds1", "sb1")
+      assert {:ok, extract} == ViewState.Extractions.get(key)
     end
   end
 
-  describe "#{profile_update()}" do
+  describe "handling #{profile_update()} event" do
     setup do
       update =
         Profile.Update.new!(
@@ -56,13 +53,14 @@ defmodule Profile.Event.HandlerTest do
           }
         )
 
-      [update: update]
+      [update: update, key: identifier(update)]
     end
 
-    test "persists stats", %{update: update} do
+    test "saves the profile object", %{update: update, key: key} do
       Brook.Test.send(@instance, profile_update(), "testing", update)
 
-      assert {:ok, %{"stat1" => "4"}} == Profile.Feed.Store.get_stats("ds1", "sb1")
+      assert {:ok, stored_update} = ViewState.Stats.get(key)
+      assert stored_update.stats == update.stats
     end
   end
 end

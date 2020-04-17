@@ -2,6 +2,8 @@ defmodule Profile.Feed.FlowTest do
   use ExUnit.Case
   require Temp.Env
 
+  import Definition, only: [identifier: 1]
+
   @instance Profile.Application.instance()
 
   Temp.Env.modify([
@@ -16,8 +18,7 @@ defmodule Profile.Feed.FlowTest do
   ])
 
   setup do
-    Brook.Test.clear_view_state(@instance, "feeds")
-
+    on_exit(fn -> Brook.Test.clear_view_state(@instance, "feeds") end)
     :ok
   end
 
@@ -69,15 +70,15 @@ defmodule Profile.Feed.FlowTest do
 
   test "gets it initial state from brook" do
     Brook.Test.with_event(@instance, fn ->
-      Profile.Update.new!(
-        dataset_id: "ds1",
-        subset_id: "sb1",
-        stats: %{
-          "min" => 23,
-          "max" => 52
-        }
-      )
-      |> Profile.Feed.Store.persist()
+      profile =
+        Profile.Update.new!(
+          dataset_id: "ds1",
+          subset_id: "sb1",
+          stats: %{"min" => 23, "max" => 52}
+        )
+
+      identifier(profile)
+      |> Profile.ViewState.Stats.persist(profile)
     end)
 
     assert {:ok, _pid} =
