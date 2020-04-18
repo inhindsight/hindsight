@@ -72,6 +72,10 @@ vernemq:
   service:
     type: LoadBalancer
   additionalEnv:
+    - name: DOCKER_VERNEMQ_LISTENER__TCP__ALLOWED_PROTOCOL_VERSIONS
+      value: "3,4,5"
+    - name: DOCKER_VERNEMQ_LISTENER__SSL__ALLOWED_PROTOCOL_VERSIONS
+      value: "3,4,5"
     - name: DOCKER_VERNEMQ_ALLOW_ANONYMOUS
       value: "on"
     - name: DOCKER_VERNEMQ_USER_HINDSIGHT
