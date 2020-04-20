@@ -57,10 +57,11 @@ defmodule Profile.Event.HandlerTest do
     end
 
     test "saves the profile object", %{update: update, key: key} do
+      stats = update.stats
+
       Brook.Test.send(@instance, profile_update(), "testing", update)
 
-      assert {:ok, stored_update} = ViewState.Stats.get(key)
-      assert stored_update.stats == update.stats
+      assert {:ok, ^stats} = ViewState.Stats.get(key)
     end
   end
 end

@@ -19,6 +19,6 @@ defmodule Profile.Event.Handler do
 
   def handle_event(%Brook.Event{type: profile_update(), data: %Profile.Update{} = update}) do
     identifier(update)
-    |> Profile.ViewState.Stats.persist(update)
+    |> Profile.ViewState.Stats.persist(update.stats)
   end
 end

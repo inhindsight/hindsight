@@ -18,7 +18,11 @@ defmodule Profile.Feed.FlowTest do
   ])
 
   setup do
-    on_exit(fn -> Brook.Test.clear_view_state(@instance, "feeds") end)
+    on_exit(fn ->
+      Brook.Test.clear_view_state(@instance, "extractions")
+      Brook.Test.clear_view_state(@instance, "stats")
+    end)
+
     :ok
   end
 
@@ -78,7 +82,7 @@ defmodule Profile.Feed.FlowTest do
         )
 
       identifier(profile)
-      |> Profile.ViewState.Stats.persist(profile)
+      |> Profile.ViewState.Stats.persist(profile.stats)
     end)
 
     assert {:ok, _pid} =

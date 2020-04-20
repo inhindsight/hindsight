@@ -37,7 +37,7 @@ defmodule Profile.Feed.Flow do
       |> Profile.ViewState.Stats.get()
       |> case do
         {:ok, nil} -> %{}
-        {:ok, profile} -> profile.stats
+        {:ok, stats} -> stats
       end
 
     reducers = Enum.map(reducers, &Profile.Reducer.init(&1, stats))
