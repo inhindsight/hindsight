@@ -10,13 +10,13 @@ defmodule Receive.Init do
   alias Receive.{Accept, SocketManager}
 
   def on_start(state) do
-    Accept.Store.get_all!()
-    |> Enum.reject(&is_nil/1)
-    |> Enum.reject(&Accept.Store.done?(&1))
-    |> Enum.each(fn accept ->
-      Accept.Supervisor.start_child({SocketManager, accept: accept})
-    end)
+    with {:ok, view_state} <- Receive.ViewState.Accepts.get_all() do
+      Map.values(view_state)
+      |> Enum.each(fn accept ->
+        Accept.Supervisor.start_child({SocketManager, accept: accept})
+      end)
 
-    {:ok, state}
+      Ok.ok(state)
+    end
   end
 end

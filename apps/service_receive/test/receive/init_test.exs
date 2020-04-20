@@ -1,5 +1,6 @@
 defmodule Receive.InitTest do
   use ExUnit.Case
+  import Definition, only: [identifier: 1]
 
   @instance Receive.Application.instance()
 
@@ -8,6 +9,8 @@ defmodule Receive.InitTest do
 
     on_exit(fn ->
       Receive.Accept.Supervisor.kill_all_children()
+      Brook.Test.clear_view_state(@instance, Receive.ViewState.Accepts.collection())
+      Brook.Test.clear_view_state(@instance, Receive.ViewState.Destinations.collection())
     end)
 
     :ok
@@ -32,7 +35,10 @@ defmodule Receive.InitTest do
     ]
 
     Brook.Test.with_event(@instance, fn ->
-      Enum.each(accepts, &Receive.Accept.Store.persist/1)
+      Enum.each(accepts, fn accept ->
+        identifier(accept)
+        |> Receive.ViewState.Accepts.persist(accept)
+      end)
     end)
 
     start_supervised({Receive.Init, name: :init_test})

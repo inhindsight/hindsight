@@ -36,9 +36,9 @@ defmodule Profile.Feed.Flow do
       identifier(dataset_id, subset_id)
       |> Profile.ViewState.Stats.get()
       |> case do
-           {:ok, nil} -> %{}
-           {:ok, profile} -> profile.stats
-         end
+        {:ok, nil} -> %{}
+        {:ok, profile} -> profile.stats
+      end
 
     reducers = Enum.map(reducers, &Profile.Reducer.init(&1, stats))
     {:ok, state} = State.start_link(reducers: reducers)
