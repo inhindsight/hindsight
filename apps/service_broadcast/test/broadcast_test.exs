@@ -8,10 +8,12 @@ defmodule BroadcastTest do
   @instance Broadcast.Application.instance()
 
   setup do
-    Brook.Test.clear_view_state(@instance, "transformations")
+    on_exit(fn ->
+      Brook.Test.clear_view_state(@instance, "transformations")
+    end)
 
     Brook.Test.with_event(@instance, fn ->
-      Broadcast.Transformations.persist(
+      transform =
         Transform.new!(
           id: "transform-1",
           dataset_id: "ds1",
@@ -24,7 +26,9 @@ defmodule BroadcastTest do
             Transform.MoveField.new!(from: ["one"], to: ["three"])
           ]
         )
-      )
+
+      identifier(transform)
+      |> Broadcast.ViewState.Transformations.persist(transform)
     end)
 
     load =
@@ -40,6 +44,8 @@ defmodule BroadcastTest do
   end
 
   test "sending #{load_start()} will stream data to channel", %{load: load} do
+    key = identifier(load)
+
     {:ok, _, socket} =
       socket(BroadcastWeb.UserSocket, %{}, %{})
       |> subscribe_and_join(BroadcastWeb.Channel, "broadcast:ds1_intersections", %{})
@@ -47,7 +53,7 @@ defmodule BroadcastTest do
     Brook.Test.send(@instance, load_start(), "testing", load)
 
     assert_async do
-      assert :undefined != Broadcast.Stream.Registry.whereis(identifier(load))
+      assert :undefined != Broadcast.Stream.Registry.whereis(key)
     end
 
     assert_receive {:source_start_link, _, _}, 2_000
@@ -56,24 +62,25 @@ defmodule BroadcastTest do
     Source.Fake.inject_messages(load.source, [value])
 
     assert_push "update", %{"three" => 1, "two" => 2}
-    assert load == Broadcast.Stream.Store.get!(load.dataset_id, load.subset_id)
+    assert {:ok, ^load} = Broadcast.ViewState.Streams.get(key)
 
     Brook.Test.send(@instance, load_end(), "testing", load)
 
     assert_async do
-      assert :undefined == Broadcast.Stream.Registry.whereis(identifier(load))
+      assert :undefined == Broadcast.Stream.Registry.whereis(key)
+      assert {:ok, nil} = Broadcast.ViewState.Streams.get(key)
     end
-
-    Broadcast.Stream.Store.done?(load)
 
     leave(socket)
   end
 
   test "will send any cached messages to client upon connection", %{load: load} do
+    key = identifier(load)
+
     Brook.Test.send(@instance, load_start(), "testing", load)
 
     assert_async do
-      assert :undefined != Broadcast.Stream.Registry.whereis(identifier(load))
+      assert :undefined != Broadcast.Stream.Registry.whereis(key)
     end
 
     assert_receive {:source_start_link, _, _}, 2_000
@@ -96,9 +103,8 @@ defmodule BroadcastTest do
 
     assert_async do
       assert :undefined == Broadcast.Stream.Registry.whereis(load.destination.name)
+      assert {:ok, nil} = Broadcast.ViewState.Streams.get(key)
     end
-
-    Broadcast.Stream.Store.done?(load)
 
     leave(socket)
   end
