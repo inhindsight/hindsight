@@ -104,14 +104,6 @@ presto:
 cert_manager:
   enabled: true
 
-global:
-  objectStore:
-    region: "us-east-2"
-    accessKey: ""
-    accessSecret: ""
-    minio:
-      enabled: false
-
 vernemq:
   enabled: false
   persistentVolume.size: 25Gi

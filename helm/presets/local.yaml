@@ -69,16 +69,6 @@ presto:
       annotations:
         nginx.ingress.kubernetes.io/use-regex: "true"
       hosts: [storage.hindsight.local/minio.*]
-global:
-  objectStore:
-    bucketName: hindsight-object-storage
-    region: local
-    accessKey: hindsightAccessKey
-    accessSecret: hindsightAccessSecret
-    minio:
-      enabled: true
-      port: 9000
-      scheme: "http://"
 vernemq:
   enabled: true
   service:
