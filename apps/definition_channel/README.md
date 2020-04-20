@@ -1,21 +1,53 @@
 # DefinitionChannel
 
-**TODO: Add description**
+Defines a `Channel.Topic` struct and implements the 
+ protocol for writing
+to a WebSocket.
+
+Defines an implementation of the [destination](../protocol_destination/README.md)
+protcol for writing data to a WebSocket via 
+[Phoenix.Channel](https://hexdocs.pm/phoenix/channels.html).
+
+## Usage
+
+Create a channel topic struct with its `new/1` function:
+
+```elixir
+{:ok, topic} = Channel.Topic.new(name: "topic-name")
+```
+
+Messages can be cached on a per-topic basis. By default, the cache is turned off.
+Pass an integer (>0) to the cache field during `new/1` to toggle cache on for that 
+many messages.
+
+```elixir
+{:ok, topic} =
+  Channel.Topic.new(
+    name: "topic-name",
+    cache: 1_000
+  )
+```
+
+### Writing
+
+With most `Destination.t()` impls, you'd write via the implementation's
+`write/3` function. But data must be written to an application-specific
+`Phoenix.Endpoint` when it comes to Phoenix channels. So using this
+impl's `write/3` will result in an exception.
+
+Instead, use the application specific `Phoenix.Endpoint` to write.
+An example:
+
+```elixir
+BroadcastWeb.Endpoint.broadcast!("broadcast:#{topic.name}", "update", data)
+```
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `definition_channel` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:definition_channel, "~> 0.1.0"}
+    {:definition_channel, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/definition_channel](https://hexdocs.pm/definition_channel).
-

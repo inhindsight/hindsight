@@ -1,4 +1,9 @@
 defmodule Presto.Table.DataStorage do
+  @moduledoc """
+  It's more performant to write a data file directly to object storage
+  than to write through PrestoDB. This behaviour defines the callbacks
+  necessary to interact with object storage.
+  """
   use Properties, otp_app: :definition_presto
 
   @callback upload(file_path :: String.t(), upload_path :: String.t()) ::
@@ -18,6 +23,9 @@ defmodule Presto.Table.DataStorage do
 end
 
 defmodule Presto.Table.DataStorage.S3 do
+  @moduledoc """
+  Implementation of `DataStorage` behaviour to manage S3.
+  """
   @behaviour Presto.Table.DataStorage
   use Properties, otp_app: :definition_presto
   require Logger

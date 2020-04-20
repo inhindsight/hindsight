@@ -1,21 +1,26 @@
 # ProtocolDestination
 
-**TODO: Add description**
+Defines a protocol for data destinations -- where data is written or loaded into.
+
+## Usage
+
+Implementing this protocol requires four functions: `start_link/2`, `write/3`, 
+`stop/2`, and `delete/1`. The difference between `stop/2` and `delete/1` is
+nuanced but important. 
+
+You (likely) want to rarely destroy a destination. This is akin to deleting a 
+Kafka topic or dropping a table. It's more likely that you want to shutdown the
+processes used to manage a table or topic. That's what `stop/2` is for.
+
+See [Kafka.Topic.Destination](../definition_kafka/lib/kafka/topic/destination.ex)
+as an example.
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `protocol_destination` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:protocol_destination, "~> 0.1.0"}
+    {:protocol_destination, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/protocol_destination](https://hexdocs.pm/protocol_destination).
-

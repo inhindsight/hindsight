@@ -1,4 +1,7 @@
 defmodule PlatformRunner.BroadcastClient do
+  @moduledoc """
+  WebSocket client for testing `service_broadcast` in e2e tests.
+  """
   use WebSockex
 
   @url "ws://localhost:4000/socket/websocket"

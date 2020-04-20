@@ -23,9 +23,10 @@ defmodule Transform.WKT.MixProject do
 
   defp deps do
     [
-      {:protocol_transform_step, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
-      {:geo, "~> 3.3"}
+      {:geo, "~> 3.3"},
+      {:protocol_transform_step, in_umbrella: true},
+      {:credo, "~> 1.3", only: [:dev]}
     ]
   end
 end

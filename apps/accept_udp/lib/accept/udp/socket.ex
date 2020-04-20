@@ -1,6 +1,5 @@
 defmodule Accept.Udp.Socket do
-  @moduledoc "TODO"
-
+  @moduledoc false
   use GenServer
   use Accept.Socket
   require Logger

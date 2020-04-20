@@ -1,4 +1,9 @@
 defmodule Dictionary.Type.String do
+  @moduledoc """
+  String type. Normalization will convert values to string via
+  `String.Chars` protocol and return an error value if the value's type
+  doesn't implement `String.Chars`.
+  """
   use Definition, schema: Dictionary.Type.String.V1
   use Dictionary.JsonEncoder
 
@@ -23,6 +28,7 @@ defmodule Dictionary.Type.String do
 end
 
 defmodule Dictionary.Type.String.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

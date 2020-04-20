@@ -47,6 +47,7 @@ defmodule Define.MixProject do
       {:transform_wkt, in_umbrella: true},
 
       # Dev/Test dependencies
+      {:credo, "~> 1.3", only: [:dev]},
       {:phoenix_live_reload, "~> 1.2", only: [:dev]},
       {:testing, in_umbrella: true, only: [:test]}
     ]

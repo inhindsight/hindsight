@@ -1,4 +1,8 @@
 defmodule Gather.Init do
+  @moduledoc """
+  Implementation of `Initializer` behaviour to reconnect to
+  pre-existing event state.
+  """
   use Initializer,
     name: __MODULE__,
     supervisor: Gather.Extraction.Supervisor
@@ -6,13 +10,11 @@ defmodule Gather.Init do
   alias Gather.Extraction
 
   def on_start(state) do
-    Extraction.Store.get_all!()
-    |> Enum.reject(&is_nil/1)
-    |> Enum.reject(&Extraction.Store.done?(&1))
-    |> Enum.each(fn extract ->
-      Extraction.Supervisor.start_child(extract)
-    end)
+    with {:ok, view_state} <- Gather.ViewState.Extractions.get_all() do
+      Map.values(view_state)
+      |> Enum.each(&Extraction.Supervisor.start_child/1)
 
-    {:ok, state}
+      Ok.ok(state)
+    end
   end
 end

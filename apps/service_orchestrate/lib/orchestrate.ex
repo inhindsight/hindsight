@@ -1,4 +1,7 @@
 defmodule Orchestrate do
+  @moduledoc """
+  Functions to send cadenced events (extract, load, compact, etc.).
+  """
   import Events, only: [send_extract_start: 3, send_compact_start: 3]
   require Logger
 

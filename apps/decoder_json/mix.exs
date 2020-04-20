@@ -27,9 +27,10 @@ defmodule DecoderJson.MixProject do
       {:definition, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:temp, "~> 0.4.7"},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
+      {:brook_serializer, "~> 2.2", only: [:test]},
       {:checkov, "~> 1.0", only: [:dev, :test]},
-      {:brook_serializer, "~> 2.2", only: [:test]}
+      {:credo, "~> 1.3", only: [:dev]},
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end
 end

@@ -56,6 +56,7 @@ defmodule Transform.MoveField do
 end
 
 defmodule Transform.MoveField.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

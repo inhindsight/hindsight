@@ -5,7 +5,8 @@ defmodule Define.DefinitionSerialization do
   alias Define.Model.{ModuleFunctionArgsView, ArgumentView, TypespecAnalysis}
   alias Define.TypespecAnalysis
 
-  @spec serialize(%Dictionary.Impl{} | list(map()) | map()) :: %ModuleFunctionArgsView{} | list(%ModuleFunctionArgsView{})
+  @spec serialize(%Dictionary.Impl{} | list(map()) | map()) ::
+          %ModuleFunctionArgsView{} | list(%ModuleFunctionArgsView{})
   def serialize(%Dictionary.Impl{ordered: ordered}) do
     serialize(ordered)
   end

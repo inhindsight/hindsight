@@ -1,7 +1,7 @@
 defmodule GatherTest do
   use Gather.Case
   import Events, only: [extract_start: 0, extract_end: 0]
-  import AssertAsync
+  import Definition, only: [identifier: 1]
   require Temp.Env
   import Mox
 
@@ -19,8 +19,6 @@ defmodule GatherTest do
 
   @instance Gather.Application.instance()
   @moduletag capture_log: true
-
-  alias Gather.Extraction
 
   setup do
     test = self()
@@ -79,31 +77,9 @@ defmodule GatherTest do
              %{"a" => "four", "b" => "five", "c" => "six"}
            ]
 
-    assert extract == Extraction.Store.get!(extract.dataset_id, extract.subset_id)
+    assert {:ok, ^extract} = Gather.ViewState.Extractions.get(identifier(extract))
 
     Process.sleep(5_000)
-  end
-
-  test "marks stored extraction done on #{extract_end()}" do
-    extract =
-      Extract.new!(
-        id: "extract-45",
-        dataset_id: "ds45",
-        subset_id: "get_some_data",
-        source: Source.Fake.new!(),
-        decoder: Decoder.Json.new!([]),
-        destination: Destination.Fake.new!()
-      )
-
-    Brook.Test.with_event(@instance, fn ->
-      Extraction.Store.persist(extract)
-    end)
-
-    Brook.Test.send(@instance, extract_end(), "testing", extract)
-
-    assert_async do
-      assert true == Extraction.Store.done?(extract)
-    end
   end
 
   test "sends extract_end on extract completion" do

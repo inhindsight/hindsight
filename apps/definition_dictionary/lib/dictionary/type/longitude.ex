@@ -1,4 +1,10 @@
 defmodule Dictionary.Type.Longitude do
+  @moduledoc """
+  Longitude type supporting `nil` values.
+
+  Normalization converts string and integer values to floats. An empty string
+  is converted to `nil`.
+  """
   use Definition, schema: Dictionary.Type.Longitude.V1
   use Dictionary.JsonEncoder
 
@@ -35,6 +41,7 @@ defmodule Dictionary.Type.Longitude do
 end
 
 defmodule Dictionary.Type.Longitude.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

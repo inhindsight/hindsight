@@ -1,4 +1,5 @@
 defmodule Define.Application do
+  @moduledoc false
   use Application
   use Properties, otp_app: :service_define
 

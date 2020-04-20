@@ -1,4 +1,7 @@
 defmodule Profile.Event.Handler do
+  @moduledoc """
+  Callbacks for handling events from `Brook`.
+  """
   use Brook.Event.Handler
 
   import Events, only: [extract_start: 0, profile_update: 0]

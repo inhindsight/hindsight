@@ -1,4 +1,10 @@
 defmodule Dictionary.Type.Integer do
+  @moduledoc """
+  Integer type supporting `nil` values.
+
+  During normalization, string values will be converted to integers. Empty
+  strings will be converted to `nil`.
+  """
   use Definition, schema: Dictionary.Type.Integer.V1
   use Dictionary.JsonEncoder
 
@@ -27,6 +33,7 @@ defmodule Dictionary.Type.Integer do
 end
 
 defmodule Dictionary.Type.Integer.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

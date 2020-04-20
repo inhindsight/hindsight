@@ -1,4 +1,8 @@
 defmodule Temp.Env do
+  @moduledoc """
+  Macro for altering application environments at runtime. Useful for
+  very targeted tests.
+  """
   defmacro modify(entries) do
     quote do
       setup do

@@ -1,4 +1,7 @@
 defmodule Broadcast.Cache.Registry do
+  @moduledoc """
+  `Registry` implementation for managing channel caches.
+  """
   def child_spec(_init_arg) do
     Supervisor.child_spec({Registry, keys: :unique, name: __MODULE__}, [])
   end

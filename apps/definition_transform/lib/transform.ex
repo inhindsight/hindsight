@@ -1,4 +1,16 @@
 defmodule Transform do
+  @moduledoc """
+  Object representing the transformation of dataset fields and values. Use `new/1` to
+  create a new instance.
+
+  ## Init options
+
+  * `id` - ID of this instance of a schedule. Typically a UUID.
+  * `dataset_id` - Dataset identifier.
+  * `subset_id` - Dataset's subset identifier.
+  * `dictionary` - A `Dictionary.t()` impl describing the data's schema.
+  * `steps` - List of `Transform.Step.t()` impls to execute.
+  """
   use Definition, schema: Transform.V1
 
   @type uuid :: String.t()

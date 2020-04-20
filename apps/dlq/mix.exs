@@ -27,6 +27,7 @@ defmodule Dlq.MixProject do
       {:annotated_retry, in_umbrella: true},
       {:elsa, "~> 0.12"},
       {:jason, "~> 1.1"},
+      {:credo, "~> 1.3", only: [:dev]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
       {:properties, in_umbrella: true},
       {:testing, in_umbrella: true, only: [:test]}

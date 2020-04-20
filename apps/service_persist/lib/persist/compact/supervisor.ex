@@ -1,4 +1,9 @@
 defmodule Persist.Compact.Supervisor do
+  @moduledoc """
+  `DynamicSupervisor` implementation. See
+  [Management.Supervisor](../../../../management/lib/management/supervisor.ex)
+  for more details.
+  """
   use Management.Supervisor,
     name: __MODULE__
 

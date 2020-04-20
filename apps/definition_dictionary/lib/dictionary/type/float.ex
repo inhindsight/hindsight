@@ -1,4 +1,10 @@
 defmodule Dictionary.Type.Float do
+  @moduledoc """
+  Float type supporting `nil` values.
+
+  During normalization, string values will be converted to floats. Empty
+  strings are converted to `nil`.
+  """
   use Definition, schema: Dictionary.Type.Float.V1
   use Dictionary.JsonEncoder
 
@@ -23,6 +29,7 @@ defmodule Dictionary.Type.Float do
 end
 
 defmodule Dictionary.Type.Float.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

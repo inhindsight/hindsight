@@ -33,9 +33,10 @@ defmodule PlatformRunner.MixProject do
       {:service_orchestrate, in_umbrella: true},
       {:divo, "~> 1.1"},
       {:websockex, "~> 0.4.0"},
-      {:testing, in_umbrella: true, only: [:test, :integration]},
       {:bypass, "~> 1.0", only: [:test, :integration]},
-      {:benchee, "~> 1.0", only: [:test, :integration]}
+      {:benchee, "~> 1.0", only: [:test, :integration]},
+      {:credo, "~> 1.3", only: [:dev]},
+      {:testing, in_umbrella: true, only: [:test, :integration]}
     ]
   end
 

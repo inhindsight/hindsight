@@ -1,4 +1,7 @@
 defmodule Decoder.JsonLines do
+  @moduledoc """
+  Defines a `Decoder` impl for [JSON Lines](http://jsonlines.org/) data.
+  """
   use Definition, schema: Decoder.JsonLines.V1
 
   @derive Jason.Encoder
@@ -19,6 +22,7 @@ defmodule Decoder.JsonLines do
 end
 
 defmodule Decoder.JsonLines.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

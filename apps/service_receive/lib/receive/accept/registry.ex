@@ -1,4 +1,10 @@
 defmodule Receive.Accept.Registry do
+  @moduledoc """
+  Registration helpers wrapping `Registry` usage.
+  """
+
+  # TODO should use Management.Registry
+
   def child_spec(_args) do
     Supervisor.child_spec({Registry, keys: :unique, name: __MODULE__}, [])
   end

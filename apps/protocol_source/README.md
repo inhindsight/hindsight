@@ -1,21 +1,26 @@
 # ProtocolSource
 
-**TODO: Add description**
+Defines a protocol data sources -- where data is coming from.
+
+## Usage
+
+Implementing this protocol requires three functions: `start_link/2`, `stop/2`,
+and `delete/1`. The difference between `stop/2` and `delete/1` is nuanced but
+important.
+
+You (likely) want to rarely destroy a source. This is akin to deleting a Kafka
+topic or dropping a table. It's more likely that you want to shutdown the
+processes used to manage a table or topic. That's what `stop/2` is for.
+
+See [Kafka.Topic.Source](../definition_kafka/lib/kafka/topic/source.ex) as an
+example.
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `protocol_source` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:protocol_source, "~> 0.1.0"}
+    {:protocol_source, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/protocol_source](https://hexdocs.pm/protocol_source).
-

@@ -1,4 +1,5 @@
 defmodule Extractor.Server do
+  @moduledoc false
   use GenServer, shutdown: 10_000
 
   def start_link(extractor, source_context) do

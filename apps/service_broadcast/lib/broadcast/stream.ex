@@ -1,4 +1,9 @@
 defmodule Broadcast.Stream do
+  @moduledoc """
+  Process to wrap the processes that push messages through `service_broadcast`.
+  This `GenServer` links processes for reading messages from a `Source.t()` impl
+  and caching if the `Load` is configured to do so.
+  """
   use GenServer, shutdown: 30_000
   use Annotated.Retry
   use Properties, otp_app: :service_broadcast

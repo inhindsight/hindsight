@@ -79,9 +79,6 @@ serviceAccount:
 podSecurityContext: {}
 securityContext: {}
 
-cert_manager:
-  enabled: false
-
 ingress:
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
@@ -105,3 +102,48 @@ resources: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+# Subchart configuration is namespaced under the subchart's name
+# as a top-level key. For example, the Certificate Manager's subchart is
+# configured under the cert_manager key.
+
+strimzi:
+  enabled: true
+  kafka:
+    replicaCount: 3
+    storage:
+      enabled: false
+      size: ""
+  zookeeper:
+    storage:
+      enabled: false
+      size: ""
+
+redis:
+  usePassword: false
+  cluster:
+    enabled: false
+
+nginx-ingress:
+  controller:
+    metrics:
+      enabled: true
+    service:
+      type: LoadBalancer
+
+prometheus-operator:
+  enabled: false
+  prometheusOperator:
+    namespaces:
+      releaseNamespace: true
+      additional:
+        - kube-system
+
+cert_manager:
+  enabled: false
+
+vernemq:
+  enabled: false
+  image:
+    repository: jeffgrunewald/vernemq
+    tag: latest

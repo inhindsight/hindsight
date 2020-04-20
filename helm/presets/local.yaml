@@ -15,6 +15,21 @@ acquire:
 ingress:
   host: hindsight.local
   tls: []
+global:
+  objectStore:
+    bucketName: hindsight-object-storage
+    region: local
+    accessKey: hindsightAccessKey
+    accessSecret: hindsightAccessSecret
+    minio:
+      enabled: true
+      port: 9000
+      scheme: "http://"
+
+# Subchart configuration is namespaced under the subchart's name
+# as a top-level key. For example, the Certificate Manager's subchart is
+# configured under the cert_manager key.
+
 strimzi:
   kafka:
     resources:
@@ -32,6 +47,7 @@ strimzi:
       limits:
         cpu: 100m
         memory: 512Mi
+
 redis:
   enabled: true
   externalAddress: ""
@@ -39,6 +55,7 @@ nginx-ingress:
   controller:
     service:
       type: LoadBalancer
+
 presto:
   presto:
     ingress:
@@ -62,6 +79,12 @@ global:
       enabled: true
       port: 9000
       scheme: "http://"
-image:
-  pullPolicy: Always
-  repository: nbeachaccenture/hindsight
+vernemq:
+  enabled: true
+  service:
+    type: LoadBalancer
+  additionalEnv:
+    - name: DOCKER_VERNEMQ_ALLOW_ANONYMOUS
+      value: "on"
+    - name: DOCKER_VERNEMQ_USER_HINDSIGHT
+      value: "hindsight"

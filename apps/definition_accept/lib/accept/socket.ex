@@ -1,4 +1,10 @@
 defmodule Accept.Socket do
+  @moduledoc """
+  Behaviour describing callbacks for handling messages pushed over
+  a socket connection. Default implementation is provided with this
+  module's `__using__` macro.
+  """
+
   @type writer :: (list -> :ok | {:error, term})
 
   @callback handle_messages(message :: term, writer) :: :ok | {:error, term}

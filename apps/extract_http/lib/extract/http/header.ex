@@ -1,4 +1,13 @@
 defmodule Extract.Http.Header do
+  @moduledoc """
+  An `Extract.Step.t()` impl for gathering response headers and storing them
+  for reuse later in the extraction pipeline.
+
+  ## Init options
+
+  * `name` - Name of the response header to retrieve.
+  * `into` - Key to store response header value under.
+  """
   use Definition, schema: Extract.Http.Header.V1
 
   @type t :: %__MODULE__{
@@ -47,6 +56,7 @@ defmodule Extract.Http.Header do
 end
 
 defmodule Extract.Http.Header.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true
