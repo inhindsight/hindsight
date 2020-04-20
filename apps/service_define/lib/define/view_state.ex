@@ -1,4 +1,7 @@
 defmodule Define.ViewState do
+  alias Define.Model.AppView
+  alias Define.Event.Store
+
   @moduledoc """
   State management functions for events.
   """
@@ -23,9 +26,8 @@ defmodule Define.ViewState do
   end
 
   @impl true
-  def handle_call({:event, type, payload}, _from, state) do
-    new_state = update_state(state, type, payload)
-    {:reply, new_state, new_state}
+  def handle_call({:event, _type, _payload}, _from, state) do
+    {:reply, state, state}
   end
 
   @impl true
@@ -35,10 +37,8 @@ defmodule Define.ViewState do
 
   @spec default_state :: map()
   def default_state() do
-    %{"greeting" => "Hola Mundo!"}
-  end
-
-  defp update_state(state, "new_greeting", payload) do
-    Map.put(state, "greeting", Map.get(payload, "greeting"))
+    %AppView{
+      data_definitions: Store.get_all()
+    }
   end
 end

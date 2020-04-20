@@ -1,5 +1,6 @@
-import { AppView } from './model/AppView'
+import {AppView} from "./model/view/AppView"
 
 export const defaultState: AppView = {
-    greeting: ""
+    greeting: "",
+    data_definitions: [],
 }

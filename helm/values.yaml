@@ -18,6 +18,45 @@ acquire:
   replicaCount: 1
   service:
     port: 80
+define:
+  replicaCount: 1
+  service:
+    port: 80
+  resource:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+strimzi:
+  enabled: true
+  kafka:
+    replicaCount: 3
+    storage:
+      enabled: false
+      size: ""
+  zookeeper:
+    storage:
+      enabled: false
+      size: ""
+redis:
+  usePassword: false
+  cluster:
+    enabled: false
+nginx-ingress:
+  controller:
+    metrics:
+      enabled: true
+    service:
+      type: LoadBalancer
+prometheus-operator:
+  enabled: false
+  prometheusOperator:
+    namespaces:
+      releaseNamespace: true
+      additional:
+        - kube-system
 image:
   repository: inhindsight/hindsight
   tag: ""
@@ -54,6 +93,10 @@ ingress:
       path: "/api/v[0-9]+/data/.*"
     - name: broadcast
       path: "/socket/websocket"
+    - name: define
+      path: "/define-socket/websocket"
+    - name: define
+      path: "/"
 
 resources: {}
 nodeSelector: {}

@@ -7,7 +7,7 @@ defmodule DefineWeb.Endpoint do
     signing_salt: "+YSBmf7s"
   ]
 
-  socket "/socket", DefineWeb.UserSocket,
+  socket "/define-socket", DefineWeb.UserSocket,
     websocket: true,
     longpoll: false
 

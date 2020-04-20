@@ -1,8 +1,8 @@
 import React, { FunctionComponent, PropsWithChildren } from "react"
 import { Socket, Channel } from "phoenix"
-import {AppView} from "../model/AppView"
 import {defaultState} from "../default-state"
 import {Event} from "./event"
+import {AppView} from "../model/view/AppView"
 
 export type PushEvent = (event: Event) => void
 export type PropsMapper<T> = (state: AppView, pushEvent: PushEvent) => T
@@ -33,7 +33,7 @@ export class StateProvider extends React.Component<PropsWithChildren<{}>, { read
     }
 
     componentDidMount() {
-        this.socket = new Socket("/socket")
+        this.socket = new Socket("/define-socket")
         this.socket.connect()
 
         this.channel = this.socket.channel("view_messages", {})

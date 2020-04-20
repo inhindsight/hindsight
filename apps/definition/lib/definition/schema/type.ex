@@ -44,7 +44,14 @@ defmodule Definition.Schema.Type do
     end)
   end
 
-  @spec access_path() :: spec
+  @spec map() :: spec
+  def map() do
+    spec(fn
+      %{__struct__: _} -> false
+      x -> is_map(x)
+    end)
+  end
+
   def access_path do
     one_of([spec(is_binary()), coll_of(spec(is_binary()))])
   end

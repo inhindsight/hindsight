@@ -1,3 +1,6 @@
+define:
+  service:
+    type: ClusterIP
 receive:
   service_udp:
     type: LoadBalancer
@@ -66,7 +69,6 @@ presto:
       annotations:
         nginx.ingress.kubernetes.io/use-regex: "true"
       hosts: [storage.hindsight.local/minio.*]
-
 vernemq:
   enabled: true
   service:

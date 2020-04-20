@@ -1,4 +1,5 @@
 import { addParameters, configure } from "@storybook/react";
+import "bootstrap/dist/css/bootstrap.css"
 
 addParameters({
     options: {
