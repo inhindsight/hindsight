@@ -9,8 +9,7 @@ defmodule Profile.Init do
 
   def on_start(state) do
     with {:ok, view_state} <- Profile.ViewState.Extractions.get_all() do
-      Map.values(view_state)
-      |> Enum.each(&Profile.Feed.Supervisor.start_child/1)
+      Enum.each(view_state, &Profile.Feed.Supervisor.start_child/1)
     end
 
     Ok.ok(state)

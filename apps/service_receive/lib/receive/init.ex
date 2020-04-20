@@ -11,8 +11,7 @@ defmodule Receive.Init do
 
   def on_start(state) do
     with {:ok, view_state} <- Receive.ViewState.Accepts.get_all() do
-      Map.values(view_state)
-      |> Enum.each(fn accept ->
+      Enum.each(view_state, fn accept ->
         Accept.Supervisor.start_child({SocketManager, accept: accept})
       end)
 
