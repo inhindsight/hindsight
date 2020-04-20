@@ -41,27 +41,28 @@ defmodule Define.TypespecAnalysis do
     |> Enum.into(%{})
   end
 
-  defp extract_field_type({:type, _, _, [{_, _, name}, {_, _, type}]}), do: {name, type, nil}
+  defp extract_field_type({:type, _, _, [{_, _, name}, {_, _, type}]}) do
+    {name, type, nil}
+  end
 
-  defp extract_field_type({:type, _, _, [{_, _, name}, {_, _, type, sub_typespec}]}),
-    do: {name, type, sub_typespec}
+  defp extract_field_type({:type, _, _, [{_, _, name}, {_, _, type, sub_typespec}]}) do
+    {name, type, sub_typespec}
+  end
 
-  defp to_simple_type({name, :list, [{_, _, [{_, _, String}, _, _]}]}),
-    do: {to_string(name), {"list", "string"}}
-
-  defp to_simple_type({name, :list, [{_, _, type, _}]}),
-    do: {to_string(name), {"list", to_string(type)}}
-
-  defp to_simple_type({name, typespec, _}) do
+  defp to_simple_type({name, typespec, details}) do
     type =
       case typespec do
-        [{_, _, String}, _, _] -> "string"
-        [{_, _, Dictionary}, _, _] -> "dictionary"
-        _ -> typespec
+        :list -> {"list", list_item_simple_type(details)}
+        [{_, _, String} | _] -> "string"
+        [{_, _, Dictionary} | _] -> "dictionary"
+        _ -> to_string(typespec)
       end
 
-    {to_string(name), to_string(type)}
+    {to_string(name), type}
   end
+
+  defp list_item_simple_type([{_, _, [{_, _, String} | _]}]), do: "string"
+  defp list_item_simple_type([{_, _, type, _}]), do: to_string(type)
 
   defp is_meta_field({"__struct__", _}), do: true
   defp is_meta_field({"version", _}), do: true
