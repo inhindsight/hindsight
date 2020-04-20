@@ -53,18 +53,32 @@ defmodule Gather.Event.Handler do
   end
 
   defp delete_source(key) do
-    ViewState.Sources.get(key)
-    |> Ok.map(fn source ->
-      Source.delete(source)
-      ViewState.Sources.delete(key)
-    end)
+    case ViewState.Sources.get(key) do
+      {:ok, nil} ->
+        Logger.warn(fn -> "#{__MODULE__}: No source to delete for #{key}" end)
+
+      {:ok, source} ->
+        Source.delete(source)
+        ViewState.Sources.delete(key)
+        Logger.debug(fn -> "#{__MODULE__}: Deleted source for #{key}" end)
+
+      {:error, reason} ->
+        raise reason
+    end
   end
 
   def delete_destination(key) do
-    ViewState.Destinations.get(key)
-    |> Ok.map(fn dest ->
-      Destination.delete(dest)
-      ViewState.Destinations.delete(key)
-    end)
+    case ViewState.Destinations.get(key) do
+      {:ok, nil} ->
+        Logger.warn(fn -> "#{__MODULE__}: No destination to delete for #{key}" end)
+
+      {:ok, destination} ->
+        Destination.delete(destination)
+        ViewState.Destinations.delete(key)
+        Logger.debug(fn -> "#{__MODULE__}: Deleted destination for #{key}" end)
+
+      {:error, reason} ->
+        raise reason
+    end
   end
 end
