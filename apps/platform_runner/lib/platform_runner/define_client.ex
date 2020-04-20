@@ -1,4 +1,5 @@
 defmodule PlatformRunner.DefineClient do
+  @moduledoc false
   use Tesla
 
   plug(Tesla.Middleware.BaseUrl, "http://localhost:4005/")

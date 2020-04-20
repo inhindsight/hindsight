@@ -1,4 +1,5 @@
 defmodule Define.Event.Handler do
+  @moduledoc false
   use Brook.Event.Handler
   require Logger
 

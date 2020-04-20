@@ -1,4 +1,5 @@
 defmodule Define.Event.Store do
+  @moduledoc false
   require Logger
   alias Define.DefinitionSerialization
   alias Define.Model.{DataDefinitionView, ExtractView, LoadView, TransformView}
