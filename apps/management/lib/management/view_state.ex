@@ -14,7 +14,7 @@ defmodule Management.ViewState do
   @callback collection() :: Brook.view_collection()
   @callback persist(Brook.view_key(), map) :: :ok
   @callback get(Brook.view_key()) :: {:ok, map} | {:error, term}
-  @callback get_all() :: {:ok, [map]} | {:error, term}
+  @callback get_all() :: {:ok, [Brook.view_value()]} | {:error, term}
   @callback delete(Brook.view_key()) :: :ok
 
   defmacro __using__(opts) do
@@ -47,7 +47,7 @@ defmodule Management.ViewState do
       @impl true
       def get_all do
         unquote(instance)
-        |> Brook.get_all(unquote(collection))
+        |> Brook.get_all_values(unquote(collection))
       end
 
       @impl true

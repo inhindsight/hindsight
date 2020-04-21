@@ -11,8 +11,7 @@ defmodule Gather.Init do
 
   def on_start(state) do
     with {:ok, view_state} <- Gather.ViewState.Extractions.get_all() do
-      Map.values(view_state)
-      |> Enum.each(&Extraction.Supervisor.start_child/1)
+      Enum.each(view_state, &Extraction.Supervisor.start_child/1)
 
       Ok.ok(state)
     end
