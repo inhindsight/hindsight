@@ -12,6 +12,22 @@ spec:
       targetPort: websocket
       protocol: TCP
       name: websocket
+    - port: 8080
+      targetPort: websocket8080
+      protocol: TCP
+      name: websocket8080
+    - port: 8081
+      targetPort: websocket8081
+      protocol: TCP
+      name: websocket8081
+    - port: 8082
+      targetPort: websocket8082
+      protocol: TCP
+      name: websocket8082
+    - port: 8083
+      targetPort: websocket8083
+      protocol: TCP
+      name: websocket8083
     - port: 9568
       targetPort: metrics
       protocol: TCP
