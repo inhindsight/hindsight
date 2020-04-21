@@ -1,11 +1,20 @@
 defmodule Persist.LoaderTest do
   use ExUnit.Case
+  import Definition, only: [identifier: 1]
+  alias Persist.ViewState
 
   @instance Persist.Application.instance()
 
   setup do
     Process.flag(:trap_exit, true)
-    Brook.Test.clear_view_state(@instance, "transformations")
+
+    on_exit(fn ->
+      Persist.Load.Supervisor.kill_all_children()
+
+      ["Loads", "Transformations", "Compactions", "Sources", "Destinations"]
+      |> Enum.map(fn state -> :"Elixir.Persist.ViewState.#{state}" end)
+      |> Enum.each(&Brook.Test.clear_view_state(@instance, &1.collection()))
+    end)
 
     transform =
       Transform.new!(
@@ -19,10 +28,6 @@ defmodule Persist.LoaderTest do
         steps: []
       )
 
-    Brook.Test.with_event(@instance, fn ->
-      Persist.Transformations.persist(transform)
-    end)
-
     load =
       Load.new!(
         id: "load-1",
@@ -32,8 +37,9 @@ defmodule Persist.LoaderTest do
         destination: Destination.Fake.new!()
       )
 
-    on_exit(fn ->
-      Persist.Load.Supervisor.kill_all_children()
+    Brook.Test.with_event(@instance, fn ->
+      identifier(transform)
+      |> ViewState.Transformations.persist(transform)
     end)
 
     [load: load, transform: transform]
@@ -42,7 +48,6 @@ defmodule Persist.LoaderTest do
   describe "start destination" do
     test "will start destination", %{load: load} do
       start_supervised({Persist.Loader, load: load})
-
       assert_receive {:destination_start_link, _}, 1_000
     end
 
