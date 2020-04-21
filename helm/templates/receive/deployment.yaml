@@ -36,6 +36,18 @@ spec:
             - name: websocket
               containerPort: 80
               protocol: TCP
+            - name: websocket8080
+              containerPort: 8080
+              protocol: TCP
+            - name: websocket8081
+              containerPort: 8081
+              protocol: TCP
+            - name: websocket8082
+              containerPort: 8082
+              protocol: TCP
+            - name: websocket8083
+              containerPort: 8083
+              protocol: TCP
             - name: udp-push
               containerPort: 6790
               protocol: UDP
