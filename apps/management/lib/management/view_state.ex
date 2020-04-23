@@ -13,7 +13,7 @@ defmodule Management.ViewState do
 
   @callback collection() :: Brook.view_collection()
   @callback persist(Brook.view_key(), map) :: :ok
-  @callback get(Brook.view_key()) :: {:ok, map} | {:error, term}
+  @callback get(Brook.view_key()) :: {:ok, nil | map} | {:error, term}
   @callback get_all() :: {:ok, [Brook.view_value()]} | {:error, term}
   @callback delete(Brook.view_key()) :: :ok
 
@@ -48,6 +48,10 @@ defmodule Management.ViewState do
       def get_all do
         unquote(instance)
         |> Brook.get_all_values(unquote(collection))
+        |> Ok.map(fn
+          nil -> []
+          x -> x
+        end)
       end
 
       @impl true
