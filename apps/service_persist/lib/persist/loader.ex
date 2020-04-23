@@ -8,10 +8,10 @@ defmodule Persist.Loader do
   use Annotated.Retry
   use Properties, otp_app: :service_persist
   require Logger
+  import Definition, only: [identifier: 1]
+  alias Persist.ViewState
 
   @max_retries get_config_value(:max_retries, default: 10)
-
-  alias Persist.Transformations
 
   @type init_opts :: [
           load: %Load{}
@@ -29,8 +29,8 @@ defmodule Persist.Loader do
     %Load{} = load = Keyword.fetch!(init_arg, :load)
     Logger.debug(fn -> "#{__MODULE__}:#{inspect(self())} initializied for #{inspect(load)}" end)
 
-    with {:ok, transform} when not is_nil(transform) <-
-           Transformations.get(load.dataset_id, load.subset_id),
+    with key <- identifier(load),
+         {:ok, transform} when not is_nil(transform) <- ViewState.Transformations.get(key),
          {:ok, dictionary} <- transform_dictionary(transform),
          {:ok, destination_pid} <- start_destination(load, dictionary),
          {:ok, source_pid} <- start_source(load, dictionary, transform, destination_pid) do

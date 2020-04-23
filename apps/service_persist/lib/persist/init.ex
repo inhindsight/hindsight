@@ -8,20 +8,17 @@ defmodule Persist.Init do
     supervisor: Persist.Load.Supervisor
 
   def on_start(state) do
-    Persist.Load.Store.get_all!()
-    |> Enum.reject(&is_nil/1)
-    |> Enum.reject(&Persist.Load.Store.done?/1)
-    |> Enum.map(fn load -> {load, Persist.Load.Store.is_being_compacted?(load)} end)
-    |> Enum.each(&start/1)
+    with {:ok, compactions} <- Persist.ViewState.Compactions.get_all(),
+         {:ok, loads} <- Persist.ViewState.Loads.get_all() do
+      Enum.split_with(loads, fn load -> load in compactions end)
+      |> start_load_or_compaction()
+    end
 
-    {:ok, state}
+    Ok.ok(state)
   end
 
-  defp start({load, false = _compacted?}) do
-    Persist.Load.Supervisor.start_child(load)
-  end
-
-  defp start({load, true = _compacted?}) do
-    Persist.Compact.Supervisor.start_child(load)
+  defp start_load_or_compaction({compacting, compacted}) do
+    Enum.each(compacting, &Persist.Compact.Supervisor.start_child/1)
+    Enum.each(compacted, &Persist.Load.Supervisor.start_child/1)
   end
 end

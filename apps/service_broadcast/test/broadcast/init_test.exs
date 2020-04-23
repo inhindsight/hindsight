@@ -1,6 +1,7 @@
 defmodule Broadcast.InitTest do
   use ExUnit.Case
   use Placebo
+  import Definition, only: [identifier: 1]
 
   @instance Broadcast.Application.instance()
 
@@ -31,7 +32,10 @@ defmodule Broadcast.InitTest do
     ]
 
     Brook.Test.with_event(@instance, fn ->
-      Enum.each(loads, &Broadcast.Stream.Store.persist/1)
+      Enum.each(loads, fn load ->
+        identifier(load)
+        |> Broadcast.ViewState.Streams.persist(load)
+      end)
     end)
 
     start_supervised(Broadcast.Init)
