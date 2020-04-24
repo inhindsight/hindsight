@@ -1,6 +1,7 @@
 defmodule Acquire.Query.Where.BboxTest do
   use ExUnit.Case
   use Placebo
+  import Definition, only: [identifier: 1]
 
   alias Acquire.Query.Where.Bbox
   alias Acquire.Query.ST
@@ -8,10 +9,16 @@ defmodule Acquire.Query.Where.BboxTest do
 
   @instance Acquire.Application.instance()
 
+  setup do
+    on_exit(fn ->
+      Brook.Test.clear_view_state(@instance, Acquire.ViewState.Fields.collection())
+    end)
+  end
+
   describe "to_queryable/2" do
     test "returns queryable object for one geospatial field" do
       Brook.Test.with_event(@instance, fn ->
-        Acquire.Dictionaries.persist(
+        transform =
           Transform.new!(
             id: "transform-1",
             dataset_id: "a",
@@ -21,7 +28,11 @@ defmodule Acquire.Query.Where.BboxTest do
             ],
             steps: []
           )
-        )
+
+        {:ok, dict} = Transformer.transform_dictionary(transform.steps, transform.dictionary)
+
+        identifier(transform)
+        |> Acquire.ViewState.Fields.persist(dict)
       end)
 
       points = [ST.point!(1.0, 2.0), ST.point!(3.0, 4.0)]
@@ -35,7 +46,7 @@ defmodule Acquire.Query.Where.BboxTest do
 
     test "returns queryable object for multiple geospatial fields" do
       Brook.Test.with_event(@instance, fn ->
-        Acquire.Dictionaries.persist(
+        transform =
           Transform.new!(
             id: "transform-1",
             dataset_id: "a",
@@ -46,7 +57,11 @@ defmodule Acquire.Query.Where.BboxTest do
             ],
             steps: []
           )
-        )
+
+        {:ok, dict} = Transformer.transform_dictionary(transform.steps, transform.dictionary)
+
+        identifier(transform)
+        |> Acquire.ViewState.Fields.persist(dict)
       end)
 
       points = [ST.point!(1.0, 2.0), ST.point!(3.0, 4.0)]

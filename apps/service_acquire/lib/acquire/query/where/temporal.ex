@@ -1,6 +1,7 @@
 defmodule Acquire.Query.Where.Temporal do
   @moduledoc false
   import Acquire.Query.Where.Functions
+  import Definition, only: [identifier: 2]
 
   @spec to_queryable(
           dataset_id :: String.t(),
@@ -11,7 +12,7 @@ defmodule Acquire.Query.Where.Temporal do
   def to_queryable(_, _, "", ""), do: nil
 
   def to_queryable(dataset_id, subset_id, after_time, before_time) do
-    with {:ok, dictionary} <- Acquire.Dictionaries.get_dictionary(dataset_id, subset_id) do
+    with {:ok, dictionary} <- dictionary(dataset_id, subset_id) do
       Dictionary.get_by_type(dictionary, Dictionary.Type.Timestamp)
       |> Enum.map(&Enum.join(&1, "."))
       |> Enum.map(&to_queryable(&1, after_time, before_time))
@@ -26,6 +27,12 @@ defmodule Acquire.Query.Where.Temporal do
     ]
     |> Enum.filter(& &1)
     |> and_clause()
+  end
+
+  defp dictionary(dataset_id, subset_id) do
+    with {:ok, nil} <- identifier(dataset_id, subset_id) |> Acquire.ViewState.Fields.get() do
+      Ok.error("dictionary not found for #{dataset_id} #{subset_id}")
+    end
   end
 
   defp after_clause(_, ""), do: nil

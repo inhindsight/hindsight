@@ -2,6 +2,7 @@ defmodule Acquire.Query do
   @moduledoc false
 
   use Definition, schema: Acquire.Query.Schema
+  import Definition, only: [identifier: 2]
 
   @type t :: %__MODULE__{
           table: String.t(),
@@ -43,19 +44,28 @@ defmodule Acquire.Query do
     defp limit_statement(n), do: "LIMIT #{n}"
   end
 
-  def from_params(%{"dataset" => dataset} = params) do
-    subset = Map.get(params, "subset", "default")
-
-    fields =
-      Map.get(params, "fields", "*")
-      |> String.split(",", trim: true)
-      |> Enum.map(&String.trim/1)
-
-    with {:ok, destination} <- Acquire.Dictionaries.get_destination(dataset, subset),
-         table_name <- destination.name,
+  def from_params(params) do
+    with {:ok, table_name} <- table(params),
          {:ok, where_clause} <- Acquire.Query.Where.from_params(params) do
-      new(table: table_name, fields: fields, limit: limit(params), where: where_clause)
+      new(table: table_name, fields: fields(params), limit: limit(params), where: where_clause)
     end
+  end
+
+  defp table(%{"dataset" => dataset_id} = params) do
+    subset_id = Map.get(params, "subset", "default")
+
+    identifier(dataset_id, subset_id)
+    |> Acquire.ViewState.Destinations.get()
+    |> case do
+      {:ok, nil} -> Ok.error("destination not found for #{dataset_id} #{subset_id}")
+      {:ok, destination} -> Ok.ok(destination.name)
+    end
+  end
+
+  defp fields(params) do
+    Map.get(params, "fields", "*")
+    |> String.split(",", trim: true)
+    |> Enum.map(&String.trim/1)
   end
 
   defp limit(%{"limit" => limit}), do: String.to_integer(limit)

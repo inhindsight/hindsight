@@ -1,5 +1,6 @@
 defmodule Acquire.Query.Where.Bbox do
   @moduledoc false
+  import Definition, only: [identifier: 2]
   alias Acquire.Query.ST
 
   @spec to_queryable([float], dataset_id :: String.t(), subset_id :: String.t()) ::
@@ -8,7 +9,7 @@ defmodule Acquire.Query.Where.Bbox do
 
   def to_queryable([x1, y1, x2, y2], dataset_id, subset_id) do
     with {:ok, envelope} <- bbox_envelope(x1, y1, x2, y2),
-         {:ok, dictionary} <- Acquire.Dictionaries.get_dictionary(dataset_id, subset_id),
+         {:ok, dictionary} <- dictionary(dataset_id, subset_id),
          wkt_fields <- wkt_fields(dictionary),
          {:ok, geometries} <- Ok.transform(wkt_fields, &ST.geometry_from_text/1) do
       case geometries do
@@ -34,5 +35,11 @@ defmodule Acquire.Query.Where.Bbox do
     Dictionary.get_by_type(dictionary, Dictionary.Type.Wkt.Point)
     |> Enum.map(&Enum.join(&1, "."))
     |> Enum.map(&Acquire.Query.Where.Field.new!(name: &1))
+  end
+
+  defp dictionary(dataset_id, subset_id) do
+    with {:ok, nil} <- identifier(dataset_id, subset_id) |> Acquire.ViewState.Fields.get() do
+      Ok.error("dictionary not found for #{dataset_id} #{subset_id}")
+    end
   end
 end
