@@ -11,10 +11,13 @@ defmodule Decoder.JsonArrays do
     def lines_or_bytes(_t), do: :line
 
     def decode(t, stream) do
-      stream
-      |> Jason.decode!()
+      Stream.map(stream, &decode_chunk/1)
+    end
+
+    defp decode_chunk(chunk) do
+      chunk
+      |> Enum.map(&Jason.decode!/1)
       |> List.flatten()
-      |> Stream.chunk_every(t.chunk_size)
     end
   end
 end
