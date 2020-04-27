@@ -15,8 +15,7 @@ defmodule Decoder.JsonArrays do
     end
 
     defp decode_chunk(chunk) do
-      chunk
-      |> Enum.flat_map(&Jason.decode!/1)
+      Enum.flat_map(chunk, &Jason.decode!/1)
     end
   end
 end
