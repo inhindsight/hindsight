@@ -5,7 +5,7 @@ defmodule Decoder.JsonArrays do
   use Definition, schema: Decoder.JsonArrays.V1
 
   @derive Jason.Encoder
-  defstruct chunk_size: 1_000
+  defstruct []
 
   defimpl Decoder do
     def lines_or_bytes(_t), do: :line
