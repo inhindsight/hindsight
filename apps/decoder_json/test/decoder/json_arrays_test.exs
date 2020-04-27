@@ -17,15 +17,18 @@ defmodule Decoder.JsonArraysTest do
 
   describe "Decoder" do
     test "decodes string with arrays to json" do
-      input =
+      input = [
         ~s([{"id":"1","type":"Crew","position":[0, 1, 2]}, [{"id":"2","type":"Crew","position":[3,4,5]},{"id":"3","type":"Guest","position":[6,7,8]}]])
+      ]
 
       output = Decoder.decode(Decoder.JsonArrays.new!([]), input)
 
       assert Enum.to_list(output) == [
-               %{"id" => "1", "type" => "Crew", "position" => [0, 1, 2]},
-               %{"id" => "2", "type" => "Crew", "position" => [3, 4, 5]},
-               %{"id" => "3", "type" => "Guest", "position" => [6, 7, 8]}
+               [
+                 %{"id" => "1", "type" => "Crew", "position" => [0, 1, 2]},
+                 %{"id" => "2", "type" => "Crew", "position" => [3, 4, 5]},
+                 %{"id" => "3", "type" => "Guest", "position" => [6, 7, 8]}
+               ]
              ]
     end
   end
