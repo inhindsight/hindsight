@@ -1,6 +1,6 @@
 defmodule Decoder.JsonArrays do
   @moduledoc """
-  Defines a `Decoder` impl for arrays of JSON data.
+  Defines a `Decoder` impl for JSON data where the json string's top level object is an array and should be decomposed into its elements.
   """
   use Definition, schema: Decoder.JsonArrays.V1
 
