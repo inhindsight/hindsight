@@ -8,6 +8,18 @@ defmodule Acquire.ViewState do
     use Management.ViewState,
       instance: Acquire.Application.instance(),
       collection: "fields"
+
+    def persist(key, object) do
+      super(key, %{key => object})
+    end
+
+    def get(key) do
+      super(key)
+      |> Ok.map(fn
+        nil -> nil
+        map -> Map.get(map, key)
+      end)
+    end
   end
 
   defmodule Destinations do

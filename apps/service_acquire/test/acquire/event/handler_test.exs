@@ -9,7 +9,7 @@ defmodule Acquire.Event.HandlerTest do
   setup do
     on_exit(fn ->
       Brook.Test.clear_view_state(@instance, ViewState.Fields.collection())
-      Brook.Test.clear_view_state(@instance, ViewState.Fields.collection())
+      Brook.Test.clear_view_state(@instance, ViewState.Destinations.collection())
     end)
 
     load =
