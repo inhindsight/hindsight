@@ -15,10 +15,10 @@ defmodule Acquire.ViewState do
 
     def get(key) do
       super(key)
-      |> Ok.map(fn
-        nil -> nil
-        map -> Map.get(map, key)
-      end)
+      |> case do
+        {:ok, nil} -> Ok.error("dictionary not found for #{key}")
+        result -> Ok.map(result, &Map.get(&1, key))
+      end
     end
   end
 

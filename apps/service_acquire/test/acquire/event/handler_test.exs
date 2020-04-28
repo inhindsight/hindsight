@@ -70,7 +70,7 @@ defmodule Acquire.Event.HandlerTest do
     end
 
     test "removes fields from state", %{key: key} do
-      assert ViewState.Fields.get(key) == {:ok, nil}
+      assert ViewState.Fields.get(key) == {:error, "dictionary not found for #{key}"}
     end
   end
 end

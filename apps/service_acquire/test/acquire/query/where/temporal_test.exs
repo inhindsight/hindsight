@@ -110,7 +110,7 @@ defmodule Acquire.Query.Where.TemporalTest do
   end
 
   test "will return an error tuple if no dictionary available" do
-    assert {:error, "dictionary not found for ds1 sb1"} =
+    assert {:error, "dictionary not found for ds1__sb1"} =
              Temporal.to_queryable("ds1", "sb1", "2018-01-01T00:00:00", "2020-01-01T00:00:00")
   end
 end
