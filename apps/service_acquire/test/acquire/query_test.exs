@@ -6,12 +6,15 @@ defmodule Acquire.QueryTest do
   alias Acquire.Queryable
   alias Acquire.Query.Where.{Function, And, Or, Parameter}
   import Acquire.Query.Where.Functions
+  import Definition, only: [identifier: 1]
 
   @instance Acquire.Application.instance()
 
   setup do
-    Brook.Test.clear_view_state(@instance, "fields")
-    :ok
+    on_exit(fn ->
+      Brook.Test.clear_view_state(@instance, Acquire.ViewState.Fields.collection())
+      Brook.Test.clear_view_state(@instance, Acquire.ViewState.Destinations.collection())
+    end)
   end
 
   describe "new/1" do
@@ -33,7 +36,7 @@ defmodule Acquire.QueryTest do
   describe "from_params/1" do
     setup do
       Brook.Test.with_event(@instance, fn ->
-        Acquire.Dictionaries.persist(
+        load =
           Load.new!(
             id: "persist-1",
             dataset_id: "a",
@@ -45,7 +48,9 @@ defmodule Acquire.QueryTest do
                 name: "table_name"
               )
           )
-        )
+
+        identifier(load)
+        |> Acquire.ViewState.Destinations.persist(load.destination)
       end)
 
       :ok

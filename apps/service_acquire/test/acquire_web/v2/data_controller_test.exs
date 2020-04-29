@@ -4,6 +4,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
   use Placebo
 
   require Temp.Env
+  import Definition, only: [identifier: 1]
 
   Temp.Env.modify([
     %{
@@ -23,7 +24,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
         Regex.named_captures(regex, path) |> Enum.reject(fn {_, v} -> v == "" end) |> Map.new()
 
       Brook.Test.with_event(@instance, fn ->
-        Acquire.Dictionaries.persist(
+        transform =
           Transform.new!(
             id: "transform-1",
             dataset_id: path_variables["dataset_id"],
@@ -34,9 +35,14 @@ defmodule AcquireWeb.V2.DataControllerTest do
             ],
             steps: []
           )
-        )
 
-        Acquire.Dictionaries.persist(
+        {:ok, dictionary} =
+          Transformer.transform_dictionary(transform.steps, transform.dictionary)
+
+        identifier(transform)
+        |> Acquire.ViewState.Fields.persist(dictionary)
+
+        load =
           Load.new!(
             id: "persist-1",
             dataset_id: path_variables["dataset_id"],
@@ -48,7 +54,9 @@ defmodule AcquireWeb.V2.DataControllerTest do
                 name: "table_destination"
               )
           )
-        )
+
+        identifier(load)
+        |> Acquire.ViewState.Destinations.persist(load.destination)
       end)
 
       data = [%{"a" => 42}]
@@ -100,7 +108,7 @@ defmodule AcquireWeb.V2.DataControllerTest do
   describe "query/2" do
     setup do
       Brook.Test.with_event(@instance, fn ->
-        Acquire.Dictionaries.persist(
+        transform =
           Transform.new!(
             id: "transform-1",
             dataset_id: "dataset_id_1",
@@ -111,9 +119,14 @@ defmodule AcquireWeb.V2.DataControllerTest do
             ],
             steps: []
           )
-        )
 
-        Acquire.Dictionaries.persist(
+        {:ok, dictionary} =
+          Transformer.transform_dictionary(transform.steps, transform.dictionary)
+
+        identifier(transform)
+        |> Acquire.ViewState.Fields.persist(dictionary)
+
+        load =
           Load.new!(
             id: "persist-1",
             dataset_id: "dataset_id_1",
@@ -125,7 +138,9 @@ defmodule AcquireWeb.V2.DataControllerTest do
                 name: "table_destination"
               )
           )
-        )
+
+        identifier(load)
+        |> Acquire.ViewState.Destinations.persist(load.destination)
       end)
     end
 

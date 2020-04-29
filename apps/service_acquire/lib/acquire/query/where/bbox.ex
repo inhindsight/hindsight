@@ -1,6 +1,8 @@
 defmodule Acquire.Query.Where.Bbox do
   @moduledoc false
+  import Definition, only: [identifier: 2]
   alias Acquire.Query.ST
+  alias Acquire.ViewState.Fields
 
   @spec to_queryable([float], dataset_id :: String.t(), subset_id :: String.t()) ::
           {:ok, Acquire.Queryable.t()} | {:error, term}
@@ -8,7 +10,7 @@ defmodule Acquire.Query.Where.Bbox do
 
   def to_queryable([x1, y1, x2, y2], dataset_id, subset_id) do
     with {:ok, envelope} <- bbox_envelope(x1, y1, x2, y2),
-         {:ok, dictionary} <- Acquire.Dictionaries.get_dictionary(dataset_id, subset_id),
+         {:ok, dictionary} <- identifier(dataset_id, subset_id) |> Fields.get(),
          wkt_fields <- wkt_fields(dictionary),
          {:ok, geometries} <- Ok.transform(wkt_fields, &ST.geometry_from_text/1) do
       case geometries do

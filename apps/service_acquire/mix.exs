@@ -38,6 +38,7 @@ defmodule Acquire.MixProject do
       {:extractor, in_umbrella: true},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
+      {:management, in_umbrella: true},
       {:metrics_reporter, in_umbrella: true},
       {:nimble_parsec, "~> 0.5.3"},
       {:ok, in_umbrella: true},

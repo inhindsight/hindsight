@@ -1,21 +1,22 @@
 defmodule Acquire.Query.Where.TemporalTest do
   use ExUnit.Case
-
+  import Definition, only: [identifier: 1]
   alias Acquire.Query.Where.Temporal
   alias Acquire.Queryable
 
   @instance Acquire.Application.instance()
 
   setup do
-    Brook.Test.clear_view_state(@instance, "fields")
-
-    :ok
+    on_exit(fn ->
+      Brook.Test.clear_view_state(@instance, Acquire.ViewState.Fields.collection())
+      Brook.Test.clear_view_state(@instance, Acquire.ViewState.Destinations.collection())
+    end)
   end
 
   describe "single timestamp field in dictionary" do
     setup do
       Brook.Test.with_event(@instance, fn ->
-        Acquire.Dictionaries.persist(
+        transform =
           Transform.new!(
             id: "transform-1",
             dataset_id: "ds1",
@@ -25,7 +26,11 @@ defmodule Acquire.Query.Where.TemporalTest do
             ],
             steps: []
           )
-        )
+
+        {:ok, dict} = Transformer.transform_dictionary(transform.steps, transform.dictionary)
+
+        identifier(transform)
+        |> Acquire.ViewState.Fields.persist(dict)
       end)
     end
 
@@ -65,7 +70,7 @@ defmodule Acquire.Query.Where.TemporalTest do
   describe "more than one timestamp field" do
     setup do
       Brook.Test.with_event(@instance, fn ->
-        Acquire.Dictionaries.persist(
+        transform =
           Transform.new!(
             id: "transform-1",
             dataset_id: "ds1",
@@ -81,7 +86,11 @@ defmodule Acquire.Query.Where.TemporalTest do
             ],
             steps: []
           )
-        )
+
+        {:ok, dict} = Transformer.transform_dictionary(transform.steps, transform.dictionary)
+
+        identifier(transform)
+        |> Acquire.ViewState.Fields.persist(dict)
       end)
     end
 
@@ -101,7 +110,7 @@ defmodule Acquire.Query.Where.TemporalTest do
   end
 
   test "will return an error tuple if no dictionary available" do
-    assert {:error, "dictionary not found for ds1 sb1"} =
+    assert {:error, "dictionary not found for ds1__sb1"} =
              Temporal.to_queryable("ds1", "sb1", "2018-01-01T00:00:00", "2020-01-01T00:00:00")
   end
 end
