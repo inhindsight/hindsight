@@ -7,6 +7,8 @@ defmodule Orchestrate.Application do
   def instance(), do: :orchestrate_instance
 
   def start(_type, _args) do
+    Plugins.load!()
+
     children =
       [
         Orchestrate.MetricsReporter,

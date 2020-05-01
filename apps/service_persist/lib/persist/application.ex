@@ -7,6 +7,8 @@ defmodule Persist.Application do
   def instance(), do: :persist_instance
 
   def start(_type, _args) do
+    Plugins.load!()
+
     children =
       [
         Persist.Load.Registry,

@@ -40,6 +40,7 @@ defmodule Persist.MixProject do
       {:jason, "~> 1.1"},
       {:management, in_umbrella: true},
       {:metrics_reporter, in_umbrella: true},
+      {:plugins, in_umbrella: true},
       {:poison, "~> 4.0"},
       {:properties, in_umbrella: true},
       {:protocol_source, in_umbrella: true},

@@ -33,6 +33,7 @@ defmodule Orchestrate.MixProject do
       {:extractor, in_umbrella: true},
       {:management, in_umbrella: true},
       {:metrics_reporter, in_umbrella: true},
+      {:plugins, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:quantum, "~> 2.3"},
       {:timex, "~> 3.0"},
