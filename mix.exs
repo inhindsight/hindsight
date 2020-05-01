@@ -47,13 +47,6 @@ defmodule Hindsight.MixProject do
         version: {:from_app, :service_acquire},
         include_executables_for: [:unix],
         applications: [service_acquire: :permanent]
-      ],
-      define: [
-        version: {:from_app, :service_define},
-        include_executables_for: [:unix],
-        applications: [service_define: :permanent],
-        # This is necessary for Define.TypespecAnalysis to have typespec data
-        strip_beams: false
       ]
     ]
   end

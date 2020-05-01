@@ -16,6 +16,13 @@ defmodule AcquireWeb.V2.DataControllerTest do
 
   @instance Acquire.Application.instance()
 
+  setup do
+    on_exit(fn ->
+      Brook.Test.clear_view_state(@instance, Acquire.ViewState.Fields.collection())
+      Brook.Test.clear_view_state(@instance, Acquire.ViewState.Destinations.collection())
+    end)
+  end
+
   describe "select/2" do
     data_test "retrieves data", %{conn: conn} do
       regex = ~r/\/api\/v2\/data\/(?<dataset_id>\w+)(\/(?<subset_id>\w+))?/
