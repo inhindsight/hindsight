@@ -1,21 +1,44 @@
 # Plugins
 
-**TODO: Add description**
+This app provides a single function meant to find and load custom protocol implementations. The
+function should be used on application startup.
+
+``` elixir
+# application.ex
+def start(_, _) do
+  Plugins.load!()
+  
+  # ...
+end
+```
+
+Plugin files in a top-level `plugins` directory will be compiled and loaded into that application.
+Plugins must end in `.ex`. They can be nested in subdirectories. The glob for finding plugins is
+`plugins/**/*.ex`.
+
+Plugins that don't compile will raise exceptions and blow up the dependent application. This
+is the intended design.
+
+## Docker
+
+The Hindsight [Dockerfile](../../Dockerfile) creates a plugins directory for this purpose.
+Any plugin copied into this directory will be made available to all standard Hindsight services.
+
+You will have to build your own image from the official Hindsight image.
+
+```dockerfile
+FROM inhindsight/hindsight:latest
+COPY my_plugins/ plugins/
+```
+
+You will also need to specify your `image.repository` and `image.tag` when using `helm`.
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `plugins` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:plugins, "~> 0.1.0"}
+    {:plugins, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/plugins](https://hexdocs.pm/plugins).
-
