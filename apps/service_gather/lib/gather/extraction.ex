@@ -63,15 +63,7 @@ defmodule Gather.Extraction do
   end
 
   defp do_extract(destination_pid, extract) do
-    Gather.Extraction.SourceStream.stream(extract)
-    |> decode(extract)
-    |> Ok.each(fn chunk ->
-      messages =
-        Enum.map(chunk, &lowercase_fields/1)
-        |> normalize(extract)
-
-      Destination.write(extract.destination, destination_pid, messages)
-    end)
+    Gather.Extraction.SourceStream.start_source(extract, destination_pid)
   rescue
     e ->
       warn_extract_failure(extract, e)
@@ -80,39 +72,9 @@ defmodule Gather.Extraction do
     Destination.stop(extract.destination, destination_pid)
   end
 
-  defp normalize(messages, extract) do
-    %{good: good, bad: bad} =
-      Enum.reduce(messages, %{good: [], bad: []}, fn message, acc ->
-        case Dictionary.normalize(extract.dictionary, message) do
-          {:ok, normalized_message} ->
-            %{acc | good: [normalized_message | acc.good]}
-
-          {:error, reason} ->
-            dead_letter = to_dead_letter(extract, message, reason)
-            %{acc | bad: [dead_letter | acc.bad]}
-        end
-      end)
-
-    unless bad == [] do
-      dlq().write(Enum.reverse(bad))
-    end
-
-    Enum.reverse(good)
-  end
-
-  defp decode(stream, extract) do
-    Decoder.decode(extract.decoder, stream)
-  end
-
-  defp to_dead_letter(extract, og, reason) do
-    DeadLetter.new(
-      dataset_id: extract.dataset_id,
-      subset_id: extract.subset_id,
-      original_message: og,
-      app_name: app_name(),
-      reason: reason
-    )
-  end
+  # defp decode(stream, extract) do
+  #   Decoder.decode(extract.decoder, stream)
+  # end
 
   defp warn_extract_failure(extract, reason) do
     Logger.warn(fn ->
@@ -121,14 +83,4 @@ defmodule Gather.Extraction do
 
     reason
   end
-
-  defp lowercase_fields(%{} = map) do
-    for {key, value} <- map, do: {String.downcase(key), lowercase_fields(value)}, into: %{}
-  end
-
-  defp lowercase_fields(list) when is_list(list) do
-    Enum.map(list, &lowercase_fields/1)
-  end
-
-  defp lowercase_fields(v), do: v
 end
