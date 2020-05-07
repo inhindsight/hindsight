@@ -80,10 +80,10 @@ config :service_receive, Receive.Application,
       init_arg: [
         table: "receive_state",
         postgrex_args: [
-          hostname: System.get_env("RECEIVE_DB_HOST", "localhost"),
-          username: System.get_env("RECEIVE_DB_USER", "receive_app_user"),
-          password: System.get_env("RECEIVE_DB_PASSWORD", "receive123"),
-          database: System.get_env("RECEIVE_DB_NAME", "receive_app_state")
+          hostname: System.get_env("DB_HOST", "localhost"),
+          username: System.get_env("DB_USER", "receive_app_user"),
+          password: System.get_env("DB_PASSWORD", "receive123"),
+          database: System.get_env("DB_NAME", "receive_app_state")
         ]
       ]
     ],
@@ -115,10 +115,10 @@ config :service_gather, Gather.Application,
       init_arg: [
         table: "gather_state",
         postgrex_args: [
-          hostname: System.get_env("GATHER_DB_HOST", "localhost"),
-          username: System.get_env("GATHER_DB_USER", "gather_app_user"),
-          password: System.get_env("GATHER_DB_PASSWORD", "gather123"),
-          database: System.get_env("GATHER_DB_NAME", "gather_app_state")
+          hostname: System.get_env("DB_HOST", "localhost"),
+          username: System.get_env("DB_USER", "gather_app_user"),
+          password: System.get_env("DB_PASSWORD", "gather123"),
+          database: System.get_env("DB_NAME", "gather_app_state")
         ]
       ]
     ],
@@ -158,10 +158,10 @@ config :service_broadcast, Broadcast.Application,
       init_arg: [
         table: "broadcast_state",
         postgrex_args: [
-          hostname: System.get_env("BROADCAST_DB_HOST", "localhost"),
-          username: System.get_env("BROADCAST_DB_USER", "broadcast_app_user"),
-          password: System.get_env("BROADCAST_DB_PASSWORD", "broadcast123"),
-          database: System.get_env("BROADCAST_DB_NAME", "broadcast_app_state")
+          hostname: System.get_env("DB_HOST", "localhost"),
+          username: System.get_env("DB_USER", "broadcast_app_user"),
+          password: System.get_env("DB_PASSWORD", "broadcast123"),
+          database: System.get_env("DB_NAME", "broadcast_app_state")
         ]
       ]
     ],
@@ -205,10 +205,10 @@ config :service_persist, Persist.Application,
       init_arg: [
         table: "persist_state",
         postgrex_args: [
-          hostname: System.get_env("PERSIST_DB_HOST", "localhost"),
-          username: System.get_env("PERSIST_DB_USER", "persist_app_user"),
-          password: System.get_env("PERSIST_DB_PASSWORD", "persist123"),
-          database: System.get_env("PERSIST_DB_NAME", "persist_app_state")
+          hostname: System.get_env("DB_HOST", "localhost"),
+          username: System.get_env("DB_USER", "persist_app_user"),
+          password: System.get_env("DB_PASSWORD", "persist123"),
+          database: System.get_env("DB_NAME", "persist_app_state")
         ]
       ]
     ],
@@ -239,10 +239,10 @@ config :service_orchestrate, Orchestrate.Application,
       init_arg: [
         table: "orchestrate_state",
         postgrex_args: [
-          hostname: System.get_env("ORCHESTRATE_DB_HOST", "localhost"),
-          username: System.get_env("ORCHESTRATE_DB_USER", "orchestrate_app_user"),
-          password: System.get_env("ORCHESTRATE_DB_PASSWORD", "orchestrate123"),
-          database: System.get_env("ORCHESTRATE_DB_NAME", "orchestrate_app_state")
+          hostname: System.get_env("DB_HOST", "localhost"),
+          username: System.get_env("DB_USER", "orchestrate_app_user"),
+          password: System.get_env("DB_PASSWORD", "orchestrate123"),
+          database: System.get_env("DB_NAME", "orchestrate_app_state")
         ]
       ]
     ],
@@ -278,10 +278,10 @@ config :service_acquire, Acquire.Application,
       init_arg: [
         table: "acquire_state",
         postgrex_args: [
-          hostname: System.get_env("ACQUIRE_DB_HOST", "localhost"),
-          username: System.get_env("ACQUIRE_DB_USER", "acquire_app_user"),
-          password: System.get_env("ACQUIRE_DB_PASSWORD", "acquire123"),
-          database: System.get_env("ACQUIRE_DB_NAME", "acquire_app_state")
+          hostname: System.get_env("DB_HOST", "localhost"),
+          username: System.get_env("DB_USER", "acquire_app_user"),
+          password: System.get_env("DB_PASSWORD", "acquire123"),
+          database: System.get_env("DB_NAME", "acquire_app_state")
         ]
       ]
     ],
@@ -312,10 +312,10 @@ config :service_profile, Profile.Application,
       init_arg: [
         table: "profile_state",
         postgrex_args: [
-          hostname: System.get_env("PROFILE_DB_HOST", "localhost"),
-          username: System.get_env("PROFILE_DB_USER", "profile_app_user"),
-          password: System.get_env("PROFILE_DB_PASSWORD", "profile123"),
-          database: System.get_env("PROFILE_DB_NAME", "profile_app_state")
+          hostname: System.get_env("DB_HOST", "localhost"),
+          username: System.get_env("DB_USER", "profile_app_user"),
+          password: System.get_env("DB_PASSWORD", "profile123"),
+          database: System.get_env("DB_NAME", "profile_app_state")
         ]
       ]
     ],

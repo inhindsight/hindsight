@@ -42,7 +42,7 @@ defmodule Initializer do
       end
 
       def handle_info({:DOWN, supervisor_ref, _, _, _}, %{supervisor_ref: supervisor_ref} = state) do
-        case do_wait_for_supervisor(supervisor_ref) do
+        case wait_for_supervisor(supervisor_ref) do
           {:ok, _} ->
             supervisor_ref = setup_monitor()
             state = Map.put(state, :supervisor_ref, supervisor_ref)
@@ -58,7 +58,7 @@ defmodule Initializer do
       end
 
       @retry with: constant_backoff(100) |> take(10)
-      defp do_wait_for_supervisor(supervisor) do
+      defp wait_for_supervisor(supervisor) do
         sup_pid = Process.whereis(unquote(supervisor))
 
         case sup_pid do
@@ -69,7 +69,7 @@ defmodule Initializer do
 
       @retry with: constant_backoff(100) |> take(10)
       defp do_on_start(state) do
-        with {:ok, new_state} <- on_start(state), do: {:ok, new_state}
+        on_start(state)
       end
 
       defp setup_monitor() do

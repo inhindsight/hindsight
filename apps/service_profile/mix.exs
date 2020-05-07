@@ -27,7 +27,7 @@ defmodule Profile.MixProject do
     [
       {:annotated_retry, in_umbrella: true},
       {:brook, "~> 0.5"},
-      {:brook_storage_postgres, "~> 0.1.1"},
+      {:brook_storage_postgres, "~> 0.1.0"},
       {:extractor, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},

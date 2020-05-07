@@ -22,6 +22,8 @@ defmodule Management.ViewState do
     collection = Keyword.fetch!(opts, :collection)
 
     quote location: :keep do
+      require Logger
+
       @behaviour Management.ViewState
 
       @impl true
@@ -31,6 +33,10 @@ defmodule Management.ViewState do
 
       @impl true
       def persist(key, object) do
+        Logger.debug(fn ->
+          "#{unquote(instance)}: Storing #{inspect(object)} in '#{unquote(collection)}' collection"
+        end)
+
         unquote(collection)
         |> Brook.ViewState.merge(key, object)
       end
