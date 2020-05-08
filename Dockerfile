@@ -19,3 +19,4 @@ ENV PORT=80
 EXPOSE ${PORT}
 WORKDIR /opt/app
 COPY --from=build /opt/app/_build/prod/rel/ .
+RUN mkdir plugins

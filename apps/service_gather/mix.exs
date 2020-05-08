@@ -37,6 +37,7 @@ defmodule Gather.MixProject do
       {:initializer, in_umbrella: true},
       {:management, in_umbrella: true},
       {:metrics_reporter, in_umbrella: true},
+      {:plugins, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:retry, "~> 0.13.0"},
       {:transformer, in_umbrella: true},

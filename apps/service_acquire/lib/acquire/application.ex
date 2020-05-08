@@ -9,6 +9,8 @@ defmodule Acquire.Application do
   def instance(), do: :acquire_instance
 
   def start(_type, _args) do
+    Plugins.load!()
+
     children = [
       Acquire.MetricsReporter,
       start_brook(),

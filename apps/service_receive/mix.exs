@@ -37,6 +37,7 @@ defmodule Receive.MixProject do
       {:initializer, in_umbrella: true},
       {:management, in_umbrella: true},
       {:metrics_reporter, in_umbrella: true},
+      {:plugins, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:transformer, in_umbrella: true},
       {:credo, "~> 1.3", only: [:dev]},

@@ -36,6 +36,7 @@ defmodule Profile.MixProject do
       {:initializer, in_umbrella: true},
       {:management, in_umbrella: true},
       {:metrics_reporter, in_umbrella: true},
+      {:plugins, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:protocol_source, in_umbrella: true},
       {:checkov, "~> 1.0", only: [:dev, :test]},

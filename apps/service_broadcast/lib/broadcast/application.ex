@@ -7,6 +7,8 @@ defmodule Broadcast.Application do
   def instance(), do: :broadcast_instance
 
   def start(_type, _args) do
+    Plugins.load!()
+
     children =
       [
         Broadcast.Cache.Registry,
