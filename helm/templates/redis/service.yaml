@@ -1,9 +1,0 @@
-{{- if not .Values.redis.enabled -}}
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ template "redis.host" . }}
-spec:
-  type: ExternalName
-  externalName: {{ .Values.redis.externalAddress | required "redis.externalAddress must be set" }}
-{{- end -}}
