@@ -10,6 +10,7 @@ ENV MIX_ENV=prod
 RUN mix release orchestrate \
   && mix release receive \
   && mix release gather \
+  && mix release profile \
   && mix release broadcast \
   && mix release persist \
   && mix release acquire
