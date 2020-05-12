@@ -25,6 +25,10 @@ defmodule Profile.Feed.Producer do
     end
 
     def send_to_dlq(dead_letters, context) do
+      Logger.debug(fn ->
+        "#{__MODULE__}(#{inspect(self())}): sending to dead letters #{inspect(dead_letters)}"
+      end)
+
       context.assigns.dlq.write(dead_letters)
     end
   end

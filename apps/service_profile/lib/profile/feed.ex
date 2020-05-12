@@ -3,6 +3,7 @@ defmodule Profile.Feed do
   Supervises dataset profiling `Flow`s.
   """
   use Supervisor
+  require Logger
 
   @type init_opts :: [
           name: GenServer.name(),
@@ -19,6 +20,16 @@ defmodule Profile.Feed do
   def init(opts) do
     extract = Keyword.fetch!(opts, :extract)
 
+    Logger.debug(fn ->
+      "#{__MODULE__}: Starting feed for #{inspect(extract)}"
+    end)
+
+    reducers = determine_reducers(extract.dictionary, [], [])
+
+    Logger.debug(fn ->
+      "#{__MODULE__}: Using reducers #{inspect(reducers)}"
+    end)
+
     children = [
       {Profile.Feed.Flow,
        dataset_id: extract.dataset_id,
@@ -29,7 +40,7 @@ defmodule Profile.Feed do
        into_specs: [
          {Profile.Feed.Consumer, dataset_id: extract.dataset_id, subset_id: extract.subset_id}
        ],
-       reducers: determine_reducers(extract.dictionary, [], [])}
+       reducers: reducers}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
