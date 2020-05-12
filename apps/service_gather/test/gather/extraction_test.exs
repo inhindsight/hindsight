@@ -15,7 +15,7 @@ defmodule Gather.ExtractionTest do
   Temp.Env.modify([
     %{
       app: :service_gather,
-      key: Gather.Extraction,
+      key: Gather.Extraction.SourceStream.SourceHandler,
       update: fn config ->
         Keyword.put(config, :dlq, DlqMock)
         |> Keyword.put(:chunk_size, 10)
@@ -28,6 +28,8 @@ defmodule Gather.ExtractionTest do
 
   setup do
     Process.flag(:trap_exit, true)
+
+    Gather.Application.instance() |> Brook.Test.register()
 
     on_exit(fn ->
       Gather.Extraction.Supervisor.kill_all_children()
@@ -137,7 +139,7 @@ defmodule Gather.ExtractionTest do
 
     {:ok, pid} = Extraction.start_link(extract: extract)
 
-    assert_receive {:EXIT, ^pid, "bad write"}, 10_000
+    assert_receive {:EXIT, ^pid, {:badmatch, {:error, "bad write"}}}, 5_000
 
     assert_down(pid)
   end

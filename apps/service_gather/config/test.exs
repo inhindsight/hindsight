@@ -20,5 +20,6 @@ config :service_gather, Gather.Application,
 config :service_gather, Gather.Application, init?: false
 
 config :service_gather, Gather.Extraction, max_tries: 3
+config :service_gather, Gather.Extraction.SourceStream.SourceHandler, max_tries: 3
 
 config :service_gather, Gather.MetricsReporter, port: 9572
