@@ -26,11 +26,6 @@ function check_strimzi {
             --timeout=${timeout}
 }
 
-function deps {
-    info "Installing Helm dependencies"
-    (cd ./helm; helm dependency update)
-}
-
 function strimzi {
     if [[ ! $(check_strimzi) ]]; then
         info "Adding strimzi repo"
@@ -57,11 +52,13 @@ function hindsight {
         local -r set_values="--set $vals"
     fi
 
-    deps
-
     info "Installing Hindsight"
-    helm upgrade ${release} ./helm \
+    helm repo add inhindsight https://inhindsight.github.io/charts
+    helm repo update
+
+    helm upgrade ${release} inhindsight/hindsight \
          --install \
+         --version 0.1.0 \
          --namespace ${ns} \
          --values ./helm/presets/${location}.yaml \
          ${set_values}

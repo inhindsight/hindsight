@@ -24,7 +24,7 @@ Hindsight requires you to use [Helm](https://helm.sh) v3. Our [.tool-versions](.
 
 Hindsight currently uses [Kafka](https://kafka.apache.org/) to decouple services, and we suggest using [Strimzi](https://github.com/strimzi/strimzi-kafka-operator) to deploy Kafka to Kubernetes. The helm chart assumes you'll use Strimzi but does not install it. You must do that yourself or toggle Strimzi off via helm values (`--set strimzi.enabled=false`).
 
-Our [install](./scripts/install) script will install Strimzi, wait for a `Ready` state, then deploy Hindsight.
+Our [install](./scripts/install) script will install Strimzi, wait for a `Ready` state, then deploy the latest Hindsight chart from https://github.com/inhindsight/charts
 
 ```bash
 ./scripts/install [RELEASE_NAME] [NAMESPACE] [aws|local] [values]

@@ -3,6 +3,9 @@ receive:
     type: LoadBalancer
   service:
     type: ClusterIP
+profile:
+  service:
+    type: ClusterIP
 broadcast:
   service:
     type: ClusterIP
