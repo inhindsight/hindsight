@@ -3,6 +3,9 @@ receive:
     type: ClusterIP
   service_udp:
     type: ClusterIP
+profile:
+  service:
+    type: ClusterIP
 broadcast:
   service:
     type: ClusterIP
@@ -16,6 +19,19 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
+
+global:
+  objectStore:
+    region: "us-east-2"
+    accessKey: ""
+    accessSecret: ""
+    minio:
+      enabled: false
+
+# Subchart configuration is namespaced under the subchart's name
+# as a top-level key. For example, the Certificate Manager's subchart is
+# configured under the cert_manager key.
+
 strimzi:
   kafka:
     storage:
@@ -42,15 +58,18 @@ strimzi:
       limits:
         cpu: 250m
         memory: 512Mi
+
 redis:
   enabled: false
   externalAddress: ""
+
 nginx-ingress:
   controller:
     service:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
       type: LoadBalancer
+
 prometheus-operator:
   enabled: true
   prometheus:
@@ -72,6 +91,7 @@ prometheus-operator:
   grafana:
     ingress:
       enabled: true
+
 presto:
   postgres:
     enable: false
@@ -84,10 +104,17 @@ presto:
 cert_manager:
   enabled: true
 
-global:
-  objectStore:
-    region: "us-east-2"
-    accessKey: ""
-    accessSecret: ""
-    minio:
-      enabled: false
+vernemq:
+  enabled: false
+  persistentVolume:
+    size: 25Gi
+  replicaCount: 3
+  service:
+    type: LoadBalancer
+  serviceMonitor:
+    enabled: true
+  additionalEnv:
+    - name: DOCKER_VERNEMQ_LISTENER__TCP__ALLOWED_PROTOCOL_VERSIONS
+      value: "3,4,5"
+    - name: DOCKER_VERNEMQ_LISTENER__SSL__ALLOWED_PROTOCOL_VERSIONS
+      value: "3,4,5"

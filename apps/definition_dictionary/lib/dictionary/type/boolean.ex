@@ -1,6 +1,18 @@
 defmodule Dictionary.Type.Boolean do
+  @moduledoc """
+  Boolean type supporting `nil` values.
+
+  During normalization, strings of `"true"` and `"false"` will be converted
+  to proper boolean types. Empty strings will be converted to `nil`.
+  """
   use Definition, schema: Dictionary.Type.Boolean.V1
   use Dictionary.JsonEncoder
+
+  @type t :: %__MODULE__{
+          version: integer,
+          name: String.t(),
+          description: String.t()
+        }
 
   defstruct version: 1,
             name: nil,
@@ -20,6 +32,7 @@ defmodule Dictionary.Type.Boolean do
 end
 
 defmodule Dictionary.Type.Boolean.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

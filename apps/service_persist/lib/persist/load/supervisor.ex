@@ -1,4 +1,9 @@
 defmodule Persist.Load.Supervisor do
+  @moduledoc """
+  `DynamicSupervisor` implementation. See
+  [Management.Supervisor](../../../../management/lib/management/supervisor.ex)
+  for more details.
+  """
   use Management.Supervisor, name: __MODULE__
 
   import Definition, only: [identifier: 1]

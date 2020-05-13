@@ -78,6 +78,9 @@ jobs:
       - name: Run formatter
         run: |
           mix format --check-formatted
+      - name: Run linter
+        run: |
+          mix credo
       - name: Run dialyzer
         run: |
           mix dialyzer

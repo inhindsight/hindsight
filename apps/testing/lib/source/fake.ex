@@ -1,4 +1,7 @@
 defmodule Source.Fake do
+  @moduledoc """
+  `Source.t()` impl for testing.
+  """
   @derive Jason.Encoder
   defstruct [:id]
 
@@ -30,6 +33,8 @@ defmodule Source.Fake do
 
   def stop(t, reason \\ :shutdown) do
     agent = :ets.lookup_element(Source.Fake, t.id, 4)
+    context = :ets.lookup_element(__MODULE__, t.id, 3)
+    context.handler.shutdown(context)
     Agent.stop(agent, reason)
   end
 
@@ -53,6 +58,8 @@ defmodule Source.Fake do
     def stop(t, server) do
       pid = :ets.lookup_element(Source.Fake, t.id, 2)
       send(pid, {:source_stop, t})
+      context = :ets.lookup_element(__MODULE__, t.id, 3)
+      context.handler.shutdown(context)
       Process.exit(server, :shutdown)
       :ok
     end

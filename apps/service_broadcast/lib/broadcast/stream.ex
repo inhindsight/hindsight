@@ -1,10 +1,16 @@
 defmodule Broadcast.Stream do
+  @moduledoc """
+  Process to wrap the processes that push messages through `service_broadcast`.
+  This `GenServer` links processes for reading messages from a `Source.t()` impl
+  and caching if the `Load` is configured to do so.
+  """
   use GenServer, shutdown: 30_000
   use Annotated.Retry
   use Properties, otp_app: :service_broadcast
   require Logger
+  import Definition, only: [identifier: 1]
 
-  alias Broadcast.Transformations
+  alias Broadcast.ViewState
 
   @max_retries get_config_value(:max_retries, default: 50)
 
@@ -31,8 +37,8 @@ defmodule Broadcast.Stream do
 
   @impl GenServer
   def handle_continue(:init, state) do
-    with {:ok, transform} when transform != nil <-
-           Transformations.get(state.load.dataset_id, state.load.subset_id),
+    with key <- identifier(state.load),
+         {:ok, transform} when not is_nil(transform) <- ViewState.Transformations.get(key),
          {:ok, dictionary} <-
            Transformer.transform_dictionary(transform.steps, transform.dictionary),
          {:ok, transformer} <- Transformer.create(transform.steps, transform.dictionary),

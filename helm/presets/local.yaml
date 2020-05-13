@@ -3,6 +3,9 @@ receive:
     type: LoadBalancer
   service:
     type: ClusterIP
+profile:
+  service:
+    type: ClusterIP
 broadcast:
   service:
     type: ClusterIP
@@ -12,6 +15,21 @@ acquire:
 ingress:
   host: hindsight.local
   tls: []
+global:
+  objectStore:
+    bucketName: hindsight-object-storage
+    region: local
+    accessKey: hindsightAccessKey
+    accessSecret: hindsightAccessSecret
+    minio:
+      enabled: true
+      port: 9000
+      scheme: "http://"
+
+# Subchart configuration is namespaced under the subchart's name
+# as a top-level key. For example, the Certificate Manager's subchart is
+# configured under the cert_manager key.
+
 strimzi:
   kafka:
     resources:
@@ -29,6 +47,7 @@ strimzi:
       limits:
         cpu: 100m
         memory: 512Mi
+
 redis:
   enabled: true
   externalAddress: ""
@@ -36,6 +55,7 @@ nginx-ingress:
   controller:
     service:
       type: LoadBalancer
+
 presto:
   presto:
     ingress:
@@ -49,13 +69,16 @@ presto:
       annotations:
         nginx.ingress.kubernetes.io/use-regex: "true"
       hosts: [storage.hindsight.local/minio.*]
-global:
-  objectStore:
-    bucketName: hindsight-object-storage
-    region: local
-    accessKey: hindsightAccessKey
-    accessSecret: hindsightAccessSecret
-    minio:
-      enabled: true
-      port: 9000
-      scheme: "http://"
+vernemq:
+  enabled: true
+  service:
+    type: LoadBalancer
+  additionalEnv:
+    - name: DOCKER_VERNEMQ_LISTENER__TCP__ALLOWED_PROTOCOL_VERSIONS
+      value: "3,4,5"
+    - name: DOCKER_VERNEMQ_LISTENER__SSL__ALLOWED_PROTOCOL_VERSIONS
+      value: "3,4,5"
+    - name: DOCKER_VERNEMQ_ALLOW_ANONYMOUS
+      value: "on"
+    - name: DOCKER_VERNEMQ_USER_HINDSIGHT
+      value: "hindsight"

@@ -7,6 +7,8 @@ defmodule Receive.Application do
   def instance(), do: :receive_instance
 
   def start(_type, _args) do
+    Plugins.load!()
+
     children =
       [
         Receive.Accept.Registry,

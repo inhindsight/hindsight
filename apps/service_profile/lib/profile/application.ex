@@ -7,6 +7,8 @@ defmodule Profile.Application do
   def instance(), do: :profile_instance
 
   def start(_type, _args) do
+    Plugins.load!()
+
     children =
       [
         Profile.Feed.Registry,

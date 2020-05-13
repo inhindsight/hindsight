@@ -33,6 +33,11 @@ defmodule Hindsight.MixProject do
         include_executables_for: [:unix],
         applications: [service_gather: :permanent]
       ],
+      profile: [
+        version: {:from_app, :service_profile},
+        include_executables_for: [:unix],
+        applications: [service_profile: :permanent]
+      ],
       broadcast: [
         version: {:from_app, :service_broadcast},
         include_executables_for: [:unix],

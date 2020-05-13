@@ -1,7 +1,6 @@
 defmodule Gather.InitTest do
   use Gather.Case
-
-  alias Gather.Extraction
+  import Definition, only: [identifier: 1]
 
   @moduletag capture_log: true
 
@@ -34,7 +33,10 @@ defmodule Gather.InitTest do
     ]
 
     Brook.Test.with_event(@instance, fn ->
-      Enum.each(extracts, &Extraction.Store.persist/1)
+      Enum.each(extracts, fn extract ->
+        key = identifier(extract)
+        Gather.ViewState.Extractions.persist(key, extract)
+      end)
     end)
 
     {:ok, _pid} = start_supervised({Gather.Init, name: :init_test})

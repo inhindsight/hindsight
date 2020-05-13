@@ -25,9 +25,15 @@ defmodule Accept.MixProject do
 
   defp deps do
     [
+      {:credo, "~> 1.3", only: [:dev]},
       {:definition, in_umbrella: true},
       {:protocol_destination, in_umbrella: true},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
+      {:uuid, "~> 1.1"},
+      
+      # Dev/Test Dependencies
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 

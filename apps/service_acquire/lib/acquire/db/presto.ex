@@ -1,5 +1,4 @@
 defmodule Acquire.Db.Presto do
-  # TODO
   @moduledoc false
 
   use Properties, otp_app: :service_acquire

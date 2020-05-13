@@ -45,12 +45,12 @@ defmodule Broadcast.MixProject do
       {:phoenix, "~> 1.4.11"},
       {:phoenix_pubsub, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
+      {:plugins, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:protocol_source, in_umbrella: true},
       {:transformer, in_umbrella: true},
-
-      # Dev/Test Dependencies
       {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:credo, "~> 1.3", only: [:dev]},
       {:mox, "~> 0.5.1", only: [:test]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}

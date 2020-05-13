@@ -34,8 +34,9 @@ defmodule DefinitionPresto.MixProject do
       {:sweet_xml, "~> 0.6.6"},
       {:tesla, "~> 1.3"},
       {:hackney, "~> 1.15.2"},
-      {:divo, "~> 1.1", only: [:dev, :test]},
       {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:credo, "~> 1.3", only: [:dev]},
+      {:divo, "~> 1.1", only: [:dev, :test]},
       {:mox, "~> 0.5.1", only: [:test]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}

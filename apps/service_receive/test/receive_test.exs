@@ -1,11 +1,12 @@
 defmodule ReceiveTest do
   use ExUnit.Case
-  import Events, only: [accept_start: 0, accept_end: 0]
+  use Placebo
+  import Events, only: [accept_start: 0]
+  import Definition, only: [identifier: 1]
   import AssertAsync
   require Temp.Env
 
   @instance Receive.Application.instance()
-  @moduletag capture_log: true
 
   Temp.Env.modify([
     %{
@@ -18,10 +19,11 @@ defmodule ReceiveTest do
   describe "Receive Udp" do
     setup do
       start_supervised({SourceUdpSocket, port: 6789, schedule: true, interval: 100})
+      allow UUID.uuid4(), return: "123-456"
 
       accept =
         Accept.new!(
-          id: "accept-id-1",
+          id: "123-456",
           dataset_id: "test-ds1",
           subset_id: "test-ss1",
           destination: Destination.Fake.new!(),
@@ -51,26 +53,17 @@ defmodule ReceiveTest do
       assert_receive {:destination_write, messages}, 5_000
       assert length(messages) == 10
 
-      assert accept == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
-    end
-
-    test "marks stored receipt done on #{accept_end()}", %{accept: accept} do
-      Brook.Test.send(@instance, accept_start(), "testing", accept)
-      Process.sleep(100)
-
-      Brook.Test.send(@instance, accept_end(), "testing", accept)
-
-      assert_async do
-        assert true == Receive.Accept.Store.done?(accept)
-      end
+      assert {:ok, ^accept} = Receive.ViewState.Accepts.get(identifier(accept))
     end
   end
 
   describe "Receive Websocket" do
     setup do
+      allow UUID.uuid4(), return: "123-456"
+
       accept =
         Accept.new!(
-          id: "accept-id-2",
+          id: "123-456",
           dataset_id: "test-ds2",
           subset_id: "test-ss2",
           destination: Destination.Fake.new!(),
@@ -105,7 +98,7 @@ defmodule ReceiveTest do
         assert length(messages) == 10
         refute "msg10" in messages
 
-        assert accept == Receive.Accept.Store.get!(accept.dataset_id, accept.subset_id)
+        assert {:ok, ^accept} = Receive.ViewState.Accepts.get(identifier(accept))
       end
 
       flush_queue(client)

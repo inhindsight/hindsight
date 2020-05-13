@@ -1,4 +1,7 @@
 defmodule Decoder.Noop do
+  @moduledoc """
+  `Decoder.t()` impl for testing.
+  """
   defstruct []
 
   def new() do

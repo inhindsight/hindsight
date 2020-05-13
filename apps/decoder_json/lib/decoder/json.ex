@@ -1,6 +1,6 @@
 defmodule Decoder.Json do
   @moduledoc """
-  Defines a `Decoder` impl for JSON data.
+  Defines a `Decoder` impl for JSON data that decodes into a single json object.
 
   ## Configuration
 

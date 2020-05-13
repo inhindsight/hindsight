@@ -1,16 +1,17 @@
 defmodule Broadcast.Init do
+  @moduledoc """
+  Implementation of `Initializer` behaviour to reconnect to
+  pre-existing event state.
+  """
   use Initializer,
     name: __MODULE__,
     supervisor: Broadcast.Stream.Supervisor
 
   def on_start(state) do
-    Broadcast.Stream.Store.get_all!()
-    |> Enum.reject(&is_nil/1)
-    |> Enum.reject(&Broadcast.Stream.Store.done?(&1))
-    |> Enum.each(fn load ->
-      Broadcast.Stream.Supervisor.start_child(load)
-    end)
+    with {:ok, view_state} <- Broadcast.ViewState.Streams.get_all() do
+      Enum.each(view_state, &Broadcast.Stream.Supervisor.start_child/1)
 
-    {:ok, state}
+      Ok.ok(state)
+    end
   end
 end

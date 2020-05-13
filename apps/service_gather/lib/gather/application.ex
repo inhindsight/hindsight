@@ -7,6 +7,8 @@ defmodule Gather.Application do
   def instance(), do: :gather_instance
 
   def start(_type, _args) do
+    Plugins.load!()
+
     children =
       [
         Gather.Extraction.Registry,

@@ -1,4 +1,7 @@
 defmodule Dictionary.Type do
+  @moduledoc """
+  Functions to support `Dictionary.Type.*` structs.
+  """
   import Kernel, except: [to_string: 1]
 
   @spec to_string(module) :: String.t()

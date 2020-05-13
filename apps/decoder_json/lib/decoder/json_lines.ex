@@ -22,6 +22,7 @@ defmodule Decoder.JsonLines do
 end
 
 defmodule Decoder.JsonLines.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

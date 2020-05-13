@@ -1,4 +1,11 @@
 defmodule Dictionary.Type.Map do
+  @moduledoc """
+  Map type. Normalization of the map normalizes its specified dictionary.
+
+  ## Init options
+
+  * `dictionary` - `Dictionary.t()` impl for the key/value pairs in this map.
+  """
   use Definition, schema: Dictionary.Type.Map.V1
   use Dictionary.JsonEncoder
   @behaviour Access
@@ -56,6 +63,7 @@ defmodule Dictionary.Type.Map do
 end
 
 defmodule Dictionary.Type.Map.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true

@@ -2,11 +2,12 @@ defmodule Profile.InitTest do
   use ExUnit.Case
   use Placebo
 
+  import Definition, only: [identifier: 1]
   @instance Profile.Application.instance()
 
   setup do
-    allow(Profile.Feed.Supervisor.start_child(any()), return: {:ok, :pid})
-    Brook.Test.clear_view_state(@instance, "feeds")
+    allow Profile.Feed.Supervisor.start_child(any()), return: {:ok, :pid}
+    on_exit(fn -> Brook.Test.clear_view_state(@instance, "feeds") end)
 
     :ok
   end
@@ -46,9 +47,11 @@ defmodule Profile.InitTest do
       )
 
     Brook.Test.with_event(@instance, fn ->
-      Profile.Feed.Store.persist(extract1)
-      Profile.Feed.Store.persist(extract2)
-      Profile.Feed.Store.persist(extract3)
+      [extract1, extract2, extract3]
+      |> Enum.each(fn extract ->
+        identifier(extract)
+        |> Profile.ViewState.Extractions.persist(extract)
+      end)
     end)
 
     assert {:ok, :state} = Profile.Init.on_start(:state)

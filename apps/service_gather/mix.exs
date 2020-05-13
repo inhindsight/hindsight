@@ -37,12 +37,12 @@ defmodule Gather.MixProject do
       {:initializer, in_umbrella: true},
       {:management, in_umbrella: true},
       {:metrics_reporter, in_umbrella: true},
+      {:plugins, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:retry, "~> 0.13.0"},
       {:transformer, in_umbrella: true},
-
-      # Dev/Test Dependencies
       {:bypass, "~> 1.0", only: [:test]},
+      {:credo, "~> 1.3", only: [:dev]},
       {:mox, "~> 0.5.1", only: [:test]},
       {:placebo, "~> 2.0.0-rc2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}

@@ -28,7 +28,8 @@ defmodule DefinitionDictionary.MixProject do
       {:jason, "~> 1.1"},
       {:brook_serializer, "~> 2.2"},
       {:timex, "~> 3.6"},
-      {:checkov, "~> 1.0", only: [:dev, :test]}
+      {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:credo, "~> 1.3", only: [:dev]}
     ]
   end
 end

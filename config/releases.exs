@@ -114,6 +114,7 @@ config :service_gather, Gather.Application,
 
 config :service_gather, Gather.Event.Handler, endpoints: kafka_endpoints
 config :service_gather, Gather.Extraction, app_name: "service_gather"
+config :service_gather, Gather.Extraction.SourceHandler, app_name: "service_gather"
 
 # SERVICE BROADCAST
 config :service_broadcast, BroadcastWeb.Endpoint,
@@ -243,41 +244,6 @@ config :service_acquire, Acquire.Application,
   ]
 
 config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")
-
-# SERVICE DEFINE
-config :service_define, DefineWeb.Endpoint,
-  http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4005")],
-  secret_key_base: secret_key_base,
-  live_view: [
-    signing_salt: secret_key_base
-  ],
-  render_errors: [view: DefineWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: Define.PubSub, adapter: Phoenix.PubSub.PG2],
-  server: true,
-  check_origin: false
-
-config :service_define, Define.Application,
-  kafka_endpoints: kafka_endpoints,
-  brook: [
-    driver: [
-      module: Brook.Driver.Kafka,
-      init_arg: [
-        endpoints: kafka_endpoints,
-        topic: "event-stream",
-        group: "define-event-stream",
-        consumer_config: [
-          begin_offset: :earliest,
-          offset_reset_policy: :reset_to_earliest
-        ]
-      ]
-    ],
-    handlers: [Define.Event.Handler],
-    storage: [
-      module: Brook.Storage.Redis,
-      init_arg: [redix_args: redix_args, namespace: "service:define:view"]
-    ],
-    dispatcher: Brook.Dispatcher.Noop
-  ]
 
 # SERVICE PROFILE
 config :service_profile, Profile.Application,

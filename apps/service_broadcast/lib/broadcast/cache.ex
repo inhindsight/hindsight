@@ -1,4 +1,7 @@
 defmodule Broadcast.Cache do
+  @moduledoc """
+  Per-dataset cache process for messages pushed through a `Broadcast` channel.
+  """
   use GenServer
   use Properties, otp_app: :service_broadcast
 

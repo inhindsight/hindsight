@@ -22,6 +22,9 @@ defmodule Management.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:brook, "~> 0.5"},
+      {:credo, "~> 1.3", only: [:dev]}
+    ]
   end
 end

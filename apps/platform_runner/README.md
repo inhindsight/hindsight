@@ -1,21 +1,25 @@
 # PlatformRunner
 
-**TODO: Add description**
+Hindsight in its entirety, runnable locally.
 
-## Installation
+## Usage
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `platform_runner` to your list of dependencies in `mix.exs`:
+You can run Hindsight locally by running `platform_runner`.
 
-```elixir
-def deps do
-  [
-    {:platform_runner, "~> 0.1.0"}
-  ]
-end
+Spin up external dependencies with [Divo](https://hex.pm/packages/divo) and drop
+into an IEx session.
+
+```bash
+MIX_ENV=integration mix docker.start
+MIX_ENV=integration iex -S mix
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/platform_runner](https://hexdocs.pm/platform_runner).
+## E2E tests
 
+Hindsight's end-to-end tests are defined in `platform_runner`. You can use the
+umbrella-level mix alias (`mix test.e2e`) or run them directly out of `platform_runner`.
+
+```bash
+MIX_ENV=integration mix docker.start
+MIX_ENV=integration mix test
+```

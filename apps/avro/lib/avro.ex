@@ -1,4 +1,6 @@
 defmodule Avro do
+  @moduledoc false
+
   @type t :: %__MODULE__{
           file_path: String.t(),
           file: File.io_device(),

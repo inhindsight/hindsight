@@ -1,4 +1,7 @@
 defmodule Receive.Accept.Supervisor do
+  @moduledoc """
+  Supervision helpers wrapping `DynamicSupervisor` usage.
+  """
   use DynamicSupervisor
 
   def start_link(args) do

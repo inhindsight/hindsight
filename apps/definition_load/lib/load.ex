@@ -30,6 +30,13 @@ defmodule Load do
             subset_id: nil,
             source: nil,
             destination: nil
+  
+  def on_new(lo) do
+    id = UUID.uuid4()
+
+    %{lo | id: id}
+    |> Ok.ok()
+  end
 end
 
 defmodule Load.V1 do

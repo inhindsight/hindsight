@@ -16,12 +16,14 @@ defmodule Source.Handler do
   @callback handle_message(map, Source.Context.t()) :: {:ok, map} | {:error, term}
   @callback handle_batch(list(map), Source.Context.t()) :: :ok
   @callback send_to_dlq(list(DeadLetter.t()), Source.Context.t()) :: :ok
+  @callback shutdown(Source.Context.t()) :: :ok
 
   defmacro __using__(_opts) do
     quote do
       @behaviour Source.Handler
 
       def handle_message(message, _), do: Ok.ok(message)
+      def shutdown(_context), do: :ok
       defoverridable Source.Handler
     end
   end

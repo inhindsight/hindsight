@@ -36,6 +36,7 @@ defmodule Transform.DeleteField do
 end
 
 defmodule Transform.DeleteField.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do

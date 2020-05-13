@@ -1,21 +1,15 @@
 # Transform.WKT
 
-**TODO: Add description**
+Implements the `Transform.Step` protocol for convering latitude/longitude to
+[WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry)
+[point](https://en.wikipedia.org/wiki/Point_(geometry)).
 
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `transform_wkt` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:transform_wkt, "~> 0.1.0"}
+    {:transform_wkt, in_umbrella: true}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/transform_wkt](https://hexdocs.pm/transform_wkt).
-

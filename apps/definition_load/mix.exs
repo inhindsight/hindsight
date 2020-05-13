@@ -25,7 +25,13 @@ defmodule DefinitionLoad.MixProject do
     [
       {:definition, in_umbrella: true},
       {:protocol_source, in_umbrella: true},
-      {:protocol_destination, in_umbrella: true}
+      {:protocol_destination, in_umbrella: true},
+      {:credo, "~> 1.3", only: [:dev]},
+      {:uuid, "~> 1.1"},
+
+      # Dev/Test Dependencies
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

@@ -1,6 +1,6 @@
 FROM bitwalker/alpine-elixir-phoenix:1.9.4 as build
 COPY . /opt/app
-WORKDIR /opt/app
+WORKDIR /opt/app/
 RUN mix do \
   local.hex --force, \
   local.rebar --force, \
@@ -10,6 +10,7 @@ ENV MIX_ENV=prod
 RUN mix release orchestrate \
   && mix release receive \
   && mix release gather \
+  && mix release profile \
   && mix release broadcast \
   && mix release persist \
   && mix release acquire
@@ -19,3 +20,4 @@ ENV PORT=80
 EXPOSE ${PORT}
 WORKDIR /opt/app
 COPY --from=build /opt/app/_build/prod/rel/ .
+RUN mkdir plugins

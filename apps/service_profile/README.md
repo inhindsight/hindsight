@@ -1,21 +1,13 @@
 # Profile
 
-**TODO: Add description**
+Service for profiling data in the ingestion pipeline. Metadata is collected for
+geospatial and temporal boundaries. The list of metadata collected may grow over time.
 
-## Installation
+## Release
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `service_profile` to your list of dependencies in `mix.exs`:
+Run `mix release profile` to build an Erlang release for this service.
 
-```elixir
-def deps do
-  [
-    {:service_profile, "~> 0.1.0"}
-  ]
-end
-```
+## Docker
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/service_profile](https://hexdocs.pm/service_profile).
-
+The latest release is baked into the `inhindsight/hindsight:latest` Docker image
+and is started with a `profile/bin/profile start` command.

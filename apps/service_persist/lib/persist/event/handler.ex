@@ -1,7 +1,12 @@
 defmodule Persist.Event.Handler do
+  @moduledoc """
+  Callbacks for handling events from `Brook`.
+  """
   use Brook.Event.Handler
   use Properties, otp_app: :service_persist
   require Logger
+
+  import Definition, only: [identifier: 1]
 
   import Events,
     only: [
@@ -12,6 +17,8 @@ defmodule Persist.Event.Handler do
       compact_end: 0,
       dataset_delete: 0
     ]
+
+  alias Persist.ViewState
 
   @instance Persist.Application.instance()
 
@@ -28,7 +35,11 @@ defmodule Persist.Event.Handler do
     end)
 
     Persist.Load.Supervisor.start_child(load)
-    Persist.Load.Store.persist(load)
+
+    key = identifier(load)
+    ViewState.Loads.persist(key, load)
+    ViewState.Sources.persist(key, load.source)
+    ViewState.Destinations.persist(key, load.destination)
   end
 
   @impl Brook.Event.Handler
@@ -41,13 +52,16 @@ defmodule Persist.Event.Handler do
     end)
 
     Persist.Load.Supervisor.terminate_child(load)
-    Persist.Load.Store.mark_done(load)
     Events.send_compact_start(@instance, __MODULE__, load)
+
+    identifier(load)
+    |> ViewState.Loads.delete()
   end
 
   @impl Brook.Event.Handler
   def handle_event(%Brook.Event{type: transform_define(), data: %Transform{} = transform}) do
-    Persist.Transformations.persist(transform)
+    identifier(transform)
+    |> ViewState.Transformations.persist(transform)
   end
 
   @impl Brook.Event.Handler
@@ -56,9 +70,10 @@ defmodule Persist.Event.Handler do
         data: %Load{destination: %Presto.Table{}} = load
       }) do
     Persist.Load.Supervisor.terminate_child(load)
-
     Persist.Compact.Supervisor.start_child(load)
-    Persist.Load.Store.mark_for_compaction(load)
+
+    identifier(load)
+    |> ViewState.Compactions.persist(load)
   end
 
   @impl Brook.Event.Handler
@@ -66,11 +81,13 @@ defmodule Persist.Event.Handler do
         type: compact_end(),
         data: %Load{destination: %Presto.Table{}} = load
       }) do
-    Persist.Load.Store.clear_compaction(load)
+    key = identifier(load)
+    ViewState.Compactions.delete(key)
 
-    case Persist.Load.Store.done?(load) do
-      true -> :ok
-      false -> Persist.Load.Supervisor.start_child(load)
+    case ViewState.Loads.get(key) do
+      {:ok, nil} -> :discard
+      {:ok, _} -> Persist.Load.Supervisor.start_child(load)
+      {:error, reason} -> raise reason
     end
   end
 
@@ -80,19 +97,73 @@ defmodule Persist.Event.Handler do
       "#{__MODULE__}: Received event #{dataset_delete()}: #{inspect(delete)}"
     end)
 
-    case Persist.Load.Store.get!(delete.dataset_id, delete.subset_id) do
-      nil ->
-        Logger.debug("No existing state to delete")
-        nil
+    key = identifier(delete)
 
-      load ->
-        Persist.Compact.Supervisor.terminate_child(load)
-        Persist.Load.Supervisor.terminate_child(load)
-        Source.delete(load.source)
-        Destination.delete(load.destination)
-        Logger.debug("Deleted existing state")
+    case ViewState.Loads.get(key) do
+      {:ok, nil} ->
+        delete_compaction(key)
+        delete_source(key)
+        delete_destination(key)
+        ViewState.Transformations.delete(key)
+
+      {:ok, load} ->
+        delete_load(load)
+        delete_compaction(key)
+        delete_source(key)
+        delete_destination(key)
+        ViewState.Transformations.delete(key)
+
+      {:error, reason} ->
+        raise reason
     end
+  end
 
-    Persist.Load.Store.delete(delete.dataset_id, delete.subset_id)
+  defp delete_compaction(key) do
+    case ViewState.Compactions.get(key) do
+      {:ok, nil} ->
+        :discard
+
+      {:ok, load} ->
+        Persist.Compact.Supervisor.terminate_child(load)
+        ViewState.Compactions.delete(key)
+
+      {:error, reason} ->
+        raise reason
+    end
+  end
+
+  defp delete_load(load) do
+    Persist.Load.Supervisor.terminate_child(load)
+
+    identifier(load)
+    |> ViewState.Loads.delete()
+  end
+
+  defp delete_source(key) do
+    case ViewState.Sources.get(key) do
+      {:ok, nil} ->
+        :discard
+
+      {:ok, source} ->
+        Source.delete(source)
+        ViewState.Sources.delete(key)
+
+      {:error, reason} ->
+        raise reason
+    end
+  end
+
+  defp delete_destination(key) do
+    case ViewState.Destinations.get(key) do
+      {:ok, nil} ->
+        :discard
+
+      {:ok, destination} ->
+        Destination.delete(destination)
+        ViewState.Destinations.delete(key)
+
+      {:error, reason} ->
+        raise reason
+    end
   end
 end

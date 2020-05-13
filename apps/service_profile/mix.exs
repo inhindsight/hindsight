@@ -36,11 +36,11 @@ defmodule Profile.MixProject do
       {:initializer, in_umbrella: true},
       {:management, in_umbrella: true},
       {:metrics_reporter, in_umbrella: true},
+      {:plugins, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:protocol_source, in_umbrella: true},
-
-      # dev/testing deps
       {:checkov, "~> 1.0", only: [:dev, :test]},
+      {:credo, "~> 1.3", only: [:dev]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:dev, :test]}
     ]

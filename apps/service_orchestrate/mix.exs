@@ -31,14 +31,15 @@ defmodule Orchestrate.MixProject do
       {:elsa, "~> 0.12", override: true},
       {:gen_stage, "~> 1.0", override: true},
       {:extractor, in_umbrella: true},
+      {:management, in_umbrella: true},
       {:metrics_reporter, in_umbrella: true},
+      {:plugins, in_umbrella: true},
       {:properties, in_umbrella: true},
       {:quantum, "~> 2.3"},
       {:timex, "~> 3.0"},
       {:transformer, in_umbrella: true},
       {:uuid, "~> 1.1"},
-
-      # Dev/Test Dependencies
+      {:credo, "~> 1.3", only: [:dev]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}
     ]

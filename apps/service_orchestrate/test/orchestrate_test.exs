@@ -2,11 +2,13 @@ defmodule OrchestrateTest do
   use ExUnit.Case
   use Placebo
   import Events, only: [extract_start: 0, compact_start: 0]
+  import Definition, only: [identifier: 1]
   import ExUnit.CaptureLog
 
   @instance Orchestrate.Application.instance()
 
   setup do
+    allow(UUID.uuid4(), return: "fake_uuid")
     Brook.Test.clear_view_state(@instance, "schedules")
 
     schedule =
@@ -35,7 +37,7 @@ defmodule OrchestrateTest do
           ),
         load: [
           Load.new!(
-            id: "persist-1",
+            id: "fake_uuid",
             dataset_id: "ds1",
             subset_id: "kpi",
             source: Source.Fake.new!(),
@@ -46,7 +48,7 @@ defmodule OrchestrateTest do
               )
           ),
           Load.new!(
-            id: "broadcast-1",
+            id: "fake_uuid",
             dataset_id: "ds1",
             subset_id: "kpi",
             source: Source.Fake.new!(),
@@ -63,7 +65,8 @@ defmodule OrchestrateTest do
       allow UUID.uuid4(), return: "uuid-1"
 
       Brook.Test.with_event(@instance, fn ->
-        Orchestrate.Schedule.Store.persist(schedule)
+        identifier(schedule)
+        |> Orchestrate.ViewState.Schedules.persist(schedule)
       end)
 
       Orchestrate.run_extract(schedule.dataset_id, schedule.subset_id)
@@ -89,7 +92,8 @@ defmodule OrchestrateTest do
   describe "run_compaction" do
     test "should send a #{compact_start()} event", %{schedule: schedule} do
       Brook.Test.with_event(@instance, fn ->
-        Orchestrate.Schedule.Store.persist(schedule)
+        identifier(schedule)
+        |> Orchestrate.ViewState.Schedules.persist(schedule)
       end)
 
       [persist, _] = schedule.load

@@ -36,6 +36,7 @@ defmodule Accept.Websocket do
 end
 
 defmodule Accept.Websocket.V1 do
+  @moduledoc false
   use Definition.Schema
 
   @impl true
