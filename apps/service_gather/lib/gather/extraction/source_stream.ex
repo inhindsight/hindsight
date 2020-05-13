@@ -101,6 +101,7 @@ defmodule Gather.Extraction.SourceStream do
   def start_source(extract, destination_pid) do
     {:ok, _source_pid} =
       Source.start_link(extract.source, source_context(extract, destination_pid))
+
     :ok
   end
 

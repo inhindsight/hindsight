@@ -33,8 +33,8 @@ defmodule Extractor.Server do
   def handle_continue(:init, state) do
     with {:ok, extract_context} <-
            Ok.reduce(state.extractor.steps, Extract.Context.new(), &Extract.Step.execute/2),
-           :ok <- run_stream(state, extract_context) do
-       state.source_context.handler.shutdown(state.source_context)
+         :ok <- run_stream(state, extract_context) do
+      state.source_context.handler.shutdown(state.source_context)
       {:stop, :normal, state}
     else
       {:error, reason} ->
