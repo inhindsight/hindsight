@@ -8,6 +8,7 @@ defmodule Gather.Extraction do
   require Logger
   use Properties, otp_app: :service_gather
   use Annotated.Retry
+  alias Gather.Extraction.SourceHandler
 
   @max_tries get_config_value(:max_tries, default: 10)
   @initial_delay get_config_value(:initial_delay, default: 500)
@@ -65,9 +66,16 @@ defmodule Gather.Extraction do
   @retry with: exponential_backoff(@initial_delay) |> take(@max_tries)
   defp extract(extract) do
     with {:ok, pid} <- start_destination(extract),
-         :ok <- Gather.Extraction.SourceStream.start_source(extract, pid) do
+         :ok <- start_source(extract, pid) do
       {:ok, pid}
     end
+  end
+
+  def start_source(extract, destination_pid) do
+    {:ok, _source_pid} =
+      Source.start_link(extract.source, source_context(extract, destination_pid))
+
+    :ok
   end
 
   defp start_destination(extract) do
@@ -79,6 +87,22 @@ defmodule Gather.Extraction do
         subset_id: extract.subset_id,
         dictionary: extract.dictionary
       )
+    )
+  end
+
+  defp source_context(extract, destination_pid) do
+    Source.Context.new!(
+      dictionary: extract.dictionary,
+      handler: SourceHandler,
+      app_name: :service_gather,
+      dataset_id: extract.dataset_id,
+      subset_id: extract.subset_id,
+      decode_json: false,
+      assigns: %{
+        pid: self(),
+        destination_pid: destination_pid,
+        extract: extract
+      }
     )
   end
 end

@@ -15,7 +15,7 @@ defmodule Gather.ExtractionTest do
   Temp.Env.modify([
     %{
       app: :service_gather,
-      key: Gather.Extraction.SourceStream.SourceHandler,
+      key: Gather.Extraction.SourceHandler,
       update: fn config ->
         Keyword.put(config, :dlq, DlqMock)
         |> Keyword.put(:chunk_size, 10)

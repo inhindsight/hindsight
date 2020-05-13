@@ -114,7 +114,7 @@ config :service_gather, Gather.Application,
 
 config :service_gather, Gather.Event.Handler, endpoints: kafka_endpoints
 config :service_gather, Gather.Extraction, app_name: "service_gather"
-config :service_gather, Gather.Extraction.SourceStream.SourceHandler, app_name: "service_gather"
+config :service_gather, Gather.Extraction.SourceHandler, app_name: "service_gather"
 
 # SERVICE BROADCAST
 config :service_broadcast, BroadcastWeb.Endpoint,
