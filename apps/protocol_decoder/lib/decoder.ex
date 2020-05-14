@@ -3,5 +3,5 @@ defprotocol Decoder do
   def lines_or_bytes(t)
 
   @spec decode(t, Enum.t()) :: Enum.t()
-  def decode(t, stream)
+  def decode(t, messages)
 end
