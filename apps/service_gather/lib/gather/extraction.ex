@@ -8,10 +8,10 @@ defmodule Gather.Extraction do
   require Logger
   use Properties, otp_app: :service_gather
   use Annotated.Retry
+  alias Gather.Extraction.SourceHandler
 
   @max_tries get_config_value(:max_tries, default: 10)
   @initial_delay get_config_value(:initial_delay, default: 500)
-  getter(:dlq, default: Dlq)
   getter(:app_name, required: true)
 
   def start_link(args) do
@@ -28,13 +28,10 @@ defmodule Gather.Extraction do
   @dialyzer {:nowarn_function, handle_continue: 2}
   @impl GenServer
   def handle_continue(:extract, %{extract: extract} = state) do
-    Logger.debug(fn -> "#{__MODULE__}: Started extraction: #{inspect(extract)}" end)
-
     case extract(extract) do
-      {:ok, _destination_pid} ->
-        Logger.debug(fn -> "#{__MODULE__}: Extraction Completed: #{inspect(extract)}" end)
-        Brook.Event.send(Gather.Application.instance(), extract_end(), "gather", extract)
-        {:stop, :normal, state}
+      {:ok, destination_and_source} ->
+        Logger.debug(fn -> "#{__MODULE__}: Started extraction: #{inspect(extract)}" end)
+        {:noreply, Map.merge(state, destination_and_source)}
 
       {:error, reason} ->
         Logger.warn("#{__MODULE__}: Extraction Stopping: #{inspect(extract)}")
@@ -42,12 +39,40 @@ defmodule Gather.Extraction do
     end
   end
 
+  @impl GenServer
+  def handle_info(:extract_complete, %{extract: extract, destination_pid: pid} = state) do
+    Destination.stop(extract.destination, pid)
+
+    Logger.debug(fn -> "#{__MODULE__}: Extraction Completed: #{inspect(extract)}" end)
+    Brook.Event.send(Gather.Application.instance(), extract_end(), "gather", extract)
+
+    {:stop, :normal, state}
+  end
+
+  @impl GenServer
+  def handle_info({:extract_failed, reason}, %{extract: extract, destination_pid: pid} = state) do
+    Destination.stop(extract.destination, pid)
+
+    Logger.warn("#{__MODULE__}: Extraction Stopping: #{inspect(extract)}")
+    {:stop, reason, state}
+  end
+
+  @impl GenServer
+  def handle_info(msg, state) do
+    Logger.warn(fn -> "#{__MODULE__}: Received unexpected message : #{inspect(msg)}" end)
+    {:noreply, state}
+  end
+
   @retry with: exponential_backoff(@initial_delay) |> take(@max_tries)
   defp extract(extract) do
-    with {:ok, pid} <- start_destination(extract),
-         :ok <- do_extract(pid, extract) do
-      {:ok, pid}
+    with {:ok, destination_pid} <- start_destination(extract),
+         {:ok, source_pid} <- start_source(extract, destination_pid) do
+      {:ok, %{destination_pid: destination_pid, source_pid: source_pid}}
     end
+  end
+
+  def start_source(extract, destination_pid) do
+    Source.start_link(extract.source, source_context(extract, destination_pid))
   end
 
   defp start_destination(extract) do
@@ -62,73 +87,19 @@ defmodule Gather.Extraction do
     )
   end
 
-  defp do_extract(destination_pid, extract) do
-    Gather.Extraction.SourceStream.stream(extract)
-    |> decode(extract)
-    |> Ok.each(fn chunk ->
-      messages =
-        Enum.map(chunk, &lowercase_fields/1)
-        |> normalize(extract)
-
-      Destination.write(extract.destination, destination_pid, messages)
-    end)
-  rescue
-    e ->
-      warn_extract_failure(extract, e)
-      {:error, e}
-  after
-    Destination.stop(extract.destination, destination_pid)
-  end
-
-  defp normalize(messages, extract) do
-    %{good: good, bad: bad} =
-      Enum.reduce(messages, %{good: [], bad: []}, fn message, acc ->
-        case Dictionary.normalize(extract.dictionary, message) do
-          {:ok, normalized_message} ->
-            %{acc | good: [normalized_message | acc.good]}
-
-          {:error, reason} ->
-            dead_letter = to_dead_letter(extract, message, reason)
-            %{acc | bad: [dead_letter | acc.bad]}
-        end
-      end)
-
-    unless bad == [] do
-      dlq().write(Enum.reverse(bad))
-    end
-
-    Enum.reverse(good)
-  end
-
-  defp decode(stream, extract) do
-    Decoder.decode(extract.decoder, stream)
-  end
-
-  defp to_dead_letter(extract, og, reason) do
-    DeadLetter.new(
+  defp source_context(extract, destination_pid) do
+    Source.Context.new!(
+      dictionary: extract.dictionary,
+      handler: SourceHandler,
+      app_name: :service_gather,
       dataset_id: extract.dataset_id,
       subset_id: extract.subset_id,
-      original_message: og,
-      app_name: app_name(),
-      reason: reason
+      decode_json: false,
+      assigns: %{
+        pid: self(),
+        destination_pid: destination_pid,
+        extract: extract
+      }
     )
   end
-
-  defp warn_extract_failure(extract, reason) do
-    Logger.warn(fn ->
-      "#{__MODULE__}: Failed with reason: #{inspect(reason)}, extract: #{inspect(extract)}"
-    end)
-
-    reason
-  end
-
-  defp lowercase_fields(%{} = map) do
-    for {key, value} <- map, do: {String.downcase(key), lowercase_fields(value)}, into: %{}
-  end
-
-  defp lowercase_fields(list) when is_list(list) do
-    Enum.map(list, &lowercase_fields/1)
-  end
-
-  defp lowercase_fields(v), do: v
 end
