@@ -18,7 +18,7 @@ defmodule Gather.Extraction.SourceHandler do
 
   @impl Source.Handler
   def handle_batch(batch, %{assigns: %{extract: extract}} = context) do
-    Decoder.decode(extract.decoder, [batch])
+    Decoder.decode(extract.decoder, List.wrap(batch))
     |> Ok.each(fn chunk ->
       messages =
         Enum.map(chunk, &lowercase_fields/1)

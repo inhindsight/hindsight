@@ -29,9 +29,9 @@ defmodule Gather.Extraction do
   @impl GenServer
   def handle_continue(:extract, %{extract: extract} = state) do
     case extract(extract) do
-      {:ok, pid} ->
+      {:ok, destination_and_source} ->
         Logger.debug(fn -> "#{__MODULE__}: Started extraction: #{inspect(extract)}" end)
-        {:noreply, Map.put(state, :destination_pid, pid)}
+        {:noreply, Map.merge(state, destination_and_source)}
 
       {:error, reason} ->
         Logger.warn("#{__MODULE__}: Extraction Stopping: #{inspect(extract)}")
@@ -65,17 +65,14 @@ defmodule Gather.Extraction do
 
   @retry with: exponential_backoff(@initial_delay) |> take(@max_tries)
   defp extract(extract) do
-    with {:ok, pid} <- start_destination(extract),
-         :ok <- start_source(extract, pid) do
-      {:ok, pid}
+    with {:ok, destination_pid} <- start_destination(extract),
+         {:ok, source_pid} <- start_source(extract, destination_pid) do
+      {:ok, %{destination_pid: destination_pid, source_pid: source_pid}}
     end
   end
 
   def start_source(extract, destination_pid) do
-    {:ok, _source_pid} =
-      Source.start_link(extract.source, source_context(extract, destination_pid))
-
-    :ok
+    Source.start_link(extract.source, source_context(extract, destination_pid))
   end
 
   defp start_destination(extract) do
