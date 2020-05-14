@@ -59,7 +59,7 @@ defmodule Gather.Extraction do
 
   @impl GenServer
   def handle_info(msg, state) do
-    Logger.info(fn -> "Received message : #{inspect(msg)}" end)
+    Logger.warn(fn -> "#{__MODULE__}: Received unexpected message : #{inspect(msg)}" end)
     {:noreply, state}
   end
 
