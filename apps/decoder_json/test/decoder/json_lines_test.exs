@@ -16,18 +16,21 @@ defmodule Decoder.JsonLinesTest do
   end
 
   describe "Decoder" do
-    test "decodes json lines file as a stream" do
+    test "decodes json lines file as a batch of messages" do
       input = [
-        [json(%{"name" => "john", "age" => 21}), json(%{"name" => "Fred", "age" => 34})],
-        [json(%{"name" => "george", "age" => 36})]
+        json(%{"name" => "john", "age" => 21}),
+        json(%{"name" => "Fred", "age" => 34}),
+        json(%{"name" => "george", "age" => 36})
       ]
 
       output = Decoder.decode(Decoder.JsonLines.new!([]), input)
 
-      assert Enum.to_list(output) == [
-               [%{"name" => "john", "age" => 21}, %{"name" => "Fred", "age" => 34}],
-               [%{"name" => "george", "age" => 36}]
-             ]
+      assert Enum.to_list(output) ==
+               [
+                 %{"name" => "john", "age" => 21},
+                 %{"name" => "Fred", "age" => 34},
+                 %{"name" => "george", "age" => 36}
+               ]
     end
   end
 
