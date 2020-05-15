@@ -30,7 +30,7 @@ defmodule Delete.MixProject do
 
       # Dev/Test Dependencies
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}
     ]
   end
 
