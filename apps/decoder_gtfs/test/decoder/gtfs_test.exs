@@ -18,10 +18,9 @@ defmodule Decoder.GtfsTest do
   describe "Decoder" do
     test "decodes gtfs into stream" do
       input =
-        File.stream!("VehiclePositions.pb", [], 2048)
-        |> Stream.chunk_every(10)
+        File.read!("VehiclePositions.pb")
 
-      output = Decoder.decode(Decoder.Gtfs.new!(chunk_size: 2), input)
+      output = Decoder.decode(Decoder.Gtfs.new!(), input)
 
       expected =
         File.read!("VehiclePositions.pb")
@@ -29,7 +28,7 @@ defmodule Decoder.GtfsTest do
         |> Map.get(:entity)
         |> Enum.map(&Decoder.Gtfs.decode_struct/1)
 
-      assert Enum.to_list(output) == Enum.chunk_every(expected, 2)
+      assert output == expected
     end
   end
 end
