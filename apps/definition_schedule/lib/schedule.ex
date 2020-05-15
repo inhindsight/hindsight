@@ -24,4 +24,13 @@ defmodule Schedule do
             extract: nil,
             transform: nil,
             load: []
+
+  def on_new(sch = %{id: nil}) do
+    Map.put(sch, :id, UUID.uuid4())
+    |> Ok.ok()
+  end
+
+  def on_new(sch) do
+    Ok.ok(sch)
+  end
 end
