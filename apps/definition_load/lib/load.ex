@@ -5,7 +5,7 @@ defmodule Load do
 
   ## Configuration
 
-  * `id` - Required. Event instance UUID.
+  * `id` - Optional. Event instance UUID.
   * `dataset_id` - Required. Dataset identifier.
   * `subset_id` - Required. Dataset's subset identifier.
   * `source` - Required. `Source` impl to read data from.
@@ -30,6 +30,15 @@ defmodule Load do
             subset_id: nil,
             source: nil,
             destination: nil
+
+  def on_new(lo = %{id: nil}) do
+    Map.put(lo, :id, UUID.uuid4())
+    |> Ok.ok()
+  end
+
+  def on_new(lo) do
+    Ok.ok(lo)
+  end
 end
 
 defmodule Load.V1 do
