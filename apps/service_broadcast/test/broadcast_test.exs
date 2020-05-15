@@ -1,6 +1,5 @@
 defmodule BroadcastTest do
   use BroadcastWeb.ChannelCase
-  use Placebo
   import AssertAsync
 
   import Events, only: [load_start: 0, load_end: 0]
@@ -9,8 +8,6 @@ defmodule BroadcastTest do
   @instance Broadcast.Application.instance()
 
   setup do
-    fake_uuid = "fake_uuid"
-    allow(UUID.uuid4(), return: fake_uuid)
     on_exit(fn ->
       Brook.Test.clear_view_state(@instance, "transformations")
     end)
@@ -36,7 +33,7 @@ defmodule BroadcastTest do
 
     load =
       Load.new!(
-        id: fake_uuid,
+        id: "load-1",
         dataset_id: "ds1",
         subset_id: "intersections",
         source: Source.Fake.new!(),

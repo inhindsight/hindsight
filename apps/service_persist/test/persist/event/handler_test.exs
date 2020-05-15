@@ -31,7 +31,6 @@ defmodule Persist.Event.HandlerTest do
   setup :set_mox_global
 
   setup do
-    allow(UUID.uuid4(), return: "fake_uuid")
     on_exit(fn ->
       [
         ViewState.Loads,
