@@ -45,15 +45,6 @@ defmodule Accept do
             subset_id: nil,
             destination: nil,
             connection: nil
-
-  def on_new(ac = %{id: nil}) do
-    Map.put(ac, :id, UUID.uuid4())
-    |> Ok.ok()
-  end
-
-  def on_new(ac) do
-    Ok.ok(ac)
-  end
 end
 
 defmodule Accept.V1 do

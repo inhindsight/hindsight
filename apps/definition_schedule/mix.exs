@@ -26,11 +26,7 @@ defmodule Schedule.MixProject do
       {:definition, in_umbrella: true},
       {:definition_extract, in_umbrella: true},
       {:definition_transform, in_umbrella: true},
-      {:uuid, "~> 1.1"},
-
-      # Dev/Test Dependencies
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end
 end

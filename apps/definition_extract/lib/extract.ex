@@ -26,17 +26,8 @@ defmodule Extract do
   @impl Definition
   def on_new(%{dictionary: list} = extract) when is_list(list) do
     Map.put(extract, :dictionary, Dictionary.from_list(list))
-    |> my_on_new()
-  end
-
-  def on_new(extract), do: my_on_new(extract)
-
-  defp my_on_new(extract = %{id: nil}) do
-    Map.put(extract, :id, UUID.uuid4())
     |> Ok.ok()
   end
 
-  defp my_on_new(extract) do
-    Ok.ok(extract)
-  end
+  def on_new(extract), do: Ok.ok(extract)
 end

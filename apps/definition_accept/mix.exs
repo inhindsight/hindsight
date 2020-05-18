@@ -27,12 +27,7 @@ defmodule Accept.MixProject do
     [
       {:definition, in_umbrella: true},
       {:protocol_destination, in_umbrella: true},
-      {:uuid, "~> 1.1"},
-
-      # Def/Test Dependencies
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
-      {:testing, in_umbrella: true, only: [:test]}
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end
 

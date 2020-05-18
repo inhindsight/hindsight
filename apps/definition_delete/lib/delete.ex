@@ -15,15 +15,6 @@ defmodule Delete do
             id: nil,
             dataset_id: nil,
             subset_id: nil
-
-  def on_new(lo = %{id: nil}) do
-    Map.put(lo, :id, UUID.uuid4())
-    |> Ok.ok()
-  end
-
-  def on_new(lo) do
-    Ok.ok(lo)
-  end
 end
 
 defmodule Delete.V1 do

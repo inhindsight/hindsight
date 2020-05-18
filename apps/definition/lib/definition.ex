@@ -37,6 +37,7 @@ defmodule Definition do
       @impl Definition
       def new(%{} = input) do
         map = for {key, val} <- input, do: {:"#{key}", val}, into: %{}
+        map = Map.put_new(map, :id, UUID.uuid4())
 
         struct(__MODULE__, map)
         |> on_new()
