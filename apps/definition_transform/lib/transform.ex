@@ -22,8 +22,17 @@ defmodule Transform do
   @impl Definition
   def on_new(%{dictionary: list} = transform) when is_list(list) do
     Map.put(transform, :dictionary, Dictionary.from_list(list))
+    |> my_on_new()
+  end
+
+  def on_new(transform), do: my_on_new(transform)
+
+  defp my_on_new(transform = %{id: nil}) do
+    Map.put(transform, :id, UUID.uuid4())
     |> Ok.ok()
   end
 
-  def on_new(transform), do: Ok.ok(transform)
+  defp my_on_new(transform) do
+    Ok.ok(transform)
+  end
 end

@@ -25,7 +25,12 @@ defmodule Transform.MixProject do
     [
       {:definition, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
+      {:uuid, "~> 1.1"},
+
+      # Dev/Test Dependencies
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end
