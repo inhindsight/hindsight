@@ -5,7 +5,7 @@ defmodule Load do
 
   ## Configuration
 
-  * `id` - Required. Event instance UUID.
+  * `id` - Optional. Event instance UUID.
   * `dataset_id` - Required. Dataset identifier.
   * `subset_id` - Required. Dataset's subset identifier.
   * `source` - Required. `Source` impl to read data from.

@@ -1,9 +1,10 @@
 defmodule DefinitionTest do
   use ExUnit.Case
+  use Placebo
 
   defmodule Foo do
     use Definition, schema: Foo.V2
-    defstruct [:version, :bar, :baz]
+    defstruct [:version, :id, :bar, :baz]
 
     def on_new(foo) do
       new_baz =
@@ -17,7 +18,9 @@ defmodule DefinitionTest do
     end
 
     def migrate(%__MODULE__{version: 1} = old) do
-      struct(__MODULE__, %{version: 2, bar: String.to_integer(old.bar)})
+      new_id = if Map.has_key?(old, :id), do: old.id, else: "fake_id"
+
+      struct(__MODULE__, %{version: 2, id: new_id, bar: String.to_integer(old.bar)})
       |> Ok.ok()
     end
 
@@ -25,7 +28,10 @@ defmodule DefinitionTest do
       use Definition.Schema
 
       def s do
-        schema(%Foo{version: spec(fn v -> v == 1 end), bar: spec(is_binary())})
+        schema(%Foo{
+          version: spec(fn v -> v == 1 end),
+          bar: spec(is_binary())
+        })
       end
     end
 
@@ -33,12 +39,32 @@ defmodule DefinitionTest do
       use Definition.Schema
 
       def s do
-        schema(%Foo{version: spec(fn v -> v == 2 end), bar: spec(is_integer())})
+        schema(%Foo{
+          version: spec(fn v -> v == 2 end),
+          id: required_string(),
+          bar: spec(is_integer())
+        })
       end
     end
   end
 
   describe "__using__/1" do
+    setup do
+      fake_uuid = "fake_uuid"
+      allow(UUID.uuid4(), return: fake_uuid)
+      {:ok, [fake_uuid: fake_uuid]}
+    end
+
+    test "generates an id if not present on input", %{fake_uuid: fake_uuid} do
+      input = %{version: 2, bar: 9001}
+      assert {:ok, %Foo{version: 2, id: ^fake_uuid, bar: 9001, baz: nil}} = Foo.new(input)
+    end
+
+    test "preserves an id if one is given" do
+      input = %{version: 2, id: "my id", bar: 9001}
+      assert {:ok, %Foo{version: 2, id: "my id", bar: 9001, baz: nil}} = Foo.new(input)
+    end
+
     test "makes new/1 available to create struct" do
       input = %{version: 2, bar: 9001}
       assert {:ok, %Foo{}} = Foo.new(input)

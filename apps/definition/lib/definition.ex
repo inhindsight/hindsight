@@ -36,7 +36,10 @@ defmodule Definition do
 
       @impl Definition
       def new(%{} = input) do
-        map = for {key, val} <- input, do: {:"#{key}", val}, into: %{}
+        map =
+          Enum.map(input, fn {key, val} -> {:"#{key}", val} end)
+          |> Map.new()
+          |> Map.put_new_lazy(:id, &UUID.uuid4/0)
 
         struct(__MODULE__, map)
         |> on_new()
