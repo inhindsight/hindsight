@@ -26,7 +26,11 @@ defmodule DefinitionTest do
       use Definition.Schema
 
       def s do
-        schema(%Foo{version: spec(fn v -> v == 1 end), id: required_string(), bar: spec(is_binary())})
+        schema(%Foo{
+          version: spec(fn v -> v == 1 end),
+          id: required_string(),
+          bar: spec(is_binary())
+        })
       end
     end
 
@@ -34,7 +38,11 @@ defmodule DefinitionTest do
       use Definition.Schema
 
       def s do
-        schema(%Foo{version: spec(fn v -> v == 2 end), id: required_string(), bar: spec(is_integer())})
+        schema(%Foo{
+          version: spec(fn v -> v == 2 end),
+          id: required_string(),
+          bar: spec(is_integer())
+        })
       end
     end
   end
