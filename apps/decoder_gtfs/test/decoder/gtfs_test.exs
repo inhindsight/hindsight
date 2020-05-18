@@ -16,7 +16,7 @@ defmodule Decoder.GtfsTest do
   end
 
   describe "Decoder" do
-    test "decodes gtfs into stream" do
+    test "decodes gtfs into batch of messages" do
       decoder = Decoder.Gtfs.new!([])
       input = File.read!("VehiclePositions.pb")
 
