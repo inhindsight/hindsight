@@ -27,12 +27,12 @@ defmodule Decoder.Csv do
 
     def decode(%{skip_first_line: true} = t, messages) do
       messages
-          |> Enum.drop(1)
-          |> Enum.map(fn x -> parse(x, t.headers) end)
+      |> Enum.drop(1)
+      |> Enum.map(fn x -> parse(x, t.headers) end)
     end
 
     def decode(t, messages) do
-        Enum.map(messages, fn x -> parse(x, t.headers) end)
+      Enum.map(messages, fn x -> parse(x, t.headers) end)
     end
 
     defp parse(data, headers) do
