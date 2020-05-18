@@ -44,7 +44,7 @@ defmodule Decoder.CsvTest do
 
       output = Decoder.decode(decoder, input)
 
-      assert Enum.to_list(output) ==
+      assert output ==
                [
                  %{"name" => "brian", "age" => "21"},
                  %{"name" => "rick", "age" => "34"},
@@ -64,7 +64,7 @@ defmodule Decoder.CsvTest do
 
       output = Decoder.decode(decoder, input)
 
-      assert Enum.to_list(output) ==
+      assert output ==
                [
                  %{"name" => "rick", "age" => "34"},
                  %{"name" => "johnson", "age" => "45"},

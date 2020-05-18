@@ -25,7 +25,7 @@ defmodule Decoder.JsonArraysTest do
 
       output = Decoder.decode(Decoder.JsonArrays.new!([]), input)
 
-      assert Enum.to_list(output) == [
+      assert output == [
                %{"id" => "1", "type" => "Crew", "position" => [0, 1, 2]},
                %{"id" => "2", "type" => "Crew", "position" => [3, 4, 5]},
                %{"id" => "3", "type" => "Guest", "position" => [6, 7, 8]},

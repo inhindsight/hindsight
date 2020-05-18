@@ -23,7 +23,7 @@ defmodule Decoder.JsonTest do
 
       output = Decoder.decode(Decoder.Json.new!([]), input)
 
-      assert Enum.to_list(output) == [
+      assert output == [
                %{"name" => "Kyle", "age" => 2},
                %{"name" => "Joe", "age" => 21},
                %{"name" => "Bobby", "age" => 62}
@@ -37,7 +37,7 @@ defmodule Decoder.JsonTest do
 
       output = Decoder.decode(Decoder.Json.new!([]), input)
 
-      assert Enum.to_list(output) == [%{"name" => "Jay", "age" => 42}]
+      assert output == [%{"name" => "Jay", "age" => 42}]
     end
   end
 end

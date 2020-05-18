@@ -25,7 +25,7 @@ defmodule Decoder.JsonLinesTest do
 
       output = Decoder.decode(Decoder.JsonLines.new!([]), input)
 
-      assert Enum.to_list(output) ==
+      assert output ==
                [
                  %{"name" => "john", "age" => 21},
                  %{"name" => "Fred", "age" => 34},
