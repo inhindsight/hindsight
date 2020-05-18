@@ -40,14 +40,17 @@ defmodule Decoder.CsvTest do
           skip_first_line: false
         )
 
-      input =
-        ["brian,21\n", "rick,34", "johnson,45\n", "greg,89"]
+      input = ["brian,21\n", "rick,34", "johnson,45\n", "greg,89"]
 
       output = Decoder.decode(decoder, input)
 
       assert Enum.to_list(output) ==
-                 [%{"name" => "brian", "age" => "21"}, %{"name" => "rick", "age" => "34"},
-                 %{"name" => "johnson", "age" => "45"}, %{"name" => "greg", "age" => "89"}]
+               [
+                 %{"name" => "brian", "age" => "21"},
+                 %{"name" => "rick", "age" => "34"},
+                 %{"name" => "johnson", "age" => "45"},
+                 %{"name" => "greg", "age" => "89"}
+               ]
     end
 
     test "parses csv while skipping first line" do
@@ -57,13 +60,16 @@ defmodule Decoder.CsvTest do
           skip_first_line: true
         )
 
-      input =
-        ["brian,21\n", "rick,34", "johnson,45\n", "greg,89"]
+      input = ["brian,21\n", "rick,34", "johnson,45\n", "greg,89"]
 
       output = Decoder.decode(decoder, input)
 
       assert Enum.to_list(output) ==
-                 [%{"name" => "rick", "age" => "34"}, %{"name" => "johnson", "age" => "45"}, %{"name" => "greg", "age" => "89"}]
+               [
+                 %{"name" => "rick", "age" => "34"},
+                 %{"name" => "johnson", "age" => "45"},
+                 %{"name" => "greg", "age" => "89"}
+               ]
     end
   end
 end
