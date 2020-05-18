@@ -25,16 +25,14 @@ defmodule Decoder.Csv do
   defimpl Decoder, for: __MODULE__ do
     def lines_or_bytes(_t), do: :line
 
-    def decode(t, messages) do
+    def decode(%{skip_first_line: true} = t, messages) do
       messages
-      |> Stream.transform(%{skip: t.skip_first_line}, fn chunk, acc ->
-        if acc.skip do
-          {[], %{acc | skip: false}}
-        else
-          parsed = parse(chunk, t.headers)
-          {[parsed], acc}
-        end
-      end)
+          |> Enum.drop(1)
+          |> Enum.map(fn x -> parse(x, t.headers) end)
+    end
+
+    def decode(t, messages) do
+        Enum.map(messages, fn x -> parse(x, t.headers) end)
     end
 
     defp parse(data, headers) do
