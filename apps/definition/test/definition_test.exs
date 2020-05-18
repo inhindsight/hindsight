@@ -18,7 +18,9 @@ defmodule DefinitionTest do
     end
 
     def migrate(%__MODULE__{version: 1} = old) do
-      struct(__MODULE__, %{version: 2, id: old.id, bar: String.to_integer(old.bar)})
+      new_id = if Map.has_key?(old, :id), do: old.id, else: "fake_id"
+
+      struct(__MODULE__, %{version: 2, id: new_id, bar: String.to_integer(old.bar)})
       |> Ok.ok()
     end
 
@@ -28,7 +30,6 @@ defmodule DefinitionTest do
       def s do
         schema(%Foo{
           version: spec(fn v -> v == 1 end),
-          id: required_string(),
           bar: spec(is_binary())
         })
       end
