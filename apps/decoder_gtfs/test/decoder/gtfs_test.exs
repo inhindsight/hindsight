@@ -17,10 +17,10 @@ defmodule Decoder.GtfsTest do
 
   describe "Decoder" do
     test "decodes gtfs into stream" do
-      input =
-        File.read!("VehiclePositions.pb")
+      decoder = Decoder.Gtfs.new!([])
+      input = File.read!("VehiclePositions.pb")
 
-      output = Decoder.decode(Decoder.Gtfs.new!(), input)
+      output = Decoder.decode(decoder, input)
 
       expected =
         File.read!("VehiclePositions.pb")
