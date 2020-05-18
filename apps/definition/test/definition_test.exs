@@ -59,6 +59,11 @@ defmodule DefinitionTest do
       assert {:ok, %Foo{version: 2, id: ^fake_uuid, bar: 9001, baz: nil}} = Foo.new(input)
     end
 
+    test "preserves an id if one is given" do
+      input = %{version: 2, id: "my id", bar: 9001}
+      assert {:ok, %Foo{version: 2, id: "my id", bar: 9001, baz: nil}} = Foo.new(input)
+    end
+
     test "makes new/1 available to create struct" do
       input = %{version: 2, bar: 9001}
       assert {:ok, %Foo{}} = Foo.new(input)
