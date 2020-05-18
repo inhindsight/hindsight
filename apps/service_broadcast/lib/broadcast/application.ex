@@ -4,7 +4,7 @@ defmodule Broadcast.Application do
   use Application
   use Properties, otp_app: :service_broadcast
 
-  def instance(), do: :broadcast_instance
+  def instance, do: :broadcast_instance
 
   def start(_type, _args) do
     Plugins.load!()
@@ -25,16 +25,16 @@ defmodule Broadcast.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp init() do
+  defp init do
     case get_config_value(:init?, default: true) do
       true -> Broadcast.Init
       false -> []
     end
   end
 
-  defp brook() do
+  defp brook do
     case get_config_value(:brook) do
-      nil -> []
+      nil -> {Brook, Initializer.Brook.config(instance(), "broadcast", Broadcast.Event.Handler)}
       config -> {Brook, Keyword.put(config, :instance, instance())}
     end
   end

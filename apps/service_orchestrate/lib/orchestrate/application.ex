@@ -4,7 +4,7 @@ defmodule Orchestrate.Application do
   use Application
   use Properties, otp_app: :service_orchestrate
 
-  def instance(), do: :orchestrate_instance
+  def instance, do: :orchestrate_instance
 
   def start(_type, _args) do
     Plugins.load!()
@@ -22,9 +22,12 @@ defmodule Orchestrate.Application do
   end
 
   defp brook() do
-    case get_config_value(:brook, required: true) do
-      nil -> []
-      config -> {Brook, Keyword.put(config, :instance, instance())}
+    case get_config_value(:brook) do
+      nil ->
+        {Brook, Initializer.Brook.config(instance(), "orchestrate", Orchestrate.Event.Handler)}
+
+      config ->
+        {Brook, Keyword.put(config, :instance, instance())}
     end
   end
 end

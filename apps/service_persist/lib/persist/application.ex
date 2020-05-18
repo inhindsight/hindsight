@@ -4,7 +4,7 @@ defmodule Persist.Application do
   use Application
   use Properties, otp_app: :service_persist
 
-  def instance(), do: :persist_instance
+  def instance, do: :persist_instance
 
   def start(_type, _args) do
     Plugins.load!()
@@ -25,16 +25,16 @@ defmodule Persist.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp init() do
+  defp init do
     case get_config_value(:init?, default: true) do
       true -> Persist.Init
       false -> []
     end
   end
 
-  defp brook() do
-    case get_config_value(:brook, required: true) do
-      nil -> []
+  defp brook do
+    case get_config_value(:brook) do
+      nil -> {Brook, Initializer.Brook.config(instance(), "persist", Persist.Event.Handler)}
       config -> {Brook, Keyword.put(config, :instance, instance())}
     end
   end

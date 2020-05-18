@@ -4,7 +4,7 @@ defmodule Gather.Application do
   use Application
   use Properties, otp_app: :service_gather
 
-  def instance(), do: :gather_instance
+  def instance, do: :gather_instance
 
   def start(_type, _args) do
     Plugins.load!()
@@ -23,16 +23,16 @@ defmodule Gather.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp init() do
+  defp init do
     case get_config_value(:init?, default: true) do
       true -> Gather.Init
       false -> []
     end
   end
 
-  defp brook() do
-    case get_config_value(:brook, required: true) do
-      nil -> []
+  defp brook do
+    case get_config_value(:brook) do
+      nil -> {Brook, Initializer.Brook.config(instance(), "gather", Gather.Event.Handler)}
       config -> {Brook, Keyword.put(config, :instance, instance())}
     end
   end

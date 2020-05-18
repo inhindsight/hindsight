@@ -58,73 +58,16 @@ config :definition_presto, Presto.Table.DataStorage.S3,
   s3_bucket: System.get_env("BUCKET_NAME", "kdp-cloud-storage"),
   s3_path: "hive-s3"
 
-# SERVICE_RECEIVE
-config :service_receive, Receive.Application,
+config :initializer, Initializer.Brook,
+  event_topic: System.get_env("EVENT_STREAM", "event-stream"),
   kafka_endpoints: kafka_endpoints,
-  brook: [
-    driver: [
-      module: Brook.Driver.Kafka,
-      init_arg: [
-        endpoints: kafka_endpoints,
-        topic: "event-stream",
-        group: "receive-event-stream",
-        consumer_config: [
-          begin_offset: :earliest,
-          offset_reset_policy: :reset_to_earliest
-        ]
-      ]
-    ],
-    handlers: [Receive.Event.Handler],
-    storage: [
-      module: Brook.Storage.Postgres,
-      init_arg: [
-        table: "receive_state",
-        postgrex_args: [
-          hostname: System.get_env("DB_HOST", "localhost"),
-          username: System.get_env("DB_USER", "receive_app_user"),
-          password: System.get_env("DB_PASSWORD", "receive123"),
-          database: System.get_env("DB_NAME", "receive_app_state")
-        ]
-      ]
-    ],
-    dispatcher: Brook.Dispatcher.Noop
-  ]
+  secret_store: System.get_env("SECRET_STORE", "environment")
 
+# SERVICE_RECEIVE
 config :service_receive, Receive.SocketManager, app_name: "service_receive"
-
 config :service_receive, Receive.Event.Handler, endpoints: kafka_endpoints
 
 # SERVICE_GATHER
-config :service_gather, Gather.Application,
-  brook: [
-    driver: [
-      module: Brook.Driver.Kafka,
-      init_arg: [
-        endpoints: kafka_endpoints,
-        topic: "event-stream",
-        group: "gather-event-stream",
-        consumer_config: [
-          begin_offset: :earliest,
-          offset_reset_policy: :reset_to_earliest
-        ]
-      ]
-    ],
-    handlers: [Gather.Event.Handler],
-    storage: [
-      module: Brook.Storage.Postgres,
-      init_arg: [
-        table: "gather_state",
-        postgrex_args: [
-          hostname: System.get_env("DB_HOST", "localhost"),
-          username: System.get_env("DB_USER", "gather_app_user"),
-          password: System.get_env("DB_PASSWORD", "gather123"),
-          database: System.get_env("DB_NAME", "gather_app_state")
-        ]
-      ]
-    ],
-    dispatcher: Brook.Dispatcher.Noop
-  ]
-
 config :service_gather, Gather.Event.Handler, endpoints: kafka_endpoints
 config :service_gather, Gather.Extraction, app_name: "service_gather"
 config :service_gather, Gather.Extraction.SourceHandler, app_name: "service_gather"
@@ -137,36 +80,6 @@ config :service_broadcast, BroadcastWeb.Endpoint,
   pubsub: [name: Broadcast.PubSub, adapter: Phoenix.PubSub.PG2],
   server: true,
   check_origin: false
-
-config :service_broadcast, Broadcast.Application,
-  brook: [
-    driver: [
-      module: Brook.Driver.Kafka,
-      init_arg: [
-        endpoints: kafka_endpoints,
-        topic: "event-stream",
-        group: "broadcast-event-stream",
-        consumer_config: [
-          begin_offset: :earliest,
-          offset_reset_policy: :reset_to_earliest
-        ]
-      ]
-    ],
-    handlers: [Broadcast.Event.Handler],
-    storage: [
-      module: Brook.Storage.Postgres,
-      init_arg: [
-        table: "broadcast_state",
-        postgrex_args: [
-          hostname: System.get_env("DB_HOST", "localhost"),
-          username: System.get_env("DB_USER", "broadcast_app_user"),
-          password: System.get_env("DB_PASSWORD", "broadcast123"),
-          database: System.get_env("DB_NAME", "broadcast_app_state")
-        ]
-      ]
-    ],
-    dispatcher: Brook.Dispatcher.Noop
-  ]
 
 config :service_broadcast, Broadcast.Event.Handler, endpoints: kafka_endpoints
 
@@ -184,70 +97,7 @@ object_storage =
 
 config :ex_aws, bucket_region
 config :ex_aws, :s3, object_storage
-
-config :service_persist, Persist.Application,
-  brook: [
-    driver: [
-      module: Brook.Driver.Kafka,
-      init_arg: [
-        endpoints: kafka_endpoints,
-        topic: "event-stream",
-        group: "persist-event-stream",
-        consumer_config: [
-          begin_offset: :earliest,
-          offset_reset_policy: :reset_to_earliest
-        ]
-      ]
-    ],
-    handlers: [Persist.Event.Handler],
-    storage: [
-      module: Brook.Storage.Postgres,
-      init_arg: [
-        table: "persist_state",
-        postgrex_args: [
-          hostname: System.get_env("DB_HOST", "localhost"),
-          username: System.get_env("DB_USER", "persist_app_user"),
-          password: System.get_env("DB_PASSWORD", "persist123"),
-          database: System.get_env("DB_NAME", "persist_app_state")
-        ]
-      ]
-    ],
-    dispatcher: Brook.Dispatcher.Noop,
-    event_processing_timeout: 20_000
-  ]
-
 config :service_persist, Persist.Event.Handler, endpoints: kafka_endpoints
-
-# SERVICE ORCHESTRATE
-config :service_orchestrate, Orchestrate.Application,
-  brook: [
-    driver: [
-      module: Brook.Driver.Kafka,
-      init_arg: [
-        endpoints: kafka_endpoints,
-        topic: "event-stream",
-        group: "orchestrate-event-stream",
-        consumer_config: [
-          begin_offset: :earliest,
-          offset_reset_policy: :reset_to_earliest
-        ]
-      ]
-    ],
-    handlers: [Orchestrate.Event.Handler],
-    storage: [
-      module: Brook.Storage.Postgres,
-      init_arg: [
-        table: "orchestrate_state",
-        postgrex_args: [
-          hostname: System.get_env("DB_HOST", "localhost"),
-          username: System.get_env("DB_USER", "orchestrate_app_user"),
-          password: System.get_env("DB_PASSWORD", "orchestrate123"),
-          database: System.get_env("DB_NAME", "orchestrate_app_state")
-        ]
-      ]
-    ],
-    dispatcher: Brook.Dispatcher.Noop
-  ]
 
 # SERVICE ACQUIRE
 config :service_acquire, AcquireWeb.Endpoint,
@@ -258,68 +108,8 @@ config :service_acquire, AcquireWeb.Endpoint,
   server: true,
   check_origin: false
 
-config :service_acquire, Acquire.Application,
-  brook: [
-    driver: [
-      module: Brook.Driver.Kafka,
-      init_arg: [
-        endpoints: kafka_endpoints,
-        topic: "event-stream",
-        group: "acquire-event-stream",
-        consumer_config: [
-          begin_offset: :earliest,
-          offset_reset_policy: :reset_to_earliest
-        ]
-      ]
-    ],
-    handlers: [Acquire.Event.Handler],
-    storage: [
-      module: Brook.Storage.Postgres,
-      init_arg: [
-        table: "acquire_state",
-        postgrex_args: [
-          hostname: System.get_env("DB_HOST", "localhost"),
-          username: System.get_env("DB_USER", "acquire_app_user"),
-          password: System.get_env("DB_PASSWORD", "acquire123"),
-          database: System.get_env("DB_NAME", "acquire_app_state")
-        ]
-      ]
-    ],
-    dispatcher: Brook.Dispatcher.Noop
-  ]
-
 config :service_acquire, Acquire.Db.Presto, presto: Keyword.put(presto_db, :user, "acquire")
 
 # SERVICE PROFILE
-config :service_profile, Profile.Application,
-  init?: true,
-  brook: [
-    driver: [
-      module: Brook.Driver.Kafka,
-      init_arg: [
-        endpoints: kafka_endpoints,
-        topic: "event-stream",
-        group: "profile-event-stream",
-        consumer_config: [
-          begin_offset: :earliest,
-          offset_reset_policy: :reset_to_earliest
-        ]
-      ]
-    ],
-    handlers: [Profile.Event.Handler],
-    storage: [
-      module: Brook.Storage.Postgres,
-      init_arg: [
-        table: "profile_state",
-        postgrex_args: [
-          hostname: System.get_env("DB_HOST", "localhost"),
-          username: System.get_env("DB_USER", "profile_app_user"),
-          password: System.get_env("DB_PASSWORD", "profile123"),
-          database: System.get_env("DB_NAME", "profile_app_state")
-        ]
-      ]
-    ],
-    dispatcher: Brook.Dispatcher.Noop
-  ]
-
+config :service_profile, Profile.Application, init?: true
 config :service_profile, Profile.Feed.Producer, endpoints: kafka_endpoints

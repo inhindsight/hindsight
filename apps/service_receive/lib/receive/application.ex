@@ -4,7 +4,7 @@ defmodule Receive.Application do
   use Application
   use Properties, otp_app: :service_receive
 
-  def instance(), do: :receive_instance
+  def instance, do: :receive_instance
 
   def start(_type, _args) do
     Plugins.load!()
@@ -23,13 +23,13 @@ defmodule Receive.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp init() do
+  defp init do
     if get_config_value(:init?, default: true), do: Receive.Init, else: []
   end
 
   defp brook() do
-    case get_config_value(:brook, required: true) do
-      nil -> []
+    case get_config_value(:brook) do
+      nil -> {Brook, Initializer.Brook.config(instance(), "receive", Receive.Event.Handler)}
       config -> {Brook, Keyword.put(config, :instance, instance())}
     end
   end

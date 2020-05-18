@@ -4,16 +4,14 @@ defmodule Acquire.Application do
   use Application
   use Properties, otp_app: :service_acquire
 
-  getter(:brook, required: true)
-
-  def instance(), do: :acquire_instance
+  def instance, do: :acquire_instance
 
   def start(_type, _args) do
     Plugins.load!()
 
     children = [
       Acquire.MetricsReporter,
-      start_brook(),
+      brook(),
       AcquireWeb.Endpoint
     ]
 
@@ -21,12 +19,15 @@ defmodule Acquire.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp start_brook() do
-    {Brook, Keyword.put(brook(), :instance, instance())}
-  end
-
   def config_change(changed, _new, removed) do
     AcquireWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defp brook do
+    case get_config_value(:brook) do
+      nil -> {Brook, Initializer.Brook.config(instance(), "acquire", Acquire.Event.Handler)}
+      config -> {Brook, Keyword.put(config, :instance, instance())}
+    end
   end
 end

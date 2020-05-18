@@ -32,9 +32,9 @@ defmodule Initializer.Brook do
           table: "#{service_name}_state",
           postgrex_args: [
             database: "#{service_name}_view_state",
-            hostname: secret().get("hindsight-#{service_name}", "host", "localhost"),
-            username: secret().get("hindsight-#{service_name}", "username", "#{service_name}_user"),
-            password: secret().get("hindsight-#{service_name}", "password", "#{service_name}123")
+            hostname: secret().get("#{service_name}-db", "host", "localhost"),
+            username: secret().get("#{service_name}-db", "username", "#{service_name}_user"),
+            password: secret().get("#{service_name}-db", "password", "#{service_name}123")
           ]
         ]
       ]
