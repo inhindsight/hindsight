@@ -28,7 +28,7 @@ defmodule Decoder.Csv do
     def decode(t, messages) do
       messages
       |> Stream.transform(%{skip: t.skip_first_line}, fn chunk, acc ->
-        if(acc.skip) do
+        if acc.skip do
           {[], %{acc | skip: false}}
         else
           parsed = parse(chunk, t.headers)
