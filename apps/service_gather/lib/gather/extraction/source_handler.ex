@@ -18,14 +18,12 @@ defmodule Gather.Extraction.SourceHandler do
 
   @impl Source.Handler
   def handle_batch(batch, %{assigns: %{extract: extract}} = context) do
-    Decoder.decode(extract.decoder, [batch])
-    |> Ok.each(fn chunk ->
-      messages =
-        Enum.map(chunk, &lowercase_fields/1)
-        |> normalize(extract)
+    messages =
+      Decoder.decode(extract.decoder, batch)
+      |> Enum.map(fn chunk -> lowercase_fields(chunk) end)
+      |> normalize(extract)
 
-      :ok = write_to_destination(extract.destination, context.assigns.destination_pid, messages)
-    end)
+    :ok = write_to_destination(extract.destination, context.assigns.destination_pid, messages)
   catch
     _, e ->
       warn_extract_failure(extract, e)
