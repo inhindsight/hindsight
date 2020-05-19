@@ -26,7 +26,7 @@ defmodule Decoder.Csv do
     def lines_or_bytes(_t), do: :line
 
     def decode(t, messages) do
-      if(skip_line?(t)) do
+      if skip_line?(t) do
         messages
         |> Enum.drop(1)
         |> Enum.map(fn message -> parse(message, t.headers) end)
@@ -35,12 +35,12 @@ defmodule Decoder.Csv do
       end
     end
 
-    def skip_line?(t) do
-      if(t.skip_first_line && !Process.get(:have_skipped_headers)) do
+    def skip_line?(%{skip_first_line: false}), do: false
+
+    def skip_line?(_t) do
+      unless Process.get(:have_skipped_headers) do
         Process.put(:have_skipped_headers, true)
         true
-      else
-        false
       end
     end
 
