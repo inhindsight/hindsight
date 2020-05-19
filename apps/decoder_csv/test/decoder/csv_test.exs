@@ -60,7 +60,7 @@ defmodule Decoder.CsvTest do
           skip_first_line: true
         )
 
-      input = ["brian,21\n", "rick,34", "johnson,45\n", "greg,89"]
+      input = ["name,age\n", "rick,34", "johnson,45\n", "greg,89"]
 
       output = Decoder.decode(decoder, input)
 
@@ -69,6 +69,34 @@ defmodule Decoder.CsvTest do
                  %{"name" => "rick", "age" => "34"},
                  %{"name" => "johnson", "age" => "45"},
                  %{"name" => "greg", "age" => "89"}
+               ]
+    end
+
+    test "parses two batches with skip headers = true, but only skips one line total" do
+      decoder =
+        Decoder.Csv.new!(
+          headers: ["name", "age"],
+          skip_first_line: true
+        )
+
+      input_1 = ["name,age\n", "rick,34", "johnson,45\n", "greg,89"]
+      input_2 = ["jessie,22", "jeff,35\n", "john,40"]
+
+      output_1 = Decoder.decode(decoder, input_1)
+      output_2 = Decoder.decode(decoder, input_2)
+
+      assert output_1 ==
+               [
+                 %{"name" => "rick", "age" => "34"},
+                 %{"name" => "johnson", "age" => "45"},
+                 %{"name" => "greg", "age" => "89"}
+               ]
+
+      assert output_2 ==
+               [
+                 %{"name" => "jessie", "age" => "22"},
+                 %{"name" => "jeff", "age" => "35"},
+                 %{"name" => "john", "age" => "40"}
                ]
     end
   end
