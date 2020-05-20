@@ -11,8 +11,7 @@ defmodule Decoder.JsonLines do
     def lines_or_bytes(_t), do: :line
 
     def decode(_t, messages) do
-      messages
-      |> Enum.map(&Jason.decode!/1)
+      Enum.map(messages, &Jason.decode!/1)
     end
   end
 end
