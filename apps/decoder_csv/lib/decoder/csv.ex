@@ -43,7 +43,7 @@ defmodule Decoder.Csv do
     end
 
     defp mark_skipped() do
-      Process.put(__MODULE__, %{:have_skipped_headers => true})
+      Process.put(__MODULE__, %{have_skipped_headers: true})
     end
 
     defp parse(data, headers) do
