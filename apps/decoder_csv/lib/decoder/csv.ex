@@ -49,25 +49,6 @@ defmodule Decoder.Csv do
       Process.put(__MODULE__, %{:have_skipped_headers => true})
     end
 
-    # def decode(t, messages) do
-    #   if skip_line?(t) do
-    #     messages
-    #     |> Enum.drop(1)
-    #     |> Enum.map(fn message -> parse(message, t.headers) end)
-    #   else
-    #     Enum.map(messages, fn message -> parse(message, t.headers) end)
-    #   end
-    # end
-
-    # def skip_line?(%{skip_first_line: false}), do: false
-    #
-    # def skip_line?(_t) do
-    #   unless Process.get(:have_skipped_headers) do
-    #     Process.put(:have_skipped_headers, true)
-    #     true
-    #   end
-    # end
-
     defp parse(data, headers) do
       Decoder.Csv.Parser.parse_string(data, skip_headers: false)
       |> List.flatten()
