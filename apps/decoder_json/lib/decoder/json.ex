@@ -16,7 +16,6 @@ defmodule Decoder.Json do
 
     def decode(_t, messages) do
       messages
-      |> List.flatten()
       |> Enum.join()
       |> Jason.decode!()
       |> List.wrap()
