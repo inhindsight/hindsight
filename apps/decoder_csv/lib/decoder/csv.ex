@@ -26,7 +26,7 @@ defmodule Decoder.Csv do
     def lines_or_bytes(_t), do: :line
 
     def decode(t, messages) do
-      do_decode(t, messages, t.skip_first_line && !already_skipped?())
+      do_decode(t, messages, t.skip_first_line and !already_skipped?())
     end
 
     defp do_decode(t, messages, false = _should_skip?) do
