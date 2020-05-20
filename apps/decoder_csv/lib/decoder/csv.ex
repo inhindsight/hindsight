@@ -26,13 +26,13 @@ defmodule Decoder.Csv do
     def lines_or_bytes(_t), do: :line
 
     def decode(t, messages) do
-      do_decode(messages, t.skip_first_line and !already_skipped?())
+      process_headers(messages, t.skip_first_line and !already_skipped?())
       |> Enum.map(&parse(&1, t.headers))
     end
 
-    defp do_decode(messages, false = _should_skip?), do: messages
+    defp process_headers(messages, false = _should_skip?), do: messages
 
-    defp do_decode(messages, true = _should_skip?) do
+    defp process_headers(messages, true = _should_skip?) do
       mark_skipped()
 
       Enum.drop(messages, 1)
