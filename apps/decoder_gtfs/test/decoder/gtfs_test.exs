@@ -23,7 +23,7 @@ defmodule Decoder.GtfsTest do
       output = Decoder.decode(decoder, input)
 
       expected =
-        File.read!("VehiclePositions.pb")
+        input
         |> TransitRealtime.FeedMessage.decode()
         |> Map.get(:entity)
         |> Enum.map(&Decoder.Gtfs.decode_struct/1)
