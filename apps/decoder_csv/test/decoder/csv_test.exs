@@ -72,18 +72,18 @@ defmodule Decoder.CsvTest do
                ]
     end
 
-    test "parses two batches with skip headers = true, but only skips one line total" do
+    test "parses two batches from the same CSV file with skip headers = true, but only skips one line total" do
       decoder =
         Decoder.Csv.new!(
           headers: ["name", "age"],
           skip_first_line: true
         )
 
-      input_1 = ["name,age\n", "rick,34", "johnson,45\n", "greg,89"]
-      input_2 = ["jessie,22", "jeff,35\n", "john,40"]
+      batch_1 = ["name,age\n", "rick,34", "johnson,45\n", "greg,89"]
+      batch_2 = ["jessie,22", "jeff,35\n", "john,40"]
 
-      output_1 = Decoder.decode(decoder, input_1)
-      output_2 = Decoder.decode(decoder, input_2)
+      output_1 = Decoder.decode(decoder, batch_1)
+      output_2 = Decoder.decode(decoder, batch_2)
 
       assert output_1 ==
                [

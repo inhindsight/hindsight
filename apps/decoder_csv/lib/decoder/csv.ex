@@ -26,23 +26,47 @@ defmodule Decoder.Csv do
     def lines_or_bytes(_t), do: :line
 
     def decode(t, messages) do
-      if skip_line?(t) do
-        messages
-        |> Enum.drop(1)
-        |> Enum.map(fn message -> parse(message, t.headers) end)
-      else
-        Enum.map(messages, fn message -> parse(message, t.headers) end)
-      end
+      do_decode(t, messages, t.skip_first_line && !already_skipped?())
     end
 
-    def skip_line?(%{skip_first_line: false}), do: false
-
-    def skip_line?(_t) do
-      unless Process.get(:have_skipped_headers) do
-        Process.put(:have_skipped_headers, true)
-        true
-      end
+    defp do_decode(t, messages, false = _should_skip?) do
+      Enum.map(messages, &parse(&1, t.headers))
     end
+
+    defp do_decode(t, messages, true = _should_skip?) do
+      mark_skipped()
+
+      messages
+      |> Enum.drop(1)
+      |> Enum.map(fn message -> parse(message, t.headers) end)
+    end
+
+    defp already_skipped?() do
+      Process.get(__MODULE__, %{}) |> Map.get(:have_skipped_headers, false)
+    end
+
+    defp mark_skipped() do
+      Process.put(__MODULE__, %{:have_skipped_headers => true})
+    end
+
+    # def decode(t, messages) do
+    #   if skip_line?(t) do
+    #     messages
+    #     |> Enum.drop(1)
+    #     |> Enum.map(fn message -> parse(message, t.headers) end)
+    #   else
+    #     Enum.map(messages, fn message -> parse(message, t.headers) end)
+    #   end
+    # end
+
+    # def skip_line?(%{skip_first_line: false}), do: false
+    #
+    # def skip_line?(_t) do
+    #   unless Process.get(:have_skipped_headers) do
+    #     Process.put(:have_skipped_headers, true)
+    #     true
+    #   end
+    # end
 
     defp parse(data, headers) do
       Decoder.Csv.Parser.parse_string(data, skip_headers: false)
