@@ -15,8 +15,8 @@ defmodule Transform.AddTimestamp do
       |>Ok.ok()
     end
 
-    def create_function(%{name: _name}, _dictionary) do
-      Ok.ok(fn -> {} end)
+    def create_function(%{name: name}, _dictionary) do
+      Ok.ok(fn record -> Map.put(record, name, DateTime.utc_now() |> DateTime.to_iso8601()) end)
     end
   end
 end
