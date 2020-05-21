@@ -40,17 +40,16 @@ defmodule Decoder.CsvTest do
           skip_first_line: false
         )
 
-      input = [
-        ["brian,21\n", "rick,34"],
-        ["johnson,45\n", "greg,89"]
-      ]
+      input = ["brian,21\n", "rick,34", "johnson,45\n", "greg,89"]
 
       output = Decoder.decode(decoder, input)
 
-      assert Enum.to_list(output) ==
+      assert output ==
                [
-                 [%{"name" => "brian", "age" => "21"}, %{"name" => "rick", "age" => "34"}],
-                 [%{"name" => "johnson", "age" => "45"}, %{"name" => "greg", "age" => "89"}]
+                 %{"name" => "brian", "age" => "21"},
+                 %{"name" => "rick", "age" => "34"},
+                 %{"name" => "johnson", "age" => "45"},
+                 %{"name" => "greg", "age" => "89"}
                ]
     end
 
@@ -61,17 +60,43 @@ defmodule Decoder.CsvTest do
           skip_first_line: true
         )
 
-      input = [
-        ["brian,21\n", "rick,34"],
-        ["johnson,45\n", "greg,89"]
-      ]
+      input = ["name,age\n", "rick,34", "johnson,45\n", "greg,89"]
 
       output = Decoder.decode(decoder, input)
 
-      assert Enum.to_list(output) ==
+      assert output ==
                [
-                 [%{"name" => "rick", "age" => "34"}],
-                 [%{"name" => "johnson", "age" => "45"}, %{"name" => "greg", "age" => "89"}]
+                 %{"name" => "rick", "age" => "34"},
+                 %{"name" => "johnson", "age" => "45"},
+                 %{"name" => "greg", "age" => "89"}
+               ]
+    end
+
+    test "parses two batches from the same CSV file with skip headers = true, but only skips one line total" do
+      decoder =
+        Decoder.Csv.new!(
+          headers: ["name", "age"],
+          skip_first_line: true
+        )
+
+      batch_1 = ["name,age\n", "rick,34", "johnson,45\n", "greg,89"]
+      batch_2 = ["jessie,22", "jeff,35\n", "john,40"]
+
+      output_1 = Decoder.decode(decoder, batch_1)
+      output_2 = Decoder.decode(decoder, batch_2)
+
+      assert output_1 ==
+               [
+                 %{"name" => "rick", "age" => "34"},
+                 %{"name" => "johnson", "age" => "45"},
+                 %{"name" => "greg", "age" => "89"}
+               ]
+
+      assert output_2 ==
+               [
+                 %{"name" => "jessie", "age" => "22"},
+                 %{"name" => "jeff", "age" => "35"},
+                 %{"name" => "john", "age" => "40"}
                ]
     end
   end

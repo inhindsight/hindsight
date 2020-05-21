@@ -14,15 +14,11 @@ defmodule Decoder.Gtfs do
   defimpl Decoder do
     def lines_or_bytes(_t), do: 2048
 
-    def decode(t, stream) do
-      stream
-      |> Enum.to_list()
-      |> List.flatten()
-      |> Enum.join()
+    def decode(_t, messages) do
+      messages
       |> TransitRealtime.FeedMessage.decode()
       |> Map.get(:entity)
       |> Enum.map(&Decoder.Gtfs.decode_struct/1)
-      |> Stream.chunk_every(t.chunk_size)
     end
   end
 

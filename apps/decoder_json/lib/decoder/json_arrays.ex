@@ -10,12 +10,8 @@ defmodule Decoder.JsonArrays do
   defimpl Decoder do
     def lines_or_bytes(_t), do: :line
 
-    def decode(t, stream) do
-      Stream.map(stream, &decode_chunk/1)
-    end
-
-    defp decode_chunk(chunk) do
-      Enum.flat_map(chunk, &Jason.decode!/1)
+    def decode(_t, messages) do
+      Enum.flat_map(messages, &Jason.decode!/1)
     end
   end
 end

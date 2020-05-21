@@ -10,13 +10,8 @@ defmodule Decoder.JsonLines do
   defimpl Decoder do
     def lines_or_bytes(_t), do: :line
 
-    def decode(_t, stream) do
-      stream
-      |> Stream.map(&decode_chunk/1)
-    end
-
-    defp decode_chunk(chunk) do
-      Enum.map(chunk, &Jason.decode!/1)
+    def decode(_t, messages) do
+      Enum.map(messages, &Jason.decode!/1)
     end
   end
 end

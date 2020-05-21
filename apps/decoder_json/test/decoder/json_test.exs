@@ -16,34 +16,28 @@ defmodule Decoder.JsonTest do
   end
 
   describe "Decoder" do
-    test "decodes stream to json" do
+    test "decodes json array message to json" do
       input = [
-        [~s([), ~s({\"name\": \"Kyle\", \"age\": 2},{\"name\": \"Joe\")],
-        [~s(, \"age\": 21},{\"name\": \"Bobby\",\"age\": 62}), ~s(])]
+        ~s([{\"name\": \"Kyle\", \"age\": 2},{\"name\": \"Joe\", \"age\": 21},{\"name\": \"Bobby\",\"age\": 62}])
       ]
 
       output = Decoder.decode(Decoder.Json.new!([]), input)
 
-      assert Enum.to_list(output) == [
-               [
-                 %{"name" => "Kyle", "age" => 2},
-                 %{"name" => "Joe", "age" => 21},
-                 %{"name" => "Bobby", "age" => 62}
-               ]
+      assert output == [
+               %{"name" => "Kyle", "age" => 2},
+               %{"name" => "Joe", "age" => 21},
+               %{"name" => "Bobby", "age" => 62}
              ]
     end
 
-    test "decodes a non-list stream to json" do
+    test "decodes a non-list message to json" do
       input = [
-        [
-          ~s({"name": "Jay",),
-          ~s("age": 42})
-        ]
+        ~s({"name": "Jay", "age": 42})
       ]
 
       output = Decoder.decode(Decoder.Json.new!([]), input)
 
-      assert Enum.to_list(output) == [[%{"name" => "Jay", "age" => 42}]]
+      assert output == [%{"name" => "Jay", "age" => 42}]
     end
   end
 end

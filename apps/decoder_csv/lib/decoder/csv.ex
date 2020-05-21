@@ -25,25 +25,29 @@ defmodule Decoder.Csv do
   defimpl Decoder, for: __MODULE__ do
     def lines_or_bytes(_t), do: :line
 
-    def decode(t, stream) do
-      stream
-      |> Stream.transform(%{skip: t.skip_first_line}, fn chunk, %{skip: skip} = acc ->
-        parsed_chunk = parse_chunk(chunk, t.headers, skip)
-        {[parsed_chunk], %{acc | skip: false}}
-      end)
+    def decode(t, messages) do
+      process_headers(messages, should_skip?(t))
+      |> Enum.map(&parse(&1, t.headers))
     end
 
-    defp parse_chunk(chunk, headers, skip) do
-      {buffer, _} =
-        Enum.reduce(chunk, {[], skip}, fn
-          message, {buffer, false} ->
-            {[parse(message, headers) | buffer], false}
+    defp process_headers(messages, false = _should_skip?), do: messages
 
-          _message, {buffer, true} ->
-            {buffer, false}
-        end)
+    defp process_headers(messages, true = _should_skip?) do
+      mark_skipped()
 
-      Enum.reverse(buffer)
+      Enum.drop(messages, 1)
+    end
+
+    defp should_skip?(t) do
+      t.skip_first_line and !already_skipped?()
+    end
+
+    defp already_skipped?() do
+      Process.get(__MODULE__, %{}) |> Map.get(:have_skipped_headers, false)
+    end
+
+    defp mark_skipped() do
+      Process.put(__MODULE__, %{have_skipped_headers: true})
     end
 
     defp parse(data, headers) do

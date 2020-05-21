@@ -14,14 +14,11 @@ defmodule Decoder.Json do
   defimpl Decoder do
     def lines_or_bytes(_t), do: :line
 
-    def decode(t, stream) do
-      stream
-      |> Enum.to_list()
-      |> List.flatten()
+    def decode(_t, messages) do
+      messages
       |> Enum.join()
       |> Jason.decode!()
       |> List.wrap()
-      |> Stream.chunk_every(t.chunk_size)
     end
   end
 end
