@@ -1,9 +1,19 @@
-defmodule Transform.AddTimestamp do
-  use Definition, schema: Transform.AddTimestamp.V1
+defmodule Transform.AddTimestampField do
+  @moduledoc """
+  `Transform.Step` impl to add a timestamp field to a dataset. Timestamps will be stored in ISO-8601 format.
+
+  ## Configuration
+  * `name` - Required. Field name or path to store the timestamp under. Ex: `"timestamp"` or `["timestamp"]`
+  """
+  use Definition, schema: Transform.AddTimestampField.V1
+
+  @type t :: %__MODULE__{
+    name: String.t() | [String.t()]
+  }
 
   defstruct [:name]
 
-  defimpl Transform.Step do
+  defimpl Transform.Step, for: __MODULE__ do
     import Dictionary.Access, only: [to_access_path: 1]
 
     def transform_dictionary(%{name: name}, dictionary) do
@@ -16,16 +26,17 @@ defmodule Transform.AddTimestamp do
     end
 
     def create_function(%{name: name}, _dictionary) do
-      Ok.ok(fn record -> Map.put(record, name, DateTime.utc_now() |> DateTime.to_iso8601()) end)
+      Ok.ok(fn record -> Map.put(record, name, DateTime.utc_now() |> DateTime.to_iso8601()) end |> Ok.ok())
     end
   end
 end
 
-defmodule Transform.AddTimestamp.V1 do
+defmodule Transform.AddTimestampField.V1 do
+  @moduledoc false
   use Definition.Schema
 
   def s do
-    schema(%Transform.AddTimestamp{
+    schema(%Transform.AddTimestampField{
       name: access_path()
     })
   end

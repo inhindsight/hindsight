@@ -1,4 +1,4 @@
-defmodule Transform.AddTimestampTest do
+defmodule Transform.AddTimestampFieldTest do
   use ExUnit.Case
   use Placebo
 
@@ -8,7 +8,7 @@ defmodule Transform.AddTimestampTest do
         Dictionary.Type.String.new!(name: "foo")
       ])
       field_name = "timestamp"
-      step = Transform.AddTimestamp.new!(name: field_name)
+      step = Transform.AddTimestampField.new!(name: field_name)
       path = Dictionary.Access.to_access_path(field_name)
       {:ok, output} = Transform.Step.transform_dictionary(step, input)
       assert %Dictionary.Type.Timestamp{} = get_in(output, path)
@@ -19,8 +19,8 @@ defmodule Transform.AddTimestampTest do
       now_string = DateTime.from_unix!(now) |> DateTime.to_iso8601()
       allow(DateTime.to_iso8601(any()), return: now_string)
       input = %{foo: "bar"}
-      transform = Transform.AddTimestamp.new!(name: "timestamp")
-      {:ok, transform_function} = Transform.Step.create_function(transform, input)
+      transform = Transform.AddTimestampField.new!(name: "timestamp")
+      {:ok, {:ok, transform_function}} = Transform.Step.create_function(transform, input)
       assert transform_function.(input) |> Map.get("timestamp") == now_string
     end
   end
