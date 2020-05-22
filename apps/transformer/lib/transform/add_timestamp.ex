@@ -3,7 +3,8 @@ defmodule Transform.AddTimestampField do
   `Transform.Step` impl to add a timestamp field to a dataset. Timestamps will be stored in ISO-8601 format.
 
   ## Configuration
-  * `name` - Required. Field name or path to store the timestamp under. Ex: `"timestamp"` or `["key1", "key2", "key3"]`
+  * `name` - Required. Key path to new timestamp field location in the data. You can specify a top level key (`"field_name"`)
+             or nest the field with a list of keys (`["top_level_key", "next_level_key", "field_name"]`).
   """
   use Definition, schema: Transform.AddTimestampField.V1
 
