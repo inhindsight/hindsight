@@ -347,14 +347,16 @@ defmodule PlatformRunner.EndToEndTest do
 
   describe "Pushed data" do
     test "pushed" do
-      data = [
-        ~s|{"name":"bob","ts":"2019-12-20 01:01:01"}|,
-        ~s|{"name":"steve","ts":"2019-12-29 02:02:02"}|,
-        ~s|{"name":"mike","ts":"2020-01-05 03:03:03"}|,
-        ~s|{"name":"doug","ts":"2020-01-16 04:04:04"}|,
-        ~s|{"name":"alex","ts":"2020-02-18 05:05:05"}|,
-        ~s|{"name":"dave","ts":"2020-02-03 06:06:06"}|
-      ]
+      data =
+        [
+          ~s|{"name":"bob","ts":"2019-12-20 01:01:01"}|,
+          ~s|{"name":"steve","ts":"2019-12-29 02:02:02"}|,
+          ~s|{"name":"mike","ts":"2020-01-05 03:03:03"}|,
+          ~s|{"name":"doug","ts":"2020-01-16 04:04:04"}|,
+          ~s|{"name":"alex","ts":"2020-02-18 05:05:05"}|,
+          ~s|{"name":"dave","ts":"2020-02-03 06:06:06"}|
+        ]
+        |> Enum.sort()
 
       accept =
         Accept.new!(
@@ -362,7 +364,13 @@ defmodule PlatformRunner.EndToEndTest do
           id: "e2e-json-push-1",
           dataset_id: "e2e-push-ds",
           subset_id: "e2e-push-ss",
-          destination: Kafka.Topic.new!(name: "e2e-push-receive", endpoints: @kafka),
+          destination:
+            Kafka.Topic.new!(
+              name: "e2e-push-receive",
+              endpoints: @kafka,
+              partitions: 2,
+              partitioner: :random
+            ),
           connection: Accept.Udp.new!(port: 6789)
         )
 
@@ -380,9 +388,14 @@ defmodule PlatformRunner.EndToEndTest do
 
       assert_async debug: true, sleep: 1_000 do
         assert Elsa.topic?(@kafka, "e2e-push-receive")
-        assert {:ok, _, messages} = Elsa.fetch(@kafka, "e2e-push-receive")
-        assert length(messages) == 6
-        retrieved_messages = Enum.map(messages, fn message -> message.value end)
+        assert {:ok, _, messages0} = Elsa.fetch(@kafka, "e2e-push-receive", partition: 0)
+        assert {:ok, _, messages1} = Elsa.fetch(@kafka, "e2e-push-receive", partition: 1)
+        total_messages = messages0 ++ messages1
+        assert length(total_messages) == 6
+
+        retrieved_messages =
+          Enum.map(total_messages, fn message -> message.value end) |> Enum.sort()
+
         assert retrieved_messages == data
       end
     end
@@ -397,7 +410,9 @@ defmodule PlatformRunner.EndToEndTest do
           source:
             Kafka.Topic.new!(
               endpoints: [localhost: 9092],
-              name: "e2e-push-receive"
+              name: "e2e-push-receive",
+              partitions: 2,
+              partitioner: :random
             ),
           decoder: Decoder.JsonLines.new!([]),
           destination:
@@ -426,7 +441,9 @@ defmodule PlatformRunner.EndToEndTest do
                  %{"name" => "doug", "ts" => "2020-01-16T04:04:04"},
                  %{"name" => "alex", "ts" => "2020-02-18T05:05:05"},
                  %{"name" => "dave", "ts" => "2020-02-03T06:06:06"}
-               ] == Enum.map(messages, fn %{value: val} -> Jason.decode!(val) end)
+               ]
+               |> Enum.sort() ==
+                 Enum.map(messages, fn %{value: val} -> Jason.decode!(val) end) |> Enum.sort()
       end
     end
 
