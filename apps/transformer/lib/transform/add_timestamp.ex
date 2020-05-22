@@ -18,17 +18,10 @@ defmodule Transform.AddTimestampField do
     import Dictionary.Access, only: [to_access_path: 1]
 
     def transform_dictionary(%{name: name, description: description}, dictionary) do
-      name_path = to_access_path(name)
-
-      put_in(
-        dictionary,
-        name_path,
-        Dictionary.Type.Timestamp.new!(%{
-          name: name,
-          description: description
-        })
-      )
-      |> Ok.ok()
+      with {:ok, timestamp} <- Dictionary.Type.Timestamp.new(name: name, description: description) do
+        put_in(dictionary, to_access_path(name), timestamp)
+        |> Ok.ok()
+      end
     end
 
     def create_function(%{name: name}, _dictionary) do
