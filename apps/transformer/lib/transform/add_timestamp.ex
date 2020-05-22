@@ -18,9 +18,18 @@ defmodule Transform.AddTimestampField do
   defimpl Transform.Step, for: __MODULE__ do
     import Dictionary.Access, only: [to_access_path: 1, to_access_path: 2]
 
+    def transform_dictionary(%{name: name, description: description}, dictionary) when is_list(name) do
+      last_name = List.last(name)
+      add_timestamp_field_to_dictionary(dictionary, name, last_name, description)
+    end
+
     def transform_dictionary(%{name: name, description: description}, dictionary) do
+      add_timestamp_field_to_dictionary(dictionary, name, name, description)
+    end
+
+    defp add_timestamp_field_to_dictionary(dictionary, path, name, description) do
       with {:ok, timestamp} <- Dictionary.Type.Timestamp.new(name: name, description: description) do
-        put_in(dictionary, to_access_path(name), timestamp)
+        put_in(dictionary, to_access_path(path), timestamp)
         |> Ok.ok()
       end
     end
