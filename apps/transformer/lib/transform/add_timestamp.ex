@@ -18,7 +18,8 @@ defmodule Transform.AddTimestampField do
   defimpl Transform.Step, for: __MODULE__ do
     import Dictionary.Access, only: [to_access_path: 1, to_access_path: 2]
 
-    def transform_dictionary(%{name: name, description: description}, dictionary) when is_list(name) do
+    def transform_dictionary(%{name: name, description: description}, dictionary)
+        when is_list(name) do
       last_name = List.last(name)
       add_timestamp_field_to_dictionary(dictionary, name, last_name, description)
     end
@@ -39,6 +40,7 @@ defmodule Transform.AddTimestampField do
 
       fn record ->
         now = NaiveDateTime.utc_now() |> NaiveDateTime.to_iso8601()
+
         put_in(record, to_path, now)
         |> Ok.ok()
       end
