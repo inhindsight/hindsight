@@ -31,7 +31,7 @@ defmodule Dictionary.Type.Timestamp do
   defstruct version: 1,
             name: nil,
             description: "",
-            format: "%FT%T.%fZ",
+            format: "%FT%T.%f",
             timezone: "Etc/UTC"
 
   defimpl Dictionary.Type.Normalizer, for: __MODULE__ do

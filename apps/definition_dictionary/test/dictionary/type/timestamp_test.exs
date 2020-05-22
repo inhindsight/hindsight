@@ -21,8 +21,8 @@ defmodule Dictionary.Type.TimestampTest do
              |> Jason.decode!()
   end
 
-  test "default format parses ISO8601 DateTime string" do
-    now = DateTime.utc_now() |> DateTime.to_iso8601()
+  test "default format parses ISO8601 NaiveDateTime string" do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.to_iso8601()
     timestamp = Dictionary.Type.Timestamp.new!(name: "foo")
 
     assert {:ok, _} = Timex.parse(now, timestamp.format, Timex.Parse.DateTime.Tokenizers.Strftime)
