@@ -8,25 +8,33 @@ defmodule Transform.AddTimestampField do
   use Definition, schema: Transform.AddTimestampField.V1
 
   @type t :: %__MODULE__{
-    name: String.t() | [String.t()]
-  }
+          name: String.t() | [String.t()]
+        }
 
-  defstruct [:name]
+  defstruct name: nil,
+            description: ""
 
   defimpl Transform.Step, for: __MODULE__ do
     import Dictionary.Access, only: [to_access_path: 1]
 
-    def transform_dictionary(%{name: name}, dictionary) do
+    def transform_dictionary(%{name: name, description: description}, dictionary) do
       name_path = to_access_path(name)
-      put_in(dictionary, name_path, Dictionary.Type.Timestamp.new!(%{
-        name: name,
-        format: "%FT%TZ"
-      }))
-      |>Ok.ok()
+
+      put_in(
+        dictionary,
+        name_path,
+        Dictionary.Type.Timestamp.new!(%{
+          name: name,
+          description: description
+        })
+      )
+      |> Ok.ok()
     end
 
     def create_function(%{name: name}, _dictionary) do
-      Ok.ok(fn record -> Map.put(record, name, DateTime.utc_now() |> DateTime.to_iso8601()) end |> Ok.ok())
+      Ok.ok(fn record ->
+        Map.put(record, name, DateTime.utc_now() |> DateTime.to_iso8601()) |> Ok.ok()
+      end)
     end
   end
 end
@@ -37,7 +45,8 @@ defmodule Transform.AddTimestampField.V1 do
 
   def s do
     schema(%Transform.AddTimestampField{
-      name: access_path()
+      name: access_path(),
+      description: string()
     })
   end
 end
