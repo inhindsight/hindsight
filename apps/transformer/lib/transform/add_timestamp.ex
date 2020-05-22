@@ -3,7 +3,7 @@ defmodule Transform.AddTimestampField do
   `Transform.Step` impl to add a timestamp field to a dataset. Timestamps will be stored in ISO-8601 format.
 
   ## Configuration
-  * `name` - Required. Field name or path to store the timestamp under. Ex: `"timestamp"` or `["timestamp"]`
+  * `name` - Required. Field name or path to store the timestamp under. Ex: `"timestamp"` or `["key1", "key2", "key3"]`
   """
   use Definition, schema: Transform.AddTimestampField.V1
 
@@ -32,9 +32,13 @@ defmodule Transform.AddTimestampField do
     end
 
     def create_function(%{name: name}, _dictionary) do
-      Ok.ok(fn record ->
-        Map.put(record, name, DateTime.utc_now() |> DateTime.to_iso8601()) |> Ok.ok()
-      end)
+      fn record ->
+        now = NaiveDateTime.utc_now() |> NaiveDateTime.to_iso8601()
+
+        Map.put(record, name, now)
+        |> Ok.ok()
+      end
+      |> Ok.ok()
     end
   end
 end

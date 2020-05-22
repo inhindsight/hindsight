@@ -19,9 +19,9 @@ defmodule Transform.AddTimestampFieldTest do
     end
 
     test "add value to record" do
-      now = 1_511_324_473
-      now_string = DateTime.from_unix!(now) |> DateTime.to_iso8601()
-      allow(DateTime.to_iso8601(any()), return: now_string)
+      {:ok, now} = NaiveDateTime.new(2020, 5, 22, 11, 12, 0)
+      now_string = NaiveDateTime.to_iso8601(now)
+      allow(NaiveDateTime.to_iso8601(any()), return: now_string)
       input = %{foo: "bar"}
       transform = Transform.AddTimestampField.new!(name: "timestamp")
       {:ok, transform_function} = Transform.Step.create_function(transform, input)
