@@ -71,7 +71,8 @@ defmodule Hindsight.MixProject do
     [
       "test.unit": "test --exclude integration --exclude performance --exclude e2e --color",
       "test.int": "test --only integration --color",
-      "test.e2e": "cmd --app platform_runner mix test.integration --only e2e --color",
+      "test.e2e":
+        "cmd --app platform_runner mix test.integration --only e2e --color --max-failures 1",
       "test.perf": "cmd --app platform_runner mix test.integration --only performance --color"
     ]
   end

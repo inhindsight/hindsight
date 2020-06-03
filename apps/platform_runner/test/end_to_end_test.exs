@@ -501,14 +501,12 @@ defmodule PlatformRunner.EndToEndTest do
 
       Process.sleep(5_000)
 
-      expected = [
-        %{"name" => "alex", "ts" => "2020-02-18 05:05:05.000"},
-        %{"name" => "dave", "ts" => "2020-02-03 06:06:06.000"}
-      ]
-
       assert_async sleep: 1_000, max_tries: 30, debug: true do
-        assert {:ok, ^expected} =
+        assert {:ok, actual} =
                  AcquireClient.data("/e2e-push-ds/e2e-push-ss?after=2020-01-23T00:00:00")
+
+        assert %{"name" => "alex", "ts" => "2020-02-18 05:05:05.000"} in actual
+        assert %{"name" => "dave", "ts" => "2020-02-03 06:06:06.000"} in actual
       end
     end
   end
