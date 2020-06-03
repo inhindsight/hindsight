@@ -1,6 +1,14 @@
 defmodule PlatformRunner.EndToEndTest do
   use ExUnit.Case
-  use Divo
+
+  use Divo,
+    post_docker_run: [
+      fn ->
+        Application.ensure_all_started(:postgrex)
+        CreateDB.init(["acquire", "broadcast", "gather", "orchestrate", "persist", "profile", "receive"])
+      end,
+      fn -> Process.sleep(60_000) end
+    ]
 
   import AssertAsync
   import Definition, only: [identifier: 1]

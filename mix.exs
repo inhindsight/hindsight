@@ -18,6 +18,11 @@ defmodule Hindsight.MixProject do
 
   defp releases do
     [
+      create_db: [
+        version: {:from_app, :hook_create_db},
+        include_executables_for: [:unix],
+        applications: [hook_create_db: :permanent]
+      ],
       orchestrate: [
         version: {:from_app, :service_orchestrate},
         include_executables_for: [:unix],

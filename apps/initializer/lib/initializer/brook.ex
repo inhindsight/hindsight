@@ -34,7 +34,10 @@ defmodule Initializer.Brook do
             database: "#{service_name}_view_state",
             hostname: secret().get("#{service_name}-db", "host", "localhost"),
             username: secret().get("#{service_name}-db", "username", "#{service_name}_user"),
-            password: secret().get("#{service_name}-db", "password", "#{service_name}123")
+            password: secret().get("#{service_name}-db", "password", "#{service_name}123"),
+            queue_target: 5_000,
+            queue_interval: 60_000,
+            show_sensitive_data_on_connection_error: true
           ]
         ]
       ]

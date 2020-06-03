@@ -27,8 +27,6 @@ services:
     logging:
       driver: none
     image: smartcitiesdata/postgres-testo:development
-    volumes:
-      - "./test/support/scripts/local_postgres_setup/:/docker-entrypoint-initdb.d"
     ports:
     - "5432:5432"
   metastore:

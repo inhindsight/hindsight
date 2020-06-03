@@ -36,7 +36,7 @@ defmodule DefinitionPresto.MixProject do
       {:hackney, "~> 1.15.2"},
       {:checkov, "~> 1.0", only: [:dev, :test]},
       {:credo, "~> 1.3", only: [:dev]},
-      {:divo, "~> 1.1", only: [:dev, :test]},
+      {:divo, "~> 1.2", only: [:dev, :test]},
       {:mox, "~> 0.5.1", only: [:test]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
       {:testing, in_umbrella: true, only: [:test]}

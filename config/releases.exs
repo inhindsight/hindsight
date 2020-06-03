@@ -63,6 +63,10 @@ config :initializer, Initializer.Brook,
   kafka_endpoints: kafka_endpoints,
   secret_store: System.get_env("SECRET_STORE", "environment")
 
+# HOOK_CREATE_DB
+config :hook_create_db, CreateDB,
+  secret_store: System.get_env("SECRET_STORE", "environment")
+
 # SERVICE_RECEIVE
 config :service_receive, Receive.SocketManager, app_name: "service_receive"
 config :service_receive, Receive.Event.Handler, endpoints: kafka_endpoints
