@@ -31,8 +31,11 @@ defmodule CreateDBTest do
     end
 
     test "creates idempotently" do
-      allow Postgrex.query(:postgrex, "create user abc_user with password 'abc123'", []), return: {:error, %Postgrex.Error{postgres: %{code: :duplicate_object}}}
-      allow Postgrex.query(:postgrex, "create user abc_view_state with owner abc_user", []), return: {:error, %Postgrex.Error{postgres: %{code: :duplicate_database}}}
+      allow Postgrex.query(:postgrex, "create user abc_user with password 'abc123'", []),
+        return: {:error, %Postgrex.Error{postgres: %{code: :duplicate_object}}}
+
+      allow Postgrex.query(:postgrex, "create user abc_view_state with owner abc_user", []),
+        return: {:error, %Postgrex.Error{postgres: %{code: :duplicate_database}}}
 
       assert CreateDB.init(["abc"]) == :ok
     end

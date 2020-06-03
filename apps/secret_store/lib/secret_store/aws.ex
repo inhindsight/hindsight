@@ -27,7 +27,7 @@ defmodule SecretStore.Aws do
   end
 
   defp assemble_name(name) do
-    [name, System.get_env("SECRET_ENV")]
+    [name, SecretStore.environment()]
     |> Enum.reject(&is_nil/1)
     |> Enum.reduce("", fn
       "", acc -> acc

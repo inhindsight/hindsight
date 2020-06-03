@@ -58,14 +58,15 @@ config :definition_presto, Presto.Table.DataStorage.S3,
   s3_bucket: System.get_env("BUCKET_NAME", "kdp-cloud-storage"),
   s3_path: "hive-s3"
 
+config :secret_store, SecretStore, secret_environment: System.get_env("SECRET_ENV", nil)
+
 config :initializer, Initializer.Brook,
   event_topic: System.get_env("EVENT_STREAM", "event-stream"),
   kafka_endpoints: kafka_endpoints,
   secret_store: System.get_env("SECRET_STORE", "environment")
 
 # HOOK_CREATE_DB
-config :hook_create_db, CreateDB,
-  secret_store: System.get_env("SECRET_STORE", "environment")
+config :hook_create_db, CreateDB, secret_store: System.get_env("SECRET_STORE", "environment")
 
 # SERVICE_RECEIVE
 config :service_receive, Receive.SocketManager, app_name: "service_receive"

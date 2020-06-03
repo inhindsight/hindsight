@@ -1,11 +1,10 @@
 defmodule SecretStore.AwsTest do
   use ExUnit.Case
   use Placebo
+  require Temp.Env
   alias SecretStore.Aws
 
   setup do
-    on_exit(fn -> System.put_env("SECRET_ENV", "") end)
-
     secret = ~s|{"foo":"bar"}|
     allow ExAws.SecretsManager.get_secret_value(any()), exec: fn x -> x end
     allow ExAws.request(any()), return: {:ok, %{"SecretString" => secret}}
@@ -16,12 +15,6 @@ defmodule SecretStore.AwsTest do
   describe "get/3" do
     test "assembles secret id from secret name and key" do
       expect ExAws.SecretsManager.get_secret_value("defined"), return: "defined"
-      Aws.get("defined", "keyname")
-    end
-
-    test "uses SECRET_ENV as part of secret id" do
-      expect ExAws.SecretsManager.get_secret_value("defined-abc"), return: :ok
-      System.put_env("SECRET_ENV", "abc")
       Aws.get("defined", "keyname")
     end
 
@@ -40,6 +33,15 @@ defmodule SecretStore.AwsTest do
 
     test "returns key value when key specified" do
       assert Aws.get("defined", "foo", nil) == "bar"
+    end
+  end
+
+  describe "get/3 in custom secret environment" do
+    Temp.Env.modify([%{app: :secret_store, key: SecretStore, set: [secret_environment: "abc"]}])
+
+    test "uses configured secret_environment value as part of secret id" do
+      expect ExAws.SecretsManager.get_secret_value("defined-abc"), return: :ok
+      Aws.get("defined", "keyname")
     end
   end
 end

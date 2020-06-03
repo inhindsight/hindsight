@@ -31,9 +31,11 @@ defmodule SecretStore.MixProject do
       {:jason, "~> 1.1"},
       {:ok, in_umbrella: true},
       {:poison, "~> 4.0"},
+      {:properties, in_umbrella: true},
       {:credo, "~> 1.3", only: [:dev]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:placebo, "~> 2.0.0-rc2", only: [:dev, :test]}
+      {:placebo, "~> 2.0.0-rc2", only: [:dev, :test]},
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 end

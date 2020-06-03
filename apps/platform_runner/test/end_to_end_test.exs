@@ -5,9 +5,17 @@ defmodule PlatformRunner.EndToEndTest do
     post_docker_run: [
       fn ->
         Application.ensure_all_started(:postgrex)
-        CreateDB.init(["acquire", "broadcast", "gather", "orchestrate", "persist", "profile", "receive"])
-      end,
-      fn -> Process.sleep(60_000) end
+
+        CreateDB.init([
+          "acquire",
+          "broadcast",
+          "gather",
+          "orchestrate",
+          "persist",
+          "profile",
+          "receive"
+        ])
+      end
     ]
 
   import AssertAsync

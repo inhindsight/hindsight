@@ -14,7 +14,7 @@ defmodule SecretStore.Environment do
   end
 
   defp assemble_name(name, key) do
-    [name, key, System.get_env("SECRET_ENV")]
+    [name, key, SecretStore.environment()]
     |> Enum.reject(&is_nil/1)
     |> Enum.reduce("", fn
       "", acc -> acc
