@@ -270,3 +270,29 @@ config :service_profile, Profile.Application,
   ]
 
 config :service_profile, Profile.Feed.Producer, endpoints: kafka_endpoints
+
+# SERVICE AGGREGATE
+config :service_aggregate, Aggregate.Application,
+  init?: true,
+  brook: [
+    driver: [
+      module: Brook.Driver.Kafka,
+      init_arg: [
+        endpoints: kafka_endpoints,
+        topic: "event-stream",
+        group: "aggregate-event-stream",
+        consumer_config: [
+          begin_offset: :earliest,
+          offset_reset_policy: :reset_to_earliest
+        ]
+      ]
+    ],
+    handlers: [Aggregate.Event.Handler],
+    storage: [
+      module: Brook.Storage.Redis,
+      init_arg: [redix_args: redix_args, namespace: "service:aggregate:view"]
+    ],
+    dispatcher: Brook.Dispatcher.Noop
+  ]
+
+config :service_aggregate, Aggregate.Feed.Producer, endpoints: kafka_endpoints

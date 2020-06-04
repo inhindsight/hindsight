@@ -33,6 +33,7 @@ defmodule DefinitionEvents.MixProject do
       {:definition_extract, in_umbrella: true},
       {:definition_load, in_umbrella: true},
       {:definition_profile_update, in_umbrella: true},
+      {:definition_aggregate_update, in_umbrella: true},
       {:definition_schedule, in_umbrella: true},
       {:extractor, in_umbrella: true},
       {:credo, "~> 1.3", only: [:dev]}
