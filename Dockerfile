@@ -13,7 +13,8 @@ RUN mix release orchestrate \
   && mix release profile \
   && mix release broadcast \
   && mix release persist \
-  && mix release acquire
+  && mix release acquire \
+  && mix release create_db
 
 FROM bitwalker/alpine-erlang:22.2.3
 ENV PORT=80
