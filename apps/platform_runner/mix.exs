@@ -37,7 +37,7 @@ defmodule PlatformRunner.MixProject do
       {:service_persist, in_umbrella: true},
       {:service_profile, in_umbrella: true},
       {:service_receive, in_umbrella: true},
-      {:testing, in_umbrella: true, only: [:test, :integration]},
+      {:testing, in_umbrella: true, only: [:dev, :test, :integration]},
       {:websockex, "~> 0.4.0"}
     ]
   end
