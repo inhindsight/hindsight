@@ -31,7 +31,6 @@ defmodule Aggregate.Application do
   end
 
   defp brook() do
-    IO.puts("brook method called")
     case get_config_value(:brook, required: true) do
       nil -> []
       config -> {Brook, Keyword.put(config, :instance, instance())}
