@@ -499,7 +499,7 @@ defmodule PlatformRunner.EndToEndTest do
 
   describe "metrics" do
     test "exposes metrics for all services" do
-      for port <- [9569, 9570, 9572, 9573, 9574, 9576] do
+      for port <- [9569, 9570, 9572, 9573, 9574, 9575, 9576, 9675] do
         {:ok, %Tesla.Env{body: body}} = Tesla.get("http://localhost:#{port}/metrics")
         assert String.contains?(body, "vm_memory_total")
       end
