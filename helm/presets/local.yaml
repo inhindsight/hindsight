@@ -12,6 +12,9 @@ broadcast:
 acquire:
   service:
     type: ClusterIP
+aggregate:
+  service:
+    type: ClusterIP
 ingress:
   host: hindsight.local
   tls: []
