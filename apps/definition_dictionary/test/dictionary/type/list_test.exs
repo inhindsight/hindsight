@@ -7,16 +7,29 @@ defmodule Dictionary.Type.ListTest do
       "version" => 1,
       "name" => "list",
       "description" => "description",
-      "type" => "list",
+      "__data_type__" => "dictionary_list",
       "item_type" => %{
         "version" => 1,
         "name" => "in_list",
         "description" => "",
-        "type" => "map",
-        "dictionary" => [
-          %{"version" => 1, "name" => "name", "description" => "", "type" => "string"},
-          %{"version" => 1, "name" => "age", "description" => "", "type" => "integer"}
-        ]
+        "__data_type__" => "dictionary_map",
+        "dictionary" => %{
+          "__data_type__" => "dictionary",
+          "fields" => [
+            %{
+              "version" => 1,
+              "name" => "name",
+              "description" => "",
+              "__data_type__" => "dictionary_string"
+            },
+            %{
+              "version" => 1,
+              "name" => "age",
+              "description" => "",
+              "__data_type__" => "dictionary_integer"
+            }
+          ]
+        }
       }
     }
 
@@ -34,7 +47,7 @@ defmodule Dictionary.Type.ListTest do
           )
       )
 
-    assert expected == Jason.encode!(list) |> Jason.decode!()
+    assert expected == JsonSerde.serialize!(list) |> Jason.decode!()
   end
 
   test "can be decoded back into struct" do
@@ -52,28 +65,9 @@ defmodule Dictionary.Type.ListTest do
           )
       )
 
-    json = Jason.encode!(list)
+    serialized = JsonSerde.serialize!(list)
 
-    assert {:ok, list} == Jason.decode!(json) |> Dictionary.Type.List.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
-    list =
-      Dictionary.Type.List.new!(
-        name: "name",
-        description: "description",
-        item_type:
-          Dictionary.Type.Map.new!(
-            name: "in_list",
-            dictionary: [
-              Dictionary.Type.String.new!(name: "name"),
-              Dictionary.Type.Integer.new!(name: "age")
-            ]
-          )
-      )
-
-    assert {:ok, list} ==
-             Brook.Serializer.serialize(list) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert list == JsonSerde.deserialize!(serialized)
   end
 
   data_test "normalizes data in maps according to field rules" do

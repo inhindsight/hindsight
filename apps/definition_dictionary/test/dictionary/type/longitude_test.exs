@@ -7,26 +7,19 @@ defmodule Dictionary.Type.LongitudeTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "type" => "longitude"
+      "__data_type__" => "dictionary_longitude"
     }
 
     assert expected ==
-             Jason.encode!(%Dictionary.Type.Longitude{name: "name", description: "description"})
+             JsonSerde.serialize!(%Dictionary.Type.Longitude{name: "name", description: "description"})
              |> Jason.decode!()
   end
 
   test "can be decoded back into struct" do
     longitude = Dictionary.Type.Longitude.new!(name: "name", description: "description")
-    json = Jason.encode!(longitude)
+    serialized = JsonSerde.serialize!(longitude)
 
-    assert {:ok, longitude} == Jason.decode!(json) |> Dictionary.Type.Longitude.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
-    longitude = Dictionary.Type.Longitude.new!(name: "name", description: "description")
-
-    assert {:ok, string} =
-             Brook.Serializer.serialize(longitude) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert longitude == JsonSerde.deserialize!(serialized)
   end
 
   data_test "validates longitudes - #{inspect(value)} --> #{inspect(result)}" do

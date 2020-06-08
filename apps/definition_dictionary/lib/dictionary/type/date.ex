@@ -14,7 +14,7 @@ defmodule Dictionary.Type.Date do
   * `format` - Format to parse string into `Date`.
   """
   use Definition, schema: Dictionary.Type.Date.V1
-  use Dictionary.JsonEncoder
+  use JsonSerde, alias: "dictionary_date"
 
   @type t :: %__MODULE__{
           version: integer,

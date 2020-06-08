@@ -8,11 +8,11 @@ defmodule Dictionary.Type.DateTest do
       "name" => "name",
       "description" => "description",
       "format" => "%Y-%0m-%0d",
-      "type" => "date"
+      "__data_type__" => "dictionary_date"
     }
 
     assert expected ==
-             Jason.encode!(%Dictionary.Type.Date{
+             JsonSerde.serialize!(%Dictionary.Type.Date{
                name: "name",
                description: "description",
                format: "%Y-%0m-%0d"
@@ -21,17 +21,19 @@ defmodule Dictionary.Type.DateTest do
   end
 
   test "can be decoded back into struct" do
-    string = Dictionary.Type.Date.new!(name: "name", description: "description", format: "%Y")
-    json = Jason.encode!(string)
+    input = %{
+      "version" => 1,
+      "name" => "name",
+      "description" => "description",
+      "format" => "%Y-%0m-%0d",
+      "__data_type__" => "dictionary_date"
+    }
 
-    assert {:ok, string} == Jason.decode!(json) |> Dictionary.Type.Date.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
-    string = Dictionary.Type.Date.new!(name: "name", description: "description", format: "%Y")
-
-    assert {:ok, string} =
-             Brook.Serializer.serialize(string) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert %Dictionary.Type.Date{
+             name: "name",
+             description: "description",
+             format: "%Y-%0m-%0d"
+           } == Jason.encode!(input) |> JsonSerde.deserialize!()
   end
 
   data_test "validates dates - #{inspect(value)} --> #{inspect(result)}" do

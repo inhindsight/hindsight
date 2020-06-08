@@ -7,26 +7,24 @@ defmodule Dictionary.Type.FloatTest do
       "version" => 1.0,
       "name" => "name",
       "description" => "precise number",
-      "type" => "float"
+      "__data_type__" => "dictionary_float"
     }
 
     assert expected ==
-             Jason.encode!(%Dictionary.Type.Float{name: "name", description: "precise number"})
+             JsonSerde.serialize!(%Dictionary.Type.Float{name: "name", description: "precise number"})
              |> Jason.decode!()
   end
 
   test "can be decoded back to a struct" do
-    float = Dictionary.Type.Float.new!(name: "name", description: "precise number")
-    json = Jason.encode!(float)
+    input = %{
+      "version" => 1.0,
+      "name" => "name",
+      "description" => "precise number",
+      "__data_type__" => "dictionary_float"
+    }
 
-    assert {:ok, float} == Jason.decode!(json) |> Dictionary.Type.Float.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
-    float = Dictionary.Type.Float.new!(name: "name", description: "precise number")
-
-    assert {:ok, float} =
-             Brook.Serializer.serialize(float) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert %Dictionary.Type.Float{name: "name", description: "precise number"} ==
+      Jason.encode!(input) |> JsonSerde.deserialize!()
   end
 
   data_test "validates floats -- #{inspect(value)} --> #{inspect(result)}" do

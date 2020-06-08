@@ -6,7 +6,7 @@ defmodule Dictionary.Type.Float do
   strings are converted to `nil`.
   """
   use Definition, schema: Dictionary.Type.Float.V1
-  use Dictionary.JsonEncoder
+  use JsonSerde, alias: "dictionary_float"
 
   defstruct version: 1,
             name: nil,

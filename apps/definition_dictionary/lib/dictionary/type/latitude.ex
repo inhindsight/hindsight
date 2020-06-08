@@ -6,7 +6,7 @@ defmodule Dictionary.Type.Latitude do
   is converted to `nil`.
   """
   use Definition, schema: Dictionary.Type.Latitude.V1
-  use Dictionary.JsonEncoder
+  use JsonSerde, alias: "dictionary_latitude"
 
   @type t :: %__MODULE__{
           version: integer,

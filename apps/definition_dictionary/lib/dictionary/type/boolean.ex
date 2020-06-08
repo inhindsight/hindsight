@@ -6,7 +6,7 @@ defmodule Dictionary.Type.Boolean do
   to proper boolean types. Empty strings will be converted to `nil`.
   """
   use Definition, schema: Dictionary.Type.Boolean.V1
-  use Dictionary.JsonEncoder
+  use JsonSerde, alias: "dictionary_boolean"
 
   @type t :: %__MODULE__{
           version: integer,

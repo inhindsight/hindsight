@@ -7,7 +7,7 @@ defmodule Dictionary.Type.Map do
   * `dictionary` - `Dictionary.t()` impl for the key/value pairs in this map.
   """
   use Definition, schema: Dictionary.Type.Map.V1
-  use Dictionary.JsonEncoder
+  use JsonSerde, alias: "dictionary_map"
   @behaviour Access
 
   @type t :: %__MODULE__{
@@ -24,11 +24,10 @@ defmodule Dictionary.Type.Map do
 
   @impl Definition
   def on_new(%{dictionary: list} = map) when is_list(list) do
-    with {:ok, decoded_dictionary} <- Dictionary.decode(list),
-         dictionary <- Dictionary.from_list(decoded_dictionary) do
-      Map.put(map, :dictionary, dictionary)
-      |> Ok.ok()
-    end
+    dictionary = Dictionary.from_list(list)
+
+    Map.put(map, :dictionary, dictionary)
+    |> Ok.ok()
   end
 
   def on_new(map) do

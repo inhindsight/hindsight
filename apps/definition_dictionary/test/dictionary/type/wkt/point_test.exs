@@ -7,26 +7,19 @@ defmodule Dictionary.Type.Wkt.PointTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "type" => "wkt_point"
+      "__data_type__" => "dictionary_wkt_point"
     }
 
     assert expected ==
-             Jason.encode!(%Dictionary.Type.Wkt.Point{name: "name", description: "description"})
+             JsonSerde.serialize!(%Dictionary.Type.Wkt.Point{name: "name", description: "description"})
              |> Jason.decode!()
   end
 
   test "can be decoded back into struct" do
-    string = Dictionary.Type.Wkt.Point.new!(name: "name", description: "description")
-    json = Jason.encode!(string)
+    point = Dictionary.Type.Wkt.Point.new!(name: "name", description: "description")
+    serialized = JsonSerde.serialize!(point)
 
-    assert {:ok, string} == Jason.decode!(json) |> Dictionary.Type.Wkt.Point.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
-    string = Dictionary.Type.Wkt.Point.new!(name: "name", description: "description")
-
-    assert {:ok, string} =
-             Brook.Serializer.serialize(string) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert point == JsonSerde.deserialize!(serialized)
   end
 
   data_test "validates strings - #{inspect(value)} --> #{inspect(result)}" do

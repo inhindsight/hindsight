@@ -7,11 +7,14 @@ defmodule Dictionary.Type.MapTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "type" => "map",
-      "dictionary" => [
-        %{"version" => 1, "name" => "name", "description" => "", "type" => "string"},
-        %{"version" => 1, "name" => "age", "description" => "", "type" => "integer"}
-      ]
+      "__data_type__" => "dictionary_map",
+      "dictionary" => %{
+        "__data_type__" => "dictionary",
+        "fields" => [
+          %{"version" => 1, "name" => "name", "description" => "", "__data_type__" => "dictionary_string"},
+          %{"version" => 1, "name" => "age", "description" => "", "__data_type__" => "dictionary_integer"}
+        ]
+      }
     }
 
     map =
@@ -25,7 +28,7 @@ defmodule Dictionary.Type.MapTest do
           ])
       )
 
-    assert expected == Jason.encode!(map) |> Jason.decode!()
+    assert expected == JsonSerde.serialize!(map) |> Jason.decode!()
   end
 
   test "can be decoded back into struct" do
@@ -40,25 +43,9 @@ defmodule Dictionary.Type.MapTest do
           ])
       )
 
-    json = Jason.encode!(map)
+    serialized = JsonSerde.serialize!(map)
 
-    assert {:ok, map} == Jason.decode!(json) |> Dictionary.Type.Map.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
-    map =
-      Dictionary.Type.Map.new!(
-        name: "name",
-        description: "description",
-        dictionary:
-          Dictionary.from_list([
-            Dictionary.Type.String.new!(name: "name"),
-            Dictionary.Type.Integer.new!(name: "age")
-          ])
-      )
-
-    assert {:ok, map} ==
-             Brook.Serializer.serialize(map) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert map == JsonSerde.deserialize!(serialized)
   end
 
   data_test "normalizes all fields inside map" do
