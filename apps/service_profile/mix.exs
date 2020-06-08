@@ -42,7 +42,7 @@ defmodule Profile.MixProject do
       {:checkov, "~> 1.0", only: [:dev, :test]},
       {:credo, "~> 1.3", only: [:dev]},
       {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]},
-      {:testing, in_umbrella: true, only: [:dev, :test]}
+      {:testing, in_umbrella: true, only: [:test]}
     ]
   end
 
