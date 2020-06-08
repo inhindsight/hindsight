@@ -8,9 +8,24 @@ defmodule Kafka.TopicTest do
         endpoints: [localhost: 9092]
       )
 
-    {:ok, serialized} = Brook.Serializer.serialize(source)
-    {:ok, deserialized} = Brook.Deserializer.deserialize(serialized)
+    expected = %{
+      "__type__" => "kafka_topic",
+      "endpoints" => [
+        %{
+          "__type__" => "tuple",
+          "values" => [%{"__type__" => "atom", "value" => "localhost"}, 9092]
+        }
+      ],
+      "key_path" => [],
+      "name" => "topic",
+      "partitioner" => %{"__type__" => "atom", "value" => "default"},
+      "partitions" => 1,
+      "version" => 1
+    }
 
-    assert source == deserialized
+    serialized = JsonSerde.serialize!(source)
+
+    assert expected == Jason.decode!(serialized)
+    assert source == JsonSerde.deserialize!(serialized)
   end
 end

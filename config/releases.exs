@@ -22,6 +22,8 @@ config :logger,
     metadata: [:request_id]
   ]
 
+config :json_serde, :type_key, "__type__"
+
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
