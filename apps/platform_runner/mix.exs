@@ -36,7 +36,8 @@ defmodule PlatformRunner.MixProject do
       {:bypass, "~> 1.0", only: [:test, :integration]},
       {:benchee, "~> 1.0", only: [:test, :integration]},
       {:credo, "~> 1.3", only: [:dev]},
-      {:testing, in_umbrella: true, only: [:test, :integration]}
+      {:testing, in_umbrella: true, only: [:test, :integration]},
+      {:faker, "~> 0.13.0", only: [:test, :integration]}
     ]
   end
 

@@ -38,9 +38,9 @@ defmodule Kafka.Topic.Source do
     {:ok, elsa_pid} =
       Elsa.Supervisor.start_link(
         endpoints: state.topic.endpoints,
-        connection: :"connection_#{state.context.app_name}_#{state.topic.name}",
+        connection: :"#{__MODULE__}_#{inspect(self())}",
         group_consumer: [
-          group: "group-#{state.context.app_name}-#{state.topic.name}",
+          group: state.topic.group || "group-#{state.context.app_name}-#{state.topic.name}",
           topics: [state.topic.name],
           handler: Kafka.Topic.Source.Handler,
           handler_init_args: state.context,
@@ -48,7 +48,8 @@ defmodule Kafka.Topic.Source do
             begin_offset: :earliest,
             offset_reset_policy: offset_reset_policy || :reset_to_earliest,
             prefetch_count: 0,
-            prefetch_bytes: 2_097_152
+            prefetch_bytes: 2_097_152,
+            max_bytes: 800_000
           ]
         ]
       )

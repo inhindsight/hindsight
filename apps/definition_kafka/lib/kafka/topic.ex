@@ -20,7 +20,8 @@ defmodule Kafka.Topic do
           name: String.t(),
           partitions: pos_integer,
           partitioner: :default | :md5 | :random,
-          key_path: list
+          key_path: list,
+          group: String.t()
         }
 
   defstruct version: 1,
@@ -28,7 +29,8 @@ defmodule Kafka.Topic do
             name: nil,
             partitions: 1,
             partitioner: :default,
-            key_path: []
+            key_path: [],
+            group: nil
 
   def on_new(struct) do
     endpoints =

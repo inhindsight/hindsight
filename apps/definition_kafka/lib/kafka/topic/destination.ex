@@ -137,6 +137,8 @@ defmodule Kafka.Topic.Destination do
   end
 
   defp do_write(topic, server, messages) do
+    size = Enum.reduce(messages, 0, fn {_key, msg}, sum -> sum + byte_size(msg) end)
+    Logger.error("Sending to elsa #{length(messages)} - size #{size}")
     connection(topic, server)
     |> Ok.map(&Elsa.produce(&1, topic.name, messages, partitioner: topic.partitioner))
   end

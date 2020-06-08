@@ -45,7 +45,9 @@ defmodule Gather.MixProject do
       {:credo, "~> 1.3", only: [:dev]},
       {:mox, "~> 0.5.1", only: [:test]},
       {:placebo, "~> 2.0.0-rc2", only: [:dev, :test]},
-      {:testing, in_umbrella: true, only: [:test]}
+      {:testing, in_umbrella: true, only: [:test, :integration]},
+      {:divo, "~> 1.1", only: [:dev, :test, :integration]},
+      {:benchee, "~> 1.0", only: [:test, :integration]}
     ]
   end
 
