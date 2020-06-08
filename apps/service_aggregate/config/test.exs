@@ -1,19 +1,19 @@
 use Mix.Config
 
-config :service_profile,
+config :service_aggregate,
   divo: [
     {DivoKafka, [create_topics: "topic1:1:1"]}
   ],
   divo_wait: [dwell: 700, max_tries: 50]
 
-config :service_profile, Profile.Application,
+config :service_aggregate, Aggregate.Application,
   init?: false,
   brook: [
     driver: [
       module: Brook.Driver.Test,
       init_arg: []
     ],
-    handlers: [Profile.Event.Handler],
+    handlers: [Aggregate.Event.Handler],
     storage: [
       module: Brook.Storage.Ets,
       init_arg: []
@@ -21,4 +21,4 @@ config :service_profile, Profile.Application,
     dispatcher: Brook.Dispatcher.Noop
   ]
 
-config :service_profile, Profile.MetricsReporter, port: 9575
+config :service_aggregate, Aggregate.MetricsReporter, port: 9577

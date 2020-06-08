@@ -24,19 +24,21 @@ defmodule PlatformRunner.MixProject do
 
   defp deps do
     [
-      {:cowlib, "~> 2.8.0", override: true},
-      {:service_receive, in_umbrella: true},
-      {:service_gather, in_umbrella: true},
-      {:service_broadcast, in_umbrella: true},
-      {:service_persist, in_umbrella: true},
-      {:service_acquire, in_umbrella: true},
-      {:service_orchestrate, in_umbrella: true},
-      {:divo, "~> 1.1"},
-      {:websockex, "~> 0.4.0"},
-      {:bypass, "~> 1.0", only: [:test, :integration]},
       {:benchee, "~> 1.0", only: [:test, :integration]},
+      {:bypass, "~> 1.0", only: [:test, :integration]},
+      {:cowlib, "~> 2.8.0", override: true},
       {:credo, "~> 1.3", only: [:dev]},
-      {:testing, in_umbrella: true, only: [:test, :integration]}
+      {:divo, "~> 1.1"},
+      {:service_acquire, in_umbrella: true},
+      {:service_aggregate, in_umbrella: true},
+      {:service_broadcast, in_umbrella: true},
+      {:service_gather, in_umbrella: true},
+      {:service_orchestrate, in_umbrella: true},
+      {:service_persist, in_umbrella: true},
+      {:service_profile, in_umbrella: true},
+      {:service_receive, in_umbrella: true},
+      {:testing, in_umbrella: true, only: [:test, :integration]},
+      {:websockex, "~> 0.4.0"}
     ]
   end
 

@@ -1,9 +1,9 @@
-defmodule Profile.MixProject do
+defmodule Aggregate.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :service_profile,
+      app: :service_aggregate,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -19,7 +19,7 @@ defmodule Profile.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Profile.Application, []}
+      mod: {Aggregate.Application, []}
     ]
   end
 
