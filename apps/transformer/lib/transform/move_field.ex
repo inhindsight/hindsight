@@ -11,6 +11,7 @@ defmodule Transform.MoveField do
   or path. Ex: `"abc"` or `["abc", "xyz"]`
   """
   use Definition, schema: Transform.MoveField.V1
+  use JsonSerde, alias: "transform_move_field"
 
   @type t :: %__MODULE__{
           from: String.t() | [String.t()],

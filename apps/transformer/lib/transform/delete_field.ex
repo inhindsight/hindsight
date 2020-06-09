@@ -7,6 +7,7 @@ defmodule Transform.DeleteField do
   * `name` - Required. Field name or path. Ex: `"foo"` or `["foo", "bar"]`
   """
   use Definition, schema: Transform.DeleteField.V1
+  use JsonSerde, alias: "transform_delete_field"
 
   @type t :: %__MODULE__{
           name: String.t() | [String.t()]
