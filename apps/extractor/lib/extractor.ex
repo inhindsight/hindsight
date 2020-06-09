@@ -8,6 +8,7 @@ defmodule Extractor do
   * `steps` - List of `Extract.Step.t()` impls composing the extraction pipeline.
   """
   use Definition, schema: Extractor.V1
+  use JsonSerde, alias: "extractor"
 
   @type t :: %__MODULE__{
           steps: list(Extract.Step.t())
