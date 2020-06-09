@@ -7,7 +7,7 @@ defmodule Dictionary.Type.BooleanTest do
       "version" => 1,
       "name" => "name",
       "description" => "do or do not",
-      "__data_type__" => "dictionary_boolean"
+      "__type__" => "dictionary_boolean"
     }
 
     assert expected ==
@@ -20,7 +20,7 @@ defmodule Dictionary.Type.BooleanTest do
       "version" => 1,
       "name" => "name",
       "description" => "do or do not",
-      "__data_type__" => "dictionary_boolean"
+      "__type__" => "dictionary_boolean"
     }
 
     assert Dictionary.Type.Boolean.new!(name: "name", description: "do or do not") ==

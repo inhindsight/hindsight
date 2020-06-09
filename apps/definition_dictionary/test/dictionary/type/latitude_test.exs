@@ -7,7 +7,7 @@ defmodule Dictionary.Type.LatitudeTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "__data_type__" => "dictionary_latitude"
+      "__type__" => "dictionary_latitude"
     }
 
     assert expected ==
@@ -20,7 +20,7 @@ defmodule Dictionary.Type.LatitudeTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "__data_type__" => "dictionary_latitude"
+      "__type__" => "dictionary_latitude"
     }
 
     assert %Dictionary.Type.Latitude{name: "name", description: "description"} ==

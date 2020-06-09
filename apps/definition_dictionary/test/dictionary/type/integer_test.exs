@@ -7,7 +7,7 @@ defmodule Dictionary.Type.IntegerTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "__data_type__" => "dictionary_integer"
+      "__type__" => "dictionary_integer"
     }
 
     assert expected ==
@@ -20,7 +20,7 @@ defmodule Dictionary.Type.IntegerTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "__data_type__" => "dictionary_integer"
+      "__type__" => "dictionary_integer"
     }
 
     assert Dictionary.Type.Integer.new!(name: "name", description: "description") ==

@@ -7,12 +7,12 @@ defmodule Dictionary.Type.MapTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "__data_type__" => "dictionary_map",
+      "__type__" => "dictionary_map",
       "dictionary" => %{
-        "__data_type__" => "dictionary",
+        "__type__" => "dictionary",
         "fields" => [
-          %{"version" => 1, "name" => "name", "description" => "", "__data_type__" => "dictionary_string"},
-          %{"version" => 1, "name" => "age", "description" => "", "__data_type__" => "dictionary_integer"}
+          %{"version" => 1, "name" => "name", "description" => "", "__type__" => "dictionary_string"},
+          %{"version" => 1, "name" => "age", "description" => "", "__type__" => "dictionary_integer"}
         ]
       }
     }

@@ -7,7 +7,7 @@ defmodule Dictionary.Type.LongitudeTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "__data_type__" => "dictionary_longitude"
+      "__type__" => "dictionary_longitude"
     }
 
     assert expected ==

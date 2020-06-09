@@ -8,7 +8,7 @@ defmodule Dictionary.Type.TimestampTest do
       "name" => "name",
       "description" => "description",
       "format" => "%Y-%0m-%0d %0H:%0M:%0S",
-      "__data_type__" => "dictionary_timestamp",
+      "__type__" => "dictionary_timestamp",
       "timezone" => "Etc/UTC"
     }
 

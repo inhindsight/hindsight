@@ -247,10 +247,10 @@ defmodule DictionaryTest do
     ])
 
     expected = %{
-      "__data_type__" => "dictionary",
+      "__type__" => "dictionary",
       "fields" => [
-        %{"__data_type__" => "dictionary_string", "name" => "name", "description" => "", "version" => 1},
-        %{"__data_type__" => "dictionary_integer", "name" => "age", "description" => "", "version" => 1}
+        %{"__type__" => "dictionary_string", "name" => "name", "description" => "", "version" => 1},
+        %{"__type__" => "dictionary_integer", "name" => "age", "description" => "", "version" => 1}
       ]
     }
 

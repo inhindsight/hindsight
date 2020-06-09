@@ -14,7 +14,7 @@ defmodule Dictionary.Type.StringTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "__data_type__" => "dictionary_string"
+      "__type__" => "dictionary_string"
     }
 
     assert expected ==
@@ -27,7 +27,7 @@ defmodule Dictionary.Type.StringTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "__data_type__" => "dictionary_string"
+      "__type__" => "dictionary_string"
     }
 
     field = input |> Jason.encode!() |> JsonSerde.deserialize!()

@@ -7,7 +7,7 @@ defmodule Dictionary.Type.FloatTest do
       "version" => 1.0,
       "name" => "name",
       "description" => "precise number",
-      "__data_type__" => "dictionary_float"
+      "__type__" => "dictionary_float"
     }
 
     assert expected ==
@@ -20,7 +20,7 @@ defmodule Dictionary.Type.FloatTest do
       "version" => 1.0,
       "name" => "name",
       "description" => "precise number",
-      "__data_type__" => "dictionary_float"
+      "__type__" => "dictionary_float"
     }
 
     assert %Dictionary.Type.Float{name: "name", description: "precise number"} ==

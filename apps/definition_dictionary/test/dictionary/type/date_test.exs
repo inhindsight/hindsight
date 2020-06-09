@@ -8,7 +8,7 @@ defmodule Dictionary.Type.DateTest do
       "name" => "name",
       "description" => "description",
       "format" => "%Y-%0m-%0d",
-      "__data_type__" => "dictionary_date"
+      "__type__" => "dictionary_date"
     }
 
     assert expected ==
@@ -26,7 +26,7 @@ defmodule Dictionary.Type.DateTest do
       "name" => "name",
       "description" => "description",
       "format" => "%Y-%0m-%0d",
-      "__data_type__" => "dictionary_date"
+      "__type__" => "dictionary_date"
     }
 
     assert %Dictionary.Type.Date{

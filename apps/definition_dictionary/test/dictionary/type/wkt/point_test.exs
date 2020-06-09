@@ -7,7 +7,7 @@ defmodule Dictionary.Type.Wkt.PointTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "__data_type__" => "dictionary_wkt_point"
+      "__type__" => "dictionary_wkt_point"
     }
 
     assert expected ==

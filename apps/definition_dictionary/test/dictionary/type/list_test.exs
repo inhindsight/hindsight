@@ -7,26 +7,26 @@ defmodule Dictionary.Type.ListTest do
       "version" => 1,
       "name" => "list",
       "description" => "description",
-      "__data_type__" => "dictionary_list",
+      "__type__" => "dictionary_list",
       "item_type" => %{
         "version" => 1,
         "name" => "in_list",
         "description" => "",
-        "__data_type__" => "dictionary_map",
+        "__type__" => "dictionary_map",
         "dictionary" => %{
-          "__data_type__" => "dictionary",
+          "__type__" => "dictionary",
           "fields" => [
             %{
               "version" => 1,
               "name" => "name",
               "description" => "",
-              "__data_type__" => "dictionary_string"
+              "__type__" => "dictionary_string"
             },
             %{
               "version" => 1,
               "name" => "age",
               "description" => "",
-              "__data_type__" => "dictionary_integer"
+              "__type__" => "dictionary_integer"
             }
           ]
         }
