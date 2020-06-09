@@ -25,6 +25,7 @@ defmodule DefinitionChannel.MixProject do
     [
       {:definition, in_umbrella: true},
       {:protocol_destination, in_umbrella: true},
+      {:json_serde, "~> 1.0"},
       {:credo, "~> 1.3", only: [:dev]}
     ]
   end
