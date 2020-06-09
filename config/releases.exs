@@ -23,6 +23,7 @@ config :logger,
   ]
 
 config :json_serde, :type_key, "__type__"
+config :brook, :serializer, JsonSerde
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
