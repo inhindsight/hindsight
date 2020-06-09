@@ -14,6 +14,7 @@ defmodule Extract do
   * `dictionary` - A `Dictionary.t()` impl describing the data's schema.
   """
   use Definition, schema: Extract.V1
+  use JsonSerde, alias: "extract"
 
   @type uuid :: String.t()
 

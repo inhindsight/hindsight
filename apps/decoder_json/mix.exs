@@ -27,6 +27,7 @@ defmodule DecoderJson.MixProject do
       {:definition, in_umbrella: true},
       {:jason, "~> 1.1"},
       {:temp, "~> 0.4.7"},
+      {:json_serde, "~> 1.0"},
       {:brook_serializer, "~> 2.2", only: [:test]},
       {:checkov, "~> 1.0", only: [:dev, :test]},
       {:credo, "~> 1.3", only: [:dev]},

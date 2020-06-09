@@ -27,6 +27,7 @@ defmodule DecoderGtfs.MixProject do
       {:protocol_decoder, in_umbrella: true},
       {:protobuf, "~> 0.7.0"},
       {:brook_serializer, "~> 2.2"},
+      {:json_serde, "~> 1.0"},
       {:temp, "~> 0.4.7", only: [:test]},
       {:checkov, "~> 1.0", only: [:dev, :test]},
       {:credo, "~> 1.3", only: [:dev]}

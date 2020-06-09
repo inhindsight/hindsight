@@ -3,6 +3,7 @@ defmodule Decoder.JsonLines do
   Defines a `Decoder` impl for [JSON Lines](http://jsonlines.org/) data.
   """
   use Definition, schema: Decoder.JsonLines.V1
+  use JsonSerde, alias: "decoder_json_lines"
 
   @derive Jason.Encoder
   defstruct []
