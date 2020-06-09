@@ -27,7 +27,6 @@ defmodule DecoderCsv.MixProject do
       {:protocol_decoder, in_umbrella: true},
       {:nimble_csv, "~> 0.6.0"},
       {:json_serde, "~> 1.0"},
-      {:brook_serializer, "~> 2.2", only: [:test]},
       {:checkov, "~> 1.0", only: [:dev, :test]},
       {:credo, "~> 1.3", only: [:dev]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}

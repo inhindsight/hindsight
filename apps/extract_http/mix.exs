@@ -30,12 +30,11 @@ defmodule ExtractHttp.MixProject do
       {:castore, "~> 0.1.4"},
       {:temp, "~> 0.4.7"},
       {:json_serde, "~> 1.0"},
-      {:brook_serializer, "~> 2.2", only: [:test]},
       {:bypass, "~> 1.0", only: [:test]},
       {:checkov, "~> 1.0", only: [:dev, :test]},
       {:credo, "~> 1.3", only: [:dev]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
-      {:placebo, "~> 2.0.0-rc.2", only: [:test]}
+      {:placebo, "~> 2.0.0-rc.2", only: [:dev, :test]}
     ]
   end
 end

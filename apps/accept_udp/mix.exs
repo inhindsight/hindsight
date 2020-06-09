@@ -28,7 +28,6 @@ defmodule Accept.Udp.MixProject do
       {:definition, in_umbrella: true},
       {:definition_accept, in_umbrella: true},
       {:json_serde, "~> 1.0"},
-      {:brook_serializer, "~> 2.2", only: [:test]},
       {:credo, "~> 1.3", only: [:dev]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:testing, in_umbrella: true, only: [:test]}

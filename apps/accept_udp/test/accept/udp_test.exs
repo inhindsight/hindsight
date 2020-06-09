@@ -19,19 +19,11 @@ defmodule Accept.UdpTest do
     end
   end
 
-  describe "serialization" do
-    test "can be decoded back into a struct" do
-      udp_conn = Accept.Udp.new!(port: 5060)
-      json = Jason.encode!(udp_conn)
+  test "serialization" do
+    udp_conn = Accept.Udp.new!(port: 5060)
 
-      assert {:ok, ^udp_conn} = Jason.decode!(json) |> Accept.Udp.new()
-    end
+    serialized = JsonSerde.serialize!(udp_conn)
 
-    test "brook serializer can (de)serialize" do
-      udp_conn = Accept.Udp.new!(port: 5060)
-
-      assert {:ok, ^udp_conn} =
-               Brook.Serializer.serialize(udp_conn) |> elem(1) |> Brook.Deserializer.deserialize()
-    end
+    assert JsonSerde.deserialize!(serialized) == udp_conn
   end
 end
