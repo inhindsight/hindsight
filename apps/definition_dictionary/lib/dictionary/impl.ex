@@ -199,9 +199,10 @@ defmodule Dictionary.Impl do
   defimpl JsonSerde.Serializer do
     def serialize(%{ordered: ordered}) do
       with {:ok, fields} <- JsonSerde.Serializer.serialize(ordered) do
-        {:ok, %{
-            JsonSerde.data_type_key() => "dictionary",
-            "fields" => fields
+        {:ok,
+         %{
+           JsonSerde.data_type_key() => "dictionary",
+           "fields" => fields
          }}
       end
     end

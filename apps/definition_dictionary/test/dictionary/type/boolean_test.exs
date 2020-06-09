@@ -11,7 +11,10 @@ defmodule Dictionary.Type.BooleanTest do
     }
 
     assert expected ==
-             JsonSerde.serialize!(%Dictionary.Type.Boolean{name: "name", description: "do or do not"})
+             JsonSerde.serialize!(%Dictionary.Type.Boolean{
+               name: "name",
+               description: "do or do not"
+             })
              |> Jason.decode!()
   end
 
@@ -24,7 +27,7 @@ defmodule Dictionary.Type.BooleanTest do
     }
 
     assert Dictionary.Type.Boolean.new!(name: "name", description: "do or do not") ==
-      Jason.encode!(input) |> JsonSerde.deserialize!()
+             Jason.encode!(input) |> JsonSerde.deserialize!()
   end
 
   data_test "validates booleans -- #{inspect(value)} --> #{inspect(result)}" do

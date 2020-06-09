@@ -19,39 +19,40 @@ defmodule DictionaryTest do
     end
 
     data_test "get_by_type returns all fields with that type" do
-      dictionary = Dictionary.from_list([
-        Dictionary.Type.String.new!(name: "name"),
-        Dictionary.Type.Integer.new!(name: "age"),
-        Dictionary.Type.Date.new!(name: "birthdate", format: "%Y-%m-%d"),
-        Dictionary.Type.String.new!(name: "nickname"),
-        Dictionary.Type.Map.new!(
-          name: "spouse",
-          dictionary: [
-            Dictionary.Type.String.new!(name: "name"),
-            Dictionary.Type.Wkt.Point.new!(name: "location")
-          ]
-        ),
-        Dictionary.Type.List.new!(
-          name: "friends",
-          item_type:
-            Dictionary.Type.Map.new!(
-              name: "in_list",
-              dictionary: [
-                Dictionary.Type.String.new!(name: "name"),
-                Dictionary.Type.Map.new!(
-                  name: "work",
-                  dictionary: [
-                    Dictionary.Type.Wkt.Point.new!(name: "location")
-                  ]
-                )
-              ]
-            )
-        ),
-        Dictionary.Type.List.new!(
-          name: "colors",
-          item_type: Dictionary.Type.String.new!(name: "in_list")
-        )
-      ])
+      dictionary =
+        Dictionary.from_list([
+          Dictionary.Type.String.new!(name: "name"),
+          Dictionary.Type.Integer.new!(name: "age"),
+          Dictionary.Type.Date.new!(name: "birthdate", format: "%Y-%m-%d"),
+          Dictionary.Type.String.new!(name: "nickname"),
+          Dictionary.Type.Map.new!(
+            name: "spouse",
+            dictionary: [
+              Dictionary.Type.String.new!(name: "name"),
+              Dictionary.Type.Wkt.Point.new!(name: "location")
+            ]
+          ),
+          Dictionary.Type.List.new!(
+            name: "friends",
+            item_type:
+              Dictionary.Type.Map.new!(
+                name: "in_list",
+                dictionary: [
+                  Dictionary.Type.String.new!(name: "name"),
+                  Dictionary.Type.Map.new!(
+                    name: "work",
+                    dictionary: [
+                      Dictionary.Type.Wkt.Point.new!(name: "location")
+                    ]
+                  )
+                ]
+              )
+          ),
+          Dictionary.Type.List.new!(
+            name: "colors",
+            item_type: Dictionary.Type.String.new!(name: "in_list")
+          )
+        ])
 
       result_from_list = Dictionary.get_by_type(dictionary, type)
       result_from_struct = Dictionary.from_list(dictionary) |> Dictionary.get_by_type(type)
@@ -241,16 +242,27 @@ defmodule DictionaryTest do
   end
 
   test "dictionary can be serialized/deserialized" do
-    dictionary = Dictionary.from_list([
-      Dictionary.Type.String.new!(name: "name"),
-      Dictionary.Type.Integer.new!(name: "age")
-    ])
+    dictionary =
+      Dictionary.from_list([
+        Dictionary.Type.String.new!(name: "name"),
+        Dictionary.Type.Integer.new!(name: "age")
+      ])
 
     expected = %{
       "__type__" => "dictionary",
       "fields" => [
-        %{"__type__" => "dictionary_string", "name" => "name", "description" => "", "version" => 1},
-        %{"__type__" => "dictionary_integer", "name" => "age", "description" => "", "version" => 1}
+        %{
+          "__type__" => "dictionary_string",
+          "name" => "name",
+          "description" => "",
+          "version" => 1
+        },
+        %{
+          "__type__" => "dictionary_integer",
+          "name" => "age",
+          "description" => "",
+          "version" => 1
+        }
       ]
     }
 
@@ -262,5 +274,4 @@ defmodule DictionaryTest do
 
     assert dictionary == deserialized
   end
-
 end

@@ -11,7 +11,10 @@ defmodule Dictionary.Type.Wkt.PointTest do
     }
 
     assert expected ==
-             JsonSerde.serialize!(%Dictionary.Type.Wkt.Point{name: "name", description: "description"})
+             JsonSerde.serialize!(%Dictionary.Type.Wkt.Point{
+               name: "name",
+               description: "description"
+             })
              |> Jason.decode!()
   end
 

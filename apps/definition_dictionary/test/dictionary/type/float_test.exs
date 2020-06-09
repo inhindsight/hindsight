@@ -11,7 +11,10 @@ defmodule Dictionary.Type.FloatTest do
     }
 
     assert expected ==
-             JsonSerde.serialize!(%Dictionary.Type.Float{name: "name", description: "precise number"})
+             JsonSerde.serialize!(%Dictionary.Type.Float{
+               name: "name",
+               description: "precise number"
+             })
              |> Jason.decode!()
   end
 
@@ -24,7 +27,7 @@ defmodule Dictionary.Type.FloatTest do
     }
 
     assert %Dictionary.Type.Float{name: "name", description: "precise number"} ==
-      Jason.encode!(input) |> JsonSerde.deserialize!()
+             Jason.encode!(input) |> JsonSerde.deserialize!()
   end
 
   data_test "validates floats -- #{inspect(value)} --> #{inspect(result)}" do

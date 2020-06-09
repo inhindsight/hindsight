@@ -18,7 +18,10 @@ defmodule Dictionary.Type.StringTest do
     }
 
     assert expected ==
-             JsonSerde.serialize!(%Dictionary.Type.String{name: "name", description: "description"})
+             JsonSerde.serialize!(%Dictionary.Type.String{
+               name: "name",
+               description: "description"
+             })
              |> Jason.decode!()
   end
 

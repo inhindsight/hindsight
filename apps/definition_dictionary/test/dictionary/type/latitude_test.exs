@@ -11,7 +11,10 @@ defmodule Dictionary.Type.LatitudeTest do
     }
 
     assert expected ==
-             JsonSerde.serialize!(%Dictionary.Type.Latitude{name: "name", description: "description"})
+             JsonSerde.serialize!(%Dictionary.Type.Latitude{
+               name: "name",
+               description: "description"
+             })
              |> Jason.decode!()
   end
 
@@ -24,7 +27,7 @@ defmodule Dictionary.Type.LatitudeTest do
     }
 
     assert %Dictionary.Type.Latitude{name: "name", description: "description"} ==
-      Jason.encode!(input) |> JsonSerde.deserialize!()
+             Jason.encode!(input) |> JsonSerde.deserialize!()
   end
 
   data_test "validates latitudes - #{inspect(value)} --> #{inspect(result)}" do

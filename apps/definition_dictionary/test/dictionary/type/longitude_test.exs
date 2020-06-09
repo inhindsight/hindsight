@@ -11,7 +11,10 @@ defmodule Dictionary.Type.LongitudeTest do
     }
 
     assert expected ==
-             JsonSerde.serialize!(%Dictionary.Type.Longitude{name: "name", description: "description"})
+             JsonSerde.serialize!(%Dictionary.Type.Longitude{
+               name: "name",
+               description: "description"
+             })
              |> Jason.decode!()
   end
 
