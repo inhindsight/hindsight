@@ -8,6 +8,7 @@ defmodule Profile.Update do
   * `subset_id` - Dataset's subset identifier.
   """
   use Definition, schema: Profile.Update.V1
+  use JsonSerde, alias: "profile_update"
 
   @type t :: %__MODULE__{
           version: integer,

@@ -20,6 +20,7 @@ defmodule Schedule do
   * `load` - List of `Load` event structs to send based on `cron` value.
   """
   use Definition, schema: Schedule.V1
+  use JsonSerde, alias: "schedule"
 
   @type uuid :: String.t()
 

@@ -27,6 +27,7 @@ defmodule AcceptWebsocket.MixProject do
       {:definition_accept, in_umbrella: true},
       {:plug_cowboy, "~> 2.1.0"},
       {:brook_serializer, "~> 2.2", only: [:test]},
+      {:json_serde, "~> 1.0"},
       {:credo, "~> 1.3", only: [:dev]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
       {:testing, in_umbrella: true, only: [:test]}

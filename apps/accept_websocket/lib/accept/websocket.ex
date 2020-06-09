@@ -10,6 +10,7 @@ defmodule Accept.Websocket do
   * `hibernate` - Defaults to false.
   """
   use Definition, schema: Accept.Websocket.V1
+  use JsonSerde, alias: "accept_websocket"
 
   @derive Jason.Encoder
   defstruct version: 1,
