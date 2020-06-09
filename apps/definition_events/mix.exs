@@ -23,7 +23,7 @@ defmodule DefinitionEvents.MixProject do
 
   defp deps do
     [
-      {:brook, "~> 0.5"},
+      {:brook, "~> 0.6"},
       {:elsa, "~> 0.12", override: true},
       {:definition_accept, in_umbrella: true},
       {:definition_channel, in_umbrella: true},

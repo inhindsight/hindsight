@@ -140,7 +140,8 @@ defmodule Dictionary.Impl do
         :ok
 
       false ->
-        reason = :"invalid_#{type}"
+        simple_type = to_string(type) |> String.split(".") |> List.last() |> String.downcase()
+        reason = :"invalid_#{simple_type}"
         {:error, reason}
     end
   end
