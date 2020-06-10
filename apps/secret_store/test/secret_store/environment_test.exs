@@ -4,6 +4,8 @@ defmodule SecretStore.EnvironmentTest do
   alias SecretStore.Environment
 
   describe "get/3" do
+    Temp.Env.modify([%{app: :secret_store, key: SecretStore, set: [secret_environment: "abc"]}])
+
     test "assembles variable from secret name and key" do
       System.put_env("FOO_BAR", "one")
       assert Environment.get("foo", "bar", nil) == "one"
@@ -17,14 +19,10 @@ defmodule SecretStore.EnvironmentTest do
     test "returns default if variable not set" do
       assert Environment.get("lmn", "op", "qrs") == "qrs"
     end
-  end
 
-  describe "get/3 in custom secret environment" do
-    Temp.Env.modify([%{app: :secret_store, key: SecretStore, set: [secret_environment: "abc"]}])
-
-    test "uses configured secret_environment value as part of variable name when set" do
-      System.put_env("FOO_BAR_ABC", "two")
-      assert Environment.get("foo", "bar", nil) == "two"
+    test "does not uses SECRET_ENVIRONMENT" do
+      System.put_env("HEY_YO_ABC", "pls ignore")
+      assert Environment.get("hey", "yo", "hi") == "hi"
     end
   end
 end

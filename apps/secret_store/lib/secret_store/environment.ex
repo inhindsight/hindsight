@@ -14,8 +14,7 @@ defmodule SecretStore.Environment do
   end
 
   defp assemble_name(name, key) do
-    [name, key, SecretStore.environment()]
-    |> Enum.reject(&is_nil/1)
+    Enum.reject([name, key], &is_nil/1)
     |> Enum.reduce("", fn
       "", acc -> acc
       val, "" -> val
