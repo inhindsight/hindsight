@@ -7,6 +7,7 @@ defmodule Decoder.Json do
   * `chunk_size` - Streaming chunk size in bytes. Defaults to `1_000`.
   """
   use Definition, schema: Decoder.Json.V1
+  use JsonSerde, alias: "decoder_json"
 
   @derive Jason.Encoder
   defstruct chunk_size: 1_000

@@ -26,7 +26,7 @@ defmodule DefinitionDictionary.MixProject do
       {:ok, in_umbrella: true},
       {:definition, in_umbrella: true},
       {:jason, "~> 1.1"},
-      {:brook_serializer, "~> 2.2"},
+      {:json_serde, "~> 1.0"},
       {:timex, "~> 3.6"},
       {:checkov, "~> 1.0", only: [:dev, :test]},
       {:credo, "~> 1.3", only: [:dev]}

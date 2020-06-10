@@ -3,6 +3,7 @@ defmodule Decoder.JsonArrays do
   Defines a `Decoder` impl for JSON data where the json string's top level object is an array and should be decomposed into its elements.
   """
   use Definition, schema: Decoder.JsonArrays.V1
+  use JsonSerde, alias: "decoder_json_arrays"
 
   @derive Jason.Encoder
   defstruct []

@@ -7,6 +7,7 @@ defmodule Decoder.Gtfs do
   * `chunk_size` - Limits chunks by bytes. Defaults to 100.
   """
   use Definition, schema: Decoder.Gtfs.V1
+  use JsonSerde, alias: "decoder_gtfs"
 
   @derive Jason.Encoder
   defstruct chunk_size: 100

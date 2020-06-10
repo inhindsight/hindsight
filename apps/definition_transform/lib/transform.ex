@@ -12,6 +12,7 @@ defmodule Transform do
   * `steps` - List of `Transform.Step.t()` impls to execute.
   """
   use Definition, schema: Transform.V1
+  use JsonSerde, alias: "transform"
 
   @type uuid :: String.t()
 

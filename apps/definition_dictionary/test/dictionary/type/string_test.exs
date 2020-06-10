@@ -14,26 +14,28 @@ defmodule Dictionary.Type.StringTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "type" => "string"
+      "__type__" => "dictionary_string"
     }
 
     assert expected ==
-             Jason.encode!(%Dictionary.Type.String{name: "name", description: "description"})
+             JsonSerde.serialize!(%Dictionary.Type.String{
+               name: "name",
+               description: "description"
+             })
              |> Jason.decode!()
   end
 
   test "can be decoded back into struct" do
-    string = Dictionary.Type.String.new!(name: "name", description: "description")
-    json = Jason.encode!(string)
+    input = %{
+      "version" => 1,
+      "name" => "name",
+      "description" => "description",
+      "__type__" => "dictionary_string"
+    }
 
-    assert {:ok, string} == Jason.decode!(json) |> Dictionary.Type.String.new()
-  end
+    field = input |> Jason.encode!() |> JsonSerde.deserialize!()
 
-  test "brook serializer can serialize and deserialize" do
-    string = Dictionary.Type.String.new!(name: "name", description: "description")
-
-    assert {:ok, string} =
-             Brook.Serializer.serialize(string) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert field == Dictionary.Type.String.new!(name: "name", description: "description")
   end
 
   data_test "validates strings - #{inspect(value)} --> #{inspect(result)}" do

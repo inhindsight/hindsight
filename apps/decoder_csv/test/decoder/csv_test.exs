@@ -18,18 +18,12 @@ defmodule Decoder.CsvTest do
     end
   end
 
-  test "can be decoded back into struct" do
-    struct = Decoder.Csv.new!(headers: ["name"])
-    json = Jason.encode!(struct)
-
-    assert {:ok, struct} == Jason.decode!(json) |> Decoder.Csv.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
+  test "can be serialized" do
     struct = Decoder.Csv.new!(headers: ["name"])
 
-    assert {:ok, struct} =
-             Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
+    serialized = JsonSerde.serialize!(struct)
+
+    assert JsonSerde.deserialize!(serialized) == struct
   end
 
   describe "Decoder" do

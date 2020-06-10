@@ -8,6 +8,7 @@ defmodule Extract.Http.Get do
   * `headers` - Map of key/value headers to include in the GET request. Defaults empty.
   """
   use Definition, schema: Extract.Http.Get.V1
+  use JsonSerde, alias: "extract_http_get"
 
   @type t :: %__MODULE__{
           version: integer,

@@ -21,18 +21,12 @@ defmodule Extract.Http.HeaderTest do
     end
   end
 
-  test "can be decoded back into struct" do
-    struct = Extract.Http.Header.new!(name: "name", into: "NAME")
-    json = Jason.encode!(struct)
-
-    assert {:ok, struct} == Jason.decode!(json) |> Extract.Http.Header.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
+  test "serialization" do
     struct = Extract.Http.Header.new!(name: "name", into: "NAME")
 
-    assert {:ok, struct} =
-             Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
+    serialized = JsonSerde.serialize!(struct)
+
+    assert JsonSerde.deserialize!(serialized) == struct
   end
 
   describe "Extract.Step" do

@@ -10,6 +10,7 @@ defmodule Presto.Table do
   * `pid` - Optional. Tracks writer processes for specific table instance.
   """
   use Definition, schema: Presto.Table.V1
+  use JsonSerde, alias: "presto_table"
 
   @type t :: %__MODULE__{
           version: integer,

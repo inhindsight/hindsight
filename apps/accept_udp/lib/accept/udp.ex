@@ -10,6 +10,7 @@ defmodule Accept.Udp do
   * `port` - The port data messages will be pushed through.
   """
   use Definition, schema: Accept.Udp.V1
+  use JsonSerde, alias: "accept_udp"
 
   @type uuid :: String.t()
 

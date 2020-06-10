@@ -7,7 +7,7 @@ defmodule Dictionary.Type.List do
   * `item_type` - `Dictionary.Type.*` type for list elements.
   """
   use Definition, schema: Dictionary.Type.List.V1
-  use Dictionary.JsonEncoder
+  use JsonSerde, alias: "dictionary_list"
   @behaviour Access
 
   @type t :: %__MODULE__{
@@ -21,19 +21,6 @@ defmodule Dictionary.Type.List do
             name: nil,
             description: "",
             item_type: nil
-
-  @impl Definition
-  def on_new(%{item_type: %{"type" => type} = item_type} = data) do
-    with {:ok, module} <- Dictionary.Type.from_string(type),
-         {:ok, new_item_type} <- module.new(item_type) do
-      Map.put(data, :item_type, new_item_type)
-      |> Ok.ok()
-    end
-  end
-
-  def on_new(data) do
-    Ok.ok(data)
-  end
 
   @impl Access
   def fetch(%{item_type: %module{} = item_type}, key) do

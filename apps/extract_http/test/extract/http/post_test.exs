@@ -29,29 +29,17 @@ defmodule Extract.Http.PostTest do
     end
   end
 
-  test "can be decoded back into struct" do
-    struct =
+  test "serialization" do
+    post =
       Extract.Http.Post.new!(
         url: "http://localhsot",
         headers: %{"name" => "some_name"},
         body: "hello"
       )
 
-    json = Jason.encode!(struct)
+    serialized = JsonSerde.serialize!(post)
 
-    assert {:ok, struct} == Jason.decode!(json) |> Extract.Http.Post.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
-    struct =
-      Extract.Http.Post.new!(
-        url: "http://localhsot",
-        headers: %{"name" => "some_name"},
-        body: "howdy"
-      )
-
-    assert {:ok, struct} =
-             Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert JsonSerde.deserialize!(serialized) == post
   end
 
   describe "Extract.Step" do

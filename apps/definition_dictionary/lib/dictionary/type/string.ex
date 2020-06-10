@@ -5,7 +5,7 @@ defmodule Dictionary.Type.String do
   doesn't implement `String.Chars`.
   """
   use Definition, schema: Dictionary.Type.String.V1
-  use Dictionary.JsonEncoder
+  use JsonSerde, alias: "dictionary_string"
 
   @type t :: %__MODULE__{
           version: integer,

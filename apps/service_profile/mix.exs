@@ -26,7 +26,7 @@ defmodule Profile.MixProject do
   defp deps do
     [
       {:annotated_retry, in_umbrella: true},
-      {:brook, "~> 0.5"},
+      {:brook, "~> 0.6"},
       {:extractor, in_umbrella: true},
       {:definition_dictionary, in_umbrella: true},
       {:definition_events, in_umbrella: true},

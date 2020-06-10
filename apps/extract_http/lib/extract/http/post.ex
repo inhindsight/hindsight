@@ -9,6 +9,7 @@ defmodule Extract.Http.Post do
   * `body` - Content to be POST'd as part of request.
   """
   use Definition, schema: Extract.Http.Post.V1
+  use JsonSerde, alias: "extract_http_post"
 
   @type t :: %__MODULE__{
           version: integer,

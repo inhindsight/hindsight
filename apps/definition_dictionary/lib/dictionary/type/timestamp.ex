@@ -18,7 +18,7 @@ defmodule Dictionary.Type.Timestamp do
   * `timezone` - Value's timezone. Defaults to UTC.
   """
   use Definition, schema: Dictionary.Type.Timestamp.V1
-  use Dictionary.JsonEncoder
+  use JsonSerde, alias: "dictionary_timestamp"
 
   @type t :: %__MODULE__{
           version: integer,

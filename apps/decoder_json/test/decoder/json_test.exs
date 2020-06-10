@@ -1,18 +1,12 @@
 defmodule Decoder.JsonTest do
   use ExUnit.Case
 
-  test "can be decoded back into struct" do
-    struct = Decoder.Json.new!([])
-    json = Jason.encode!(struct)
-
-    assert {:ok, struct} == Jason.decode!(json) |> Decoder.Json.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
+  test "serialization" do
     struct = Decoder.Json.new!([])
 
-    assert {:ok, struct} =
-             Brook.Serializer.serialize(struct) |> elem(1) |> Brook.Deserializer.deserialize()
+    serialized = JsonSerde.serialize!(struct)
+
+    assert JsonSerde.deserialize!(serialized) == struct
   end
 
   describe "Decoder" do

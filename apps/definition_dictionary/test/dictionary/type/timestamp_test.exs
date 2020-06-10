@@ -8,12 +8,12 @@ defmodule Dictionary.Type.TimestampTest do
       "name" => "name",
       "description" => "description",
       "format" => "%Y-%0m-%0d %0H:%0M:%0S",
-      "type" => "timestamp",
+      "__type__" => "dictionary_timestamp",
       "timezone" => "Etc/UTC"
     }
 
     assert expected ==
-             Jason.encode!(%Dictionary.Type.Timestamp{
+             JsonSerde.serialize!(%Dictionary.Type.Timestamp{
                name: "name",
                description: "description",
                format: "%Y-%0m-%0d %0H:%0M:%0S"
@@ -29,20 +29,12 @@ defmodule Dictionary.Type.TimestampTest do
   end
 
   test "can be decoded back into struct" do
-    string =
+    timestamp =
       Dictionary.Type.Timestamp.new!(name: "name", description: "description", format: "%Y")
 
-    json = Jason.encode!(string)
+    serialized = JsonSerde.serialize!(timestamp)
 
-    assert {:ok, string} == Jason.decode!(json) |> Dictionary.Type.Timestamp.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
-    string =
-      Dictionary.Type.Timestamp.new!(name: "name", description: "description", format: "%Y")
-
-    assert {:ok, string} =
-             Brook.Serializer.serialize(string) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert timestamp == JsonSerde.deserialize!(serialized)
   end
 
   data_test "validates dates - #{inspect(value)} tz #{timezone} --> #{inspect(result)}" do

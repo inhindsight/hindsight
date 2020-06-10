@@ -34,6 +34,7 @@ defmodule Extract.Steps.MixProject do
       {:extract_http, in_umbrella: true},
       {:ok, in_umbrella: true},
       {:definition, in_umbrella: true},
+      {:json_serde, "~> 1.0"},
       {:credo, "~> 1.3", only: [:dev]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]

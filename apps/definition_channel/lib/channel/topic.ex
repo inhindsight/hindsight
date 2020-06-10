@@ -12,6 +12,7 @@ defmodule Channel.Topic do
   join. Defaults to 0 (off).
   """
   use Definition, schema: Channel.Topic.V1
+  use JsonSerde, alias: "channel_topic"
 
   @type t :: %__MODULE__{
           name: String.t(),

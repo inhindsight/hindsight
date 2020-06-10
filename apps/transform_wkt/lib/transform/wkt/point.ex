@@ -10,6 +10,7 @@ defmodule Transform.Wkt.Point do
   * `to` - String or list of strings as path to transformed value field.
   """
   use Definition, schema: Transform.Wkt.Point.V1
+  use JsonSerde, alias: "transform_wkt_point"
 
   @type t :: %__MODULE__{
           longitude: String.t(),

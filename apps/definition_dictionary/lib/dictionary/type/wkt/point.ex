@@ -3,7 +3,7 @@ defmodule Dictionary.Type.Wkt.Point do
   Well-known text (WKT) POINT object type.
   """
   use Definition, schema: Dictionary.Type.Wkt.Point.V1
-  use Dictionary.JsonEncoder
+  use JsonSerde, alias: "dictionary_wkt_point"
 
   defstruct version: 1,
             name: nil,

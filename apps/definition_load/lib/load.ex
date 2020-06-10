@@ -12,6 +12,7 @@ defmodule Load do
   * `destination` - Required. `Destination` impl to write data to.
   """
   use Definition, schema: Load.V1
+  use JsonSerde, alias: "load"
 
   @type uuid :: String.t()
 

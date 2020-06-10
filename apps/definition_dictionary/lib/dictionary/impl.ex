@@ -1,6 +1,7 @@
 defmodule Dictionary.Impl do
   @moduledoc false
   require Logger
+  use JsonSerde, alias: "dictionary"
 
   @behaviour Access
 
@@ -139,7 +140,8 @@ defmodule Dictionary.Impl do
         :ok
 
       false ->
-        reason = :"invalid_#{Dictionary.Type.to_string(type)}"
+        simple_type = to_string(type) |> String.split(".") |> List.last() |> String.downcase()
+        reason = :"invalid_#{simple_type}"
         {:error, reason}
     end
   end
@@ -195,15 +197,23 @@ defmodule Dictionary.Impl do
     end
   end
 
-  defimpl Jason.Encoder, for: __MODULE__ do
-    def encode(%{ordered: ordered}, opts) do
-      Jason.Encode.list(ordered, opts)
+  defimpl JsonSerde.Serializer do
+    def serialize(%{ordered: ordered}) do
+      with {:ok, fields} <- JsonSerde.Serializer.serialize(ordered) do
+        {:ok,
+         %{
+           JsonSerde.data_type_key() => "dictionary",
+           "fields" => fields
+         }}
+      end
     end
   end
 
-  defimpl Brook.Serializer.Protocol, for: __MODULE__ do
-    def serialize(%{ordered: ordered}) do
-      Brook.Serializer.Protocol.List.serialize(ordered)
+  defimpl JsonSerde.Deserializer do
+    def deserialize(_, %{"fields" => fields}) do
+      with {:ok, types} <- JsonSerde.Deserializer.deserialize(fields, fields) do
+        {:ok, Dictionary.from_list(types)}
+      end
     end
   end
 end

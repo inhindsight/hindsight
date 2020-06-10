@@ -10,6 +10,7 @@ defmodule Decoder.Csv do
   * `skip_first_line` - Is first line the headers? Defaults to `false`.
   """
   use Definition, schema: Decoder.Csv.V1
+  use JsonSerde, alias: "decoder_csv"
 
   @type t :: %__MODULE__{
           version: integer,
@@ -22,7 +23,7 @@ defmodule Decoder.Csv do
             headers: nil,
             skip_first_line: false
 
-  defimpl Decoder, for: __MODULE__ do
+  defimpl Decoder do
     def lines_or_bytes(_t), do: :line
 
     def decode(t, messages) do

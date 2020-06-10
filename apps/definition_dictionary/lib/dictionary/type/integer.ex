@@ -6,7 +6,7 @@ defmodule Dictionary.Type.Integer do
   strings will be converted to `nil`.
   """
   use Definition, schema: Dictionary.Type.Integer.V1
-  use Dictionary.JsonEncoder
+  use JsonSerde, alias: "dictionary_integer"
 
   @type t :: %__MODULE__{
           version: integer,

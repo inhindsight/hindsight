@@ -7,26 +7,27 @@ defmodule Dictionary.Type.IntegerTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "type" => "integer"
+      "__type__" => "dictionary_integer"
     }
 
     assert expected ==
-             Jason.encode!(%Dictionary.Type.Integer{name: "name", description: "description"})
+             JsonSerde.serialize!(%Dictionary.Type.Integer{
+               name: "name",
+               description: "description"
+             })
              |> Jason.decode!()
   end
 
   test "can be decoded back into struct" do
-    integer = Dictionary.Type.Integer.new!(name: "name", description: "description")
-    json = Jason.encode!(integer)
+    input = %{
+      "version" => 1,
+      "name" => "name",
+      "description" => "description",
+      "__type__" => "dictionary_integer"
+    }
 
-    assert {:ok, integer} == Jason.decode!(json) |> Dictionary.Type.Integer.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
-    integer = Dictionary.Type.Integer.new!(name: "name", description: "description")
-
-    assert {:ok, integer} ==
-             Brook.Serializer.serialize(integer) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert Dictionary.Type.Integer.new!(name: "name", description: "description") ==
+             Jason.encode!(input) |> JsonSerde.deserialize!()
   end
 
   data_test "validates integers -- #{inspect(value)} --> #{inspect(result)}" do

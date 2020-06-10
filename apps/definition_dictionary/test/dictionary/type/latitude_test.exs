@@ -7,26 +7,27 @@ defmodule Dictionary.Type.LatitudeTest do
       "version" => 1,
       "name" => "name",
       "description" => "description",
-      "type" => "latitude"
+      "__type__" => "dictionary_latitude"
     }
 
     assert expected ==
-             Jason.encode!(%Dictionary.Type.Latitude{name: "name", description: "description"})
+             JsonSerde.serialize!(%Dictionary.Type.Latitude{
+               name: "name",
+               description: "description"
+             })
              |> Jason.decode!()
   end
 
   test "can be decoded back into struct" do
-    latitude = Dictionary.Type.Latitude.new!(name: "name", description: "description")
-    json = Jason.encode!(latitude)
+    input = %{
+      "version" => 1,
+      "name" => "name",
+      "description" => "description",
+      "__type__" => "dictionary_latitude"
+    }
 
-    assert {:ok, latitude} == Jason.decode!(json) |> Dictionary.Type.Latitude.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
-    latitude = Dictionary.Type.Latitude.new!(name: "name", description: "description")
-
-    assert {:ok, string} =
-             Brook.Serializer.serialize(latitude) |> elem(1) |> Brook.Deserializer.deserialize()
+    assert %Dictionary.Type.Latitude{name: "name", description: "description"} ==
+             Jason.encode!(input) |> JsonSerde.deserialize!()
   end
 
   data_test "validates latitudes - #{inspect(value)} --> #{inspect(result)}" do

@@ -9,6 +9,7 @@ defmodule Extract.Http.Header do
   * `into` - Key to store response header value under.
   """
   use Definition, schema: Extract.Http.Header.V1
+  use JsonSerde, alias: "extract_http_header"
 
   @type t :: %__MODULE__{
           version: integer,

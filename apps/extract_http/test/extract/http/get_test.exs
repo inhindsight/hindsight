@@ -28,18 +28,12 @@ defmodule Extract.Http.GetTest do
     end
   end
 
-  test "can be decoded back into struct" do
-    get = Extract.Http.Get.new!(url: "http://localhsot", headers: %{"name" => "some_name"})
-    json = Jason.encode!(get)
-
-    assert {:ok, get} == Jason.decode!(json) |> Extract.Http.Get.new()
-  end
-
-  test "brook serializer can serialize and deserialize" do
+  test "serialization" do
     get = Extract.Http.Get.new!(url: "http://localhsot", headers: %{"name" => "some_name"})
 
-    assert {:ok, get} =
-             Brook.Serializer.serialize(get) |> elem(1) |> Brook.Deserializer.deserialize()
+    serialized = JsonSerde.serialize!(get)
+
+    assert JsonSerde.deserialize!(serialized) == get
   end
 
   describe "Extract.Step" do

@@ -2,7 +2,6 @@ defmodule Dictionary.Type.Test do
   use ExUnit.Case
 
   @protocols [
-    Jason.Encoder,
     Dictionary.Type.Normalizer,
     Presto.Table.Dictionary.Translator,
     Avro.Translator

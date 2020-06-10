@@ -25,35 +25,6 @@ defmodule Dictionary do
   defdelegate delete_field(dictionary, name), to: Dictionary.Impl
   defdelegate validate_field(dictionary, path, type), to: Dictionary.Impl
 
-  @doc """
-  Encode a list of dictionary fields to json format.
-  """
-  @spec encode(list) :: {:ok, String.t()} | {:error, term}
-  def encode(fields) do
-    Jason.encode(fields)
-  end
-
-  @spec decode(binary | list | map) :: {:ok, term} | {:error, term}
-  def decode(json) when is_binary(json) do
-    with {:ok, decoded_json} <- Jason.decode(json) do
-      decode(decoded_json)
-    end
-  end
-
-  def decode(list) when is_list(list) do
-    Ok.transform(list, &decode/1)
-  end
-
-  def decode(%{"type" => type} = field) do
-    with {:ok, module} <- Dictionary.Type.from_string(type) do
-      module.new(field)
-    end
-  end
-
-  def decode(%_struct{} = struct) do
-    Ok.ok(struct)
-  end
-
   @spec normalize(dictionary :: Dictionary.t(), payload :: map) ::
           {:ok, map} | {:error, %{String.t() => term}}
   def normalize(dictionary, payload) when is_map(payload) do

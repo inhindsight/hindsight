@@ -26,6 +26,7 @@ defmodule Transform.WKT.MixProject do
       {:definition_dictionary, in_umbrella: true},
       {:geo, "~> 3.3"},
       {:protocol_transform_step, in_umbrella: true},
+      {:json_serde, "~> 1.0"},
       {:credo, "~> 1.3", only: [:dev]}
     ]
   end

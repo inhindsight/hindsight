@@ -28,6 +28,7 @@ defmodule Extract.MixProject do
       {:protocol_source, in_umbrella: true},
       {:protocol_decoder, in_umbrella: true},
       {:protocol_destination, in_umbrella: true},
+      {:json_serde, "~> 1.0"},
       {:credo, "~> 1.3", only: [:dev]},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]

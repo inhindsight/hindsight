@@ -32,6 +32,7 @@ defmodule DefinitionKafka.MixProject do
       {:protocol_destination, in_umbrella: true},
       {:protocol_source, in_umbrella: true},
       {:telemetry, "~> 0.4.1"},
+      {:json_serde, "~> 1.0"},
       {:credo, "~> 1.3", only: [:dev]},
       {:divo, "~> 1.1", only: [:dev, :test]},
       {:divo_kafka, "~> 0.1.6", only: [:test]},

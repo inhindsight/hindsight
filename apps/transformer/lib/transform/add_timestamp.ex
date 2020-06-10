@@ -7,6 +7,7 @@ defmodule Transform.AddTimestampField do
              or nest the field with a list of keys (`["top_level_key", "next_level_key", "field_name"]`).
   """
   use Definition, schema: Transform.AddTimestampField.V1
+  use JsonSerde, alias: "transform_add_timestamp"
 
   @type t :: %__MODULE__{
           name: String.t() | [String.t()]

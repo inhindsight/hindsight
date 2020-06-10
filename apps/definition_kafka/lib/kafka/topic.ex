@@ -13,6 +13,7 @@ defmodule Kafka.Topic do
   * `key_path` - String or list of strings used to parse message key from message content. Defaults to empty list, resulting in no message key (`""`).
   """
   use Definition, schema: Kafka.Topic.V1
+  use JsonSerde, alias: "kafka_topic"
 
   @type t :: %__MODULE__{
           version: integer(),
@@ -29,30 +30,6 @@ defmodule Kafka.Topic do
             partitions: 1,
             partitioner: :default,
             key_path: []
-
-  def on_new(struct) do
-    endpoints =
-      struct.endpoints
-      |> List.wrap()
-      |> Enum.map(&fix_endpoint/1)
-
-    struct
-    |> Map.put(:endpoints, endpoints)
-    |> Map.update!(:partitioner, &fix_partitioner/1)
-    |> Ok.ok()
-  end
-
-  defp fix_partitioner(partitioner) when is_binary(partitioner) do
-    String.to_atom(partitioner)
-  end
-
-  defp fix_partitioner(partitioner), do: partitioner
-
-  defp fix_endpoint([host, port]) when is_binary(host) and is_integer(port) do
-    {String.to_atom(host), port}
-  end
-
-  defp fix_endpoint(endpoint), do: endpoint
 
   defimpl Source do
     defdelegate start_link(t, context), to: Kafka.Topic.Source
